@@ -15,9 +15,12 @@ type Window struct {
 	app    fyne.App
 	window fyne.Window
 
-	mdOutput       *widget.RichText
-	mdOutputScroll *container.Scroll
-	inText         *components.TextInput
+	tabs            *container.AppTabs
+	mdOutput        *widget.RichText
+	mdOutputScroll  *container.Scroll
+	rawOutput       *widget.Entry
+	rawOutputScroll *container.Scroll
+	inText          *components.TextInput
 
 	btnStop      *widget.Button
 	btnClipboard *widget.Button
@@ -38,6 +41,13 @@ func NewWindow(controller *Controller, prompt string, width, height uint) *Windo
 	r.mdOutputScroll.SetMinSize(fyne.NewSize(float32(width), float32(height)))
 	r.mdOutputScroll.Hide()
 
+	r.rawOutput = widget.NewMultiLineEntry()
+	r.rawOutput.Wrapping = fyne.TextWrapWord
+
+	r.rawOutputScroll = container.NewScroll(r.rawOutput)
+	r.rawOutputScroll.SetMinSize(fyne.NewSize(float32(width), float32(height)))
+	r.rawOutputScroll.Hide()
+
 	r.inText = components.NewTextInput()
 	r.inText.SetPlaceHolder("Enter question...")
 	r.inText.OnSubmitted = controller.OnInputSubmitted
@@ -55,10 +65,16 @@ func NewWindow(controller *Controller, prompt string, width, height uint) *Windo
 
 	inputContainer := container.NewBorder(nil, nil, nil, r.btnStop, r.inText)
 
+	r.tabs = container.NewAppTabs(
+		container.NewTabItemWithIcon("Rendered", theme.DocumentIcon(), r.mdOutputScroll),
+		container.NewTabItemWithIcon("Plain", theme.DocumentPrintIcon(), r.rawOutputScroll),
+	)
+	r.tabs.Hide()
+
 	if controller.backendBuilder.Type == backend.TypeSingleShot {
-		r.window.SetContent(container.NewBorder(inputContainer, r.btnClipboard, nil, nil, r.mdOutputScroll))
+		r.window.SetContent(container.NewBorder(inputContainer, r.btnClipboard, nil, nil, r.tabs))
 	} else if controller.backendBuilder.Type == backend.TypeMultiShot {
-		r.window.SetContent(container.NewBorder(nil, inputContainer, nil, nil, r.mdOutputScroll))
+		r.window.SetContent(container.NewBorder(nil, inputContainer, nil, nil, r.tabs))
 	} else {
 		panic("Unknown backend type!")
 	}

@@ -71,9 +71,11 @@ func (c *Controller) setOutput(input, output string) {
 
 	if c.backendBuilder.Type == backend.TypeSingleShot {
 		c.window.mdOutput.ParseMarkdown(output)
+		c.window.rawOutput.SetText(output)
 	} else if c.backendBuilder.Type == backend.TypeMultiShot {
 		c.window.mdOutput.AppendMarkdown("# " + input)
 		c.window.mdOutput.AppendMarkdown(output)
+		c.window.rawOutput.SetText(c.window.rawOutput.Text + "#" + input + "\n" + output + "\n")
 		c.window.inText.SetText("")
 	} else {
 		panic("Unknown backend type!")
@@ -81,12 +83,19 @@ func (c *Controller) setOutput(input, output string) {
 
 	if output == "" {
 		c.window.mdOutputScroll.Hide()
+		c.window.rawOutputScroll.Hide()
 		c.window.btnClipboard.Hide()
+		c.window.tabs.Hide()
 	} else {
 		c.window.mdOutputScroll.Show()
+		c.window.rawOutputScroll.Show()
 		c.window.btnClipboard.Show()
+		c.window.tabs.Show()
 
-		time.AfterFunc(250*time.Millisecond, func() { c.window.mdOutputScroll.ScrollToBottom() })
+		time.AfterFunc(250*time.Millisecond, func() {
+			c.window.mdOutputScroll.ScrollToBottom()
+			c.window.rawOutputScroll.ScrollToBottom()
+		})
 	}
 }
 
