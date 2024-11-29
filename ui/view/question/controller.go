@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"fyne.io/fyne/v2"
 	"github.com/rainu/ask-mai/backend"
+	"github.com/rainu/ask-mai/io"
+	"time"
 )
 
 type Controller struct {
@@ -13,11 +15,13 @@ type Controller struct {
 	backend        backend.Handle
 
 	rawAnswer string
+	printer   io.ResponsePrinter
 }
 
-func NewController(bb backend.Builder) *Controller {
+func NewController(bb backend.Builder, printer io.ResponsePrinter) *Controller {
 	return &Controller{
 		backendBuilder: bb,
+		printer:        printer,
 	}
 }
 
@@ -63,6 +67,8 @@ func (c *Controller) getBackend() (backend.Handle, error) {
 func (c *Controller) setOutput(input, output string) {
 	c.rawAnswer = output
 
+	c.printer.Print(input, output)
+
 	if c.backendBuilder.Type == backend.TypeSingleShot {
 		c.window.mdOutput.ParseMarkdown(output)
 	} else if c.backendBuilder.Type == backend.TypeMultiShot {
@@ -78,8 +84,9 @@ func (c *Controller) setOutput(input, output string) {
 		c.window.btnClipboard.Hide()
 	} else {
 		c.window.mdOutputScroll.Show()
-		c.window.mdOutputScroll.ScrollToBottom()
 		c.window.btnClipboard.Show()
+
+		time.AfterFunc(250*time.Millisecond, func() { c.window.mdOutputScroll.ScrollToBottom() })
 	}
 }
 
