@@ -74,10 +74,11 @@ func (c *Controller) setOutput(input, output string) {
 	}
 
 	if output == "" {
-		c.window.mdOutput.Hide()
+		c.window.mdOutputScroll.Hide()
 		c.window.btnClipboard.Hide()
 	} else {
-		c.window.mdOutput.Show()
+		c.window.mdOutputScroll.Show()
+		c.window.mdOutputScroll.ScrollToBottom()
 		c.window.btnClipboard.Show()
 	}
 }

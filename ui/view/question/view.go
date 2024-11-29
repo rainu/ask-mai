@@ -15,24 +15,28 @@ type Window struct {
 	app    fyne.App
 	window fyne.Window
 
-	mdOutput *widget.RichText
-	inText   *components.TextInput
+	mdOutput       *widget.RichText
+	mdOutputScroll *container.Scroll
+	inText         *components.TextInput
 
 	btnStop      *widget.Button
 	btnClipboard *widget.Button
 }
 
-func NewWindow(controller *Controller, prompt string) *Window {
+func NewWindow(controller *Controller, prompt string, width, height uint) *Window {
 	r := &Window{}
 
 	r.app = app.New()
 	r.window = r.app.NewWindow("Input - Ask mAI")
-	r.window.Resize(fyne.NewSize(400, 0))
+	r.window.Resize(fyne.NewSize(float32(width), 0))
 	r.window.CenterOnScreen()
 
 	r.mdOutput = widget.NewRichTextFromMarkdown("")
 	r.mdOutput.Wrapping = fyne.TextWrapWord
-	r.mdOutput.Hide()
+
+	r.mdOutputScroll = container.NewScroll(r.mdOutput)
+	r.mdOutputScroll.SetMinSize(fyne.NewSize(float32(width), float32(height)))
+	r.mdOutputScroll.Hide()
 
 	r.inText = components.NewTextInput()
 	r.inText.SetPlaceHolder("Enter question...")
@@ -52,9 +56,9 @@ func NewWindow(controller *Controller, prompt string) *Window {
 	inputContainer := container.NewBorder(nil, nil, nil, r.btnStop, r.inText)
 
 	if controller.backendBuilder.Type == backend.TypeSingleShot {
-		r.window.SetContent(container.NewBorder(inputContainer, r.btnClipboard, nil, nil, r.mdOutput))
+		r.window.SetContent(container.NewBorder(inputContainer, r.btnClipboard, nil, nil, r.mdOutputScroll))
 	} else if controller.backendBuilder.Type == backend.TypeMultiShot {
-		r.window.SetContent(container.NewBorder(nil, inputContainer, nil, nil, r.mdOutput))
+		r.window.SetContent(container.NewBorder(nil, inputContainer, nil, nil, r.mdOutputScroll))
 	} else {
 		panic("Unknown backend type!")
 	}

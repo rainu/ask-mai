@@ -14,6 +14,8 @@ const (
 
 type Config struct {
 	Prompt string
+	Width  uint
+	Height uint
 
 	Backend     string
 	OpenAI      OpenAIConfig
@@ -33,6 +35,8 @@ type AnythingLLMConfig struct {
 func ParseConfig() Config {
 	var config Config
 
+	flag.UintVar(&config.Width, "width", 1920/2, "The (initial) width of the window")
+	flag.UintVar(&config.Height, "height", 1080/3, "The maximal height of the chat response area")
 	flag.StringVar(&config.Prompt, "prompt", "", "The prompt to use")
 	flag.StringVar(&config.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM))
 	flag.StringVar(&config.OpenAI.APIKey, "openai-api-key", "", "OpenAI API Key")

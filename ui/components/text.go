@@ -18,9 +18,9 @@ func NewTextInput() *TextInput {
 	return result
 }
 
-func (e *TextInput) KeyUp(key *fyne.KeyEvent) {
-	e.Entry.KeyUp(key)
-	if e.OnKeyUp != nil {
-		e.OnKeyUp(key)
+func (t *TextInput) KeyUp(key *fyne.KeyEvent) {
+	t.Entry.KeyUp(key)
+	if t.OnKeyUp != nil {
+		t.OnKeyUp(key)
 	}
 }

@@ -44,6 +44,6 @@ func main() {
 	}
 	defer mainWindowController.Close()
 
-	mainWindow := questionView.NewWindow(mainWindowController, config.Prompt)
+	mainWindow := questionView.NewWindow(mainWindowController, config.Prompt, config.Width, config.Height)
 	mainWindow.ShowAndRun()
 }
