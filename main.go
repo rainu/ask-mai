@@ -49,7 +49,7 @@ func main() {
 	case BackendOpenAI:
 		mainWindowController = questionView.NewController(backend.Builder{
 			Build: func() (backend.Handle, error) {
-				return openai.NewOpenAI(config.OpenAI.APIKey)
+				return openai.NewOpenAI(config.OpenAI.APIKey, config.OpenAI.SystemPrompt)
 			},
 			Type: backend.TypeMultiShot,
 		}, printer)

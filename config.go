@@ -36,7 +36,8 @@ type Config struct {
 }
 
 type OpenAIConfig struct {
-	APIKey string
+	APIKey       string
+	SystemPrompt string
 }
 
 type AnythingLLMConfig struct {
@@ -61,6 +62,7 @@ func ParseConfig() *Config {
 	flag.StringVar(&c.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM))
 
 	flag.StringVar(&c.OpenAI.APIKey, "openai-api-key", "", "OpenAI API Key")
+	flag.StringVar(&c.OpenAI.SystemPrompt, "openai-system-prompt", "", "OpenAI System Prompt")
 
 	flag.StringVar(&c.AnythingLLM.BaseURL, "anythingllm-base-url", "", "Base URL for AnythingLLM")
 	flag.StringVar(&c.AnythingLLM.Token, "anythingllm-token", "", "Token for AnythingLLM")

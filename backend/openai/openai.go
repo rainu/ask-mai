@@ -16,10 +16,16 @@ type OpenAI struct {
 	history []openai.ChatCompletionMessageParamUnion
 }
 
-func NewOpenAI(apiKey string) (backend.Handle, error) {
-	client := openai.NewClient(option.WithAPIKey(apiKey))
-	ctx, cancel := context.WithCancel(context.Background())
-	return &OpenAI{client: client, ctx: ctx, cancel: cancel}, nil
+func NewOpenAI(apiKey, systemPrompt string) (backend.Handle, error) {
+	result := &OpenAI{
+		client: openai.NewClient(option.WithAPIKey(apiKey)),
+	}
+	if systemPrompt != "" {
+		result.history = append(result.history, openai.AssistantMessage(systemPrompt))
+	}
+
+	result.ctx, result.cancel = context.WithCancel(context.Background())
+	return result, nil
 }
 
 func (o *OpenAI) AskSomething(question string) (string, error) {
