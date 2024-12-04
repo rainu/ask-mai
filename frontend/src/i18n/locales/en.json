@@ -1,0 +1,9 @@
+{
+	"languages": {
+		"en": "English",
+		"de": "Deutsch"
+	},
+	"prompt": {
+		"placeholder": "Enter question..."
+	}
+}
