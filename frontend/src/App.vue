@@ -13,8 +13,13 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
 	data() {
+		let theme = 'light'
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			theme = 'dark'
+		}
+
 		return {
-			theme: 'light',
+			theme,
 		}
 	},
 })
