@@ -1,50 +1,19 @@
 <template>
 	<div ref="page">
-		<template v-if="output">
+		<template v-if="chatHistory.length > 0">
 			<v-app-bar app class="pa-0 ma-0" density="compact">
 				<div style="width: 100%" ref="appbar">
-					<v-row dense class="pa-0 ma-0">
-						<v-col :cols="progress ? 11 : 12" class="pa-0 ma-0">
-							<v-text-field
-								v-model="input"
-								:disabled="progress"
-								@keyup.enter="onSubmit"
-								hide-details
-								autofocus
-								:placeholder="$t('prompt.placeholder')"
-							>
-							</v-text-field>
-						</v-col>
-						<v-col :cols="progress ? 1 : 0" v-show="progress" class="pa-0 ma-0">
-							<v-btn @click="onStop" variant="flat" color="error" block style="height: 100%">
-								<v-icon size="x-large">mdi-stop-circle</v-icon>
-							</v-btn>
-						</v-col>
-					</v-row>
+					<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
 				</div>
 			</v-app-bar>
-			<ChatMessage :message="output" />
+
+      <template v-for="(entry, index) in chatHistory" :key="index">
+        <ChatMessage :message="entry.message" :role="entry.role" />
+      </template>
 		</template>
 
 		<template v-else>
-			<v-row dense class="pa-0 ma-0">
-				<v-col :cols="progress ? 11 : 12" class="pa-0 ma-0">
-					<v-text-field
-						v-model="input"
-						:disabled="progress"
-						@keyup.enter="onSubmit"
-						hide-details
-						autofocus
-						:placeholder="$t('prompt.placeholder')"
-					>
-					</v-text-field>
-				</v-col>
-				<v-col :cols="progress ? 1 : 0" v-show="progress" class="pa-0 ma-0">
-					<v-btn @click="onStop" variant="flat" color="error" block style="height: 100%">
-						<v-icon size="x-large">mdi-stop-circle</v-icon>
-					</v-btn>
-				</v-col>
-			</v-row>
+			<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
 		</template>
 	</div>
 </template>
@@ -52,16 +21,22 @@
 <script lang="ts">
 import { AppMounted, GetInitialPrompt, LLMAsk, LLMInterrupt } from '../../wailsjs/go/controller/Controller'
 import { WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
-import ChatMessage from '../components/ChatMessage.vue'
+import ChatMessage, { Role } from '../components/ChatMessage.vue'
+import ChatInput from '../components/ChatInput.vue'
+
+type ChatHistoryEntry = {
+	message: string
+	role: Role
+}
 
 export default {
 	name: 'Home',
-	components: { ChatMessage },
+	components: { ChatInput, ChatMessage },
 	data() {
 		return {
 			progress: false,
-			input: '' as string,
-			output: '' as string,
+      input: '',
+			chatHistory: [] as ChatHistoryEntry[],
 		}
 	},
 	methods: {
@@ -72,25 +47,32 @@ export default {
 
 			await WindowSetSize(currentSize.w, pageHeight + appbarHeight)
 		},
-		async onSubmit() {
+		async onSubmit(input: string) {
 			try {
 				this.progress = true
-				this.output = await LLMAsk({ Content: this.input })
+				const output = await LLMAsk({ Content: input })
+        this.chatHistory.push(
+          { message: input, role: Role.User },
+          { message: output, role: Role.Bot },
+        )
+        this.input = ""
+
+				console.log(output)
 			} catch (err) {
 				console.error(err)
 			} finally {
 				this.progress = false
 			}
 		},
-		async onStop() {
+		async onInterrupt() {
 			await LLMInterrupt()
 		},
 	},
 	mounted() {
 		GetInitialPrompt().then((prompt) => {
 			if (prompt) {
-				this.input = prompt
-				this.onSubmit()
+        this.input = prompt
+				this.onSubmit(prompt)
 			}
 		})
 		this.adjustHeight().then(() => AppMounted())
