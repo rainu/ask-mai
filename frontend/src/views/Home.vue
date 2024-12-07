@@ -7,9 +7,9 @@
 				</div>
 			</v-app-bar>
 
-      <template v-for="(entry, index) in chatHistory" :key="index">
-        <ChatMessage :message="entry.message" :role="entry.role" />
-      </template>
+			<template v-for="(entry, index) in chatHistory" :key="index">
+				<ChatMessage :message="entry.Content" :role="entry.Role" />
+			</template>
 		</template>
 
 		<template v-else>
@@ -23,11 +23,8 @@ import { AppMounted, GetInitialPrompt, LLMAsk, LLMInterrupt } from '../../wailsj
 import { WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { Role } from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
-
-type ChatHistoryEntry = {
-	message: string
-	role: Role
-}
+import { backend, controller } from '../../wailsjs/go/models.ts'
+import LLMAskArgs = controller.LLMAskArgs
 
 export default {
 	name: 'Home',
@@ -35,8 +32,8 @@ export default {
 	data() {
 		return {
 			progress: false,
-      input: '',
-			chatHistory: [] as ChatHistoryEntry[],
+			input: '',
+			chatHistory: [] as backend.Message[],
 		}
 	},
 	methods: {
@@ -50,14 +47,19 @@ export default {
 		async onSubmit(input: string) {
 			try {
 				this.progress = true
-				const output = await LLMAsk({ Content: input })
-        this.chatHistory.push(
-          { message: input, role: Role.User },
-          { message: output, role: Role.Bot },
-        )
-        this.input = ""
-
-				console.log(output)
+				const output = await LLMAsk(
+					LLMAskArgs.createFrom({
+						History: [
+							...this.chatHistory,
+							{
+								Content: input,
+								Role: Role.User,
+							},
+						],
+					}),
+				)
+				this.chatHistory.push({ Content: input, Role: Role.User }, { Content: output, Role: Role.Bot })
+				this.input = ''
 			} catch (err) {
 				console.error(err)
 			} finally {
@@ -71,7 +73,7 @@ export default {
 	mounted() {
 		GetInitialPrompt().then((prompt) => {
 			if (prompt) {
-        this.input = prompt
+				this.input = prompt
 				this.onSubmit(prompt)
 			}
 		})

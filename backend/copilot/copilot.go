@@ -32,11 +32,15 @@ func NewCopilot() (backend.Handle, error) {
 	return &Copilot{}, nil
 }
 
-func (c *Copilot) AskSomething(question string) (string, error) {
-	return c.AskSomethingWithContext(context.Background(), question)
+func (c *Copilot) AskSomething(chat []backend.Message) (string, error) {
+	return c.AskSomethingWithContext(context.Background(), chat)
 }
 
-func (c *Copilot) AskSomethingWithContext(ctx context.Context, question string) (string, error) {
+func (c *Copilot) AskSomethingWithContext(ctx context.Context, chat []backend.Message) (string, error) {
+	if len(chat) == 0 {
+		return "", fmt.Errorf("empty history provided")
+	}
+
 	c.ctx, c.cancelFn = context.WithCancel(ctx)
 
 	inputIn, inputOut := io.Pipe()
@@ -57,7 +61,7 @@ func (c *Copilot) AskSomethingWithContext(ctx context.Context, question string) 
 		defer outputOut.Close()
 
 		commandErr = cmdchain.Builder().WithInput(inputIn).
-			JoinWithContext(c.ctx, "gh", "copilot", "suggest", question, "--target", "shell", "--shell-out", tempFile.Name()).
+			JoinWithContext(c.ctx, "gh", "copilot", "suggest", chat[len(chat)-1].Content, "--target", "shell", "--shell-out", tempFile.Name()).
 			Finalize().WithOutput(outputOut).
 			Run()
 	}()

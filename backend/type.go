@@ -7,8 +7,20 @@ const (
 	TypeMultiShot  Type = iota
 )
 
+type Role string
+
+const (
+	RoleUser Role = "user"
+	RoleBot  Role = "bot"
+)
+
+type Message struct {
+	Content string
+	Role    Role
+}
+
 type Handle interface {
-	AskSomething(question string) (string, error)
+	AskSomething(chat []Message) (string, error)
 	Close() error
 }
 

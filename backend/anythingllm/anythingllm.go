@@ -63,14 +63,18 @@ func NewAnythingLLM(baseURL, token, workspace string) (backend.Handle, error) {
 	return result, nil
 }
 
-func (a *AnythingLLM) AskSomething(question string) (string, error) {
+func (a *AnythingLLM) AskSomething(chat []backend.Message) (string, error) {
 	a.Close()
 
 	a.ctx, a.cancel = context.WithCancel(context.Background())
-	return a.AskSomethingWithContext(a.ctx, question)
+	return a.AskSomethingWithContext(a.ctx, chat)
 }
 
-func (a *AnythingLLM) AskSomethingWithContext(ctx context.Context, question string) (string, error) {
+func (a *AnythingLLM) AskSomethingWithContext(ctx context.Context, chat []backend.Message) (string, error) {
+	if len(chat) == 0 {
+		return "", fmt.Errorf("empty history provided")
+	}
+
 	if a.threadSlug == "" {
 		err := a.createNewThread()
 		if err != nil {
@@ -80,7 +84,7 @@ func (a *AnythingLLM) AskSomethingWithContext(ctx context.Context, question stri
 
 	url := fmt.Sprintf("%s/api/v1/workspace/%s/thread/%s/chat", a.baseURL, a.workspace, a.threadSlug)
 	jsonPayload, err := json.Marshal(chatRequest{
-		Message:   question,
+		Message:   chat[len(chat)-1].Content,
 		Mode:      "chat",
 		SessionID: a.threadSlug,
 	})
