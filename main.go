@@ -82,9 +82,10 @@ func main() {
 	err := wails.Run(controller.CreateOptions(controller.CreateOptionsArg{
 		Controller: mainWindowController,
 
-		Assets: assets,
-		Icon:   icon,
-		Width:  int(config.Width),
+		Assets:    assets,
+		Icon:      icon,
+		Width:     int(config.Width),
+		MaxHeight: int(config.Height),
 	}))
 
 	if err != nil {

@@ -24,6 +24,7 @@ func CreateOptions(args CreateOptionsArg) *options.App {
 		Title:             "Prompt - Ask mAI",
 		Width:             args.Width,
 		Height:            1,
+		MaxHeight:         args.MaxHeight,
 		DisableResize:     false,
 		Fullscreen:        false,
 		Frameless:         true,
