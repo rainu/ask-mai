@@ -15,6 +15,8 @@
 		<template v-else>
 			<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
 		</template>
+
+    <a ref="bottom"></a>
 	</div>
 </template>
 
@@ -44,6 +46,10 @@ export default {
 
 			await WindowSetSize(currentSize.w, pageHeight + appbarHeight)
 		},
+    scrollToBottom() {
+      const bottomEl = (this.$refs.bottom as HTMLElement)
+      bottomEl.scrollIntoView({block: "end", behavior: "smooth"})
+    },
 		async onSubmit(input: string) {
 			try {
 				this.progress = true
@@ -80,7 +86,11 @@ export default {
 		this.adjustHeight().then(() => AppMounted())
 	},
 	updated() {
-		this.$nextTick(() => this.adjustHeight())
+		this.$nextTick(() => {
+      this.adjustHeight()
+
+      setTimeout(this.scrollToBottom, 250)
+    })
 	},
 }
 </script>
