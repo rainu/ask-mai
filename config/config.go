@@ -1,0 +1,198 @@
+package config
+
+import (
+	"flag"
+	"fmt"
+	"github.com/rainu/ask-mai/backend/copilot"
+	"github.com/wailsapp/wails/v2/pkg/options"
+	"io"
+	"log/slog"
+	"os"
+	"strings"
+)
+
+const (
+	BackendCopilot     = "copilot"
+	BackendOpenAI      = "openai"
+	BackendAnythingLLM = "anythingllm"
+
+	ThemeDark   = "dark"
+	ThemeLight  = "light"
+	ThemeSystem = "system"
+
+	PrinterFormatPlain = "plain"
+	PrinterFormatJSON  = "json"
+	PrinterTargetOut   = "stdout"
+	PrinterTargetErr   = "stderr"
+)
+
+type Config struct {
+	UI UIConfig
+
+	Backend     string
+	OpenAI      OpenAIConfig
+	AnythingLLM AnythingLLMConfig
+
+	Printer PrinterConfig
+
+	LogLevel int
+}
+
+type UIConfig struct {
+	Window       WindowConfig
+	Prompt       string
+	QuitShortcut Shortcut
+	Theme        string
+	Language     string
+}
+
+type WindowConfig struct {
+	Title           string
+	InitialWidth    uint
+	MaxHeight       uint
+	BackgroundColor struct {
+		R uint
+		G uint
+		B uint
+		A uint
+	}
+	StartState int
+	Frameless  bool
+	Resizeable bool
+}
+
+type Shortcut struct {
+	Code  string
+	Alt   bool
+	Ctrl  bool
+	Meta  bool
+	Shift bool
+}
+type OpenAIConfig struct {
+	APIKey       string
+	SystemPrompt string
+}
+
+type AnythingLLMConfig struct {
+	BaseURL   string
+	Token     string
+	Workspace string
+}
+
+type PrinterConfig struct {
+	Format  string
+	Targets []io.WriteCloser
+	targets string
+}
+
+func Parse(arguments []string) *Config {
+	c := &Config{}
+
+	flag.IntVar(&c.LogLevel, "ll", int(slog.LevelError), fmt.Sprintf("Log level (debug(%d), info(%d), warn(%d), error(%d))", slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError))
+
+	flag.StringVar(&c.UI.Prompt, "ui-prompt", "", "The prompt to use")
+	flag.StringVar(&c.UI.Window.Title, "ui-title", "Prompt - Ask mAI", "The window title")
+	flag.UintVar(&c.UI.Window.InitialWidth, "ui-init-width", 1920/2, "The (initial) width of the window")
+	flag.UintVar(&c.UI.Window.MaxHeight, "ui-max-height", 1080/3, "The maximal height of the chat response area")
+	flag.UintVar(&c.UI.Window.BackgroundColor.R, "ui-bg-color-r", 255, "The window's background color (red value)")
+	flag.UintVar(&c.UI.Window.BackgroundColor.G, "ui-bg-color-g", 255, "The window's background color (green value)")
+	flag.UintVar(&c.UI.Window.BackgroundColor.B, "ui-bg-color-b", 255, "The window's background color (blue value)")
+	flag.UintVar(&c.UI.Window.BackgroundColor.A, "ui-bg-color-a", 255, "The window's background color (alpha value)")
+	flag.IntVar(&c.UI.Window.StartState, "ui-start-state", int(options.Normal), fmt.Sprintf("The window start state (normal(%d), minimized(%d), maximized(%d), fullscreen(%d))", options.Normal, options.Minimised, options.Maximised, options.Fullscreen))
+	flag.BoolVar(&c.UI.Window.Frameless, "ui-frameless", true, "Should the window be frameless")
+	flag.BoolVar(&c.UI.Window.Resizeable, "ui-resizeable", true, "Should the window be resizeable")
+	flag.StringVar(&c.UI.QuitShortcut.Code, "ui-quit-shortcut-keycode", "escape", "The shortcut for quitting the application (key-code)")
+	flag.BoolVar(&c.UI.QuitShortcut.Ctrl, "ui-quit-shortcut-ctrl", false, "The shortcut for quitting the application (control-key must be pressed)")
+	flag.BoolVar(&c.UI.QuitShortcut.Shift, "ui-quit-shortcut-shift", false, "The shortcut for quitting the application (shift-key must be pressed)")
+	flag.BoolVar(&c.UI.QuitShortcut.Alt, "ui-quit-shortcut-alt", false, "The shortcut for quitting the application (alt-key must be pressed)")
+	flag.BoolVar(&c.UI.QuitShortcut.Meta, "ui-quit-shortcut-meta", false, "The shortcut for quitting the application (meta-key must be pressed)")
+	flag.StringVar(&c.UI.Theme, "ui-theme", ThemeSystem, fmt.Sprintf("The theme to use ('%s', '%s', '%s')", ThemeLight, ThemeDark, ThemeSystem))
+	flag.StringVar(&c.UI.Language, "ui-lang", os.Getenv("LANG"), "The language to use")
+
+	flag.StringVar(&c.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM))
+
+	flag.StringVar(&c.OpenAI.APIKey, "openai-api-key", "", "OpenAI API Key")
+	flag.StringVar(&c.OpenAI.SystemPrompt, "openai-system-prompt", "", "OpenAI System Prompt")
+
+	flag.StringVar(&c.AnythingLLM.BaseURL, "anythingllm-base-url", "", "Base URL for AnythingLLM")
+	flag.StringVar(&c.AnythingLLM.Token, "anythingllm-token", "", "Token for AnythingLLM")
+	flag.StringVar(&c.AnythingLLM.Workspace, "anythingllm-workspace", "", "Workspace for AnythingLLM")
+
+	flag.StringVar(&c.Printer.Format, "print-format", PrinterFormatJSON, fmt.Sprintf("Response printer format (%s, %s)", PrinterFormatPlain, PrinterFormatJSON))
+	flag.StringVar(&c.Printer.targets, "print-targets", PrinterTargetOut, fmt.Sprintf("Comma seperated response printer targets (%s, %s, <path/to/file>)", PrinterTargetOut, PrinterTargetErr))
+
+	flag.CommandLine.Parse(arguments)
+
+	for _, target := range strings.Split(c.Printer.targets, ",") {
+		target = strings.TrimSpace(target)
+
+		if target == PrinterTargetOut {
+			c.Printer.Targets = append(c.Printer.Targets, os.Stdout)
+		} else if target == PrinterTargetErr {
+			c.Printer.Targets = append(c.Printer.Targets, os.Stderr)
+		} else {
+			file, err := os.Create(target)
+			if err != nil {
+				panic(fmt.Errorf("Error creating printer target file: %w", err))
+			}
+			c.Printer.Targets = append(c.Printer.Targets, file)
+		}
+	}
+
+	return c
+}
+
+func (c Config) Validate() error {
+	if c.LogLevel < int(slog.LevelDebug) || c.LogLevel > int(slog.LevelError) {
+		return fmt.Errorf("Invalid log level")
+	}
+
+	if c.UI.Window.BackgroundColor.R > 255 {
+		return fmt.Errorf("Invalid background color (red)")
+	}
+	if c.UI.Window.BackgroundColor.G > 255 {
+		return fmt.Errorf("Invalid background color (green)")
+	}
+	if c.UI.Window.BackgroundColor.B > 255 {
+		return fmt.Errorf("Invalid background color (blue)")
+	}
+	if c.UI.Window.BackgroundColor.A > 255 {
+		return fmt.Errorf("Invalid background color (alpha)")
+	}
+	if c.UI.Theme != ThemeDark && c.UI.Theme != ThemeLight && c.UI.Theme != ThemeSystem {
+		return fmt.Errorf("Invalid theme")
+	}
+	if c.UI.Window.StartState < int(options.Normal) || c.UI.Window.StartState > int(options.Fullscreen) {
+		return fmt.Errorf("Invalid window start state")
+	}
+
+	if c.Backend != BackendCopilot && c.Backend != BackendOpenAI && c.Backend != BackendAnythingLLM {
+		return fmt.Errorf("Invalid backend")
+	}
+
+	if c.Backend == BackendCopilot && !copilot.IsCopilotInstalled() {
+		return fmt.Errorf("GitHub Copilot is not installed")
+	}
+
+	if c.Backend == BackendOpenAI && c.OpenAI.APIKey == "" {
+		return fmt.Errorf("OpenAI API Key is missing")
+	}
+
+	if c.Backend == BackendAnythingLLM {
+		if c.AnythingLLM.BaseURL == "" {
+			return fmt.Errorf("AnythingLLM Base URL is missing")
+		}
+		if c.AnythingLLM.Token == "" {
+			return fmt.Errorf("AnythingLLM Token is missing")
+		}
+		if c.AnythingLLM.Workspace == "" {
+			return fmt.Errorf("AnythingLLM Workspace is missing")
+		}
+	}
+
+	if c.Printer.Format != PrinterFormatJSON && c.Printer.Format != PrinterFormatPlain {
+		return fmt.Errorf("Invalid response printer format")
+	}
+
+	return nil
+}

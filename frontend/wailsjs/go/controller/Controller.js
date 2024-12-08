@@ -6,8 +6,12 @@ export function AppMounted() {
   return window['go']['controller']['Controller']['AppMounted']();
 }
 
-export function GetInitialPrompt() {
-  return window['go']['controller']['Controller']['GetInitialPrompt']();
+export function Close() {
+  return window['go']['controller']['Controller']['Close']();
+}
+
+export function GetApplicationConfig() {
+  return window['go']['controller']['Controller']['GetApplicationConfig']();
 }
 
 export function LLMAsk(arg1) {

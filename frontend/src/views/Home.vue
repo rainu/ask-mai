@@ -16,12 +16,12 @@
 			<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
 		</template>
 
-    <a ref="bottom"></a>
+		<a ref="bottom"></a>
 	</div>
 </template>
 
 <script lang="ts">
-import { AppMounted, GetInitialPrompt, LLMAsk, LLMInterrupt } from '../../wailsjs/go/controller/Controller'
+import { AppMounted, LLMAsk, LLMInterrupt } from '../../wailsjs/go/controller/Controller'
 import { WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { Role } from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
@@ -46,10 +46,10 @@ export default {
 
 			await WindowSetSize(currentSize.w, pageHeight + appbarHeight)
 		},
-    scrollToBottom() {
-      const bottomEl = (this.$refs.bottom as HTMLElement)
-      bottomEl.scrollIntoView({block: "end", behavior: "smooth"})
-    },
+		scrollToBottom() {
+			const bottomEl = this.$refs.bottom as HTMLElement
+			bottomEl.scrollIntoView({ block: 'end', behavior: 'smooth' })
+		},
 		async onSubmit(input: string) {
 			try {
 				this.progress = true
@@ -77,20 +77,18 @@ export default {
 		},
 	},
 	mounted() {
-		GetInitialPrompt().then((prompt) => {
-			if (prompt) {
-				this.input = prompt
-				this.onSubmit(prompt)
-			}
-		})
+		if (this.$appConfig.UI.Prompt) {
+			this.input = this.$appConfig.UI.Prompt
+			this.onSubmit(this.$appConfig.UI.Prompt)
+		}
 		this.adjustHeight().then(() => AppMounted())
 	},
 	updated() {
 		this.$nextTick(() => {
-      this.adjustHeight()
+			this.adjustHeight()
 
-      setTimeout(this.scrollToBottom, 250)
-    })
+			setTimeout(this.scrollToBottom, 250)
+		})
 	},
 }
 </script>
