@@ -47,10 +47,12 @@ type UIConfig struct {
 }
 
 type WindowConfig struct {
-	Title           string
-	InitialWidth    uint
-	MaxHeight       uint
-	BackgroundColor struct {
+	Title            string
+	InitialWidth     string
+	MaxHeight        string
+	InitialPositionX string
+	InitialPositionY string
+	BackgroundColor  struct {
 		R uint
 		G uint
 		B uint
@@ -92,8 +94,10 @@ func Parse(arguments []string) *Config {
 
 	flag.StringVar(&c.UI.Prompt, "ui-prompt", "", "The prompt to use")
 	flag.StringVar(&c.UI.Window.Title, "ui-title", "Prompt - Ask mAI", "The window title")
-	flag.UintVar(&c.UI.Window.InitialWidth, "ui-init-width", 1920/2, "The (initial) width of the window")
-	flag.UintVar(&c.UI.Window.MaxHeight, "ui-max-height", 1080/3, "The maximal height of the chat response area")
+	flag.StringVar(&c.UI.Window.InitialWidth, "ui-init-width", "CurrentScreen.Dimension.Width/2", "The (initial) width of the window")
+	flag.StringVar(&c.UI.Window.MaxHeight, "ui-max-height", "CurrentScreen.Dimension.Height/3", "The maximal height of the chat response area")
+	flag.StringVar(&c.UI.Window.InitialPositionX, "ui-init-pos-x", "CurrentScreen.Dimension.Width/4", "The (initial) x-position of the window")
+	flag.StringVar(&c.UI.Window.InitialPositionY, "ui-init-pos-y", "0", "The (initial) y-position of the window")
 	flag.UintVar(&c.UI.Window.BackgroundColor.R, "ui-bg-color-r", 255, "The window's background color (red value)")
 	flag.UintVar(&c.UI.Window.BackgroundColor.G, "ui-bg-color-g", 255, "The window's background color (green value)")
 	flag.UintVar(&c.UI.Window.BackgroundColor.B, "ui-bg-color-b", 255, "The window's background color (blue value)")
@@ -120,6 +124,10 @@ func Parse(arguments []string) *Config {
 
 	flag.StringVar(&c.Printer.Format, "print-format", PrinterFormatJSON, fmt.Sprintf("Response printer format (%s, %s)", PrinterFormatPlain, PrinterFormatJSON))
 	flag.StringVar(&c.Printer.targets, "print-targets", PrinterTargetOut, fmt.Sprintf("Comma seperated response printer targets (%s, %s, <path/to/file>)", PrinterTargetOut, PrinterTargetErr))
+
+	flag.Usage = func() {
+		printUsage(flag.CommandLine.Output())
+	}
 
 	flag.CommandLine.Parse(arguments)
 
@@ -164,6 +172,30 @@ func (c Config) Validate() error {
 	}
 	if c.UI.Window.StartState < int(options.Normal) || c.UI.Window.StartState > int(options.Fullscreen) {
 		return fmt.Errorf("Invalid window start state")
+	}
+
+	if c.UI.Window.MaxHeight != "" {
+		if err := ValidateExpression(c.UI.Window.MaxHeight); err != nil {
+			return fmt.Errorf("Invalid window max height expression: %w", err)
+		}
+	}
+
+	if c.UI.Window.InitialWidth != "" {
+		if err := ValidateExpression(c.UI.Window.InitialWidth); err != nil {
+			return fmt.Errorf("Invalid window initial width expression: %w", err)
+		}
+	}
+
+	if c.UI.Window.InitialPositionX != "" {
+		if err := ValidateExpression(c.UI.Window.InitialPositionX); err != nil {
+			return fmt.Errorf("Invalid window initial x-position expression: %w", err)
+		}
+	}
+
+	if c.UI.Window.InitialPositionY != "" {
+		if err := ValidateExpression(c.UI.Window.InitialPositionY); err != nil {
+			return fmt.Errorf("Invalid window initial y-position expression: %w", err)
+		}
 	}
 
 	if c.Backend != BackendCopilot && c.Backend != BackendOpenAI && c.Backend != BackendAnythingLLM {

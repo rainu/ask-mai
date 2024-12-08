@@ -85,8 +85,10 @@ export namespace config {
 	}
 	export class WindowConfig {
 	    Title: string;
-	    InitialWidth: number;
-	    MaxHeight: number;
+	    InitialWidth: string;
+	    MaxHeight: string;
+	    InitialPositionX: string;
+	    InitialPositionY: string;
 	    // Go type: struct { R uint; G uint; B uint; A uint }
 	    BackgroundColor: any;
 	    StartState: number;
@@ -102,6 +104,8 @@ export namespace config {
 	        this.Title = source["Title"];
 	        this.InitialWidth = source["InitialWidth"];
 	        this.MaxHeight = source["MaxHeight"];
+	        this.InitialPositionX = source["InitialPositionX"];
+	        this.InitialPositionY = source["InitialPositionY"];
 	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], Object);
 	        this.StartState = source["StartState"];
 	        this.Frameless = source["Frameless"];

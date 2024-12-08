@@ -63,9 +63,7 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 	ac := c.appConfig
 	return &options.App{
 		Title:             ac.UI.Window.Title,
-		Width:             int(ac.UI.Window.InitialWidth),
 		Height:            1,
-		MaxHeight:         int(ac.UI.Window.MaxHeight),
 		DisableResize:     !ac.UI.Window.Resizeable,
 		Fullscreen:        false,
 		Frameless:         ac.UI.Window.Frameless,

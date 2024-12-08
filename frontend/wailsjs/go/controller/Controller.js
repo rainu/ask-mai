@@ -6,10 +6,6 @@ export function AppMounted() {
   return window['go']['controller']['Controller']['AppMounted']();
 }
 
-export function Close() {
-  return window['go']['controller']['Controller']['Close']();
-}
-
 export function GetApplicationConfig() {
   return window['go']['controller']['Controller']['GetApplicationConfig']();
 }

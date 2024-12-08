@@ -5,8 +5,6 @@ import {controller} from '../models';
 
 export function AppMounted():Promise<void>;
 
-export function Close():Promise<void>;
-
 export function GetApplicationConfig():Promise<config.Config>;
 
 export function LLMAsk(arg1:controller.LLMAskArgs):Promise<string>;
