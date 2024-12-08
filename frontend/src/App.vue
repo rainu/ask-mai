@@ -10,6 +10,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { Quit } from '../wailsjs/runtime'
 
 export default defineComponent({
 	data() {
@@ -21,6 +22,16 @@ export default defineComponent({
 		return {
 			theme,
 		}
+	},
+	methods: {
+		handleGlobalKeydown(event: KeyboardEvent) {
+			if (event.key === 'Escape') {
+        Quit()
+			}
+		},
+	},
+	mounted() {
+		window.addEventListener('keydown', this.handleGlobalKeydown)
 	},
 })
 </script>
