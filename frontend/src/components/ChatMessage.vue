@@ -102,6 +102,7 @@ export default defineComponent({
 pre code {
 	background-color: #f5f5f5;
 	border: 1px solid #ccc;
+  margin: 0.5em 0;
 	padding: 0.5em 1em;
 	border-radius: 5px;
 	display: block;
@@ -154,6 +155,21 @@ code:not(pre code):not(h1 code):not(h2 code):not(h3 code):not(h4 code):not(h5 co
 	border-radius: 3px;
 }
 
+/* Quote-Blocks */
+
+blockquote {
+  border-left: 5px solid #ccc;
+  margin: 0.5em 0;
+  padding: 0.5em 1em;
+  color: #555;
+  background: none;
+  border-radius: 0;
+}
+
+blockquote:hover {
+  border-color: #007bff;
+}
+
 /* Header Padding increase */
 h1,
 h2,
@@ -165,8 +181,7 @@ h6 {
 }
 
 /* make list items visible */
-ol li {
-	padding-top: 1em;
+ol,ul li {
 	margin-left: 2em;
 }
 </style>
