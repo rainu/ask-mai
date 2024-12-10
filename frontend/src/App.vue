@@ -1,11 +1,15 @@
 <template>
-	<v-app :theme="theme">
-		<v-main>
-			<v-container class="pa-0 ma-0" fluid>
-				<RouterView />
-			</v-container>
-		</v-main>
-	</v-app>
+	<v-hover>
+		<template v-slot:default="{ props: hoverProps, isHovering }">
+			<v-app :theme="theme" v-bind="hoverProps" :style="{ opacity: opacityValue(isHovering) }">
+				<v-main>
+					<v-container class="pa-0 ma-0" fluid>
+						<RouterView />
+					</v-container>
+				</v-main>
+			</v-app>
+		</template>
+	</v-hover>
 </template>
 
 <script lang="ts">
@@ -27,6 +31,7 @@ export default defineComponent({
 
 		return {
 			theme,
+			opacity: this.$appConfig.UI.Window.BackgroundColor.A / 255,
 		}
 	},
 	methods: {
@@ -40,6 +45,15 @@ export default defineComponent({
 			if (code && ctrl && shift && alt && meta) {
 				Quit()
 			}
+		},
+		opacityValue(isHovering: boolean | null): number {
+			switch (this.$appConfig.UI.Window.Translucent) {
+				case 'ever':
+					return this.opacity
+				case 'hover':
+					return isHovering ? 1 : this.opacity
+			}
+			return 1
 		},
 	},
 	mounted() {

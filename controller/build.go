@@ -61,6 +61,11 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller) {
 
 func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 	ac := c.appConfig
+	translucent := true
+	if ac.UI.Window.Translucent == config.TranslucentNever {
+		translucent = false
+	}
+
 	return &options.App{
 		Title:             ac.UI.Window.Title,
 		Height:            1,
@@ -107,7 +112,7 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		// Windows platform specific options
 		Windows: &windows.Options{
 			WebviewIsTransparent:              true,
-			WindowIsTranslucent:               false,
+			WindowIsTranslucent:               translucent,
 			DisableWindowIcon:                 false,
 			DisableFramelessWindowDecorations: false,
 			WebviewUserDataPath:               "",
@@ -135,7 +140,7 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 			},
 			Appearance:           mac.NSAppearanceNameDarkAqua,
 			WebviewIsTransparent: true,
-			WindowIsTranslucent:  true,
+			WindowIsTranslucent:  translucent,
 			About: &mac.AboutInfo{
 				Title:   ac.UI.Window.Title,
 				Message: "Ask mAI is a simple application to ask questions to AI models.",
@@ -143,7 +148,8 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 			},
 		},
 		Linux: &linux.Options{
-			Icon: icon,
+			Icon:                icon,
+			WindowIsTranslucent: translucent,
 		},
 	}
 }

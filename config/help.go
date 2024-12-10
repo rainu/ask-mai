@@ -45,6 +45,9 @@ func printUsage(output io.Writer) {
 
 	wails.Run(&options.App{
 		StartHidden: true,
+		Frameless:   true,
+		Width:       1,
+		Height:      1,
 		OnStartup: func(ctx context.Context) {
 			screens, err := runtime.ScreenGetAll(ctx)
 			if err != nil {

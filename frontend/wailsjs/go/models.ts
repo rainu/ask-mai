@@ -83,17 +83,35 @@ export namespace config {
 	        this.Shift = source["Shift"];
 	    }
 	}
+	export class WindowBackgroundColor {
+	    R: number;
+	    G: number;
+	    B: number;
+	    A: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new WindowBackgroundColor(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.R = source["R"];
+	        this.G = source["G"];
+	        this.B = source["B"];
+	        this.A = source["A"];
+	    }
+	}
 	export class WindowConfig {
 	    Title: string;
 	    InitialWidth: string;
 	    MaxHeight: string;
 	    InitialPositionX: string;
 	    InitialPositionY: string;
-	    // Go type: struct { R uint; G uint; B uint; A uint }
-	    BackgroundColor: any;
+	    BackgroundColor: WindowBackgroundColor;
 	    StartState: number;
 	    Frameless: boolean;
 	    Resizeable: boolean;
+	    Translucent: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new WindowConfig(source);
@@ -106,10 +124,11 @@ export namespace config {
 	        this.MaxHeight = source["MaxHeight"];
 	        this.InitialPositionX = source["InitialPositionX"];
 	        this.InitialPositionY = source["InitialPositionY"];
-	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], Object);
+	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], WindowBackgroundColor);
 	        this.StartState = source["StartState"];
 	        this.Frameless = source["Frameless"];
 	        this.Resizeable = source["Resizeable"];
+	        this.Translucent = source["Translucent"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -208,6 +227,7 @@ export namespace config {
 		    return a;
 		}
 	}
+	
 	
 	
 	

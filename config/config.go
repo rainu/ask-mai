@@ -20,6 +20,10 @@ const (
 	ThemeLight  = "light"
 	ThemeSystem = "system"
 
+	TranslucentNever = "never"
+	TranslucentEver  = "ever"
+	TranslucentHover = "hover"
+
 	PrinterFormatPlain = "plain"
 	PrinterFormatJSON  = "json"
 	PrinterTargetOut   = "stdout"
@@ -52,15 +56,18 @@ type WindowConfig struct {
 	MaxHeight        string
 	InitialPositionX string
 	InitialPositionY string
-	BackgroundColor  struct {
-		R uint
-		G uint
-		B uint
-		A uint
-	}
-	StartState int
-	Frameless  bool
-	Resizeable bool
+	BackgroundColor  WindowBackgroundColor
+	StartState       int
+	Frameless        bool
+	Resizeable       bool
+	Translucent      string
+}
+
+type WindowBackgroundColor struct {
+	R uint
+	G uint
+	B uint
+	A uint
 }
 
 type Shortcut struct {
@@ -101,10 +108,11 @@ func Parse(arguments []string) *Config {
 	flag.UintVar(&c.UI.Window.BackgroundColor.R, "ui-bg-color-r", 255, "The window's background color (red value)")
 	flag.UintVar(&c.UI.Window.BackgroundColor.G, "ui-bg-color-g", 255, "The window's background color (green value)")
 	flag.UintVar(&c.UI.Window.BackgroundColor.B, "ui-bg-color-b", 255, "The window's background color (blue value)")
-	flag.UintVar(&c.UI.Window.BackgroundColor.A, "ui-bg-color-a", 255, "The window's background color (alpha value)")
+	flag.UintVar(&c.UI.Window.BackgroundColor.A, "ui-bg-color-a", 192, "The window's background color (alpha value)")
 	flag.IntVar(&c.UI.Window.StartState, "ui-start-state", int(options.Normal), fmt.Sprintf("The window start state (normal(%d), minimized(%d), maximized(%d), fullscreen(%d))", options.Normal, options.Minimised, options.Maximised, options.Fullscreen))
 	flag.BoolVar(&c.UI.Window.Frameless, "ui-frameless", true, "Should the window be frameless")
 	flag.BoolVar(&c.UI.Window.Resizeable, "ui-resizeable", true, "Should the window be resizeable")
+	flag.StringVar(&c.UI.Window.Translucent, "ui-translucent", TranslucentHover, fmt.Sprintf("When the window should be translucent (%s, %s, %s)", TranslucentNever, TranslucentEver, TranslucentHover))
 	flag.StringVar(&c.UI.QuitShortcut.Code, "ui-quit-shortcut-keycode", "escape", "The shortcut for quitting the application (key-code)")
 	flag.BoolVar(&c.UI.QuitShortcut.Ctrl, "ui-quit-shortcut-ctrl", false, "The shortcut for quitting the application (control-key must be pressed)")
 	flag.BoolVar(&c.UI.QuitShortcut.Shift, "ui-quit-shortcut-shift", false, "The shortcut for quitting the application (shift-key must be pressed)")
@@ -196,6 +204,10 @@ func (c Config) Validate() error {
 		if err := ValidateExpression(c.UI.Window.InitialPositionY); err != nil {
 			return fmt.Errorf("Invalid window initial y-position expression: %w", err)
 		}
+	}
+
+	if c.UI.Window.Translucent != TranslucentNever && c.UI.Window.Translucent != TranslucentEver && c.UI.Window.Translucent != TranslucentHover {
+		return fmt.Errorf("Invalid window translucent value")
 	}
 
 	if c.Backend != BackendCopilot && c.Backend != BackendOpenAI && c.Backend != BackendAnythingLLM {
