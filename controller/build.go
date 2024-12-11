@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"github.com/rainu/ask-mai/config"
 	"github.com/rainu/ask-mai/io"
-	"github.com/rainu/ask-mai/llms/anythingllm"
-	"github.com/rainu/ask-mai/llms/copilot"
-	"github.com/rainu/ask-mai/llms/openai"
+	"github.com/rainu/ask-mai/llms"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -36,16 +34,20 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 
 	switch cfg.Backend {
 	case config.BackendCopilot:
-		ctrl.aiModel, err = copilot.NewCopilot()
+		ctrl.aiModel, err = llms.NewCopilot()
 	case config.BackendOpenAI:
-		ctrl.aiModel, err = openai.NewOpenAI(
+		ctrl.aiModel, err = llms.NewOpenAI(
 			cfg.OpenAI.AsOptions(),
 		)
 	case config.BackendAnythingLLM:
-		ctrl.aiModel, err = anythingllm.NewAnythingLLM(
+		ctrl.aiModel, err = llms.NewAnythingLLM(
 			cfg.AnythingLLM.BaseURL,
 			cfg.AnythingLLM.Token,
 			cfg.AnythingLLM.Workspace,
+		)
+	case config.BackendOllama:
+		ctrl.aiModel, err = llms.NewOllama(
+			cfg.Ollama.AsOptions(),
 		)
 	default:
 		err = fmt.Errorf("unknown backend: %s", cfg.Backend)

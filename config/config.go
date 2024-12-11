@@ -3,7 +3,7 @@ package config
 import (
 	"flag"
 	"fmt"
-	"github.com/rainu/ask-mai/llms/copilot"
+	"github.com/rainu/ask-mai/llms"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"io"
 	"log/slog"
@@ -15,6 +15,7 @@ const (
 	BackendCopilot     = "copilot"
 	BackendOpenAI      = "openai"
 	BackendAnythingLLM = "anythingllm"
+	BackendOllama      = "ollama"
 
 	ThemeDark   = "dark"
 	ThemeLight  = "light"
@@ -36,6 +37,7 @@ type Config struct {
 	Backend     string
 	OpenAI      OpenAIConfig
 	AnythingLLM AnythingLLMConfig
+	Ollama      OllamaConfig
 	CallOptions CallOptionsConfig
 
 	Printer PrinterConfig
@@ -112,10 +114,11 @@ func Parse(arguments []string) *Config {
 	flag.StringVar(&c.UI.Theme, "ui-theme", ThemeSystem, fmt.Sprintf("The theme to use ('%s', '%s', '%s')", ThemeLight, ThemeDark, ThemeSystem))
 	flag.StringVar(&c.UI.Language, "ui-lang", os.Getenv("LANG"), "The language to use")
 
-	flag.StringVar(&c.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM))
+	flag.StringVar(&c.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM, BackendOllama))
 
 	configureOpenai(&c.OpenAI)
 	configureAnythingLLM(&c.AnythingLLM)
+	configureOllama(&c.Ollama)
 	configureCallOptions(&c.CallOptions)
 
 	flag.StringVar(&c.Printer.Format, "print-format", PrinterFormatJSON, fmt.Sprintf("Response printer format (%s, %s)", PrinterFormatPlain, PrinterFormatJSON))
@@ -198,24 +201,25 @@ func (c Config) Validate() error {
 		return fmt.Errorf("Invalid window translucent value")
 	}
 
-	if c.Backend != BackendCopilot && c.Backend != BackendOpenAI && c.Backend != BackendAnythingLLM {
-		return fmt.Errorf("Invalid backend")
-	}
-
-	if c.Backend == BackendCopilot && !copilot.IsCopilotInstalled() {
-		return fmt.Errorf("GitHub Copilot is not installed")
-	}
-
-	if c.Backend == BackendOpenAI {
+	switch c.Backend {
+	case BackendCopilot:
+		if !llms.IsCopilotInstalled() {
+			return fmt.Errorf("GitHub Copilot is not installed")
+		}
+	case BackendOpenAI:
 		if ve := c.OpenAI.Validate(); ve != nil {
 			return ve
 		}
-	}
-
-	if c.Backend == BackendAnythingLLM {
+	case BackendAnythingLLM:
 		if ve := c.AnythingLLM.Validate(); ve != nil {
 			return ve
 		}
+	case BackendOllama:
+		if ve := c.Ollama.Validate(); ve != nil {
+			return ve
+		}
+	default:
+		return fmt.Errorf("Invalid backend")
 	}
 
 	if ve := c.CallOptions.Validate(); ve != nil {

@@ -1,11 +1,10 @@
-package anythingllm
+package llms
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	illms "github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms"
 	"net/http"
 	"time"
@@ -50,7 +49,7 @@ type threadResponse struct {
 	Message *string `json:"message"`
 }
 
-func NewAnythingLLM(baseURL, token, workspace string) (illms.Model, error) {
+func NewAnythingLLM(baseURL, token, workspace string) (Model, error) {
 	result := &AnythingLLM{
 		client: &http.Client{},
 
