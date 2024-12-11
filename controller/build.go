@@ -49,6 +49,10 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 		ctrl.aiModel, err = llms.NewOllama(
 			cfg.Ollama.AsOptions(),
 		)
+	case config.BackendMistral:
+		ctrl.aiModel, err = llms.NewMistral(
+			cfg.Mistral.AsOptions(),
+		)
 	default:
 		err = fmt.Errorf("unknown backend: %s", cfg.Backend)
 	}

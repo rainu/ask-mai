@@ -16,6 +16,7 @@ const (
 	BackendOpenAI      = "openai"
 	BackendAnythingLLM = "anythingllm"
 	BackendOllama      = "ollama"
+	BackendMistral     = "mistral"
 
 	ThemeDark   = "dark"
 	ThemeLight  = "light"
@@ -38,6 +39,7 @@ type Config struct {
 	OpenAI      OpenAIConfig
 	AnythingLLM AnythingLLMConfig
 	Ollama      OllamaConfig
+	Mistral     MistralConfig
 	CallOptions CallOptionsConfig
 
 	Printer PrinterConfig
@@ -114,11 +116,12 @@ func Parse(arguments []string) *Config {
 	flag.StringVar(&c.UI.Theme, "ui-theme", ThemeSystem, fmt.Sprintf("The theme to use ('%s', '%s', '%s')", ThemeLight, ThemeDark, ThemeSystem))
 	flag.StringVar(&c.UI.Language, "ui-lang", os.Getenv("LANG"), "The language to use")
 
-	flag.StringVar(&c.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM, BackendOllama))
+	flag.StringVar(&c.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM, BackendOllama, BackendMistral))
 
 	configureOpenai(&c.OpenAI)
 	configureAnythingLLM(&c.AnythingLLM)
 	configureOllama(&c.Ollama)
+	configureMistral(&c.Mistral)
 	configureCallOptions(&c.CallOptions)
 
 	flag.StringVar(&c.Printer.Format, "print-format", PrinterFormatJSON, fmt.Sprintf("Response printer format (%s, %s)", PrinterFormatPlain, PrinterFormatJSON))
@@ -216,6 +219,10 @@ func (c Config) Validate() error {
 		}
 	case BackendOllama:
 		if ve := c.Ollama.Validate(); ve != nil {
+			return ve
+		}
+	case BackendMistral:
+		if ve := c.Mistral.Validate(); ve != nil {
 			return ve
 		}
 	default:
