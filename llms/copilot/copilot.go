@@ -4,8 +4,9 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/rainu/ask-mai/backend"
+	illms "github.com/rainu/ask-mai/llms"
 	cmdchain "github.com/rainu/go-command-chain"
+	"github.com/tmc/langchaingo/llms"
 	"io"
 	"log/slog"
 	"os"
@@ -18,31 +19,42 @@ var interruptionPattern = []string{
 	"? What would you like the shell command to do?",
 }
 
-type Copilot struct {
-	ctx      context.Context
-	cancelFn context.CancelFunc
-}
+type Copilot struct{}
 
 type interaction struct {
 	Prefix string
 	Output string
 }
 
-func NewCopilot() (backend.Handle, error) {
+func NewCopilot() (illms.Model, error) {
 	return &Copilot{}, nil
 }
 
-func (c *Copilot) AskSomething(chat []backend.Message) (string, error) {
-	return c.AskSomethingWithContext(context.Background(), chat)
-}
-
-func (c *Copilot) AskSomethingWithContext(ctx context.Context, chat []backend.Message) (string, error) {
-	if len(chat) == 0 {
-		return "", fmt.Errorf("empty history provided")
+func (c *Copilot) GenerateContent(ctx context.Context, messages []llms.MessageContent, options ...llms.CallOption) (*llms.ContentResponse, error) {
+	if len(messages) == 0 {
+		return nil, fmt.Errorf("empty messages provided")
 	}
 
-	c.ctx, c.cancelFn = context.WithCancel(ctx)
+	prompt := ""
+	for _, part := range messages[len(messages)-1].Parts {
+		if textPart, ok := part.(llms.TextContent); ok {
+			prompt += textPart.Text
+		}
+	}
 
+	result, err := c.Call(ctx, prompt, options...)
+	if err != nil {
+		return nil, fmt.Errorf("error calling copilot: %w", err)
+	}
+
+	return &llms.ContentResponse{
+		Choices: []*llms.ContentChoice{
+			{Content: result},
+		},
+	}, nil
+}
+
+func (c *Copilot) Call(ctx context.Context, prompt string, options ...llms.CallOption) (string, error) {
 	inputIn, inputOut := io.Pipe()
 	outputIn, outputOut := io.Pipe()
 
@@ -61,7 +73,7 @@ func (c *Copilot) AskSomethingWithContext(ctx context.Context, chat []backend.Me
 		defer outputOut.Close()
 
 		commandErr = cmdchain.Builder().WithInput(inputIn).
-			JoinWithContext(c.ctx, "gh", "copilot", "suggest", chat[len(chat)-1].Content, "--target", "shell", "--shell-out", tempFile.Name()).
+			JoinWithContext(ctx, "gh", "copilot", "suggest", prompt, "--target", "shell", "--shell-out", tempFile.Name()).
 			Finalize().WithOutput(outputOut).
 			Run()
 	}()
@@ -119,9 +131,5 @@ func (c *Copilot) AskSomethingWithContext(ctx context.Context, chat []backend.Me
 }
 
 func (c *Copilot) Close() error {
-	if c.cancelFn != nil {
-		c.cancelFn()
-	}
-
 	return nil
 }

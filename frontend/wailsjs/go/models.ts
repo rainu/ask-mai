@@ -1,22 +1,3 @@
-export namespace backend {
-	
-	export class Message {
-	    Content: string;
-	    Role: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new Message(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Content = source["Content"];
-	        this.Role = source["Role"];
-	    }
-	}
-
-}
-
 export namespace config {
 	
 	export class AnythingLLMConfig {
@@ -237,8 +218,22 @@ export namespace config {
 
 export namespace controller {
 	
+	export class LLMMessage {
+	    Role: string;
+	    Content: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LLMMessage(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Role = source["Role"];
+	        this.Content = source["Content"];
+	    }
+	}
 	export class LLMAskArgs {
-	    History: backend.Message[];
+	    History: LLMMessage[];
 	
 	    static createFrom(source: any = {}) {
 	        return new LLMAskArgs(source);
@@ -246,7 +241,7 @@ export namespace controller {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.History = this.convertValues(source["History"], backend.Message);
+	        this.History = this.convertValues(source["History"], LLMMessage);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

@@ -25,7 +25,7 @@ import { AppMounted, LLMAsk, LLMInterrupt } from '../../wailsjs/go/controller/Co
 import { WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { Role } from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
-import { backend, controller } from '../../wailsjs/go/models.ts'
+import { controller } from '../../wailsjs/go/models.ts'
 import LLMAskArgs = controller.LLMAskArgs
 
 export default {
@@ -35,7 +35,7 @@ export default {
 		return {
 			progress: false,
 			input: '',
-			chatHistory: [] as backend.Message[],
+			chatHistory: [] as controller.LLMMessage[],
 		}
 	},
 	methods: {

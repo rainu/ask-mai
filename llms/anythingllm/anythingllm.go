@@ -5,15 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/rainu/ask-mai/backend"
+	illms "github.com/rainu/ask-mai/llms"
+	"github.com/tmc/langchaingo/llms"
 	"net/http"
 	"time"
 )
 
 type AnythingLLM struct {
 	client *http.Client
-	ctx    context.Context
-	cancel context.CancelFunc
 
 	token      string
 	baseURL    string
@@ -51,7 +50,7 @@ type threadResponse struct {
 	Message *string `json:"message"`
 }
 
-func NewAnythingLLM(baseURL, token, workspace string) (backend.Handle, error) {
+func NewAnythingLLM(baseURL, token, workspace string) (illms.Model, error) {
 	result := &AnythingLLM{
 		client: &http.Client{},
 
@@ -63,20 +62,33 @@ func NewAnythingLLM(baseURL, token, workspace string) (backend.Handle, error) {
 	return result, nil
 }
 
-func (a *AnythingLLM) AskSomething(chat []backend.Message) (string, error) {
-	a.Close()
-
-	a.ctx, a.cancel = context.WithCancel(context.Background())
-	return a.AskSomethingWithContext(a.ctx, chat)
-}
-
-func (a *AnythingLLM) AskSomethingWithContext(ctx context.Context, chat []backend.Message) (string, error) {
-	if len(chat) == 0 {
-		return "", fmt.Errorf("empty history provided")
+func (a *AnythingLLM) GenerateContent(ctx context.Context, messages []llms.MessageContent, options ...llms.CallOption) (*llms.ContentResponse, error) {
+	if len(messages) == 0 {
+		return nil, fmt.Errorf("empty messages provided")
 	}
 
+	prompt := ""
+	for _, part := range messages[len(messages)-1].Parts {
+		if textPart, ok := part.(llms.TextContent); ok {
+			prompt += textPart.Text
+		}
+	}
+
+	result, err := a.Call(ctx, prompt, options...)
+	if err != nil {
+		return nil, fmt.Errorf("error calling copilot: %w", err)
+	}
+
+	return &llms.ContentResponse{
+		Choices: []*llms.ContentChoice{
+			{Content: result},
+		},
+	}, nil
+}
+
+func (a *AnythingLLM) Call(ctx context.Context, prompt string, options ...llms.CallOption) (string, error) {
 	if a.threadSlug == "" {
-		err := a.createNewThread()
+		err := a.createNewThread(ctx)
 		if err != nil {
 			return "", fmt.Errorf("error creating new thread: %w", err)
 		}
@@ -84,7 +96,7 @@ func (a *AnythingLLM) AskSomethingWithContext(ctx context.Context, chat []backen
 
 	url := fmt.Sprintf("%s/api/v1/workspace/%s/thread/%s/chat", a.baseURL, a.workspace, a.threadSlug)
 	jsonPayload, err := json.Marshal(chatRequest{
-		Message:   chat[len(chat)-1].Content,
+		Message:   prompt,
 		Mode:      "chat",
 		SessionID: a.threadSlug,
 	})
@@ -118,7 +130,7 @@ func (a *AnythingLLM) AskSomethingWithContext(ctx context.Context, chat []backen
 	return result.TextResponse, nil
 }
 
-func (a *AnythingLLM) createNewThread() error {
+func (a *AnythingLLM) createNewThread(ctx context.Context) error {
 	url := fmt.Sprintf("%s/api/v1/workspace/%s/thread/new", a.baseURL, a.workspace)
 
 	jsonPayload, err := json.Marshal(threadRequest{
@@ -128,7 +140,7 @@ func (a *AnythingLLM) createNewThread() error {
 		return fmt.Errorf("error marshalling payload: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(a.ctx, http.MethodPost, url, bytes.NewBuffer(jsonPayload))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		return fmt.Errorf("error creating request: %w", err)
 	}
@@ -155,14 +167,14 @@ func (a *AnythingLLM) createNewThread() error {
 	return nil
 }
 
-func (a *AnythingLLM) deleteThread() error {
+func (a *AnythingLLM) deleteThread(ctx context.Context) error {
 	if a.threadSlug == "" {
 		return nil
 	}
 
 	url := fmt.Sprintf("%s/api/v1/workspace/%s/thread/%s", a.baseURL, a.workspace, a.threadSlug)
 
-	req, err := http.NewRequestWithContext(a.ctx, http.MethodDelete, url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, nil)
 	if err != nil {
 		return fmt.Errorf("error creating request: %w", err)
 	}
@@ -185,10 +197,8 @@ func (a *AnythingLLM) deleteThread() error {
 }
 
 func (a *AnythingLLM) Close() error {
-	if a.cancel != nil {
-		a.cancel()
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	a.ctx, a.cancel = context.WithTimeout(context.Background(), 5*time.Second)
-	return a.deleteThread()
+	return a.deleteThread(ctx)
 }

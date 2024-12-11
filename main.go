@@ -4,13 +4,12 @@ import (
 	"embed"
 	"github.com/rainu/ask-mai/config"
 	"github.com/rainu/ask-mai/controller"
+	"github.com/wailsapp/wails/v2"
 	"log"
 	"log/slog"
 	"os"
 	"slices"
 	"strings"
-
-	"github.com/wailsapp/wails/v2"
 )
 
 //go:embed frontend/dist
@@ -35,10 +34,13 @@ func main() {
 
 	slog.SetLogLoggerLevel(slog.Level(cfg.LogLevel))
 
-	ctrl := controller.BuildFromConfig(cfg)
+	ctrl, err := controller.BuildFromConfig(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Create application with options
-	err := wails.Run(controller.GetOptions(ctrl, icon, assets))
+	err = wails.Run(controller.GetOptions(ctrl, icon, assets))
 
 	if err != nil {
 		log.Fatal(err)

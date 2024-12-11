@@ -2,12 +2,12 @@ package controller
 
 import (
 	"embed"
-	"github.com/rainu/ask-mai/backend"
-	"github.com/rainu/ask-mai/backend/anythingllm"
-	"github.com/rainu/ask-mai/backend/copilot"
-	"github.com/rainu/ask-mai/backend/openai"
+	"fmt"
 	"github.com/rainu/ask-mai/config"
 	"github.com/rainu/ask-mai/io"
+	"github.com/rainu/ask-mai/llms/anythingllm"
+	"github.com/rainu/ask-mai/llms/copilot"
+	"github.com/rainu/ask-mai/llms/openai"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -17,7 +17,7 @@ import (
 	"log/slog"
 )
 
-func BuildFromConfig(cfg *config.Config) (ctrl *Controller) {
+func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 	ctrl = &Controller{
 		appConfig: cfg,
 	}
@@ -36,24 +36,25 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller) {
 
 	switch cfg.Backend {
 	case config.BackendCopilot:
-		ctrl.backendBuilder = backend.Builder{
-			Build: copilot.NewCopilot,
-			Type:  backend.TypeSingleShot,
-		}
+		ctrl.aiModel, err = copilot.NewCopilot()
 	case config.BackendOpenAI:
-		ctrl.backendBuilder = backend.Builder{
-			Build: func() (backend.Handle, error) {
-				return openai.NewOpenAI(cfg.OpenAI.APIKey, cfg.OpenAI.SystemPrompt)
-			},
-			Type: backend.TypeMultiShot,
-		}
+		ctrl.aiModel, err = openai.NewOpenAI(
+			cfg.OpenAI.APIKey,
+			cfg.OpenAI.SystemPrompt,
+		)
 	case config.BackendAnythingLLM:
-		ctrl.backendBuilder = backend.Builder{
-			Build: func() (backend.Handle, error) {
-				return anythingllm.NewAnythingLLM(cfg.AnythingLLM.BaseURL, cfg.AnythingLLM.Token, cfg.AnythingLLM.Workspace)
-			},
-			Type: backend.TypeMultiShot,
-		}
+		ctrl.aiModel, err = anythingllm.NewAnythingLLM(
+			cfg.AnythingLLM.BaseURL,
+			cfg.AnythingLLM.Token,
+			cfg.AnythingLLM.Workspace,
+		)
+	default:
+		err = fmt.Errorf("unknown backend: %s", cfg.Backend)
+	}
+
+	if err != nil {
+		err = fmt.Errorf("error creating ai model: %w", err)
+		return
 	}
 
 	return

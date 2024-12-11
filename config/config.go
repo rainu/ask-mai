@@ -3,7 +3,7 @@ package config
 import (
 	"flag"
 	"fmt"
-	"github.com/rainu/ask-mai/backend/copilot"
+	"github.com/rainu/ask-mai/llms/copilot"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"io"
 	"log/slog"

@@ -15,8 +15,8 @@ import hljs from 'highlight.js'
 import { type Options as MarkdownItOptions } from 'markdown-it'
 
 export enum Role {
-	User = 'user',
-	Bot = 'bot',
+	User = 'human',
+	Bot = 'ai',
 }
 
 export default defineComponent({
