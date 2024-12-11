@@ -53,6 +53,10 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 		ctrl.aiModel, err = llms.NewMistral(
 			cfg.Mistral.AsOptions(),
 		)
+	case config.BackendAnthropic:
+		ctrl.aiModel, err = llms.NewAnthropic(
+			cfg.Anthropic.AsOptions(),
+		)
 	default:
 		err = fmt.Errorf("unknown backend: %s", cfg.Backend)
 	}
