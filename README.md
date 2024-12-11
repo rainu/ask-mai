@@ -1,6 +1,6 @@
-# ask-mai
+# Ask m' AI
 
-Little Desktop-Chat-Application for LargeLanguageModels (e.g. OpenAI's GPT).
+**Ask m' AI** (ask my ai -> ask m' ai) is a little Desktop-Chat-Application for LargeLanguageModels (e.g. OpenAI's GPT).
 
 Unlike many chat applications out there, this application aims to be scriptable. 
 Which means you can call it from you terminal and gave all necessary options as arguments. 
