@@ -16,7 +16,7 @@ type LLMMessage struct {
 }
 type LLMMessages []LLMMessage
 
-func (m LLMMessages) ToMessageContent() []llms.MessageContent {
+func (m LLMMessages) ToMessageContent(systemPrompt string) []llms.MessageContent {
 	result := make([]llms.MessageContent, len(m))
 	for i, msg := range m {
 		result[i] = llms.MessageContent{
@@ -26,6 +26,12 @@ func (m LLMMessages) ToMessageContent() []llms.MessageContent {
 			Role: llms.ChatMessageType(msg.Role),
 		}
 	}
+
+	if systemPrompt != "" {
+		msg := llms.TextParts(llms.ChatMessageTypeSystem, systemPrompt)
+		result = append([]llms.MessageContent{msg}, result...)
+	}
+
 	return result
 }
 
@@ -38,7 +44,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (string, error) {
 		return "", fmt.Errorf("error interrupting previous LLM: %w", err)
 	}
 
-	content := args.History.ToMessageContent()
+	content := args.History.ToMessageContent(c.appConfig.CallOptions.SystemPrompt)
 
 	c.aiModelCtx, c.aiModelCancel = context.WithCancel(context.Background())
 	defer func() {
@@ -47,7 +53,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (string, error) {
 		c.aiModelCancel = nil
 	}()
 
-	resp, err := c.aiModel.GenerateContent(c.aiModelCtx, content)
+	resp, err := c.aiModel.GenerateContent(c.aiModelCtx, content, c.appConfig.CallOptions.AsOptions()...)
 	if err != nil {
 		return "", fmt.Errorf("error creating completion: %w", err)
 	}

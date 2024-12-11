@@ -39,8 +39,7 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 		ctrl.aiModel, err = copilot.NewCopilot()
 	case config.BackendOpenAI:
 		ctrl.aiModel, err = openai.NewOpenAI(
-			cfg.OpenAI.APIKey,
-			cfg.OpenAI.SystemPrompt,
+			cfg.OpenAI.AsOptions(),
 		)
 	case config.BackendAnythingLLM:
 		ctrl.aiModel, err = anythingllm.NewAnythingLLM(

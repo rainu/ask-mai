@@ -9,17 +9,14 @@ import (
 )
 
 type OpenAI struct {
-	client        *openai.LLM
-	systemMessage llms.MessageContent
+	client *openai.LLM
 }
 
-func NewOpenAI(apiKey, systemPrompt string) (illms.Model, error) {
-	result := &OpenAI{
-		systemMessage: llms.TextParts(llms.ChatMessageTypeSystem, systemPrompt),
-	}
+func NewOpenAI(opts []openai.Option) (illms.Model, error) {
+	result := &OpenAI{}
 
 	var err error
-	result.client, err = openai.New(openai.WithToken(apiKey), openai.WithModel("gpt-4o-mini"))
+	result.client, err = openai.New(opts...)
 	if err != nil {
 		return nil, fmt.Errorf("error creating OpenAI LLM: %w", err)
 	}
@@ -32,11 +29,7 @@ func (o *OpenAI) Call(ctx context.Context, prompt string, options ...llms.CallOp
 }
 
 func (o *OpenAI) GenerateContent(ctx context.Context, messages []llms.MessageContent, options ...llms.CallOption) (*llms.ContentResponse, error) {
-	return o.client.GenerateContent(
-		ctx,
-		append([]llms.MessageContent{o.systemMessage}, messages...),
-		options...,
-	)
+	return o.client.GenerateContent(ctx, messages, options...)
 }
 
 func (o *OpenAI) Close() error {
