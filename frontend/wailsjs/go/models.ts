@@ -1,5 +1,21 @@
 export namespace config {
 	
+	export class AnthropicConfig {
+	    Token: string;
+	    BaseUrl: string;
+	    Model: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AnthropicConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Token = source["Token"];
+	        this.BaseUrl = source["BaseUrl"];
+	        this.Model = source["Model"];
+	    }
+	}
 	export class AnythingLLMConfig {
 	    BaseURL: string;
 	    Token: string;
@@ -16,6 +32,30 @@ export namespace config {
 	        this.Workspace = source["Workspace"];
 	    }
 	}
+	export class CallOptionsConfig {
+	    SystemPrompt: string;
+	    MaxToken: number;
+	    Temperature: number;
+	    TopK: number;
+	    TopP: number;
+	    MinLength: number;
+	    MaxLength: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CallOptionsConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.SystemPrompt = source["SystemPrompt"];
+	        this.MaxToken = source["MaxToken"];
+	        this.Temperature = source["Temperature"];
+	        this.TopK = source["TopK"];
+	        this.TopP = source["TopP"];
+	        this.MinLength = source["MinLength"];
+	        this.MaxLength = source["MaxLength"];
+	    }
+	}
 	export class PrinterConfig {
 	    Format: string;
 	    Targets: any[];
@@ -30,9 +70,43 @@ export namespace config {
 	        this.Targets = source["Targets"];
 	    }
 	}
+	export class MistralConfig {
+	    ApiKey: string;
+	    Endpoint: string;
+	    Model: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new MistralConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ApiKey = source["ApiKey"];
+	        this.Endpoint = source["Endpoint"];
+	        this.Model = source["Model"];
+	    }
+	}
+	export class OllamaConfig {
+	    ServerURL: string;
+	    Model: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new OllamaConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ServerURL = source["ServerURL"];
+	        this.Model = source["Model"];
+	    }
+	}
 	export class OpenAIConfig {
 	    APIKey: string;
-	    SystemPrompt: string;
+	    APIType: string;
+	    APIVersion: string;
+	    Model: string;
+	    BaseUrl: string;
+	    Organization: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new OpenAIConfig(source);
@@ -41,7 +115,11 @@ export namespace config {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.APIKey = source["APIKey"];
-	        this.SystemPrompt = source["SystemPrompt"];
+	        this.APIType = source["APIType"];
+	        this.APIVersion = source["APIVersion"];
+	        this.Model = source["Model"];
+	        this.BaseUrl = source["BaseUrl"];
+	        this.Organization = source["Organization"];
 	    }
 	}
 	export class Shortcut {
@@ -173,6 +251,10 @@ export namespace config {
 	    Backend: string;
 	    OpenAI: OpenAIConfig;
 	    AnythingLLM: AnythingLLMConfig;
+	    Ollama: OllamaConfig;
+	    Mistral: MistralConfig;
+	    Anthropic: AnthropicConfig;
+	    CallOptions: CallOptionsConfig;
 	    Printer: PrinterConfig;
 	    LogLevel: number;
 	
@@ -186,6 +268,10 @@ export namespace config {
 	        this.Backend = source["Backend"];
 	        this.OpenAI = this.convertValues(source["OpenAI"], OpenAIConfig);
 	        this.AnythingLLM = this.convertValues(source["AnythingLLM"], AnythingLLMConfig);
+	        this.Ollama = this.convertValues(source["Ollama"], OllamaConfig);
+	        this.Mistral = this.convertValues(source["Mistral"], MistralConfig);
+	        this.Anthropic = this.convertValues(source["Anthropic"], AnthropicConfig);
+	        this.CallOptions = this.convertValues(source["CallOptions"], CallOptionsConfig);
 	        this.Printer = this.convertValues(source["Printer"], PrinterConfig);
 	        this.LogLevel = source["LogLevel"];
 	    }
@@ -208,6 +294,8 @@ export namespace config {
 		    return a;
 		}
 	}
+	
+	
 	
 	
 	
