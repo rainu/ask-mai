@@ -63,6 +63,7 @@ type WindowConfig struct {
 	MaxHeight        string
 	InitialPositionX string
 	InitialPositionY string
+	InitialZoom      float64
 	BackgroundColor  WindowBackgroundColor
 	StartState       int
 	Frameless        bool
@@ -102,6 +103,7 @@ func Parse(arguments []string) *Config {
 	flag.StringVar(&c.UI.Window.MaxHeight, "ui-max-height", "CurrentScreen.Dimension.Height/3", "The maximal height of the chat response area")
 	flag.StringVar(&c.UI.Window.InitialPositionX, "ui-init-pos-x", "CurrentScreen.Dimension.Width/4", "The (initial) x-position of the window")
 	flag.StringVar(&c.UI.Window.InitialPositionY, "ui-init-pos-y", "0", "The (initial) y-position of the window")
+	flag.Float64Var(&c.UI.Window.InitialZoom, "ui-init-zoom", 1.0, "The (initial) zoom level of the window")
 	flag.UintVar(&c.UI.Window.BackgroundColor.R, "ui-bg-color-r", 255, "The window's background color (red value)")
 	flag.UintVar(&c.UI.Window.BackgroundColor.G, "ui-bg-color-g", 255, "The window's background color (green value)")
 	flag.UintVar(&c.UI.Window.BackgroundColor.B, "ui-bg-color-b", 255, "The window's background color (blue value)")
@@ -177,6 +179,9 @@ func (c Config) Validate() error {
 	}
 	if c.UI.Window.StartState < int(options.Normal) || c.UI.Window.StartState > int(options.Fullscreen) {
 		return fmt.Errorf("Invalid window start state")
+	}
+	if c.UI.Window.InitialZoom < 0.1 || c.UI.Window.InitialZoom > 10.0 {
+		return fmt.Errorf("Invalid window zoom: value must be between 0.1 and 10.0")
 	}
 
 	if c.UI.Window.MaxHeight != "" {

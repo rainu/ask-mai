@@ -1,5 +1,5 @@
 <template>
-	<div ref="page">
+	<div ref="page" :style="{ zoom }">
 		<template v-if="chatHistory.length > 0">
 			<v-app-bar app class="pa-0 ma-0" density="compact">
 				<div style="width: 100%" ref="appbar">
@@ -36,15 +36,41 @@ export default {
 			progress: false,
 			input: '',
 			chatHistory: [] as controller.LLMMessage[],
+			zoom: this.$appConfig.UI.Window.InitialZoom,
 		}
 	},
 	methods: {
+		zoomIn() {
+			if (this.zoom < 5) {
+				this.zoom += 0.1
+			}
+		},
+		zoomOut() {
+			if (this.zoom > 0.1) {
+				this.zoom -= 0.1
+			}
+		},
+		handleKeyup(event: KeyboardEvent) {
+			if (event.ctrlKey && event.key === '+') {
+				this.zoomIn()
+				this.adjustHeight()
+			}
+			if (event.ctrlKey && event.key === '-') {
+				this.zoomOut()
+				this.adjustHeight()
+			}
+			if (event.ctrlKey && event.key === '0') {
+				this.zoom = 1
+				this.adjustHeight()
+			}
+		},
 		async adjustHeight() {
 			const currentSize = await WindowGetSize()
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
 			const appbarHeight = this.$refs.appbar ? (this.$refs.appbar as HTMLElement).clientHeight : 0
+			const combinedHeight = (pageHeight + appbarHeight) * this.zoom
 
-			await WindowSetSize(currentSize.w, pageHeight + appbarHeight)
+			await WindowSetSize(currentSize.w, combinedHeight)
 		},
 		scrollToBottom() {
 			const bottomEl = this.$refs.bottom as HTMLElement
@@ -77,6 +103,8 @@ export default {
 		},
 	},
 	mounted() {
+		window.addEventListener('keyup', this.handleKeyup)
+
 		if (this.$appConfig.UI.Prompt) {
 			this.input = this.$appConfig.UI.Prompt
 			this.onSubmit(this.$appConfig.UI.Prompt)

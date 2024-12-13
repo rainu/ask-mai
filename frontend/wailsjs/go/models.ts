@@ -166,6 +166,7 @@ export namespace config {
 	    MaxHeight: string;
 	    InitialPositionX: string;
 	    InitialPositionY: string;
+	    InitialZoom: number;
 	    BackgroundColor: WindowBackgroundColor;
 	    StartState: number;
 	    Frameless: boolean;
@@ -183,6 +184,7 @@ export namespace config {
 	        this.MaxHeight = source["MaxHeight"];
 	        this.InitialPositionX = source["InitialPositionX"];
 	        this.InitialPositionY = source["InitialPositionY"];
+	        this.InitialZoom = source["InitialZoom"];
 	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], WindowBackgroundColor);
 	        this.StartState = source["StartState"];
 	        this.Frameless = source["Frameless"];
