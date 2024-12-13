@@ -68,7 +68,7 @@ export default {
 			const currentSize = await WindowGetSize()
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
 			const appbarHeight = this.$refs.appbar ? (this.$refs.appbar as HTMLElement).clientHeight : 0
-			const combinedHeight = (pageHeight + appbarHeight) * this.zoom
+			const combinedHeight = Math.ceil((pageHeight + appbarHeight) * this.zoom)
 
 			await WindowSetSize(currentSize.w, combinedHeight)
 		},
