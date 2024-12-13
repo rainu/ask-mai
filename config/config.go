@@ -54,6 +54,7 @@ type UIConfig struct {
 	Prompt       string
 	QuitShortcut Shortcut
 	Theme        string
+	CodeStyle    string
 	Language     string
 }
 
@@ -118,6 +119,7 @@ func Parse(arguments []string) *Config {
 	flag.BoolVar(&c.UI.QuitShortcut.Alt, "ui-quit-shortcut-alt", false, "The shortcut for quitting the application (alt-key must be pressed)")
 	flag.BoolVar(&c.UI.QuitShortcut.Meta, "ui-quit-shortcut-meta", false, "The shortcut for quitting the application (meta-key must be pressed)")
 	flag.StringVar(&c.UI.Theme, "ui-theme", ThemeSystem, fmt.Sprintf("The theme to use ('%s', '%s', '%s')", ThemeLight, ThemeDark, ThemeSystem))
+	flag.StringVar(&c.UI.CodeStyle, "ui-code-style", "github", "The code style to use")
 	flag.StringVar(&c.UI.Language, "ui-lang", os.Getenv("LANG"), "The language to use")
 
 	flag.StringVar(&c.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s', '%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM, BackendOllama, BackendMistral, BackendAnthropic))

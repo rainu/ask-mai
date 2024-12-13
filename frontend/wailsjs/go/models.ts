@@ -215,6 +215,7 @@ export namespace config {
 	    Prompt: string;
 	    QuitShortcut: Shortcut;
 	    Theme: string;
+	    CodeStyle: string;
 	    Language: string;
 	
 	    static createFrom(source: any = {}) {
@@ -227,6 +228,7 @@ export namespace config {
 	        this.Prompt = source["Prompt"];
 	        this.QuitShortcut = this.convertValues(source["QuitShortcut"], Shortcut);
 	        this.Theme = source["Theme"];
+	        this.CodeStyle = source["CodeStyle"];
 	        this.Language = source["Language"];
 	    }
 	

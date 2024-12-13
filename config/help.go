@@ -41,6 +41,11 @@ func printUsage(output io.Writer) {
 	fmt.Fprintf(output, "Usage of %s:\n", os.Args[0])
 	flag.PrintDefaults()
 
+	fmt.Fprintf(output, "\nAvailable code styles:\n")
+	for _, style := range availableCodeStyles {
+		fmt.Fprintf(output, "  - %s\n", style)
+	}
+
 	fmt.Fprintf(output, "\nAvailable Expression variables:\n")
 
 	wails.Run(&options.App{

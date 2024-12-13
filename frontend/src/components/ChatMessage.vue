@@ -1,27 +1,27 @@
 <template>
 	<template v-if="isUserMessage">
-    <v-row class="justify-end pa-2 mb-0 mt-1 mx-1 ml-15">
-      <v-sheet color="green-accent-2" class="pa-2" rounded>
-        <vue-markdown :source="message" :options="options" />
-      </v-sheet>
-    </v-row>
-  </template>
-  <template v-else>
-    <v-row class="pa-2 mb-0 mt-1 mx-1 mr-15">
-      <v-sheet color="grey-lighten-2" class="pa-2" rounded>
-        <vue-markdown :source="message" :options="options" />
-      </v-sheet>
-    </v-row>
-  </template>
+		<v-row class="justify-end pa-2 mb-0 mt-1 mx-1 ml-15">
+			<v-sheet color="green-accent-2" class="pa-2" rounded>
+				<vue-markdown :source="message" :options="options" />
+			</v-sheet>
+		</v-row>
+	</template>
+	<template v-else>
+		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15">
+			<v-sheet color="grey-lighten-2" class="pa-2" rounded>
+				<vue-markdown :source="message" :options="options" />
+			</v-sheet>
+		</v-row>
+	</template>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 
-import 'highlight.js/styles/github.css'
 import hljs from 'highlight.js'
 import { type Options as MarkdownItOptions } from 'markdown-it'
+import { UseCodeStyle } from './code-style.ts'
 
 export enum Role {
 	User = 'human',
@@ -57,9 +57,9 @@ export default defineComponent({
 		}
 	},
 	computed: {
-    isUserMessage(){
-      return this.role === Role.User
-    },
+		isUserMessage() {
+			return this.role === Role.User
+		},
 	},
 	methods: {
 		enrichCopyButtons() {
@@ -96,6 +96,8 @@ export default defineComponent({
 		},
 	},
 	mounted() {
+		UseCodeStyle(this.$appConfig.UI.CodeStyle)
+
 		this.$nextTick(() => this.enrichCopyButtons())
 	},
 })
@@ -105,7 +107,7 @@ export default defineComponent({
 pre code {
 	background-color: #f5f5f5;
 	border: 1px solid #ccc;
-  margin: 0.5em 0;
+	margin: 0.5em 0;
 	padding: 0.5em 1em;
 	border-radius: 5px;
 	display: block;
@@ -145,8 +147,8 @@ div.code-container {
 }
 
 pre.copied {
-	border: 2px solid #4DB6AC;
-  border-radius: 5px;
+	border: 2px solid #4db6ac;
+	border-radius: 5px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Add elevation effect */
 }
 
@@ -161,16 +163,16 @@ code:not(pre code):not(h1 code):not(h2 code):not(h3 code):not(h4 code):not(h5 co
 /* Quote-Blocks */
 
 blockquote {
-  border-left: 5px solid #ccc;
-  margin: 0.5em 0;
-  padding: 0.5em 1em;
-  color: #555;
-  background: none;
-  border-radius: 0;
+	border-left: 5px solid #ccc;
+	margin: 0.5em 0;
+	padding: 0.5em 1em;
+	color: #555;
+	background: none;
+	border-radius: 0;
 }
 
 blockquote:hover {
-  border-color: #007bff;
+	border-color: #007bff;
 }
 
 /* Header Padding increase */
@@ -184,7 +186,8 @@ h6 {
 }
 
 /* make list items visible */
-ol,ul li {
+ol,
+ul li {
 	margin-left: 2em;
 }
 </style>
