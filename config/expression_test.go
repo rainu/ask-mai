@@ -14,6 +14,12 @@ func TestExpression_Variables(t *testing.T) {
 				Height: 1080,
 			},
 		},
+		CurrentScreen: VariableScreen{
+			Dimension: VariableScreenDimension{
+				Width:  3840,
+				Height: 2160,
+			},
+		},
 		Screens: []VariableScreen{
 			{
 				Dimension: VariableScreenDimension{
@@ -36,6 +42,8 @@ func TestExpression_Variables(t *testing.T) {
 	assert.Equal(t, map[string]any{
 		"PrimaryScreen.Dimension.Width":  float64(1920),
 		"PrimaryScreen.Dimension.Height": float64(1080),
+		"CurrentScreen.Dimension.Width":  float64(3840),
+		"CurrentScreen.Dimension.Height": float64(2160),
 		"Screens[0].Dimension.Width":     float64(1920),
 		"Screens[0].Dimension.Height":    float64(1080),
 		"Screens[1].Dimension.Width":     float64(3840),

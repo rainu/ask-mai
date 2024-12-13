@@ -95,7 +95,7 @@ func (c *Copilot) Call(ctx context.Context, prompt string, options ...llms.CallO
 			if strings.HasPrefix(line, interactions[0].Prefix) {
 				_, err := io.WriteString(inputOut, interactions[0].Output)
 				if err != nil {
-					slog.Error("Error writing to stdin:", err)
+					slog.Error("Error writing to stdin", "error", err)
 					continue
 				}
 
