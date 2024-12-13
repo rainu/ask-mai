@@ -1,9 +1,18 @@
 <template>
-	<v-row class="justify-end pa-2 mb-0 mt-1 mx-1" :class="classes">
-		<v-sheet :color="color" class="pa-2" rounded>
-			<vue-markdown :source="message" :options="options" />
-		</v-sheet>
-	</v-row>
+	<template v-if="isUserMessage">
+    <v-row class="justify-end pa-2 mb-0 mt-1 mx-1 ml-15">
+      <v-sheet color="green-accent-2" class="pa-2" rounded>
+        <vue-markdown :source="message" :options="options" />
+      </v-sheet>
+    </v-row>
+  </template>
+  <template v-else>
+    <v-row class="pa-2 mb-0 mt-1 mx-1 mr-15">
+      <v-sheet color="grey-lighten-2" class="pa-2" rounded>
+        <vue-markdown :source="message" :options="options" />
+      </v-sheet>
+    </v-row>
+  </template>
 </template>
 
 <script lang="ts">
@@ -48,15 +57,9 @@ export default defineComponent({
 		}
 	},
 	computed: {
-		color() {
-			return this.role === Role.Bot ? 'grey-lighten-2' : 'green-accent-2'
-		},
-		classes() {
-			return {
-				'mr-15': this.role === Role.Bot,
-				'ml-15': this.role === Role.User,
-			}
-		},
+    isUserMessage(){
+      return this.role === Role.User
+    },
 	},
 	methods: {
 		enrichCopyButtons() {
