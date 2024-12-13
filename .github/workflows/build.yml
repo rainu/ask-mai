@@ -9,8 +9,27 @@ env:
   NODE_OPTIONS: "--max-old-space-size=4096"
 
 jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          check-latest: true
+          go-version: 1.23.1
+      - name: Test
+        shell: bash
+        run: |
+          mkdir frontend/dist
+          touch frontend/dist/index.html
+          go test -v ./...
+
   build:
     name: Build
+    needs: test
     strategy:
       fail-fast: false
       matrix:
