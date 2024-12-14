@@ -79,10 +79,20 @@ jobs:
         shell: powershell
 
       # Build
-      - name: Common - Build
+      - name: Linux - Build
+        if: runner.os == 'Linux'
         shell: bash
-        # compression will warn if upx is not installed (windows/macOS) but will not break the build
         run: wails build -platform ${{ matrix.build.platform }} -upx -o ${{ matrix.build.name }}
+      - name: Windows - Build
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          wails build -platform ${{ matrix.build.platform }} -o ${{ matrix.build.name }}.exe
+          wails build -platform ${{ matrix.build.platform }} -upx -o ${{ matrix.build.name }}-compressed.exe
+      - name: MacOS - Build
+        if: runner.os == 'macOS'
+        shell: bash
+        run: wails build -platform ${{ matrix.build.platform }} -o ${{ matrix.build.name }}
 
       # Package MacOS
       - name: MacOS - Build .app zip file
