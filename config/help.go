@@ -56,13 +56,13 @@ func printUsage(output io.Writer) {
 		OnStartup: func(ctx context.Context) {
 			screens, err := runtime.ScreenGetAll(ctx)
 			if err != nil {
-				println(err.Error())
+				fmt.Fprintln(os.Stderr, err.Error())
 				return
 			}
 
 			flatMap, err := FromScreens(screens).ToFlatMap()
 			if err != nil {
-				println(err.Error())
+				fmt.Fprintln(os.Stderr, err.Error())
 				return
 			}
 			for k, v := range flatMap {
