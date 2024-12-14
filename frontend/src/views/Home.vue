@@ -1,6 +1,6 @@
 <template>
 	<div ref="page" :style="{ zoom }">
-		<template v-if="chatHistory.length > 0">
+		<template v-if="chatHistory.length > 0 || error">
 			<v-app-bar app class="pa-0 ma-0" density="compact">
 				<div style="width: 100%" ref="appbar">
 					<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
@@ -10,6 +10,8 @@
 			<template v-for="(entry, index) in chatHistory" :key="index">
 				<ChatMessage :message="entry.Content" :role="entry.Role" />
 			</template>
+
+			<v-alert v-if="error" type="error" :title="error.title" :text="error.message" />
 		</template>
 
 		<template v-else>
@@ -35,6 +37,7 @@ export default {
 		return {
 			progress: false,
 			input: '',
+			error: null as { title: string; message: string } | null,
 			chatHistory: [] as controller.LLMMessage[],
 			zoom: this.$appConfig.UI.Window.InitialZoom,
 		}
@@ -93,6 +96,10 @@ export default {
 				this.chatHistory.push({ Content: input, Role: Role.User }, { Content: output, Role: Role.Bot })
 				this.input = ''
 			} catch (err) {
+				this.error = {
+					title: 'Error while asking LLM',
+					message: `${err}`,
+				}
 				console.error(err)
 			} finally {
 				this.progress = false
