@@ -26,3 +26,7 @@ The conversations will also be printed out in the terminal, so you can use it in
     ```sh
     wails build
     ```
+
+## Contributing
+
+If you use [nix](https://nixos.org/), you can use `nix develop` to enter a shell with all dependencies you need for contributing. The flake also utilises [treefmt](https://github.com/numtide/treefmt-nix) to format all *.nix and *.go files. This can be done with `nix fmt` and checked with `nix flake check`.
