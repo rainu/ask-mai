@@ -35,6 +35,10 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 	switch cfg.Backend {
 	case config.BackendCopilot:
 		ctrl.aiModel, err = llms.NewCopilot()
+	case config.BackendLocalAI:
+		ctrl.aiModel, err = llms.NewLocalAI(
+			cfg.LocalAI.AsOptions(),
+		)
 	case config.BackendOpenAI:
 		ctrl.aiModel, err = llms.NewOpenAI(
 			cfg.OpenAI.AsOptions(),

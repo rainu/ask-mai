@@ -9,12 +9,13 @@ The conversations will also be printed out in the terminal, so you can use it in
 ## Features
 
 * Support different LLM provider
-  * Github Copilot
-  * OpenAI
-  * AnythingLLM
-  * Ollama
-  * Mistral
-  * Anthropic
+  * [Github Copilot](https://github.com/features/copilot)
+  * [OpenAI](https://openai.com)
+  * [LocalAI](https://localai.io/)
+  * [AnythingLLM](https://anythingllm.com/)
+  * [Ollama](https://ollama.com/)
+  * [Mistral](https://mistral.ai/)
+  * [Anthropic](https://www.anthropic.com/)
 * Scriptable
   * All settings can be set via command line arguments
   * The users questions and models answers will be printed out in the terminal
@@ -23,9 +24,9 @@ The conversations will also be printed out in the terminal, so you can use it in
 
 1. Install dependencies [see wails documentation](https://wails.io/docs/gettingstarted/installation)
 2. Build the application:
-    ```sh
-    wails build
-    ```
+```sh
+wails build
+```
 
 ## Contributing
 

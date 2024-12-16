@@ -13,6 +13,7 @@ import (
 
 const (
 	BackendCopilot     = "copilot"
+	BackendLocalAI     = "localai"
 	BackendOpenAI      = "openai"
 	BackendAnythingLLM = "anythingllm"
 	BackendOllama      = "ollama"
@@ -37,6 +38,7 @@ type Config struct {
 	UI UIConfig
 
 	Backend     string
+	LocalAI     LocalAIConfig
 	OpenAI      OpenAIConfig
 	AnythingLLM AnythingLLMConfig
 	Ollama      OllamaConfig
@@ -124,6 +126,7 @@ func Parse(arguments []string) *Config {
 
 	flag.StringVar(&c.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s', '%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM, BackendOllama, BackendMistral, BackendAnthropic))
 
+	configureLocalai(&c.LocalAI)
 	configureOpenai(&c.OpenAI)
 	configureAnythingLLM(&c.AnythingLLM)
 	configureOllama(&c.Ollama)
@@ -218,6 +221,10 @@ func (c Config) Validate() error {
 	case BackendCopilot:
 		if !llms.IsCopilotInstalled() {
 			return fmt.Errorf("GitHub Copilot is not installed")
+		}
+	case BackendLocalAI:
+		if ve := c.LocalAI.Validate(); ve != nil {
+			return ve
 		}
 	case BackendOpenAI:
 		if ve := c.OpenAI.Validate(); ve != nil {
