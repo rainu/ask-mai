@@ -28,6 +28,22 @@ The conversations will also be printed out in the terminal, so you can use it in
 wails build
 ```
 
+## Application starts not fast enough
+
+If the application does not start fast enough for your needs, you can get the prompt by your own and use the `-ui-prompt` flag to start the application with that prompt. 
+Here is an example with [rofi](https://github.com/davatorium/rofi):
+
+```sh
+#!/bin/sh
+
+PROMPT=$(rofi -dmenu -p "Ask-mAI" -l 0 -location 2)
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+ask-mai -ui-prompt "${PROMPT}"
+```
+
 ## Contributing
 
 If you use [nix](https://nixos.org/), you can use `nix develop` to enter a shell with all dependencies you need for contributing. The flake also utilises [treefmt](https://github.com/numtide/treefmt-nix) to format all *.nix and *.go files. This can be done with `nix fmt` and checked with `nix flake check`.
