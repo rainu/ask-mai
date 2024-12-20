@@ -44,6 +44,7 @@ export default {
 			outputStreamRole: Role.Bot,
 			error: null as { title: string; message: string } | null,
 			chatHistory: [] as controller.LLMMessage[],
+			userScroll: false,
 			zoom: this.$appConfig.UI.Window.InitialZoom,
 		}
 	},
@@ -72,6 +73,16 @@ export default {
 				this.adjustHeight()
 			}
 		},
+		handleKeydown(event: KeyboardEvent) {
+			if (event.key === 'PageUp' || event.key === 'PageDown') {
+				this.onUserScroll()
+			}
+		},
+		handleWheel(event: WheelEvent) {
+			if (event.deltaY !== 0) {
+				this.onUserScroll()
+			}
+		},
 		async adjustHeight() {
 			const currentSize = await WindowGetSize()
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
@@ -81,12 +92,21 @@ export default {
 			await WindowSetSize(currentSize.w, combinedHeight)
 		},
 		scrollToBottom() {
+			if (this.userScroll) {
+				// do not automatic scroll if the user is scrolling!
+				return
+			}
+
 			const bottomEl = this.$refs.bottom as HTMLElement
 			bottomEl.scrollIntoView({ block: 'end', behavior: 'smooth' })
+		},
+		onUserScroll() {
+			this.userScroll = true
 		},
 		async processLLM(input: string, processFn: () => Promise<string>) {
 			try {
 				this.progress = true
+				this.userScroll = false
 
 				const setInput = () => {
 					this.input = ''
@@ -139,6 +159,8 @@ export default {
 			this.outputStream += chunk
 		})
 		window.addEventListener('keyup', this.handleKeyup)
+		window.addEventListener('keydown', this.handleKeydown)
+		window.addEventListener('wheel', this.handleWheel)
 
 		this.adjustHeight()
 			.then(() => AppMounted())
