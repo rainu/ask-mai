@@ -88,6 +88,7 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		Frameless:         ac.UI.Window.Frameless,
 		StartHidden:       true,
 		HideWindowOnClose: false,
+		AlwaysOnTop:       ac.UI.Window.AlwaysOnTop,
 		BackgroundColour: &options.RGBA{
 			R: uint8(ac.UI.Window.BackgroundColor.R),
 			G: uint8(ac.UI.Window.BackgroundColor.G),
@@ -164,6 +165,7 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		Linux: &linux.Options{
 			Icon:                icon,
 			WindowIsTranslucent: translucent,
+			ProgramName:         ac.UI.Window.Title,
 		},
 	}
 }

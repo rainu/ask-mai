@@ -69,6 +69,7 @@ type WindowConfig struct {
 	InitialZoom      float64
 	BackgroundColor  WindowBackgroundColor
 	StartState       int
+	AlwaysOnTop      bool
 	Frameless        bool
 	Resizeable       bool
 	Translucent      string
@@ -113,6 +114,7 @@ func Parse(arguments []string) *Config {
 	flag.UintVar(&c.UI.Window.BackgroundColor.A, "ui-bg-color-a", 192, "The window's background color (alpha value)")
 	flag.IntVar(&c.UI.Window.StartState, "ui-start-state", int(options.Normal), fmt.Sprintf("The window start state (normal(%d), minimized(%d), maximized(%d), fullscreen(%d))", options.Normal, options.Minimised, options.Maximised, options.Fullscreen))
 	flag.BoolVar(&c.UI.Window.Frameless, "ui-frameless", true, "Should the window be frameless")
+	flag.BoolVar(&c.UI.Window.AlwaysOnTop, "ui-always-on-top", true, "Should the window be always on top")
 	flag.BoolVar(&c.UI.Window.Resizeable, "ui-resizeable", true, "Should the window be resizeable")
 	flag.StringVar(&c.UI.Window.Translucent, "ui-translucent", TranslucentHover, fmt.Sprintf("When the window should be translucent (%s, %s, %s)", TranslucentNever, TranslucentEver, TranslucentHover))
 	flag.StringVar(&c.UI.QuitShortcut.Code, "ui-quit-shortcut-keycode", "escape", "The shortcut for quitting the application (key-code)")

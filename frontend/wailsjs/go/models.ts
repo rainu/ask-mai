@@ -122,6 +122,22 @@ export namespace config {
 	        this.Organization = source["Organization"];
 	    }
 	}
+	export class LocalAIConfig {
+	    APIKey: string;
+	    Model: string;
+	    BaseUrl: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LocalAIConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.APIKey = source["APIKey"];
+	        this.Model = source["Model"];
+	        this.BaseUrl = source["BaseUrl"];
+	    }
+	}
 	export class Shortcut {
 	    Code: string;
 	    Alt: boolean;
@@ -169,6 +185,7 @@ export namespace config {
 	    InitialZoom: number;
 	    BackgroundColor: WindowBackgroundColor;
 	    StartState: number;
+	    AlwaysOnTop: boolean;
 	    Frameless: boolean;
 	    Resizeable: boolean;
 	    Translucent: string;
@@ -187,6 +204,7 @@ export namespace config {
 	        this.InitialZoom = source["InitialZoom"];
 	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], WindowBackgroundColor);
 	        this.StartState = source["StartState"];
+	        this.AlwaysOnTop = source["AlwaysOnTop"];
 	        this.Frameless = source["Frameless"];
 	        this.Resizeable = source["Resizeable"];
 	        this.Translucent = source["Translucent"];
@@ -253,6 +271,7 @@ export namespace config {
 	export class Config {
 	    UI: UIConfig;
 	    Backend: string;
+	    LocalAI: LocalAIConfig;
 	    OpenAI: OpenAIConfig;
 	    AnythingLLM: AnythingLLMConfig;
 	    Ollama: OllamaConfig;
@@ -270,6 +289,7 @@ export namespace config {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.UI = this.convertValues(source["UI"], UIConfig);
 	        this.Backend = source["Backend"];
+	        this.LocalAI = this.convertValues(source["LocalAI"], LocalAIConfig);
 	        this.OpenAI = this.convertValues(source["OpenAI"], OpenAIConfig);
 	        this.AnythingLLM = this.convertValues(source["AnythingLLM"], AnythingLLMConfig);
 	        this.Ollama = this.convertValues(source["Ollama"], OllamaConfig);
@@ -298,6 +318,7 @@ export namespace config {
 		    return a;
 		}
 	}
+	
 	
 	
 	
