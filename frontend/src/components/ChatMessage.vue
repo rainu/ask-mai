@@ -146,7 +146,7 @@ div.code-container {
 	float: right;
 }
 
-pre.copied {
+pre.copied code {
 	border: 2px solid #4db6ac;
 	border-radius: 5px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Add elevation effect */
