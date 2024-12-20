@@ -78,21 +78,32 @@ jobs:
         run: choco install upx
         shell: powershell
 
+      # Version ldflags
+      - name: Common - Set version flags
+        id: ldflags
+        run: |
+          echo -n " -X 'main.commitHash=$(git rev-parse HEAD)'" >> ldflags
+          echo -n " -X 'main.branch=$(git rev-parse --abbrev-ref HEAD)'" >> ldflags
+          echo -n " -X 'main.tag=$(git describe --tags --abbrev=0)'" >> ldflags
+          echo -n " -X 'main.built=$(date +%s%3N)'" >> ldflags
+
+          echo "ldflags=$(cat ldflags)" >> $GITHUB_OUTPUT
+
       # Build
       - name: Linux - Build
         if: runner.os == 'Linux'
         shell: bash
-        run: wails build -platform ${{ matrix.build.platform }} -upx -o ${{ matrix.build.name }}
+        run: wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -upx -o ${{ matrix.build.name }}
       - name: Windows - Build
         if: runner.os == 'Windows'
         shell: bash
         run: |
-          wails build -platform ${{ matrix.build.platform }} -o ${{ matrix.build.name }}.exe
-          wails build -platform ${{ matrix.build.platform }} -upx -o ${{ matrix.build.name }}-compressed.exe
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -o ${{ matrix.build.name }}.exe
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -upx -o ${{ matrix.build.name }}-compressed.exe
       - name: MacOS - Build
         if: runner.os == 'macOS'
         shell: bash
-        run: wails build -platform ${{ matrix.build.platform }} -o ${{ matrix.build.name }}
+        run: wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -o ${{ matrix.build.name }}
 
       # Package MacOS
       - name: MacOS - Build .app zip file
