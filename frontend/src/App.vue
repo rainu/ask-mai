@@ -3,7 +3,7 @@
 		<template v-slot:default="{ props: hoverProps, isHovering }">
 			<v-app :theme="theme" v-bind="hoverProps" :style="{ opacity: opacityValue(isHovering) }">
 				<v-main>
-					<v-container class="pa-0 ma-0" fluid>
+					<v-container class="pa-0 ma-0" fluid style="overflow-x: auto;">
 						<RouterView />
 					</v-container>
 				</v-main>
