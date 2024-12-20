@@ -282,6 +282,7 @@ export namespace config {
 	    CallOptions: CallOptionsConfig;
 	    Printer: PrinterConfig;
 	    LogLevel: number;
+	    PrintVersion: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);
@@ -300,6 +301,7 @@ export namespace config {
 	        this.CallOptions = this.convertValues(source["CallOptions"], CallOptionsConfig);
 	        this.Printer = this.convertValues(source["Printer"], PrinterConfig);
 	        this.LogLevel = source["LogLevel"];
+	        this.PrintVersion = source["PrintVersion"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

@@ -48,7 +48,8 @@ type Config struct {
 
 	Printer PrinterConfig
 
-	LogLevel int
+	LogLevel     int
+	PrintVersion bool
 }
 
 type UIConfig struct {
@@ -140,6 +141,8 @@ func Parse(arguments []string) *Config {
 
 	flag.StringVar(&c.Printer.Format, "print-format", PrinterFormatJSON, fmt.Sprintf("Response printer format (%s, %s)", PrinterFormatPlain, PrinterFormatJSON))
 	flag.StringVar(&c.Printer.targets, "print-targets", PrinterTargetOut, fmt.Sprintf("Comma seperated response printer targets (%s, %s, <path/to/file>)", PrinterTargetOut, PrinterTargetErr))
+
+	flag.BoolVar(&c.PrintVersion, "v", false, "Show the version")
 
 	flag.Usage = func() {
 		printUsage(flag.CommandLine.Output())

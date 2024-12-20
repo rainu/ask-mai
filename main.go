@@ -34,6 +34,11 @@ func main() {
 	})
 
 	cfg := config.Parse(os.Args[1:])
+	if cfg.PrintVersion {
+		fmt.Fprintln(os.Stderr, versionLine())
+		os.Exit(0)
+		return
+	}
 	if !buildMode {
 		if err := cfg.Validate(); err != nil {
 			fmt.Fprintln(os.Stderr, err.Error())
