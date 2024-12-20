@@ -9,14 +9,14 @@ import (
 var (
 	commitHash = "9295DFD720"
 	branch     = ""
-	tag        = "dev"
+	tag        = ""
 	built      = "629579700000"
 )
 
 func versionLine() string {
-	version := tag
-	if branch != "" {
-		version = branch
+	version := branch
+	if tag != "" {
+		version = tag
 	}
 	builtTime := time.UnixMilli(0)
 	if iBuilt, _ := strconv.ParseInt(built, 10, 64); iBuilt > 0 {
