@@ -16,6 +16,8 @@ func (c *Controller) AppMounted() {
 	c.applyInitialWindowConfig()
 
 	runtime.WindowShow(c.ctx)
+
+	c.vueAppMounted = true
 }
 
 func (c *Controller) applyInitialWindowConfig() {

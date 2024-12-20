@@ -54,6 +54,7 @@ type Config struct {
 type UIConfig struct {
 	Window       WindowConfig
 	Prompt       string
+	Stream       bool
 	QuitShortcut Shortcut
 	Theme        string
 	CodeStyle    string
@@ -102,6 +103,7 @@ func Parse(arguments []string) *Config {
 	flag.IntVar(&c.LogLevel, "ll", int(slog.LevelError), fmt.Sprintf("Log level (debug(%d), info(%d), warn(%d), error(%d))", slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError))
 
 	flag.StringVar(&c.UI.Prompt, "ui-prompt", "", "The prompt to use")
+	flag.BoolVar(&c.UI.Stream, "ui-stream", false, "Should the output be streamed")
 	flag.StringVar(&c.UI.Window.Title, "ui-title", "Prompt - Ask mAI", "The window title")
 	flag.StringVar(&c.UI.Window.InitialWidth, "ui-init-width", "CurrentScreen.Dimension.Width/2", "The (initial) width of the window")
 	flag.StringVar(&c.UI.Window.MaxHeight, "ui-max-height", "CurrentScreen.Dimension.Height/3", "The maximal height of the chat response area")

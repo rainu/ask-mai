@@ -1,6 +1,6 @@
 <template>
 	<div ref="page" :style="{ zoom }">
-		<template v-if="chatHistory.length > 0 || error">
+		<template v-if="chatHistory.length > 0 || outputStream || error">
 			<v-app-bar app class="pa-0 ma-0" density="compact">
 				<div style="width: 100%" ref="appbar">
 					<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
@@ -9,6 +9,9 @@
 
 			<template v-for="(entry, index) in chatHistory" :key="index">
 				<ChatMessage :message="entry.Content" :role="entry.Role" />
+			</template>
+			<template v-if="outputStream">
+				<ChatMessage :message="outputStream" :role="outputStreamRole" />
 			</template>
 
 			<v-alert v-if="error" type="error" :title="error.title" :text="error.message" />
@@ -24,7 +27,7 @@
 
 <script lang="ts">
 import { AppMounted, LLMAsk, LLMInterrupt, LLMWait } from '../../wailsjs/go/controller/Controller'
-import { WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
+import { EventsOn, WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { Role } from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
 import { controller } from '../../wailsjs/go/models.ts'
@@ -37,6 +40,8 @@ export default {
 		return {
 			progress: false,
 			input: '',
+			outputStream: '',
+			outputStreamRole: Role.Bot,
 			error: null as { title: string; message: string } | null,
 			chatHistory: [] as controller.LLMMessage[],
 			zoom: this.$appConfig.UI.Window.InitialZoom,
@@ -82,9 +87,22 @@ export default {
 		async processLLM(input: string, processFn: () => Promise<string>) {
 			try {
 				this.progress = true
+
+				const setInput = () => {
+					this.input = ''
+					this.chatHistory.push({ Content: input, Role: Role.User })
+				}
+				if (this.$appConfig.UI.Stream) {
+					setInput()
+				}
+
 				const output = await processFn()
-				this.chatHistory.push({ Content: input, Role: Role.User }, { Content: output, Role: Role.Bot })
-				this.input = ''
+
+				if (!this.$appConfig.UI.Stream) {
+					setInput()
+				}
+
+				this.chatHistory.push({ Content: output, Role: Role.Bot })
 			} catch (err) {
 				this.error = {
 					title: 'Error while processing LLM',
@@ -93,6 +111,7 @@ export default {
 				console.error(err)
 			} finally {
 				this.progress = false
+				this.outputStream = ''
 			}
 		},
 		async onSubmit(input: string) {
@@ -116,12 +135,18 @@ export default {
 		},
 	},
 	mounted() {
+		EventsOn('llm:stream:chunk', (chunk: string) => {
+			this.outputStream += chunk
+		})
 		window.addEventListener('keyup', this.handleKeyup)
 
-		if (this.$appConfig.UI.Prompt) {
-			this.waitForLLM()
-		}
-		this.adjustHeight().then(() => AppMounted())
+		this.adjustHeight()
+			.then(() => AppMounted())
+			.then(() => {
+				if (this.$appConfig.UI.Prompt) {
+					this.waitForLLM()
+				}
+			})
 	},
 	updated() {
 		this.$nextTick(() => {

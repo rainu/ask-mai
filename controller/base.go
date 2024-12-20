@@ -19,6 +19,9 @@ type Controller struct {
 
 	appConfig *config.Config
 	printer   io.ResponsePrinter
+
+	vueAppMounted bool
+	streamBuffer  []byte
 }
 
 type llmAskResult struct {

@@ -231,6 +231,7 @@ export namespace config {
 	export class UIConfig {
 	    Window: WindowConfig;
 	    Prompt: string;
+	    Stream: boolean;
 	    QuitShortcut: Shortcut;
 	    Theme: string;
 	    CodeStyle: string;
@@ -244,6 +245,7 @@ export namespace config {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Window = this.convertValues(source["Window"], WindowConfig);
 	        this.Prompt = source["Prompt"];
+	        this.Stream = source["Stream"];
 	        this.QuitShortcut = this.convertValues(source["QuitShortcut"], Shortcut);
 	        this.Theme = source["Theme"];
 	        this.CodeStyle = source["CodeStyle"];

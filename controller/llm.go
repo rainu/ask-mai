@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/tmc/langchaingo/llms"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type LLMAskArgs struct {
@@ -67,7 +68,13 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		})
 	}()
 
-	resp, err := c.aiModel.GenerateContent(c.aiModelCtx, content, c.appConfig.CallOptions.AsOptions()...)
+	opts := c.appConfig.CallOptions.AsOptions()
+	if c.appConfig.UI.Stream {
+		// streaming is enabled
+		opts = append(opts, llms.WithStreamingFunc(c.streamingFunc))
+	}
+
+	resp, err := c.aiModel.GenerateContent(c.aiModelCtx, content, opts...)
 	if err != nil {
 		return "", fmt.Errorf("error creating completion: %w", err)
 	}
@@ -82,6 +89,21 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 	}
 
 	return result, nil
+}
+
+func (c *Controller) streamingFunc(ctx context.Context, chunk []byte) error {
+	if !c.vueAppMounted {
+		c.streamBuffer = append(c.streamBuffer, chunk...)
+		return nil
+	}
+	if len(c.streamBuffer) > 0 {
+		// emit the buffered chunk
+		runtime.EventsEmit(c.ctx, "llm:stream:chunk", string(c.streamBuffer))
+		c.streamBuffer = nil
+	}
+
+	runtime.EventsEmit(c.ctx, "llm:stream:chunk", string(chunk))
+	return nil
 }
 
 func (c *Controller) LLMWait() (result string, err error) {
