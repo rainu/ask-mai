@@ -6,6 +6,7 @@ import (
 	"github.com/rainu/ask-mai/config"
 	"github.com/rainu/ask-mai/io"
 	"github.com/rainu/ask-mai/llms"
+	langChainLLM "github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -68,6 +69,16 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 	if err != nil {
 		err = fmt.Errorf("error creating ai model: %w", err)
 		return
+	}
+
+	if cfg.UI.Prompt != "" {
+		// ask the model the first question in background
+		go ctrl.LLMAsk(LLMAskArgs{
+			History: LLMMessages{{
+				Content: cfg.UI.Prompt,
+				Role:    string(langChainLLM.ChatMessageTypeHuman),
+			}},
+		})
 	}
 
 	return

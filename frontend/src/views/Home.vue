@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { AppMounted, LLMAsk, LLMInterrupt } from '../../wailsjs/go/controller/Controller'
+import { AppMounted, LLMAsk, LLMInterrupt, LLMWait } from '../../wailsjs/go/controller/Controller'
 import { WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { Role } from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
@@ -79,31 +79,37 @@ export default {
 			const bottomEl = this.$refs.bottom as HTMLElement
 			bottomEl.scrollIntoView({ block: 'end', behavior: 'smooth' })
 		},
-		async onSubmit(input: string) {
+		async processLLM(input: string, processFn: () => Promise<string>) {
 			try {
 				this.progress = true
-				const output = await LLMAsk(
-					LLMAskArgs.createFrom({
-						History: [
-							...this.chatHistory,
-							{
-								Content: input,
-								Role: Role.User,
-							},
-						],
-					}),
-				)
+				const output = await processFn()
 				this.chatHistory.push({ Content: input, Role: Role.User }, { Content: output, Role: Role.Bot })
 				this.input = ''
 			} catch (err) {
 				this.error = {
-					title: 'Error while asking LLM',
+					title: 'Error while processing LLM',
 					message: `${err}`,
 				}
 				console.error(err)
 			} finally {
 				this.progress = false
 			}
+		},
+		async onSubmit(input: string) {
+			const args = LLMAskArgs.createFrom({
+				History: [
+					...this.chatHistory,
+					{
+						Content: input,
+						Role: Role.User,
+					},
+				],
+			})
+			await this.processLLM(input, () => LLMAsk(args))
+		},
+		async waitForLLM() {
+			this.input = this.$appConfig.UI.Prompt
+			await this.processLLM(this.input, () => LLMWait())
 		},
 		async onInterrupt() {
 			await LLMInterrupt()
@@ -113,8 +119,7 @@ export default {
 		window.addEventListener('keyup', this.handleKeyup)
 
 		if (this.$appConfig.UI.Prompt) {
-			this.input = this.$appConfig.UI.Prompt
-			this.onSubmit(this.$appConfig.UI.Prompt)
+			this.waitForLLM()
 		}
 		this.adjustHeight().then(() => AppMounted())
 	},

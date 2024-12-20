@@ -5,6 +5,7 @@ import (
 	"github.com/rainu/ask-mai/config"
 	"github.com/rainu/ask-mai/io"
 	"github.com/rainu/ask-mai/llms"
+	"github.com/rainu/ask-mai/sync"
 )
 
 type Controller struct {
@@ -13,9 +14,16 @@ type Controller struct {
 	aiModel       llms.Model
 	aiModelCtx    context.Context
 	aiModelCancel context.CancelFunc
+	aiModelMutex  sync.Mutex
+	lastAskResult llmAskResult
 
 	appConfig *config.Config
 	printer   io.ResponsePrinter
+}
+
+type llmAskResult struct {
+	Content string
+	Error   error
 }
 
 func (c *Controller) startup(ctx context.Context) {

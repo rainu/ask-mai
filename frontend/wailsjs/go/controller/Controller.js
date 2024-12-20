@@ -17,3 +17,7 @@ export function LLMAsk(arg1) {
 export function LLMInterrupt() {
   return window['go']['controller']['Controller']['LLMInterrupt']();
 }
+
+export function LLMWait() {
+  return window['go']['controller']['Controller']['LLMWait']();
+}
