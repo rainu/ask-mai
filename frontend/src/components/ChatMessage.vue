@@ -80,7 +80,13 @@ export default defineComponent({
 		onCopyButtonClicked(event: MouseEvent) {
 			const preElement = (event.target as HTMLButtonElement)?.nextElementSibling as HTMLElement
 			if (preElement && preElement.tagName === 'PRE') {
-				const code = preElement.innerText
+				let code = preElement.innerText
+				const newlineCount = (code.match(/\n/g) || []).length
+				if(newlineCount === 1) {
+					//prevent that shell-code-statements will be executed directly
+					code = code.trim()
+				}
+
 				navigator.clipboard.writeText(code).then(() => {
 					preElement.classList.add('copied')
 					setTimeout(() => {
