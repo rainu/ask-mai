@@ -108,7 +108,7 @@ pre code {
 	background-color: #f5f5f5;
 	border: 1px solid #ccc;
 	margin: 0.5em 0;
-	padding: 0.5em 1em;
+	padding: 0.5em 2em 0.5em 1em;
 	border-radius: 5px;
 	display: block;
 	overflow-x: auto;
@@ -140,7 +140,7 @@ div.code-container {
 .copy-button {
 	position: absolute;
 	right: 1px;
-	padding-top: 0.5em;
+	padding-top: 1em;
 	padding-right: 0.5em;
 	z-index: 1;
 	float: right;
