@@ -1,5 +1,8 @@
 <template>
 	<div ref="page" :style="{ zoom }">
+		<ZoomDetector @onZoom="onZoom" />
+		<UserScrollDetector @onScroll="onUserScroll" />
+
 		<template v-if="chatHistory.length > 0 || outputStream || error">
 			<v-app-bar app class="pa-0 ma-0" density="compact">
 				<div style="width: 100%" ref="appbar">
@@ -30,12 +33,14 @@ import { AppMounted, LLMAsk, LLMInterrupt, LLMWait } from '../../wailsjs/go/cont
 import { EventsOn, WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { Role } from '../components/ChatMessage.vue'
 import ChatInput from '../components/ChatInput.vue'
+import ZoomDetector from '../components/ZoomDetector.vue'
+import UserScrollDetector from '../components/UserScrollDetector.vue'
 import { controller } from '../../wailsjs/go/models.ts'
 import LLMAskArgs = controller.LLMAskArgs
 
 export default {
 	name: 'Home',
-	components: { ChatInput, ChatMessage },
+	components: { UserScrollDetector, ZoomDetector, ChatInput, ChatMessage },
 	data() {
 		return {
 			progress: false,
@@ -49,39 +54,9 @@ export default {
 		}
 	},
 	methods: {
-		zoomIn() {
-			if (this.zoom < 5) {
-				this.zoom += 0.1
-			}
-		},
-		zoomOut() {
-			if (this.zoom > 0.1) {
-				this.zoom -= 0.1
-			}
-		},
-		handleKeyup(event: KeyboardEvent) {
-			if (event.ctrlKey && event.key === '+') {
-				this.zoomIn()
-				this.adjustHeight()
-			}
-			if (event.ctrlKey && event.key === '-') {
-				this.zoomOut()
-				this.adjustHeight()
-			}
-			if (event.ctrlKey && event.key === '0') {
-				this.zoom = 1
-				this.adjustHeight()
-			}
-		},
-		handleKeydown(event: KeyboardEvent) {
-			if (event.key === 'PageUp' || event.key === 'PageDown') {
-				this.onUserScroll()
-			}
-		},
-		handleWheel(event: WheelEvent) {
-			if (event.deltaY !== 0) {
-				this.onUserScroll()
-			}
+		onZoom(factor: number) {
+			this.zoom = factor
+			this.adjustHeight()
 		},
 		async adjustHeight() {
 			const currentSize = await WindowGetSize()
@@ -158,9 +133,6 @@ export default {
 		EventsOn('llm:stream:chunk', (chunk: string) => {
 			this.outputStream += chunk
 		})
-		window.addEventListener('keyup', this.handleKeyup)
-		window.addEventListener('keydown', this.handleKeydown)
-		window.addEventListener('wheel', this.handleWheel)
 
 		this.adjustHeight()
 			.then(() => AppMounted())
