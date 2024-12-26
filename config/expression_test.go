@@ -6,51 +6,6 @@ import (
 	"testing"
 )
 
-func TestExpression_Variables(t *testing.T) {
-	v := Variables{
-		PrimaryScreen: VariableScreen{
-			Dimension: VariableScreenDimension{
-				Width:  1920,
-				Height: 1080,
-			},
-		},
-		CurrentScreen: VariableScreen{
-			Dimension: VariableScreenDimension{
-				Width:  3840,
-				Height: 2160,
-			},
-		},
-		Screens: []VariableScreen{
-			{
-				Dimension: VariableScreenDimension{
-					Width:  1920,
-					Height: 1080,
-				},
-			},
-			{
-				Dimension: VariableScreenDimension{
-					Width:  3840,
-					Height: 2160,
-				},
-			},
-		},
-	}
-
-	m, e := v.ToFlatMap()
-	require.NoError(t, e)
-
-	assert.Equal(t, map[string]any{
-		"PrimaryScreen.Dimension.Width":  float64(1920),
-		"PrimaryScreen.Dimension.Height": float64(1080),
-		"CurrentScreen.Dimension.Width":  float64(3840),
-		"CurrentScreen.Dimension.Height": float64(2160),
-		"Screens[0].Dimension.Width":     float64(1920),
-		"Screens[0].Dimension.Height":    float64(1080),
-		"Screens[1].Dimension.Width":     float64(3840),
-		"Screens[1].Dimension.Height":    float64(2160),
-	}, m)
-}
-
 func TestExpression_Calculate(t *testing.T) {
 	variables := Variables{
 		PrimaryScreen: VariableScreen{
@@ -79,13 +34,15 @@ func TestExpression_Calculate(t *testing.T) {
 		expression string
 		expected   float64
 	}{
-		{"PrimaryScreen.Dimension.Height * 2", float64(variables.PrimaryScreen.Dimension.Height * 2)},
-		{"PrimaryScreen.Dimension.Width / 2", float64(variables.PrimaryScreen.Dimension.Width / 2)},
-		{"Screens[1].Dimension.Width - Screens[0].Dimension.Width", float64(variables.Screens[1].Dimension.Width - variables.Screens[0].Dimension.Width)},
-		{"Screens[1].Dimension.Height / Screens[0].Dimension.Height", float64(variables.Screens[1].Dimension.Height / variables.Screens[0].Dimension.Height)},
+		{"v.PrimaryScreen.Dimension.Height * 2", float64(variables.PrimaryScreen.Dimension.Height * 2)},
+		{"v.PrimaryScreen.Dimension.Width / 2", float64(variables.PrimaryScreen.Dimension.Width / 2)},
+		{"v.Screens[1].Dimension.Width - v.Screens[0].Dimension.Width", float64(variables.Screens[1].Dimension.Width - variables.Screens[0].Dimension.Width)},
+		{"v.Screens[1].Dimension.Height / v.Screens[0].Dimension.Height", float64(variables.Screens[1].Dimension.Height / variables.Screens[0].Dimension.Height)},
 		{"3 + 2", float64(3 + 2)},
 		{"(3 + 2) * 4", float64((3 + 2) * 4)},
-		{"(3+Screens[1].Dimension.Height)*4", float64((3 + variables.Screens[1].Dimension.Height) * 4)},
+		{"(3+v.Screens[1].Dimension.Height)*4", float64((3 + variables.Screens[1].Dimension.Height) * 4)},
+		{"if(v.PrimaryScreen.Dimension.Height >= 2160){ 1 } else { 2 }", float64(2)},
+		{"let r=0; for(let i=0; i < 5; i++){ r+=i }; r", float64(10)},
 	}
 
 	for _, tt := range tests {
@@ -95,4 +52,9 @@ func TestExpression_Calculate(t *testing.T) {
 			assert.Equal(t, tt.expected, result)
 		})
 	}
+}
+
+func TestExpression_Calculate_NaN(t *testing.T) {
+	_, err := Expression("log('test'); 'test'").Calculate(Variables{})
+	assert.Error(t, err)
 }

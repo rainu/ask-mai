@@ -1,14 +1,10 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/dop251/goja"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"go/token"
-	"go/types"
-	"reflect"
-	"strconv"
-	"strings"
+	"os"
 )
 
 type Expression string
@@ -51,69 +47,32 @@ func FromScreens(screens []runtime.Screen) Variables {
 	return variables
 }
 
-func (v Variables) ToFlatMap() (map[string]interface{}, error) {
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-
-	var jsonData map[string]interface{}
-	if err := json.Unmarshal(data, &jsonData); err != nil {
-		return nil, err
-	}
-
-	flatMap := make(map[string]interface{})
-	flatten("", jsonData, flatMap)
-	return flatMap, nil
-}
-
-func flatten(prefix string, data interface{}, flatMap map[string]interface{}) {
-	if data == nil {
-		return
-	}
-
-	switch reflect.TypeOf(data).Kind() {
-	case reflect.Map:
-		for k, v := range data.(map[string]interface{}) {
-			key := k
-			if prefix != "" {
-				key = prefix + "." + k
-			}
-			flatten(key, v, flatMap)
-		}
-	case reflect.Slice:
-		for i, v := range data.([]interface{}) {
-			key := fmt.Sprintf("%s[%d]", prefix, i)
-			flatten(key, v, flatMap)
-		}
-	default:
-		flatMap[prefix] = data
-	}
-}
+const varNameVariables = "v"
+const funcNameLog = "log"
 
 func (e Expression) Calculate(v Variables) (float64, error) {
-	flatVars, err := v.ToFlatMap()
+	vm := goja.New()
+	err := vm.Set(varNameVariables, v)
 	if err != nil {
-		return 0, fmt.Errorf("error flattening variables: %w", err)
+		return 0, fmt.Errorf("error setting variables: %w", err)
 	}
-
-	expression := string(e)
-	for variable, value := range flatVars {
-		expression = strings.ReplaceAll(expression, variable, fmt.Sprintf("%v", value))
-	}
-
-	fs := token.NewFileSet()
-	tv, err := types.Eval(fs, nil, token.NoPos, expression)
+	err = vm.Set(funcNameLog, func(args ...interface{}) {
+		fmt.Fprint(os.Stderr, "EXPRESSION_LOG: ")
+		fmt.Fprintln(os.Stderr, args...)
+	})
 	if err != nil {
-		return 0, fmt.Errorf("error evaluating expression: %w", err)
+		return 0, fmt.Errorf("error setting functions: %w", err)
 	}
-
-	result, err := strconv.ParseFloat(tv.Value.String(), 64)
+	result, err := vm.RunString(string(e))
 	if err != nil {
-		return 0, fmt.Errorf("error parsing result: %w", err)
+		return 0, fmt.Errorf("error running expression: %w", err)
 	}
 
-	return result, nil
+	if result.ToNumber().SameAs(goja.NaN()) {
+		return 0, fmt.Errorf("result is not a number")
+	}
+
+	return result.ToFloat(), nil
 }
 
 func ValidateExpression(e string) error {

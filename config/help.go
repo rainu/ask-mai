@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/wailsapp/wails/v2"
@@ -46,7 +47,11 @@ func printUsage(output io.Writer) {
 		fmt.Fprintf(output, "  - %s\n", style)
 	}
 
-	fmt.Fprintf(output, "\nAvailable Expression variables:\n")
+	fmt.Fprintf(output, "\nThe expression language is JavaScript. You can use the following variables and functions:\n")
+	fmt.Fprintf(output, "\nFunctions:\n")
+	fmt.Fprintf(flag.CommandLine.Output(), "  - %s: writes a message to the console.\n", funcNameLog)
+
+	fmt.Fprintf(output, "\nVariables:\n")
 
 	wails.Run(&options.App{
 		StartHidden: true,
@@ -60,14 +65,12 @@ func printUsage(output io.Writer) {
 				return
 			}
 
-			flatMap, err := FromScreens(screens).ToFlatMap()
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err.Error())
-				return
-			}
-			for k, v := range flatMap {
-				fmt.Fprintf(flag.CommandLine.Output(), "  - %s: %v\n", k, v)
-			}
+			fmt.Fprintf(flag.CommandLine.Output(), "  const %s = ", varNameVariables)
+
+			variables := FromScreens(screens)
+			je := json.NewEncoder(flag.CommandLine.Output())
+			je.SetIndent("  ", "  ")
+			je.Encode(variables)
 		},
 		OnDomReady: func(ctx context.Context) {
 			runtime.Quit(ctx)

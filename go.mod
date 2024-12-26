@@ -3,6 +3,7 @@ module github.com/rainu/ask-mai
 go 1.23.1
 
 require (
+	github.com/dop251/goja v0.0.0-20241024094426-79f3a7efcdbd
 	github.com/rainu/go-command-chain v0.4.0
 	github.com/stretchr/testify v1.9.0
 	github.com/tmc/langchaingo v0.1.12
@@ -12,10 +13,12 @@ require (
 require (
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dlclark/regexp2 v1.10.0 // indirect
+	github.com/dlclark/regexp2 v1.11.4 // indirect
 	github.com/gage-technologies/mistral-go v1.0.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
+	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
+	github.com/google/pprof v0.0.0-20230207041349-798e818bf904 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/labstack/echo/v4 v4.10.2 // indirect
