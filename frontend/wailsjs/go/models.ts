@@ -176,13 +176,27 @@ export namespace config {
 	        this.A = source["A"];
 	    }
 	}
+	export class ExpressionContainer {
+	    Expression: string;
+	    Value: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ExpressionContainer(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Expression = source["Expression"];
+	        this.Value = source["Value"];
+	    }
+	}
 	export class WindowConfig {
 	    Title: string;
-	    InitialWidth: string;
-	    MaxHeight: string;
-	    InitialPositionX: string;
-	    InitialPositionY: string;
-	    InitialZoom: number;
+	    InitialWidth: ExpressionContainer;
+	    MaxHeight: ExpressionContainer;
+	    InitialPositionX: ExpressionContainer;
+	    InitialPositionY: ExpressionContainer;
+	    InitialZoom: ExpressionContainer;
 	    BackgroundColor: WindowBackgroundColor;
 	    StartState: number;
 	    AlwaysOnTop: boolean;
@@ -197,11 +211,11 @@ export namespace config {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Title = source["Title"];
-	        this.InitialWidth = source["InitialWidth"];
-	        this.MaxHeight = source["MaxHeight"];
-	        this.InitialPositionX = source["InitialPositionX"];
-	        this.InitialPositionY = source["InitialPositionY"];
-	        this.InitialZoom = source["InitialZoom"];
+	        this.InitialWidth = this.convertValues(source["InitialWidth"], ExpressionContainer);
+	        this.MaxHeight = this.convertValues(source["MaxHeight"], ExpressionContainer);
+	        this.InitialPositionX = this.convertValues(source["InitialPositionX"], ExpressionContainer);
+	        this.InitialPositionY = this.convertValues(source["InitialPositionY"], ExpressionContainer);
+	        this.InitialZoom = this.convertValues(source["InitialZoom"], ExpressionContainer);
 	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], WindowBackgroundColor);
 	        this.StartState = source["StartState"];
 	        this.AlwaysOnTop = source["AlwaysOnTop"];
@@ -322,6 +336,7 @@ export namespace config {
 		    return a;
 		}
 	}
+	
 	
 	
 	

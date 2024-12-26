@@ -50,7 +50,7 @@ export default {
 			error: null as { title: string; message: string } | null,
 			chatHistory: [] as controller.LLMMessage[],
 			userScroll: false,
-			zoom: this.$appConfig.UI.Window.InitialZoom,
+			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
 		}
 	},
 	methods: {

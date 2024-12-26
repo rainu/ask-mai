@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/rainu/ask-mai/config"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"math"
@@ -21,29 +20,22 @@ func (c *Controller) AppMounted() {
 }
 
 func (c *Controller) applyInitialWindowConfig() {
-	screens, err := runtime.ScreenGetAll(c.ctx)
-	if err != nil {
-		panic(fmt.Errorf("could not get screens: %w", err))
+	initWidth := int(c.appConfig.UI.Window.InitialWidth.Value)
+	if int(initWidth) > 0 {
+		_, height := runtime.WindowGetSize(c.ctx)
+		runtime.WindowSetSize(c.ctx, initWidth, height)
 	}
 
-	variables := config.FromScreens(screens)
-	_, height := runtime.WindowGetSize(c.ctx)
-
-	value, _ := config.Expression(c.appConfig.UI.Window.InitialWidth).Calculate(variables)
-	if int(value) > 0 {
-		runtime.WindowSetSize(c.ctx, int(value), height)
+	maxHeight := int(c.appConfig.UI.Window.MaxHeight.Value)
+	if maxHeight > 0 {
+		runtime.WindowSetMaxSize(c.ctx, math.MaxInt32, maxHeight)
 	}
 
-	value, _ = config.Expression(c.appConfig.UI.Window.MaxHeight).Calculate(variables)
-	if int(value) > 0 {
-		runtime.WindowSetMaxSize(c.ctx, math.MaxInt32, int(value))
-	}
+	posX := int(c.appConfig.UI.Window.InitialPositionX.Value)
+	posY := int(c.appConfig.UI.Window.InitialPositionY.Value)
 
-	posX, _ := config.Expression(c.appConfig.UI.Window.InitialPositionX).Calculate(variables)
-	posY, _ := config.Expression(c.appConfig.UI.Window.InitialPositionY).Calculate(variables)
-
-	if int(posX) >= 0 && int(posY) >= 0 {
-		runtime.WindowSetPosition(c.ctx, int(posX), int(posY))
+	if posX >= 0 && posY >= 0 {
+		runtime.WindowSetPosition(c.ctx, posX, posY)
 	} else {
 		runtime.WindowCenter(c.ctx)
 	}

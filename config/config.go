@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/rainu/ask-mai/llms"
@@ -64,17 +65,22 @@ type UIConfig struct {
 
 type WindowConfig struct {
 	Title            string
-	InitialWidth     string
-	MaxHeight        string
-	InitialPositionX string
-	InitialPositionY string
-	InitialZoom      float64
+	InitialWidth     ExpressionContainer
+	MaxHeight        ExpressionContainer
+	InitialPositionX ExpressionContainer
+	InitialPositionY ExpressionContainer
+	InitialZoom      ExpressionContainer
 	BackgroundColor  WindowBackgroundColor
 	StartState       int
 	AlwaysOnTop      bool
 	Frameless        bool
 	Resizeable       bool
 	Translucent      string
+}
+
+type ExpressionContainer struct {
+	Expression string
+	Value      float64
 }
 
 type WindowBackgroundColor struct {
@@ -106,11 +112,11 @@ func Parse(arguments []string) *Config {
 	flag.StringVar(&c.UI.Prompt, "ui-prompt", "", "The prompt to use")
 	flag.BoolVar(&c.UI.Stream, "ui-stream", false, "Should the output be streamed")
 	flag.StringVar(&c.UI.Window.Title, "ui-title", "Prompt - Ask mAI", "The window title")
-	flag.StringVar(&c.UI.Window.InitialWidth, "ui-init-width", "v.CurrentScreen.Dimension.Width/2", "The (initial) width of the window")
-	flag.StringVar(&c.UI.Window.MaxHeight, "ui-max-height", "v.CurrentScreen.Dimension.Height/3", "The maximal height of the chat response area")
-	flag.StringVar(&c.UI.Window.InitialPositionX, "ui-init-pos-x", "v.CurrentScreen.Dimension.Width/4", "The (initial) x-position of the window")
-	flag.StringVar(&c.UI.Window.InitialPositionY, "ui-init-pos-y", "0", "The (initial) y-position of the window")
-	flag.Float64Var(&c.UI.Window.InitialZoom, "ui-init-zoom", 1.0, "The (initial) zoom level of the window")
+	flag.StringVar(&c.UI.Window.InitialWidth.Expression, "ui-init-width", "v.CurrentScreen.Dimension.Width/2", "Expression: The (initial) width of the window")
+	flag.StringVar(&c.UI.Window.MaxHeight.Expression, "ui-max-height", "v.CurrentScreen.Dimension.Height/3", "Expression: The maximal height of the chat response area")
+	flag.StringVar(&c.UI.Window.InitialPositionX.Expression, "ui-init-pos-x", "v.CurrentScreen.Dimension.Width/4", "Expression: The (initial) x-position of the window")
+	flag.StringVar(&c.UI.Window.InitialPositionY.Expression, "ui-init-pos-y", "0", "Expression: The (initial) y-position of the window")
+	flag.StringVar(&c.UI.Window.InitialZoom.Expression, "ui-init-zoom", "1.0", "Expression: The (initial) zoom level of the window")
 	flag.UintVar(&c.UI.Window.BackgroundColor.R, "ui-bg-color-r", 255, "The window's background color (red value)")
 	flag.UintVar(&c.UI.Window.BackgroundColor.G, "ui-bg-color-g", 255, "The window's background color (green value)")
 	flag.UintVar(&c.UI.Window.BackgroundColor.B, "ui-bg-color-b", 255, "The window's background color (blue value)")
@@ -169,7 +175,7 @@ func Parse(arguments []string) *Config {
 	return c
 }
 
-func (c Config) Validate() error {
+func (c *Config) Validate() error {
 	if c.LogLevel < int(slog.LevelDebug) || c.LogLevel > int(slog.LevelError) {
 		return fmt.Errorf("Invalid log level")
 	}
@@ -192,31 +198,34 @@ func (c Config) Validate() error {
 	if c.UI.Window.StartState < int(options.Normal) || c.UI.Window.StartState > int(options.Fullscreen) {
 		return fmt.Errorf("Invalid window start state")
 	}
-	if c.UI.Window.InitialZoom < 0.1 || c.UI.Window.InitialZoom > 10.0 {
-		return fmt.Errorf("Invalid window zoom: value must be between 0.1 and 10.0")
-	}
 
-	if c.UI.Window.MaxHeight != "" {
-		if err := ValidateExpression(c.UI.Window.MaxHeight); err != nil {
+	if c.UI.Window.MaxHeight.Expression != "" {
+		if err := ValidateExpression(c.UI.Window.MaxHeight.Expression); err != nil {
 			return fmt.Errorf("Invalid window max height expression: %w", err)
 		}
 	}
 
-	if c.UI.Window.InitialWidth != "" {
-		if err := ValidateExpression(c.UI.Window.InitialWidth); err != nil {
+	if c.UI.Window.InitialWidth.Expression != "" {
+		if err := ValidateExpression(c.UI.Window.InitialWidth.Expression); err != nil {
 			return fmt.Errorf("Invalid window initial width expression: %w", err)
 		}
 	}
 
-	if c.UI.Window.InitialPositionX != "" {
-		if err := ValidateExpression(c.UI.Window.InitialPositionX); err != nil {
+	if c.UI.Window.InitialPositionX.Expression != "" {
+		if err := ValidateExpression(c.UI.Window.InitialPositionX.Expression); err != nil {
 			return fmt.Errorf("Invalid window initial x-position expression: %w", err)
 		}
 	}
 
-	if c.UI.Window.InitialPositionY != "" {
-		if err := ValidateExpression(c.UI.Window.InitialPositionY); err != nil {
+	if c.UI.Window.InitialPositionY.Expression != "" {
+		if err := ValidateExpression(c.UI.Window.InitialPositionY.Expression); err != nil {
 			return fmt.Errorf("Invalid window initial y-position expression: %w", err)
+		}
+	}
+
+	if c.UI.Window.InitialZoom.Expression != "" {
+		if err := ValidateExpression(c.UI.Window.InitialZoom.Expression); err != nil {
+			return fmt.Errorf("Invalid window initial zoom expression: %w", err)
 		}
 	}
 
@@ -266,4 +275,31 @@ func (c Config) Validate() error {
 	}
 
 	return nil
+}
+
+func (c *Config) ResolveExpressions(variables Variables) (err error) {
+	var curErr error
+
+	c.UI.Window.InitialWidth.Value, curErr = Expression(c.UI.Window.InitialWidth.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving initial width expression: %w", curErr))
+	}
+	c.UI.Window.MaxHeight.Value, curErr = Expression(c.UI.Window.MaxHeight.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving max width expression: %w", curErr))
+	}
+	c.UI.Window.InitialPositionX.Value, curErr = Expression(c.UI.Window.InitialPositionX.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving initial x-position expression: %w", curErr))
+	}
+	c.UI.Window.InitialPositionY.Value, curErr = Expression(c.UI.Window.InitialPositionY.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving initial y-position expression: %w", curErr))
+	}
+	c.UI.Window.InitialZoom.Value, curErr = Expression(c.UI.Window.InitialZoom.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving initial zoom expression: %w", curErr))
+	}
+
+	return
 }
