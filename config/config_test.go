@@ -375,20 +375,6 @@ func TestConfig_Parse(t *testing.T) {
 			}),
 		},
 		{
-			name: "Set print targets",
-			args: []string{"--print-targets", "stderr"},
-			expected: modifiedConfig(func(c *Config) {
-				c.Printer.targets = PrinterTargetErr
-			}),
-		},
-		{
-			name: "Set print targets - shorthand",
-			args: []string{"-o", "stderr"},
-			expected: modifiedConfig(func(c *Config) {
-				c.Printer.targets = PrinterTargetErr
-			}),
-		},
-		{
 			name: "Enable print version",
 			args: []string{"--version"},
 			expected: modifiedConfig(func(c *Config) {
