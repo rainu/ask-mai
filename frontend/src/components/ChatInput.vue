@@ -11,7 +11,7 @@
 				:placeholder="$t('prompt.placeholder')"
 			>
 				<template v-slot:append-inner>
-					<v-btn icon :disabled="progress || !isSubmitable" @click="onSubmit">
+					<v-btn icon v-show="!progress && isSubmitable" @click="onSubmit">
 						<v-icon>mdi-send</v-icon>
 					</v-btn>
 				</template>
