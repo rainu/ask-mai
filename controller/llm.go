@@ -3,8 +3,11 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"os"
+	"strings"
 )
 
 type LLMAskArgs struct {
@@ -12,19 +15,53 @@ type LLMAskArgs struct {
 }
 
 type LLMMessage struct {
-	Role    string
+	Role         string
+	ContentParts []LLMMessageContentPart
+}
+type LLMMessageContentPart struct {
+	Type    LLMMessageContentPartType
 	Content string
 }
+type LLMMessageContentPartType string
+
+const (
+	LLMMessageContentPartTypeAttachment LLMMessageContentPartType = "attachment"
+	LLMMessageContentPartTypeText       LLMMessageContentPartType = "text"
+)
+
 type LLMMessages []LLMMessage
 
-func (m LLMMessages) ToMessageContent(systemPrompt string) []llms.MessageContent {
+func (m LLMMessages) ToMessageContent(systemPrompt string) ([]llms.MessageContent, error) {
 	result := make([]llms.MessageContent, len(m))
 	for i, msg := range m {
 		result[i] = llms.MessageContent{
-			Parts: []llms.ContentPart{
-				llms.TextContent{Text: msg.Content},
-			},
-			Role: llms.ChatMessageType(msg.Role),
+			Role:  llms.ChatMessageType(msg.Role),
+			Parts: make([]llms.ContentPart, len(msg.ContentParts)),
+		}
+		for j, part := range msg.ContentParts {
+			switch part.Type {
+			case LLMMessageContentPartTypeAttachment:
+				path := part.Content // in case of attachment, the content is the file path
+				mime, err := mimetype.DetectFile(path)
+				if err != nil {
+					return nil, fmt.Errorf("error detecting mimetype: %w", err)
+				}
+				data, err := os.ReadFile(path)
+				if err != nil {
+					return nil, fmt.Errorf("error reading attachment: %w", err)
+				}
+				binaryPart := llms.BinaryPart(mime.String(), data)
+				result[i].Parts[j] = binaryPart
+
+				// special treatment for images (some llms supports image URLs but no binary containing image data)
+				if strings.HasPrefix(binaryPart.MIMEType, "image/") {
+					result[i].Parts[j] = llms.ImageURLPart(binaryPart.String())
+				}
+			case LLMMessageContentPartTypeText:
+				fallthrough
+			default:
+				result[i].Parts[j] = llms.TextPart(part.Content)
+			}
 		}
 	}
 
@@ -33,7 +70,7 @@ func (m LLMMessages) ToMessageContent(systemPrompt string) []llms.MessageContent
 		result = append([]llms.MessageContent{msg}, result...)
 	}
 
-	return result
+	return result, nil
 }
 
 func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
@@ -55,7 +92,10 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		return "", fmt.Errorf("error interrupting previous LLM: %w", err)
 	}
 
-	content := args.History.ToMessageContent(c.appConfig.CallOptions.SystemPrompt)
+	content, err := args.History.ToMessageContent(c.appConfig.CallOptions.SystemPrompt)
+	if err != nil {
+		return "", fmt.Errorf("error converting history to message content: %w", err)
+	}
 
 	c.aiModelMutex.Write(func() {
 		c.aiModelCtx, c.aiModelCancel = context.WithCancel(context.Background())
@@ -85,7 +125,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 
 	result = resp.Choices[0].Content
 	if result != "" {
-		c.printer.Print(args.History[len(args.History)-1].Content, result)
+		c.printer.Print(args.History[len(args.History)-1].ContentParts[0].Content, result)
 	}
 
 	return result, nil

@@ -1,19 +1,40 @@
 <template>
 	<v-row dense class="pa-0 ma-0">
-		<v-col :cols="progress ? 11 : 12" class="pa-0 ma-0">
+		<v-col id="chat-input-text-area" :cols="progress ? 11 : 12" class="pa-0 ma-0">
 			<v-textarea
-				v-model="value"
+				v-model="value.prompt"
 				:rows="rows"
 				:disabled="progress"
 				@keyup="onKeyup"
-				hide-details
+				:hide-details="value.attachments.length === 0"
 				autofocus
 				:placeholder="$t('prompt.placeholder')"
 			>
+				<template v-slot:prepend-inner>
+					<v-btn icon density="compact" @click="onAddFile">
+						<v-icon>mdi-paperclip</v-icon>
+					</v-btn>
+				</template>
 				<template v-slot:append-inner>
 					<v-btn icon v-show="!progress && isSubmitable" @click="onSubmit">
 						<v-icon>mdi-send</v-icon>
 					</v-btn>
+				</template>
+				<template v-slot:details>
+					<v-container class="pa-0 ma-0" style="overflow-y: auto;">
+						<v-chip
+							v-for="(attachment, i) in value.attachments"
+							:key="attachment"
+							:title="attachment"
+							class="ma-1"
+							prepend-icon="mdi-file"
+							color="primary"
+							variant="flat"
+							@click="onRemoveFile(i)"
+						>
+							{{ shortFileName(attachment) }}
+						</v-chip>
+					</v-container>
 				</template>
 			</v-textarea>
 		</v-col>
@@ -27,6 +48,11 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { OpenFileDialog } from '../../wailsjs/go/controller/Controller'
+import { controller } from '../../wailsjs/go/models.ts'
+import OpenFileDialogArgs = controller.OpenFileDialogArgs
+
+export type ChatInputType = { prompt: string; attachments: string[] }
 
 export default defineComponent({
 	name: 'ChatInput',
@@ -38,9 +64,9 @@ export default defineComponent({
 			default: false,
 		},
 		modelValue: {
-			type: String,
+			type: Object as () => ChatInputType,
 			required: false,
-			default: '',
+			default: () => ({ prompt: '', attachments: [] }),
 		},
 	},
 	computed: {
@@ -52,12 +78,12 @@ export default defineComponent({
 				this.$emit('update:modelValue', value)
 			},
 		},
-		isSubmitable(){
-			return this.modelValue.trim() !== ''
+		isSubmitable() {
+			return this.modelValue.prompt.trim() !== ''
 		},
 		rows() {
 			return Math.max(
-				Math.min(this.modelValue.split('\n').length, this.$appConfig.UI.Prompt.MaxRows),
+				Math.min(this.modelValue.prompt.split('\n').length, this.$appConfig.UI.Prompt.MaxRows),
 				this.$appConfig.UI.Prompt.MinRows,
 			)
 		},
@@ -77,13 +103,36 @@ export default defineComponent({
 		onSubmit() {
 			if (!this.isSubmitable) return
 
-			this.$emit('submit', this.modelValue.trim())
+			this.$emit('submit', this.modelValue)
 		},
 		onStop() {
 			this.$emit('interrupt')
+		},
+		onAddFile() {
+			OpenFileDialog(
+				OpenFileDialogArgs.createFrom({
+					Title: this.$t('dialog.files.title'),
+				}),
+			).then((results) => {
+				this.value.attachments.push(...results)
+			})
+		},
+		onRemoveFile(index: number) {
+			this.value.attachments.splice(index, 1)
+		},
+		shortFileName(path: string) {
+			let name = path.split('/').pop() || ''
+			if (name.length > 10) {
+				name = name.slice(0, 10) + '...'
+			}
+			return name
 		},
 	},
 })
 </script>
 
-<style scoped></style>
+<style>
+#chat-input-text-area .v-messages {
+	display: none;
+}
+</style>

@@ -138,6 +138,30 @@ export namespace config {
 	        this.BaseUrl = source["BaseUrl"];
 	    }
 	}
+	export class FileDialogConfig {
+	    DefaultDirectory: string;
+	    ShowHiddenFiles: boolean;
+	    CanCreateDirectories: boolean;
+	    ResolvesAliases: boolean;
+	    TreatPackagesAsDirectories: boolean;
+	    FilterDisplay: string[];
+	    FilterPattern: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new FileDialogConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.DefaultDirectory = source["DefaultDirectory"];
+	        this.ShowHiddenFiles = source["ShowHiddenFiles"];
+	        this.CanCreateDirectories = source["CanCreateDirectories"];
+	        this.ResolvesAliases = source["ResolvesAliases"];
+	        this.TreatPackagesAsDirectories = source["TreatPackagesAsDirectories"];
+	        this.FilterDisplay = source["FilterDisplay"];
+	        this.FilterPattern = source["FilterPattern"];
+	    }
+	}
 	export class Shortcut {
 	    Code: string;
 	    Alt: boolean;
@@ -160,6 +184,7 @@ export namespace config {
 	}
 	export class PromptConfig {
 	    InitValue: string;
+	    InitAttachments: string[];
 	    MinRows: number;
 	    MaxRows: number;
 	    SubmitShortcut: Shortcut;
@@ -171,6 +196,7 @@ export namespace config {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.InitValue = source["InitValue"];
+	        this.InitAttachments = source["InitAttachments"];
 	        this.MinRows = source["MinRows"];
 	        this.MaxRows = source["MaxRows"];
 	        this.SubmitShortcut = this.convertValues(source["SubmitShortcut"], Shortcut);
@@ -281,6 +307,7 @@ export namespace config {
 	export class UIConfig {
 	    Window: WindowConfig;
 	    Prompt: PromptConfig;
+	    FileDialog: FileDialogConfig;
 	    Stream: boolean;
 	    QuitShortcut: Shortcut;
 	    Theme: string;
@@ -295,6 +322,7 @@ export namespace config {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Window = this.convertValues(source["Window"], WindowConfig);
 	        this.Prompt = this.convertValues(source["Prompt"], PromptConfig);
+	        this.FileDialog = this.convertValues(source["FileDialog"], FileDialogConfig);
 	        this.Stream = source["Stream"];
 	        this.QuitShortcut = this.convertValues(source["QuitShortcut"], Shortcut);
 	        this.Theme = source["Theme"];
@@ -382,14 +410,29 @@ export namespace config {
 	
 	
 	
+	
 
 }
 
 export namespace controller {
 	
+	export class LLMMessageContentPart {
+	    Type: string;
+	    Content: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LLMMessageContentPart(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Type = source["Type"];
+	        this.Content = source["Content"];
+	    }
+	}
 	export class LLMMessage {
 	    Role: string;
-	    Content: string;
+	    ContentParts: LLMMessageContentPart[];
 	
 	    static createFrom(source: any = {}) {
 	        return new LLMMessage(source);
@@ -398,8 +441,26 @@ export namespace controller {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Role = source["Role"];
-	        this.Content = source["Content"];
+	        this.ContentParts = this.convertValues(source["ContentParts"], LLMMessageContentPart);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class LLMAskArgs {
 	    History: LLMMessage[];
@@ -430,6 +491,20 @@ export namespace controller {
 		    }
 		    return a;
 		}
+	}
+	
+	
+	export class OpenFileDialogArgs {
+	    Title: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new OpenFileDialogArgs(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Title = source["Title"];
+	    }
 	}
 
 }

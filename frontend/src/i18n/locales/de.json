@@ -1,9 +1,14 @@
 {
-	"languages": {
-		"en": "English",
-		"de": "Deutsch"
-	},
-	"prompt": {
-		"placeholder": "Frage stellen..."
-	}
+  "languages": {
+    "en": "English",
+    "de": "Deutsch"
+  },
+  "prompt": {
+    "placeholder": "Frage stellen..."
+  },
+  "dialog": {
+    "files": {
+      "title": "Dateien auswählen"
+    }
+  }
 }

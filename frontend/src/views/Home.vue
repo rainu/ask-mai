@@ -11,12 +11,12 @@
 			</v-app-bar>
 
 			<!-- div which is exactly high as the app-bar which is behind the appbar -->
-			<div :style="{height: `${appbarHeight}px`}">{{input}}</div>
+			<div :style="{ height: `${appbarHeight}px` }">{{ input }}</div>
 
 			<template v-for="(entry, index) in chatHistory" :key="index">
-				<ChatMessage :message="entry.Content" :role="entry.Role" />
+				<ChatMessage :message="entry.ContentParts" :role="entry.Role" />
 			</template>
-			<template v-if="outputStream">
+			<template v-if="outputStream[0].Content">
 				<ChatMessage :message="outputStream" :role="outputStreamRole" />
 			</template>
 
@@ -34,12 +34,14 @@
 <script lang="ts">
 import { AppMounted, LLMAsk, LLMInterrupt, LLMWait } from '../../wailsjs/go/controller/Controller'
 import { EventsOn, WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
-import ChatMessage, { Role } from '../components/ChatMessage.vue'
-import ChatInput from '../components/ChatInput.vue'
+import ChatMessage, { ContentType, Role } from '../components/ChatMessage.vue'
+import ChatInput, { ChatInputType } from '../components/ChatInput.vue'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import UserScrollDetector from '../components/UserScrollDetector.vue'
 import { controller } from '../../wailsjs/go/models.ts'
 import LLMAskArgs = controller.LLMAskArgs
+import LLMMessageContentPart = controller.LLMMessageContentPart
+import LLMMessage = controller.LLMMessage
 
 export default {
 	name: 'Home',
@@ -48,8 +50,16 @@ export default {
 		return {
 			appbarHeight: 0,
 			progress: false,
-			input: '',
-			outputStream: '',
+			input: {
+				prompt: '',
+				attachments: [] as string[],
+			} as ChatInputType,
+			outputStream: [
+				{
+					Type: ContentType.Text,
+					Content: '',
+				},
+			] as LLMMessageContentPart[],
 			outputStreamRole: Role.Bot,
 			error: null as { title: string; message: string } | null,
 			chatHistory: [] as controller.LLMMessage[],
@@ -67,7 +77,7 @@ export default {
 
 			const currentSize = await WindowGetSize()
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
-			const combinedHeight = Math.ceil((pageHeight) * this.zoom)
+			const combinedHeight = Math.ceil(pageHeight * this.zoom)
 
 			await WindowSetSize(currentSize.w, combinedHeight)
 		},
@@ -83,14 +93,25 @@ export default {
 		onUserScroll() {
 			this.userScroll = true
 		},
-		async processLLM(input: string, processFn: () => Promise<string>) {
+		convertChatInputToLLMMessage(input: ChatInputType): LLMMessage {
+			return LLMMessage.createFrom({
+				Role: Role.User,
+				ContentParts: [
+					LLMMessageContentPart.createFrom({ Type: ContentType.Text, Content: input.prompt }),
+					...input.attachments.map((a) => LLMMessageContentPart.createFrom({ Type: ContentType.Attachment, Content: a })),
+				],
+			})
+		},
+		async processLLM(input: ChatInputType, processFn: () => Promise<string>) {
 			try {
 				this.progress = true
 				this.userScroll = false
 
 				const setInput = () => {
-					this.input = ''
-					this.chatHistory.push({ Content: input, Role: Role.User })
+					this.chatHistory.push(this.convertChatInputToLLMMessage(input))
+
+					this.input.prompt = ''
+					this.input.attachments = []
 				}
 				if (this.$appConfig.UI.Stream) {
 					setInput()
@@ -102,7 +123,12 @@ export default {
 					setInput()
 				}
 
-				this.chatHistory.push({ Content: output, Role: Role.Bot })
+				this.chatHistory.push(
+					LLMMessage.createFrom({
+						Role: Role.Bot,
+						ContentParts: [LLMMessageContentPart.createFrom({ Type: ContentType.Text, Content: output })],
+					}),
+				)
 			} catch (err) {
 				this.error = {
 					title: 'Error while processing LLM',
@@ -111,23 +137,18 @@ export default {
 				console.error(err)
 			} finally {
 				this.progress = false
-				this.outputStream = ''
+				this.outputStream[0].Content = ''
 			}
 		},
-		async onSubmit(input: string) {
+		async onSubmit(input: ChatInputType) {
 			const args = LLMAskArgs.createFrom({
-				History: [
-					...this.chatHistory,
-					{
-						Content: input,
-						Role: Role.User,
-					},
-				],
+				History: [...this.chatHistory, this.convertChatInputToLLMMessage(input)] as LLMMessage[],
 			})
 			await this.processLLM(input, () => LLMAsk(args))
 		},
 		async waitForLLM() {
-			this.input = this.$appConfig.UI.Prompt.InitValue
+			this.input.prompt = this.$appConfig.UI.Prompt.InitValue
+			this.input.attachments = []
 			await this.processLLM(this.input, () => LLMWait())
 		},
 		async onInterrupt() {
@@ -136,7 +157,7 @@ export default {
 	},
 	mounted() {
 		EventsOn('llm:stream:chunk', (chunk: string) => {
-			this.outputStream += chunk
+			this.outputStream[0].Content += chunk
 		})
 
 		this.adjustHeight()

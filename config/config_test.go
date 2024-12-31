@@ -14,10 +14,20 @@ func defaultConfig() Config {
 		LogLevel: int(slog.LevelError),
 		UI: UIConfig{
 			Prompt: PromptConfig{
-				InitValue:      "",
-				MinRows:        1,
-				MaxRows:        4,
-				SubmitShortcut: Shortcut{Alt: true, Code: "enter"},
+				InitValue:       "",
+				InitAttachments: []string{},
+				MinRows:         1,
+				MaxRows:         4,
+				SubmitShortcut:  Shortcut{Alt: true, Code: "enter"},
+			},
+			FileDialog: FileDialogConfig{
+				DefaultDirectory:           "",
+				ShowHiddenFiles:            true,
+				CanCreateDirectories:       false,
+				ResolvesAliases:            true,
+				TreatPackagesAsDirectories: true,
+				FilterDisplay:              []string{},
+				FilterPattern:              []string{},
 			},
 			Stream: false,
 			Window: WindowConfig{
@@ -104,10 +114,17 @@ func TestConfig_Parse(t *testing.T) {
 			}),
 		},
 		{
-			name: "Set system prompt value - shorthand",
-			args: []string{"-S", "test"},
+			name: "Set UI prompt initial attachments",
+			args: []string{"--ui-prompt-attachments", "file1.txt,file2.txt"},
 			expected: modifiedConfig(func(c *Config) {
-				c.CallOptions.SystemPrompt = "test"
+				c.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
+			}),
+		},
+		{
+			name: "Set UI prompt initial attachments - shorthand",
+			args: []string{"-a", "file1.txt,file2.txt"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
 			}),
 		},
 		{
@@ -129,6 +146,70 @@ func TestConfig_Parse(t *testing.T) {
 			args: []string{"--ui-prompt-submit-alt=false", "--ui-prompt-submit-key", "space"},
 			expected: modifiedConfig(func(c *Config) {
 				c.UI.Prompt.SubmitShortcut = Shortcut{Code: "space"}
+			}),
+		},
+
+		{
+			name: "Set UI file dialog default directory",
+			args: []string{"--ui-file-dialog-default-dir", "/home/user"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.DefaultDirectory = "/home/user"
+			}),
+		},
+		{
+			name: "Set UI file dialog show hidden files",
+			args: []string{"--ui-file-dialog-show-hidden=false"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.ShowHiddenFiles = false
+			}),
+		},
+		{
+			name: "Set UI file dialog can create directories",
+			args: []string{"--ui-file-dialog-can-create-dirs=true"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.CanCreateDirectories = true
+			}),
+		},
+		{
+			name: "Set UI file dialog resolves aliases",
+			args: []string{"--ui-file-dialog-resolves-aliases=true"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.ResolvesAliases = true
+			}),
+		},
+		{
+			name: "Set UI file dialog treat packages as directories",
+			args: []string{"--ui-file-dialog-treat-packages-as-dirs=false"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.TreatPackagesAsDirectories = false
+			}),
+		},
+		{
+			name: "Set UI file dialog filter display",
+			args: []string{"--ui-file-dialog-filter-display=\"Images (*.jpg, *.png)\""},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)"}
+			}),
+		},
+		{
+			name: "Set UI file dialog filter pattern",
+			args: []string{"--ui-file-dialog-filter-pattern", "*.jpg;*.png"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png"}
+			}),
+		},
+		{
+			name: "Set UI file dialog filter display",
+			args: []string{"--ui-file-dialog-filter-display=\"Images (*.jpg, *.png)\"", "--ui-file-dialog-filter-display=\"Documents (*.doc, *.docx)\""},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)", "Documents (*.doc, *.docx)"}
+			}),
+		},
+		{
+			name: "Set UI file dialog filter pattern",
+			args: []string{"--ui-file-dialog-filter-pattern", "*.jpg;*.png", "--ui-file-dialog-filter-pattern", "*.doc;*.docx"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png", "*.doc;*.docx"}
 			}),
 		},
 		{

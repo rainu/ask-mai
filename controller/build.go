@@ -73,11 +73,22 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 
 	if cfg.UI.Prompt.InitValue != "" {
 		// ask the model the first question in background
-		go ctrl.LLMAsk(LLMAskArgs{
-			History: LLMMessages{{
+		message := LLMMessage{
+			ContentParts: []LLMMessageContentPart{{
+				Type:    LLMMessageContentPartTypeText,
 				Content: cfg.UI.Prompt.InitValue,
-				Role:    string(langChainLLM.ChatMessageTypeHuman),
 			}},
+			Role: string(langChainLLM.ChatMessageTypeHuman),
+		}
+		for _, attachment := range cfg.UI.Prompt.InitAttachments {
+			message.ContentParts = append(message.ContentParts, LLMMessageContentPart{
+				Type:    LLMMessageContentPartTypeAttachment,
+				Content: attachment,
+			})
+		}
+
+		go ctrl.LLMAsk(LLMAskArgs{
+			History: LLMMessages{message},
 		})
 	}
 

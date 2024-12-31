@@ -56,6 +56,7 @@ type Config struct {
 type UIConfig struct {
 	Window       WindowConfig
 	Prompt       PromptConfig
+	FileDialog   FileDialogConfig
 	Stream       bool
 	QuitShortcut Shortcut
 	Theme        string
@@ -64,10 +65,22 @@ type UIConfig struct {
 }
 
 type PromptConfig struct {
-	InitValue      string
-	MinRows        uint
-	MaxRows        uint
-	SubmitShortcut Shortcut
+	InitValue       string
+	InitAttachments []string
+	MinRows         uint
+	MaxRows         uint
+	SubmitShortcut  Shortcut
+}
+
+type FileDialogConfig struct {
+	DefaultDirectory           string
+	ShowHiddenFiles            bool
+	CanCreateDirectories       bool
+	ResolvesAliases            bool
+	TreatPackagesAsDirectories bool
+
+	FilterDisplay []string
+	FilterPattern []string
 }
 
 type WindowConfig struct {
@@ -118,6 +131,7 @@ func Parse(arguments []string) *Config {
 	flag.IntVar(&c.LogLevel, "log-level", int(slog.LevelError), fmt.Sprintf("Log level (debug(%d), info(%d), warn(%d), error(%d))", slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError))
 
 	flag.StringVarP(&c.UI.Prompt.InitValue, "ui-prompt-value", "p", "", "The (initial) prompt to use")
+	flag.StringSliceVarP(&c.UI.Prompt.InitAttachments, "ui-prompt-attachments", "a", []string{}, "The (initial) attachments to use")
 	flag.UintVar(&c.UI.Prompt.MinRows, "ui-prompt-min-rows", 1, "The minimal number of rows the prompt should have")
 	flag.UintVar(&c.UI.Prompt.MaxRows, "ui-prompt-max-rows", 4, "The maximal number of rows the prompt should have")
 	flag.StringVar(&c.UI.Prompt.SubmitShortcut.Code, "ui-prompt-submit-key", "enter", "The shortcut for submit the prompt (key-code)")
@@ -125,6 +139,13 @@ func Parse(arguments []string) *Config {
 	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Ctrl, "ui-prompt-submit-ctrl", false, "The shortcut for submit the prompt (control-key must be pressed)")
 	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Meta, "ui-prompt-submit-meta", false, "The shortcut for submit the prompt (meta-key must be pressed)")
 	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Shift, "ui-prompt-submit-shift", false, "The shortcut for submit the prompt (shift-key must be pressed)")
+	flag.StringVar(&c.UI.FileDialog.DefaultDirectory, "ui-file-dialog-default-dir", "", "The default directory for the file dialog")
+	flag.BoolVar(&c.UI.FileDialog.ShowHiddenFiles, "ui-file-dialog-show-hidden", true, "Should the file dialog show hidden files")
+	flag.BoolVar(&c.UI.FileDialog.CanCreateDirectories, "ui-file-dialog-can-create-dirs", false, "Should the file dialog be able to create directories")
+	flag.BoolVar(&c.UI.FileDialog.ResolvesAliases, "ui-file-dialog-resolves-aliases", true, "Should the file dialog resolve aliases")
+	flag.BoolVar(&c.UI.FileDialog.TreatPackagesAsDirectories, "ui-file-dialog-treat-packages-as-dirs", true, "Should the file dialog treat packages as directories")
+	flag.StringSliceVar(&c.UI.FileDialog.FilterDisplay, "ui-file-dialog-filter-display", []string{}, "The filter display names for the file dialog. For example: \"Image Files (*.jpg, *.png)\"")
+	flag.StringSliceVar(&c.UI.FileDialog.FilterPattern, "ui-file-dialog-filter-pattern", []string{}, "The filter patterns for the file dialog. For example: \"*.jpg;*.png\"")
 	flag.BoolVarP(&c.UI.Stream, "ui-stream", "s", false, "Should the output be streamed")
 	flag.StringVar(&c.UI.Window.Title, "ui-title", "Prompt - Ask mAI", "The window title")
 	flag.StringVar(&c.UI.Window.InitialWidth.Expression, "ui-init-width", "v.CurrentScreen.Dimension.Width/2", "Expression: The (initial) width of the window")
@@ -250,6 +271,10 @@ func (c *Config) Validate() error {
 
 	if c.UI.Window.Translucent != TranslucentNever && c.UI.Window.Translucent != TranslucentEver && c.UI.Window.Translucent != TranslucentHover {
 		return fmt.Errorf("Invalid window translucent value")
+	}
+
+	if len(c.UI.FileDialog.FilterDisplay) != len(c.UI.FileDialog.FilterPattern) {
+		return fmt.Errorf("Invalid file dialog filter configuration: it must have the same number of display names and patterns")
 	}
 
 	switch c.Backend {

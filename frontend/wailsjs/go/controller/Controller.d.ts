@@ -12,3 +12,5 @@ export function LLMAsk(arg1:controller.LLMAskArgs):Promise<string>;
 export function LLMInterrupt():Promise<void>;
 
 export function LLMWait():Promise<string>;
+
+export function OpenFileDialog(arg1:controller.OpenFileDialogArgs):Promise<Array<string>>;

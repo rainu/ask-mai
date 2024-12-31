@@ -2,30 +2,48 @@
 	<template v-if="isUserMessage">
 		<v-row class="justify-end pa-2 mb-0 mt-1 mx-1 ml-15">
 			<v-sheet color="green-accent-2" class="pa-2" rounded>
-				<vue-markdown :source="message" :options="options" />
+				<vue-markdown :source="textMessage" :options="options" />
+
+				<!-- at the moment, only user messages can have attachments -->
+				<v-chip
+					v-for="attachment of attachments"
+					:key="attachment"
+					prepend-icon="mdi-file"
+					color="primary"
+					variant="flat"
+				>
+					{{ fileName(attachment) }}
+				</v-chip>
 			</v-sheet>
 		</v-row>
 	</template>
 	<template v-else>
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15">
 			<v-sheet color="grey-lighten-2" class="pa-2" rounded>
-				<vue-markdown :source="message" :options="options" />
+				<vue-markdown :source="textMessage" :options="options" />
 			</v-sheet>
 		</v-row>
 	</template>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 
 import hljs from 'highlight.js'
 import { type Options as MarkdownItOptions } from 'markdown-it'
 import { UseCodeStyle } from './code-style.ts'
+import { controller } from '../../wailsjs/go/models.ts'
+import LLMMessageContentPart = controller.LLMMessageContentPart
 
 export enum Role {
 	User = 'human',
 	Bot = 'ai',
+}
+
+export enum ContentType {
+	Text = 'text',
+	Attachment = 'attachment',
 }
 
 export default defineComponent({
@@ -33,7 +51,7 @@ export default defineComponent({
 	components: { VueMarkdown },
 	props: {
 		message: {
-			type: String,
+			type: Array as PropType<LLMMessageContentPart[]>,
 			required: true,
 		},
 		role: {
@@ -60,6 +78,15 @@ export default defineComponent({
 		isUserMessage() {
 			return this.role === Role.User
 		},
+		textMessage() {
+			return this.message
+				.filter((part) => part.Type === ContentType.Text)
+				.map((part) => part.Content)
+				.join('')
+		},
+		attachments() {
+			return this.message.filter((part) => part.Type === ContentType.Attachment).map((part) => part.Content)
+		},
 	},
 	methods: {
 		enrichCopyButtons() {
@@ -82,7 +109,7 @@ export default defineComponent({
 			if (preElement && preElement.tagName === 'PRE') {
 				let code = preElement.innerText
 				const newlineCount = (code.match(/\n/g) || []).length
-				if(newlineCount === 1) {
+				if (newlineCount === 1) {
 					//prevent that shell-code-statements will be executed directly
 					code = code.trim()
 				}
@@ -95,9 +122,12 @@ export default defineComponent({
 				})
 			}
 		},
+		fileName(path: string) {
+			return path.split('/').pop() || ''
+		},
 	},
 	watch: {
-		message() {
+		textMessage() {
 			this.$nextTick(() => this.enrichCopyButtons())
 		},
 	},
