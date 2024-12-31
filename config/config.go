@@ -55,12 +55,19 @@ type Config struct {
 
 type UIConfig struct {
 	Window       WindowConfig
-	Prompt       string
+	Prompt       PromptConfig
 	Stream       bool
 	QuitShortcut Shortcut
 	Theme        string
 	CodeStyle    string
 	Language     string
+}
+
+type PromptConfig struct {
+	InitValue      string
+	MinRows        uint
+	MaxRows        uint
+	SubmitShortcut Shortcut
 }
 
 type WindowConfig struct {
@@ -109,7 +116,14 @@ func Parse(arguments []string) *Config {
 
 	flag.IntVar(&c.LogLevel, "ll", int(slog.LevelError), fmt.Sprintf("Log level (debug(%d), info(%d), warn(%d), error(%d))", slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError))
 
-	flag.StringVar(&c.UI.Prompt, "ui-prompt", "", "The prompt to use")
+	flag.StringVar(&c.UI.Prompt.InitValue, "ui-prompt-value", "", "The (initial) prompt to use")
+	flag.UintVar(&c.UI.Prompt.MinRows, "ui-prompt-min-rows", 1, "The minimal number of rows the prompt should have")
+	flag.UintVar(&c.UI.Prompt.MaxRows, "ui-prompt-max-rows", 4, "The maximal number of rows the prompt should have")
+	flag.StringVar(&c.UI.Prompt.SubmitShortcut.Code, "ui-prompt-submit-key", "enter", "The shortcut for submit the prompt (key-code)")
+	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Alt, "ui-prompt-submit-alt", true, "The shortcut for submit the prompt (alt-key must be pressed)")
+	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Ctrl, "ui-prompt-submit-ctrl", false, "The shortcut for submit the prompt (control-key must be pressed)")
+	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Meta, "ui-prompt-submit-meta", false, "The shortcut for submit the prompt (meta-key must be pressed)")
+	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Shift, "ui-prompt-submit-shift", false, "The shortcut for submit the prompt (shift-key must be pressed)")
 	flag.BoolVar(&c.UI.Stream, "ui-stream", false, "Should the output be streamed")
 	flag.StringVar(&c.UI.Window.Title, "ui-title", "Prompt - Ask mAI", "The window title")
 	flag.StringVar(&c.UI.Window.InitialWidth.Expression, "ui-init-width", "v.CurrentScreen.Dimension.Width/2", "Expression: The (initial) width of the window")

@@ -158,6 +158,42 @@ export namespace config {
 	        this.Shift = source["Shift"];
 	    }
 	}
+	export class PromptConfig {
+	    InitValue: string;
+	    MinRows: number;
+	    MaxRows: number;
+	    SubmitShortcut: Shortcut;
+	
+	    static createFrom(source: any = {}) {
+	        return new PromptConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.InitValue = source["InitValue"];
+	        this.MinRows = source["MinRows"];
+	        this.MaxRows = source["MaxRows"];
+	        this.SubmitShortcut = this.convertValues(source["SubmitShortcut"], Shortcut);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class WindowBackgroundColor {
 	    R: number;
 	    G: number;
@@ -244,7 +280,7 @@ export namespace config {
 	}
 	export class UIConfig {
 	    Window: WindowConfig;
-	    Prompt: string;
+	    Prompt: PromptConfig;
 	    Stream: boolean;
 	    QuitShortcut: Shortcut;
 	    Theme: string;
@@ -258,7 +294,7 @@ export namespace config {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Window = this.convertValues(source["Window"], WindowConfig);
-	        this.Prompt = source["Prompt"];
+	        this.Prompt = this.convertValues(source["Prompt"], PromptConfig);
 	        this.Stream = source["Stream"];
 	        this.QuitShortcut = this.convertValues(source["QuitShortcut"], Shortcut);
 	        this.Theme = source["Theme"];
@@ -336,6 +372,7 @@ export namespace config {
 		    return a;
 		}
 	}
+	
 	
 	
 	

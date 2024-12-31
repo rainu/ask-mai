@@ -4,11 +4,14 @@
 		<UserScrollDetector @onScroll="onUserScroll" />
 
 		<template v-if="chatHistory.length > 0 || outputStream || error">
-			<v-app-bar app class="pa-0 ma-0" density="compact">
+			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
 					<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
 				</div>
 			</v-app-bar>
+
+			<!-- div which is exactly high as the app-bar which is behind the appbar -->
+			<div :style="{height: `${appbarHeight}px`}">{{input}}</div>
 
 			<template v-for="(entry, index) in chatHistory" :key="index">
 				<ChatMessage :message="entry.Content" :role="entry.Role" />
@@ -43,6 +46,7 @@ export default {
 	components: { UserScrollDetector, ZoomDetector, ChatInput, ChatMessage },
 	data() {
 		return {
+			appbarHeight: 0,
 			progress: false,
 			input: '',
 			outputStream: '',
@@ -59,10 +63,11 @@ export default {
 			this.adjustHeight()
 		},
 		async adjustHeight() {
+			this.appbarHeight = this.$refs.appbar ? (this.$refs.appbar as HTMLElement).clientHeight : 0
+
 			const currentSize = await WindowGetSize()
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
-			const appbarHeight = this.$refs.appbar ? (this.$refs.appbar as HTMLElement).clientHeight : 0
-			const combinedHeight = Math.ceil((pageHeight + appbarHeight) * this.zoom)
+			const combinedHeight = Math.ceil((pageHeight) * this.zoom)
 
 			await WindowSetSize(currentSize.w, combinedHeight)
 		},
@@ -122,7 +127,7 @@ export default {
 			await this.processLLM(input, () => LLMAsk(args))
 		},
 		async waitForLLM() {
-			this.input = this.$appConfig.UI.Prompt
+			this.input = this.$appConfig.UI.Prompt.InitValue
 			await this.processLLM(this.input, () => LLMWait())
 		},
 		async onInterrupt() {
@@ -137,7 +142,7 @@ export default {
 		this.adjustHeight()
 			.then(() => AppMounted())
 			.then(() => {
-				if (this.$appConfig.UI.Prompt) {
+				if (this.$appConfig.UI.Prompt.InitValue) {
 					this.waitForLLM()
 				}
 			})

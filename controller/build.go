@@ -71,11 +71,11 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 		return
 	}
 
-	if cfg.UI.Prompt != "" {
+	if cfg.UI.Prompt.InitValue != "" {
 		// ask the model the first question in background
 		go ctrl.LLMAsk(LLMAskArgs{
 			History: LLMMessages{{
-				Content: cfg.UI.Prompt,
+				Content: cfg.UI.Prompt.InitValue,
 				Role:    string(langChainLLM.ChatMessageTypeHuman),
 			}},
 		})
