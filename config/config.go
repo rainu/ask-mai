@@ -2,9 +2,9 @@ package config
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"github.com/rainu/ask-mai/llms"
+	flag "github.com/spf13/pflag"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"io"
 	"log/slog"
@@ -113,10 +113,11 @@ type PrinterConfig struct {
 
 func Parse(arguments []string) *Config {
 	c := &Config{}
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
 
-	flag.IntVar(&c.LogLevel, "ll", int(slog.LevelError), fmt.Sprintf("Log level (debug(%d), info(%d), warn(%d), error(%d))", slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError))
+	flag.IntVar(&c.LogLevel, "log-level", int(slog.LevelError), fmt.Sprintf("Log level (debug(%d), info(%d), warn(%d), error(%d))", slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError))
 
-	flag.StringVar(&c.UI.Prompt.InitValue, "ui-prompt-value", "", "The (initial) prompt to use")
+	flag.StringVarP(&c.UI.Prompt.InitValue, "ui-prompt-value", "p", "", "The (initial) prompt to use")
 	flag.UintVar(&c.UI.Prompt.MinRows, "ui-prompt-min-rows", 1, "The minimal number of rows the prompt should have")
 	flag.UintVar(&c.UI.Prompt.MaxRows, "ui-prompt-max-rows", 4, "The maximal number of rows the prompt should have")
 	flag.StringVar(&c.UI.Prompt.SubmitShortcut.Code, "ui-prompt-submit-key", "enter", "The shortcut for submit the prompt (key-code)")
@@ -124,7 +125,7 @@ func Parse(arguments []string) *Config {
 	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Ctrl, "ui-prompt-submit-ctrl", false, "The shortcut for submit the prompt (control-key must be pressed)")
 	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Meta, "ui-prompt-submit-meta", false, "The shortcut for submit the prompt (meta-key must be pressed)")
 	flag.BoolVar(&c.UI.Prompt.SubmitShortcut.Shift, "ui-prompt-submit-shift", false, "The shortcut for submit the prompt (shift-key must be pressed)")
-	flag.BoolVar(&c.UI.Stream, "ui-stream", false, "Should the output be streamed")
+	flag.BoolVarP(&c.UI.Stream, "ui-stream", "s", false, "Should the output be streamed")
 	flag.StringVar(&c.UI.Window.Title, "ui-title", "Prompt - Ask mAI", "The window title")
 	flag.StringVar(&c.UI.Window.InitialWidth.Expression, "ui-init-width", "v.CurrentScreen.Dimension.Width/2", "Expression: The (initial) width of the window")
 	flag.StringVar(&c.UI.Window.MaxHeight.Expression, "ui-max-height", "v.CurrentScreen.Dimension.Height/3", "Expression: The maximal height of the chat response area")
@@ -149,7 +150,7 @@ func Parse(arguments []string) *Config {
 	flag.StringVar(&c.UI.CodeStyle, "ui-code-style", "github", "The code style to use")
 	flag.StringVar(&c.UI.Language, "ui-lang", os.Getenv("LANG"), "The language to use")
 
-	flag.StringVar(&c.Backend, "backend", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s', '%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM, BackendOllama, BackendMistral, BackendAnthropic))
+	flag.StringVarP(&c.Backend, "backend", "b", BackendCopilot, fmt.Sprintf("The backend to use ('%s', '%s', '%s', '%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendAnythingLLM, BackendOllama, BackendMistral, BackendAnthropic))
 
 	configureLocalai(&c.LocalAI)
 	configureOpenai(&c.OpenAI)
@@ -159,16 +160,20 @@ func Parse(arguments []string) *Config {
 	configureAnthropic(&c.Anthropic)
 	configureCallOptions(&c.CallOptions)
 
-	flag.StringVar(&c.Printer.Format, "print-format", PrinterFormatJSON, fmt.Sprintf("Response printer format (%s, %s)", PrinterFormatPlain, PrinterFormatJSON))
-	flag.StringVar(&c.Printer.targets, "print-targets", PrinterTargetOut, fmt.Sprintf("Comma seperated response printer targets (%s, %s, <path/to/file>)", PrinterTargetOut, PrinterTargetErr))
+	flag.StringVarP(&c.Printer.Format, "print-format", "f", PrinterFormatJSON, fmt.Sprintf("Response printer format (%s, %s)", PrinterFormatPlain, PrinterFormatJSON))
+	flag.StringVarP(&c.Printer.targets, "print-targets", "o", PrinterTargetOut, fmt.Sprintf("Comma seperated response printer targets (%s, %s, <path/to/file>)", PrinterTargetOut, PrinterTargetErr))
 
-	flag.BoolVar(&c.PrintVersion, "v", false, "Show the version")
+	flag.BoolVarP(&c.PrintVersion, "version", "v", false, "Show the version")
 
 	flag.Usage = func() {
-		printUsage(flag.CommandLine.Output())
+		printUsage(os.Stderr)
 	}
 
-	flag.CommandLine.Parse(arguments)
+	err := flag.CommandLine.Parse(arguments)
+	if errors.Is(err, flag.ErrHelp) {
+		os.Exit(0)
+		return nil
+	}
 
 	for _, target := range strings.Split(c.Printer.targets, ",") {
 		target = strings.TrimSpace(target)

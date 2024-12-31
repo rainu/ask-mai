@@ -1,8 +1,8 @@
 package config
 
 import (
-	"flag"
 	"fmt"
+	flag "github.com/spf13/pflag"
 	"github.com/tmc/langchaingo/llms"
 )
 
@@ -17,7 +17,7 @@ type CallOptionsConfig struct {
 }
 
 func configureCallOptions(c *CallOptionsConfig) {
-	flag.StringVar(&c.SystemPrompt, "call-system-prompt", "", "LLM-Call System Prompt")
+	flag.StringVarP(&c.SystemPrompt, "call-system-prompt", "S", "", "LLM-Call System Prompt")
 	flag.IntVar(&c.MaxToken, "call-max-token", 0, "LLM-Call Max Token")
 	flag.Float64Var(&c.Temperature, "call-temperature", -1, "LLM-Call Temperature")
 	flag.IntVar(&c.TopK, "call-top-k", -1, "LLM-Call Top-K")

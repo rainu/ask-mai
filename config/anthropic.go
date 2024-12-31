@@ -1,8 +1,8 @@
 package config
 
 import (
-	"flag"
 	"fmt"
+	flag "github.com/spf13/pflag"
 	"github.com/tmc/langchaingo/llms/anthropic"
 )
 

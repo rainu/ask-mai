@@ -3,8 +3,8 @@ package config
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
+	flag "github.com/spf13/pflag"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -49,7 +49,7 @@ func printUsage(output io.Writer) {
 
 	fmt.Fprintf(output, "\nThe expression language is JavaScript. You can use the following variables and functions:\n")
 	fmt.Fprintf(output, "\nFunctions:\n")
-	fmt.Fprintf(flag.CommandLine.Output(), "  - %s: writes a message to the console.\n", funcNameLog)
+	fmt.Fprintf(output, "  - %s: writes a message to the console.\n", funcNameLog)
 
 	fmt.Fprintf(output, "\nVariables:\n")
 
@@ -65,10 +65,10 @@ func printUsage(output io.Writer) {
 				return
 			}
 
-			fmt.Fprintf(flag.CommandLine.Output(), "  const %s = ", varNameVariables)
+			fmt.Fprintf(output, "  const %s = ", varNameVariables)
 
 			variables := FromScreens(screens)
-			je := json.NewEncoder(flag.CommandLine.Output())
+			je := json.NewEncoder(output)
 			je.SetIndent("  ", "  ")
 			je.Encode(variables)
 		},

@@ -5,6 +5,7 @@ go 1.23.1
 require (
 	github.com/dop251/goja v0.0.0-20241024094426-79f3a7efcdbd
 	github.com/rainu/go-command-chain v0.4.0
+	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.9.0
 	github.com/tmc/langchaingo v0.1.12
 	github.com/wailsapp/wails/v2 v2.9.2
