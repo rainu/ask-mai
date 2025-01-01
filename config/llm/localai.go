@@ -1,4 +1,4 @@
-package config
+package llm
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 )
 
 type LocalAIConfig struct {
-	APIKey  string
-	Model   string
-	BaseUrl string
+	APIKey  string `config:"api-key" usage:"API Key"`
+	Model   string `config:"model" usage:"Model"`
+	BaseUrl string `config:"base-url" usage:"BaseUrl"`
 }
 
 func configureLocalai(c *LocalAIConfig) {

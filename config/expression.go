@@ -1,11 +1,17 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dop251/goja"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"os"
 )
+
+type ExpressionContainer struct {
+	Expression string  `config:""`
+	Value      float64 `config:"-"`
+}
 
 type Expression string
 
@@ -89,4 +95,31 @@ func ValidateExpression(e string) error {
 
 	_, err := Expression(e).Calculate(tv)
 	return err
+}
+
+func (c *Config) ResolveExpressions(variables Variables) (err error) {
+	var curErr error
+
+	c.UI.Window.InitialWidth.Value, curErr = Expression(c.UI.Window.InitialWidth.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving initial width expression: %w", curErr))
+	}
+	c.UI.Window.MaxHeight.Value, curErr = Expression(c.UI.Window.MaxHeight.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving max width expression: %w", curErr))
+	}
+	c.UI.Window.InitialPositionX.Value, curErr = Expression(c.UI.Window.InitialPositionX.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving initial x-position expression: %w", curErr))
+	}
+	c.UI.Window.InitialPositionY.Value, curErr = Expression(c.UI.Window.InitialPositionY.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving initial y-position expression: %w", curErr))
+	}
+	c.UI.Window.InitialZoom.Value, curErr = Expression(c.UI.Window.InitialZoom.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving initial zoom expression: %w", curErr))
+	}
+
+	return
 }

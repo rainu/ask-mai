@@ -1,4 +1,4 @@
-package config
+package llm
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 )
 
 type MistralConfig struct {
-	ApiKey   string
-	Endpoint string
-	Model    string
+	ApiKey   string `config:"api-key" usage:"API Key"`
+	Endpoint string `config:"endpoint" usage:"Endpoint"`
+	Model    string `config:"model" usage:"Model"`
 }
 
 func configureMistral(c *MistralConfig) {

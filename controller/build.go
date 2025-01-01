@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/rainu/ask-mai/config"
 	"github.com/rainu/ask-mai/io"
-	"github.com/rainu/ask-mai/llms"
 	langChainLLM "github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -33,39 +32,7 @@ func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
 	}
 	ctrl.printer = printer
 
-	switch cfg.Backend {
-	case config.BackendCopilot:
-		ctrl.aiModel, err = llms.NewCopilot()
-	case config.BackendLocalAI:
-		ctrl.aiModel, err = llms.NewLocalAI(
-			cfg.LocalAI.AsOptions(),
-		)
-	case config.BackendOpenAI:
-		ctrl.aiModel, err = llms.NewOpenAI(
-			cfg.OpenAI.AsOptions(),
-		)
-	case config.BackendAnythingLLM:
-		ctrl.aiModel, err = llms.NewAnythingLLM(
-			cfg.AnythingLLM.BaseURL,
-			cfg.AnythingLLM.Token,
-			cfg.AnythingLLM.Workspace,
-		)
-	case config.BackendOllama:
-		ctrl.aiModel, err = llms.NewOllama(
-			cfg.Ollama.AsOptions(),
-		)
-	case config.BackendMistral:
-		ctrl.aiModel, err = llms.NewMistral(
-			cfg.Mistral.AsOptions(),
-		)
-	case config.BackendAnthropic:
-		ctrl.aiModel, err = llms.NewAnthropic(
-			cfg.Anthropic.AsOptions(),
-		)
-	default:
-		err = fmt.Errorf("unknown backend: %s", cfg.Backend)
-	}
-
+	ctrl.aiModel, err = cfg.LLM.BuildLLM()
 	if err != nil {
 		err = fmt.Errorf("error creating ai model: %w", err)
 		return

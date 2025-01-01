@@ -1,21 +1,14 @@
-package config
+package llm
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"github.com/tmc/langchaingo/llms/anthropic"
 )
 
 type AnthropicConfig struct {
-	Token   string
-	BaseUrl string
-	Model   string
-}
-
-func configureAnthropic(c *AnthropicConfig) {
-	flag.StringVar(&c.Token, "anthropic-api-key", "", "API Key for Anthropic")
-	flag.StringVar(&c.BaseUrl, "anthropic-base-url", "", "BaseUrl for Anthropic")
-	flag.StringVar(&c.Model, "anthropic-model", "", "Model for Anthropic")
+	Token   string `config:"api-key" usage:"API Key"`
+	BaseUrl string `config:"base-url" usage:"BaseUrl"`
+	Model   string `config:"model" usage:"Model"`
 }
 
 func (c *AnthropicConfig) AsOptions() (opts []anthropic.Option) {

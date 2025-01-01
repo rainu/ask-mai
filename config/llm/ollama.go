@@ -1,4 +1,4 @@
-package config
+package llm
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 )
 
 type OllamaConfig struct {
-	ServerURL string
-	Model     string
+	ServerURL string `config:"server-url" usage:"Server URL"`
+	Model     string `config:"model" usage:"Model"`
 }
 
 func configureOllama(c *OllamaConfig) {

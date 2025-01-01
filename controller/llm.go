@@ -92,7 +92,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		return "", fmt.Errorf("error interrupting previous LLM: %w", err)
 	}
 
-	content, err := args.History.ToMessageContent(c.appConfig.CallOptions.SystemPrompt)
+	content, err := args.History.ToMessageContent(c.appConfig.LLM.CallOptions.SystemPrompt)
 	if err != nil {
 		return "", fmt.Errorf("error converting history to message content: %w", err)
 	}
@@ -108,7 +108,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		})
 	}()
 
-	opts := c.appConfig.CallOptions.AsOptions()
+	opts := c.appConfig.LLM.CallOptions.AsOptions()
 	if c.appConfig.UI.Stream {
 		// streaming is enabled
 		opts = append(opts, llms.WithStreamingFunc(c.streamingFunc))

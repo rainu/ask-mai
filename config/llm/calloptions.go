@@ -1,29 +1,18 @@
-package config
+package llm
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"github.com/tmc/langchaingo/llms"
 )
 
 type CallOptionsConfig struct {
-	SystemPrompt string
-	MaxToken     int
-	Temperature  float64
-	TopK         int
-	TopP         float64
-	MinLength    int
-	MaxLength    int
-}
-
-func configureCallOptions(c *CallOptionsConfig) {
-	flag.StringVarP(&c.SystemPrompt, "call-system-prompt", "S", "", "LLM-Call System Prompt")
-	flag.IntVar(&c.MaxToken, "call-max-token", 0, "LLM-Call Max Token")
-	flag.Float64Var(&c.Temperature, "call-temperature", -1, "LLM-Call Temperature")
-	flag.IntVar(&c.TopK, "call-top-k", -1, "LLM-Call Top-K")
-	flag.Float64Var(&c.TopP, "call-top-p", -1, "LLM-Call Top-P")
-	flag.IntVar(&c.MinLength, "call-min-length", 0, "LLM-Call Min Length")
-	flag.IntVar(&c.MaxLength, "call-max-length", 0, "LLM-Call Max Length")
+	SystemPrompt string  `config:"system-prompt" short:"S" usage:"System Prompt"`
+	MaxToken     int     `config:"max-token" usage:"Max Token"`
+	Temperature  float64 `config:"temperature" usage:"Temperature"`
+	TopK         int     `config:"top-k" usage:"Top-K"`
+	TopP         float64 `config:"top-p" usage:"Top-P"`
+	MinLength    int     `config:"min-length" usage:"Min Length"`
+	MaxLength    int     `config:"max-length" usage:"Max Length"`
 }
 
 func (c *CallOptionsConfig) AsOptions() (opts []llms.CallOption) {

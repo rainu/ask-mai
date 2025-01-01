@@ -1,4 +1,4 @@
-package config
+package llm
 
 import (
 	"fmt"
@@ -7,13 +7,21 @@ import (
 )
 
 type OpenAIConfig struct {
-	APIKey     string
-	APIType    string
-	APIVersion string
+	APIKey     string `config:"api-key" usage:"API Key"`
+	APIType    string `config:"api-type"`
+	APIVersion string `config:"api-version" usage:"API Version"`
 
-	Model        string
-	BaseUrl      string
-	Organization string
+	Model        string `config:"model" usage:"Model"`
+	BaseUrl      string `config:"base-url" usage:"BaseUrl"`
+	Organization string `config:"organization" usage:"Organization"`
+}
+
+func (c *OpenAIConfig) GetUsage(field string) string {
+	switch field {
+	case "APIType":
+		return fmt.Sprintf("OpenAI API Type (%s, %s, %s)", openai.APITypeOpenAI, openai.APITypeAzure, openai.APITypeAzureAD)
+	}
+	return ""
 }
 
 func configureOpenai(c *OpenAIConfig) {
