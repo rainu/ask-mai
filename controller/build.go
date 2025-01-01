@@ -13,6 +13,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 	"log/slog"
+	"net/http"
 )
 
 func BuildFromConfig(cfg *config.Config) (ctrl *Controller, err error) {
@@ -107,7 +108,7 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		WindowStartState: options.WindowStartState(ac.UI.Window.StartState),
 		AssetServer: &assetserver.Options{
 			Assets:     assets,
-			Handler:    nil,
+			Handler:    http.HandlerFunc(c.handleAsset),
 			Middleware: nil,
 		},
 		Bind: []interface{}{

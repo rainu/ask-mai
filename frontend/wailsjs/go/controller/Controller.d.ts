@@ -7,6 +7,8 @@ export function AppMounted():Promise<void>;
 
 export function GetApplicationConfig():Promise<config.Config>;
 
+export function GetAssetMeta(arg1:string):Promise<controller.AssetMeta>;
+
 export function LLMAsk(arg1:controller.LLMAskArgs):Promise<string>;
 
 export function LLMInterrupt():Promise<void>;

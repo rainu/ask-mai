@@ -10,6 +10,10 @@ export function GetApplicationConfig() {
   return window['go']['controller']['Controller']['GetApplicationConfig']();
 }
 
+export function GetAssetMeta(arg1) {
+  return window['go']['controller']['Controller']['GetAssetMeta'](arg1);
+}
+
 export function LLMAsk(arg1) {
   return window['go']['controller']['Controller']['LLMAsk'](arg1);
 }

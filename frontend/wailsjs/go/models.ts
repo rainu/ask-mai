@@ -276,6 +276,20 @@ export namespace config {
 
 export namespace controller {
 	
+	export class AssetMeta {
+	    Path: string;
+	    MimeType: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AssetMeta(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Path = source["Path"];
+	        this.MimeType = source["MimeType"];
+	    }
+	}
 	export class LLMMessageContentPart {
 	    Type: string;
 	    Content: string;

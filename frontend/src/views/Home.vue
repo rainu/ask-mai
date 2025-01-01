@@ -51,8 +51,8 @@ export default {
 			appbarHeight: 0,
 			progress: false,
 			input: {
-				prompt: '',
-				attachments: [] as string[],
+				prompt: this.$appConfig.UI.Prompt.InitValue,
+				attachments: this.$appConfig.UI.Prompt.InitAttachments,
 			} as ChatInputType,
 			outputStream: [
 				{
@@ -148,7 +148,7 @@ export default {
 		},
 		async waitForLLM() {
 			this.input.prompt = this.$appConfig.UI.Prompt.InitValue
-			this.input.attachments = []
+			this.input.attachments = this.$appConfig.UI.Prompt.InitAttachments
 			await this.processLLM(this.input, () => LLMWait())
 		},
 		async onInterrupt() {

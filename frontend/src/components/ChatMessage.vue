@@ -5,15 +5,16 @@
 				<vue-markdown :source="textMessage" :options="options" />
 
 				<!-- at the moment, only user messages can have attachments -->
-				<v-chip
-					v-for="attachment of attachments"
-					:key="attachment"
-					prepend-icon="mdi-file"
-					color="primary"
-					variant="flat"
-				>
-					{{ fileName(attachment) }}
-				</v-chip>
+				<template v-for="attachmentMeta of attachmentsMeta" :key="attachmentMeta.Path">
+					<template v-if="isImage(attachmentMeta)">
+						<v-img :src="attachmentMeta.Path" :max-width="imageWidth" class="ml-auto" />
+					</template>
+					<template v-else>
+						<v-chip prepend-icon="mdi-file" color="primary" variant="flat">
+							{{ fileName(attachmentMeta) }}
+						</v-chip>
+					</template>
+				</template>
 			</v-sheet>
 		</v-row>
 	</template>
@@ -30,11 +31,13 @@
 import { defineComponent, PropType } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 
+import { GetAssetMeta } from '../../wailsjs/go/controller/Controller'
+import { controller } from '../../wailsjs/go/models.ts'
+import AssetMeta = controller.AssetMeta
+import LLMMessageContentPart = controller.LLMMessageContentPart
 import hljs from 'highlight.js'
 import { type Options as MarkdownItOptions } from 'markdown-it'
 import { UseCodeStyle } from './code-style.ts'
-import { controller } from '../../wailsjs/go/models.ts'
-import LLMMessageContentPart = controller.LLMMessageContentPart
 
 export enum Role {
 	User = 'human',
@@ -72,6 +75,7 @@ export default defineComponent({
 					return '' // use external default escaping
 				},
 			} as MarkdownItOptions,
+			attachmentsMeta: [] as AssetMeta[],
 		}
 	},
 	computed: {
@@ -86,6 +90,9 @@ export default defineComponent({
 		},
 		attachments() {
 			return this.message.filter((part) => part.Type === ContentType.Attachment).map((part) => part.Content)
+		},
+		imageWidth() {
+			return this.$appConfig.UI.Window.InitialWidth.Value / 5
 		},
 	},
 	methods: {
@@ -122,13 +129,27 @@ export default defineComponent({
 				})
 			}
 		},
-		fileName(path: string) {
-			return path.split('/').pop() || ''
+		fileName(asset: AssetMeta) {
+			return asset.Path.split('/').pop() || ''
+		},
+		isImage(asset: AssetMeta) {
+			return asset.MimeType.startsWith('image/')
 		},
 	},
 	watch: {
 		textMessage() {
 			this.$nextTick(() => this.enrichCopyButtons())
+		},
+		attachments: {
+			async handler() {
+				const promises = this.attachments.map((path) => GetAssetMeta(path))
+				try {
+					this.attachmentsMeta = await Promise.all(promises)
+				} catch (e) {
+					console.error(e)
+				}
+			},
+			immediate: true,
 		},
 	},
 	mounted() {
