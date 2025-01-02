@@ -6,6 +6,8 @@ Unlike many chat applications out there, this application aims to be scriptable.
 Which means you can call it from you terminal and gave all necessary options as arguments. 
 The conversations will also be printed out in the terminal, so you can use it in your scripts. 
 
+[![Watch the demo](demo.png)](demo.mp4)
+
 ## Features
 
 * Support different LLM provider
