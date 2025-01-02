@@ -19,6 +19,10 @@ The conversations will also be printed out in the terminal, so you can use it in
 * Scriptable
   * All settings can be set via command line arguments
   * The users questions and models answers will be printed out in the terminal
+* Customizable
+  * Choose between two themes (light and dark)
+  * Choose between different languages (english, german)
+  * Choose between different code themes (see help for all available themes)
 
 ## Download this application
 
