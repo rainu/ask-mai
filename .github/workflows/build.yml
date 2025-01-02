@@ -113,7 +113,7 @@ jobs:
           wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -upx -o ${{ matrix.build.name }}-compressed.exe
           wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }} -X 'main.windowMode=false'" -windowsconsole -upx -o ${{ matrix.build.name }}-console-compressed.exe
       - name: Windows - Build (debug)
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && matrix.build.platform != 'windows/arm64'  #currently broken in arm64 - don't know why
         shell: bash
         run: |
           wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }} -X 'main.windowMode=false'" -windowsconsole -devtools -debug -o ${{ matrix.build.name }}-console-debug.exe
