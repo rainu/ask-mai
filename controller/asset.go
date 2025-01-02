@@ -6,10 +6,16 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
+)
+
+const (
+	routeAsset = "/ASSET/"
 )
 
 type AssetMeta struct {
 	Path     string
+	Url      string
 	MimeType string
 }
 
@@ -28,6 +34,7 @@ func (c *Controller) GetAssetMeta(path string) (AssetMeta, error) {
 
 	result := AssetMeta{
 		Path:     path,
+		Url:      routeAsset + path,
 		MimeType: mime.String(),
 	}
 
@@ -35,7 +42,13 @@ func (c *Controller) GetAssetMeta(path string) (AssetMeta, error) {
 }
 
 func (c *Controller) handleAsset(resp http.ResponseWriter, req *http.Request) {
-	file, err := os.Open(req.URL.Path)
+	if !strings.HasPrefix(req.URL.Path, routeAsset) {
+		resp.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	filePath := req.URL.Path[len(routeAsset):]
+	file, err := os.Open(filePath)
 	if err != nil {
 		resp.WriteHeader(http.StatusNotFound)
 		return

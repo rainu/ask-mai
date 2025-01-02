@@ -167,6 +167,7 @@ export default {
 					this.waitForLLM()
 				}
 			})
+			.then(() => this.adjustHeight()) //sometimes the init height isnt correct - try to fix that issue
 	},
 	updated() {
 		this.$nextTick(() => {

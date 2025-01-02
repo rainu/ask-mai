@@ -7,7 +7,7 @@
 				<!-- at the moment, only user messages can have attachments -->
 				<template v-for="attachmentMeta of attachmentsMeta" :key="attachmentMeta.Path">
 					<template v-if="isImage(attachmentMeta)">
-						<v-img :src="attachmentMeta.Path" :max-width="imageWidth" class="ml-auto" />
+						<v-img :src="attachmentMeta.Url" :max-width="imageWidth" class="ml-auto" />
 					</template>
 					<template v-else>
 						<v-chip prepend-icon="mdi-file" color="primary" variant="flat">
@@ -33,6 +33,7 @@ import VueMarkdown from 'vue-markdown-render'
 
 import { GetAssetMeta } from '../../wailsjs/go/controller/Controller'
 import { controller } from '../../wailsjs/go/models.ts'
+import { PathSeparator } from '../common/platform.ts'
 import AssetMeta = controller.AssetMeta
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import hljs from 'highlight.js'
@@ -130,7 +131,7 @@ export default defineComponent({
 			}
 		},
 		fileName(asset: AssetMeta) {
-			return asset.Path.split('/').pop() || ''
+			return asset.Path.split(PathSeparator).pop() || ''
 		},
 		isImage(asset: AssetMeta) {
 			return asset.MimeType.startsWith('image/')

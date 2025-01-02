@@ -19,9 +19,12 @@ var assets embed.FS
 //go:embed build/appicon.png
 var icon []byte
 
+// this variable will be set correctly in built-time
+var windowMode = "true"
+
 func init() {
-	if runtime.GOOS == "windows" {
-		// in windows there is no stdout and stderr
+	if runtime.GOOS == "windows" && windowMode == "true" {
+		// in windows there is no stdout and stderr in window-mode
 		// so we need to redirect the log output to a file
 		os.Stdout, _ = os.OpenFile("ask-mai.out.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 		os.Stderr, _ = os.OpenFile("ask-mai.err.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)

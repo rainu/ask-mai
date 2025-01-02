@@ -50,6 +50,7 @@
 import { defineComponent } from 'vue'
 import { OpenFileDialog } from '../../wailsjs/go/controller/Controller'
 import { controller } from '../../wailsjs/go/models.ts'
+import { PathSeparator } from '../common/platform.ts'
 import OpenFileDialogArgs = controller.OpenFileDialogArgs
 
 export type ChatInputType = { prompt: string; attachments: string[] }
@@ -121,7 +122,7 @@ export default defineComponent({
 			this.value.attachments.splice(index, 1)
 		},
 		shortFileName(path: string) {
-			let name = path.split('/').pop() || ''
+			let name = path.split(PathSeparator).pop() || ''
 			if (name.length > 10) {
 				name = name.slice(0, 10) + '...'
 			}

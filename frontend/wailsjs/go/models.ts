@@ -278,6 +278,7 @@ export namespace controller {
 	
 	export class AssetMeta {
 	    Path: string;
+	    Url: string;
 	    MimeType: string;
 	
 	    static createFrom(source: any = {}) {
@@ -287,6 +288,7 @@ export namespace controller {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Path = source["Path"];
+	        this.Url = source["Url"];
 	        this.MimeType = source["MimeType"];
 	    }
 	}
