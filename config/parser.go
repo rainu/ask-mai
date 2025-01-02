@@ -159,6 +159,9 @@ func setupConfig(path []fieldInfo, val reflect.Value) {
 	case "*[]string":
 		sp := val.Interface().(*[]string)
 		sv := *sp
+		if sv == nil {
+			sv = []string{}
+		}
 		flag.StringSliceVarP(sp, sFlag, sShort, sv, sUsage)
 	}
 }

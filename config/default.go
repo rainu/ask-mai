@@ -26,14 +26,17 @@ func defaultConfig() *Config {
 		},
 		UI: UIConfig{
 			Prompt: PromptConfig{
-				MinRows:        1,
-				MaxRows:        4,
-				SubmitShortcut: Shortcut{Alt: true, Code: "enter"},
+				MinRows:         1,
+				MaxRows:         4,
+				SubmitShortcut:  Shortcut{Alt: true, Code: "enter"},
+				InitAttachments: []string{},
 			},
 			FileDialog: FileDialogConfig{
 				ShowHiddenFiles:            true,
 				ResolvesAliases:            true,
 				TreatPackagesAsDirectories: true,
+				FilterDisplay:              []string{},
+				FilterPattern:              []string{},
 			},
 			Window: WindowConfig{
 				Title:            "Prompt - Ask mAI",
