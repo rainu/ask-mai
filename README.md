@@ -20,6 +20,31 @@ The conversations will also be printed out in the terminal, so you can use it in
   * All settings can be set via command line arguments
   * The users questions and models answers will be printed out in the terminal
 
+## Download this application
+
+You can download the latest version of this application from the [releases page](https://github.com/rainu/ask-mai/releases).
+There are many different versions for different operating systems, architectures and feature sets.
+
+The file names are structured as follows:
+```
+ask-mai-${OS}-${ARCH}-${FEATURE}.${EXTENSION}
+```
+
+Available OS:
+* darwin - MacOS
+* linux - Linux
+* windows - Windows
+
+Available Architectures:
+* amd64 - 64bit
+* 386 - 32bit
+* arm64 - ARM 64bit
+
+Available Features:
+* compressed - The binary is compressed (can be problematic for some antivirus software - especially on windows)
+* console - The binary is console application (only for windows)
+* debug - The binary contains devtools (you can inspect the GUI-Sources)
+
 ## How to Build this application
 
 1. Install dependencies [see wails documentation](https://wails.io/docs/gettingstarted/installation)
