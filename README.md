@@ -6,7 +6,7 @@ Unlike many chat applications out there, this application aims to be scriptable.
 Which means you can call it from you terminal and gave all necessary options as arguments. 
 The conversations will also be printed out in the terminal, so you can use it in your scripts. 
 
-[![Watch the demo](demo.png)](demo.mp4)
+https://github.com/user-attachments/assets/3e006ecc-98ec-42fc-b6b0-377302788ad3
 
 ## Features
 
