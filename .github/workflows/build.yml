@@ -93,31 +93,33 @@ jobs:
       - name: Linux - Build
         if: runner.os == 'Linux'
         shell: bash
-        run: wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -upx -o ${{ matrix.build.name }}
+        run: |
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -upx -o ${{ matrix.build.name }}
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -debug -devtools -upx -o ${{ matrix.build.name }}-debug
       - name: Windows - Build
         if: runner.os == 'Windows'
         shell: bash
         run: |
           wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -o ${{ matrix.build.name }}.exe
           wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -upx -o ${{ matrix.build.name }}-compressed.exe
+
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }} -X 'main.windowMode=false'" -windowsconsole -o ${{ matrix.build.name }}-console.exe
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }} -X 'main.windowMode=false'" -windowsconsole -upx -o ${{ matrix.build.name }}-console-compressed.exe
+          
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }} -X 'main.windowMode=false'" -windowsconsole -devtools -debug -o ${{ matrix.build.name }}-console-debug.exe
       - name: MacOS - Build
         if: runner.os == 'macOS'
         shell: bash
-        run: wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -o ${{ matrix.build.name }}
-
-      # Package MacOS
-      - name: MacOS - Build .app zip file
-        if: runner.os == 'macOS'
-        shell: bash
         run: |
           APP_DIR_NAME="$(cat wails.json | jq -r '.name' ).app"
+          
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -o ${{ matrix.build.name }}
           ditto -c -k ./build/bin/${APP_DIR_NAME} ./build/bin/${{ matrix.build.name }}.app.zip
-      - name: MacOS - Building Installer
-        if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          APP_DIR_NAME="$(cat wails.json | jq -r '.name' ).app"
           productbuild --component ./build/bin/${APP_DIR_NAME} ./build/bin/${{ matrix.build.name }}.pkg
+
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -devtools -debug -o ${{ matrix.build.name }}
+          ditto -c -k ./build/bin/${APP_DIR_NAME} ./build/bin/${{ matrix.build.name }}-debug.app.zip
+          productbuild --component ./build/bin/${APP_DIR_NAME} ./build/bin/${{ matrix.build.name }}-debug.pkg
 
       # Upload build assets (only for tags)
       - name: Common - Upload build artifacts
