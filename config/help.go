@@ -12,6 +12,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sort"
+	"strings"
 )
 
 type NoopLooger struct {
@@ -38,9 +40,28 @@ func (n NoopLooger) Error(message string) {
 func (n NoopLooger) Fatal(message string) {
 }
 
-func printUsage(output io.Writer) {
+func printUsage(output io.Writer, fields resolvedFieldInfos) {
 	fmt.Fprintf(output, "Usage of %s:\n", os.Args[0])
 	flag.PrintDefaults()
+
+	fmt.Fprintf(output, "\nAvailable environment variables:\n")
+
+	maxLen := 0
+	sort.Slice(fields, func(i, j int) bool {
+		//the sort algorithm must iterate all elements
+		//so here we "recycle" the loop to determine max-length
+		if len(fields[i].Env) > maxLen {
+			maxLen = len(fields[i].Env)
+		}
+		return fields[i].Env < fields[j].Env
+	})
+	for _, field := range fields {
+		env := field.Env
+		if strings.HasPrefix(field.Value.Type().String(), "*[]") {
+			env += "_N"
+		}
+		fmt.Fprintf(output, "  %s%s\t%s\n", env, strings.Repeat(" ", maxLen-len(env)), field.Usage)
+	}
 
 	fmt.Fprintf(output, "\nAvailable code styles:\n")
 	for _, style := range availableCodeStyles {

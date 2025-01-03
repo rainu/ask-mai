@@ -36,7 +36,7 @@ func main() {
 		return strings.HasPrefix(s, "tsprefix=")
 	})
 
-	cfg := config.Parse(os.Args[1:])
+	cfg := config.Parse(os.Args[1:], os.Environ())
 	if cfg.PrintVersion {
 		fmt.Fprintln(os.Stderr, versionLine())
 		os.Exit(0)

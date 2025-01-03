@@ -1,33 +1,22 @@
 package config
 
 import (
-	"errors"
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"os"
 	"reflect"
 	"slices"
 	"strings"
 )
 
-type UsageProvider interface {
-	GetUsage(field string) string
-}
+const EnvironmentPrefix = "ASK_MAI_"
 
-func Parse(arguments []string) *Config {
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+func Parse(arguments []string, env []string) *Config {
 	c := defaultConfig()
-	scanConfigTags(nil, c)
 
-	flag.Usage = func() {
-		printUsage(os.Stderr)
-	}
+	fields := scanConfigTags(nil, c)
 
-	err := flag.CommandLine.Parse(arguments)
-	if errors.Is(err, flag.ErrHelp) {
-		os.Exit(0)
-		return nil
-	}
+	processEnvironment(env, fields)
+	processArguments(arguments, fields)
 
 	c.Printer.Targets = nil
 	for _, target := range strings.Split(c.Printer.TargetsRaw, ",") {
@@ -49,13 +38,13 @@ func Parse(arguments []string) *Config {
 	return c
 }
 
-type fieldInfo struct {
+type fieldTagInfo struct {
 	Name  string
 	Short string
 	Usage string
 }
 
-func scanConfigTags(parent []fieldInfo, v interface{}) {
+func scanConfigTags(parent []fieldTagInfo, v interface{}) (result resolvedFieldInfos) {
 	val := reflect.ValueOf(v).Elem()
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
@@ -76,7 +65,7 @@ func scanConfigTags(parent []fieldInfo, v interface{}) {
 		}
 
 		path := slices.Clone(parent)
-		path = append(path, fieldInfo{
+		path = append(path, fieldTagInfo{
 			Name:  getName(field),
 			Short: getShort(field),
 			Usage: getUsage(usageProvider, field),
@@ -84,11 +73,13 @@ func scanConfigTags(parent []fieldInfo, v interface{}) {
 
 		fieldValue := val.Field(i)
 		if fieldValue.Kind() == reflect.Struct {
-			scanConfigTags(path, fieldValue.Addr().Interface())
+			result = append(result, scanConfigTags(path, fieldValue.Addr().Interface())...)
 		} else {
-			setupConfig(path, fieldValue.Addr())
+			result = append(result, extractFieldInfo(path, fieldValue.Addr()))
 		}
 	}
+
+	return
 }
 
 func shouldSkip(field reflect.StructField) bool {
@@ -118,50 +109,37 @@ func getUsage(up UsageProvider, field reflect.StructField) string {
 	return ""
 }
 
-func setupConfig(path []fieldInfo, val reflect.Value) {
+type resolvedFieldInfo struct {
+	Flag  string
+	Short string
+	Env   string
+	Usage string
+
+	Value reflect.Value
+}
+type resolvedFieldInfos []resolvedFieldInfo
+
+func extractFieldInfo(path []fieldTagInfo, val reflect.Value) resolvedFieldInfo {
 	sbFlag := strings.Builder{}
+	sbEnv := strings.Builder{}
 	sbShort := strings.Builder{}
 	sbUsage := strings.Builder{}
 
 	for i, p := range path {
 		if i > 0 && p.Name != "" {
 			sbFlag.WriteString("-")
+			sbEnv.WriteString("_")
 		}
 		sbFlag.WriteString(p.Name)
+		sbEnv.WriteString(strings.Replace(p.Name, "-", "_", -1))
 		sbShort.WriteString(p.Short)
 		sbUsage.WriteString(p.Usage)
 	}
-	sFlag := strings.TrimLeft(sbFlag.String(), "-")
-	sShort := sbShort.String()
-	sUsage := strings.Trim(sbUsage.String(), " ")
-
-	switch val.Type().String() {
-	case "*string":
-		sp := val.Interface().(*string)
-		sv := *sp
-		flag.StringVarP(sp, sFlag, sShort, sv, sUsage)
-	case "*int":
-		ip := val.Interface().(*int)
-		iv := *ip
-		flag.IntVarP(ip, sFlag, sShort, iv, sUsage)
-	case "*uint":
-		ip := val.Interface().(*uint)
-		iv := *ip
-		flag.UintVarP(ip, sFlag, sShort, iv, sUsage)
-	case "*bool":
-		bp := val.Interface().(*bool)
-		bv := *bp
-		flag.BoolVarP(bp, sFlag, sShort, bv, sUsage)
-	case "*float64":
-		fp := val.Interface().(*float64)
-		fv := *fp
-		flag.Float64VarP(fp, sFlag, sShort, fv, sUsage)
-	case "*[]string":
-		sp := val.Interface().(*[]string)
-		sv := *sp
-		if sv == nil {
-			sv = []string{}
-		}
-		flag.StringSliceVarP(sp, sFlag, sShort, sv, sUsage)
+	return resolvedFieldInfo{
+		Flag:  strings.TrimLeft(sbFlag.String(), "-"),
+		Short: sbShort.String(),
+		Env:   EnvironmentPrefix + strings.TrimLeft(strings.ToUpper(sbEnv.String()), "_"),
+		Usage: strings.Trim(sbUsage.String(), " "),
+		Value: val,
 	}
 }

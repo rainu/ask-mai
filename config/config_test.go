@@ -17,6 +17,7 @@ func TestConfig_Parse(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     []string
+		env      []string
 		expected Config
 	}{
 		{
@@ -87,7 +88,6 @@ func TestConfig_Parse(t *testing.T) {
 				c.UI.Prompt.SubmitShortcut = Shortcut{Code: "space"}
 			}),
 		},
-
 		{
 			name: "Set UI file dialog default directory",
 			args: []string{"--ui-file-dialog-default-dir", "/home/user"},
@@ -327,11 +327,264 @@ func TestConfig_Parse(t *testing.T) {
 				c.PrintVersion = true
 			}),
 		},
+		{
+			name: "Set environment variable for init prompt",
+			env:  []string{EnvironmentPrefix + "UI_PROMPT_VALUE=test"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Prompt.InitValue = "test"
+			}),
+		},
+		{
+			name: "Set environment variable for log level",
+			env:  []string{EnvironmentPrefix + "LOG_LEVEL=-4"},
+			expected: modifiedConfig(func(c *Config) {
+				c.LogLevel = int(slog.LevelDebug)
+			}),
+		},
+		{
+			name: "Set environment variable for UI stream",
+			env:  []string{EnvironmentPrefix + "UI_STREAM=true"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Stream = true
+			}),
+		},
+		{
+			name: "Set environment variable for UI window title",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_TITLE=Test Title"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.Title = "Test Title"
+			}),
+		},
+		{
+			name: "Set environment variable for backend",
+			env:  []string{EnvironmentPrefix + "BACKEND=openai"},
+			expected: modifiedConfig(func(c *Config) {
+				c.LLM.Backend = llm.BackendOpenAI
+			}),
+		},
+		{
+			name: "Set environment variable for print format",
+			env:  []string{EnvironmentPrefix + "PRINT_FORMAT=plain"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Printer.Format = PrinterFormatPlain
+			}),
+		},
+		{
+			name: "Set environment variable for UI language",
+			env:  []string{EnvironmentPrefix + "UI_LANG=en_US"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Language = "en_US"
+			}),
+		},
+		{
+			name: "Set environment variable for UI prompt initial attachments",
+			env: []string{
+				EnvironmentPrefix + "UI_PROMPT_ATTACHMENTS_1=file2.txt",
+				EnvironmentPrefix + "UI_PROMPT_ATTACHMENTS_0=file1.txt",
+			},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI prompt min rows",
+			env:  []string{EnvironmentPrefix + "UI_PROMPT_MIN_ROWS=2"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Prompt.MinRows = 2
+			}),
+		},
+		{
+			name: "Set environment variable for UI prompt max rows",
+			env:  []string{EnvironmentPrefix + "UI_PROMPT_MAX_ROWS=5"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Prompt.MaxRows = 5
+			}),
+		},
+		{
+			name: "Set environment variable for UI prompt submit key",
+			env: []string{
+				EnvironmentPrefix + "UI_PROMPT_SUBMIT_ALT=false",
+				EnvironmentPrefix + "UI_PROMPT_SUBMIT_KEY=space",
+			},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Prompt.SubmitShortcut = Shortcut{Code: "space"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI file dialog default directory",
+			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_DEFAULT_DIR=/home/user"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.DefaultDirectory = "/home/user"
+			}),
+		},
+		{
+			name: "Set environment variable for UI file dialog show hidden files",
+			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_SHOW_HIDDEN=false"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.ShowHiddenFiles = false
+			}),
+		},
+		{
+			name: "Set environment variable for UI file dialog can create directories",
+			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_CAN_CREATE_DIRS=true"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.CanCreateDirectories = true
+			}),
+		},
+		{
+			name: "Set environment variable for UI file dialog resolves aliases",
+			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_RESOLVES_ALIASES=true"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.ResolvesAliases = true
+			}),
+		},
+		{
+			name: "Set environment variable for UI file dialog treat packages as directories",
+			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_TREAT_PACKAGES_AS_DIRS=false"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.TreatPackagesAsDirectories = false
+			}),
+		},
+		{
+			name: "Set environment variable for UI file dialog filter display",
+			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_FILTER_DISPLAY_0=Images (*.jpg, *.png)"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI file dialog filter pattern",
+			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_FILTER_PATTERN_0=*.jpg;*.png"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI initial width",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_WIDTH=100"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.InitialWidth = ExpressionContainer{Expression: "100"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI max height",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_MAX_HEIGHT=200"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.MaxHeight = ExpressionContainer{Expression: "200"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI initial position X",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_POS_X=50"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.InitialPositionX = ExpressionContainer{Expression: "50"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI initial position Y",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_POS_Y=50"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.InitialPositionY = ExpressionContainer{Expression: "50"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI initial zoom",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_ZOOM=1.5"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.InitialZoom = ExpressionContainer{Expression: "1.5"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI background color",
+			env: []string{
+				EnvironmentPrefix + "UI_WINDOW_BG_COLOR_R=100",
+				EnvironmentPrefix + "UI_WINDOW_BG_COLOR_G=100",
+				EnvironmentPrefix + "UI_WINDOW_BG_COLOR_B=100",
+				EnvironmentPrefix + "UI_WINDOW_BG_COLOR_A=100",
+			},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.BackgroundColor = WindowBackgroundColor{R: 100, G: 100, B: 100, A: 100}
+			}),
+		},
+		{
+			name: "Set environment variable for UI start state",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_START_STATE=1"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.StartState = 1
+			}),
+		},
+		{
+			name: "Set environment variable for UI frameless",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_FRAMELESS=false"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.Frameless = false
+			}),
+		},
+		{
+			name: "Set environment variable for UI always on top",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_ALWAYS_ON_TOP=false"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.AlwaysOnTop = false
+			}),
+		},
+		{
+			name: "Set environment variable for UI resizable",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_RESIZEABLE=false"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.Resizeable = false
+			}),
+		},
+		{
+			name: "Set environment variable for UI translucent",
+			env:  []string{EnvironmentPrefix + "UI_WINDOW_TRANSLUCENT=never"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Window.Translucent = TranslucentNever
+			}),
+		},
+		{
+			name: "Set environment variable for UI quit shortcut",
+			env: []string{
+				EnvironmentPrefix + "UI_QUIT_SHORTCUT_KEY=q",
+				EnvironmentPrefix + "UI_QUIT_SHORTCUT_CTRL=true",
+			},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.QuitShortcut = Shortcut{Code: "q", Ctrl: true}
+			}),
+		},
+		{
+			name: "Set environment variable for UI theme",
+			env:  []string{EnvironmentPrefix + "UI_THEME=dark"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Theme = ThemeDark
+			}),
+		},
+		{
+			name: "Set environment variable for UI code style",
+			env:  []string{EnvironmentPrefix + "UI_CODE_STYLE=monokai"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.CodeStyle = "monokai"
+			}),
+		},
+		{
+			name: "Set environment variable for print version",
+			env:  []string{EnvironmentPrefix + "VERSION=true"},
+			expected: modifiedConfig(func(c *Config) {
+				c.PrintVersion = true
+			}),
+		},
+		{
+			name: "Argument will override environment",
+			args: []string{"--ui-prompt-value=arg-prompt"},
+			env:  []string{EnvironmentPrefix + "UI_PROMPT_VALUE=env-prompt"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Prompt.InitValue = "arg-prompt"
+			}),
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := Parse(tt.args)
+			c := Parse(tt.args, tt.env)
 			assert.Equal(t, tt.expected, *c)
 		})
 	}
