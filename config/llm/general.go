@@ -16,15 +16,15 @@ const (
 )
 
 type LLMConfig struct {
-	Backend string `config:"backend" short:"b"`
+	Backend string `yaml:"backend" short:"b"`
 
-	LocalAI     LocalAIConfig     `config:"localai" usage:"LocalAI: "`
-	OpenAI      OpenAIConfig      `config:"openai" usage:"OpenAI: "`
-	AnythingLLM AnythingLLMConfig `config:"anythingllm" usage:"AnythingLLM: "`
-	Ollama      OllamaConfig      `config:"ollama" usage:"Ollama: "`
-	Mistral     MistralConfig     `config:"mistral" usage:"Mistral: "`
-	Anthropic   AnthropicConfig   `config:"anthropic" usage:"Anthropic: "`
-	CallOptions CallOptionsConfig `config:"call" usage:"LLM-CALL: "`
+	LocalAI     LocalAIConfig     `yaml:"localai" usage:"LocalAI: "`
+	OpenAI      OpenAIConfig      `yaml:"openai" usage:"OpenAI: "`
+	AnythingLLM AnythingLLMConfig `yaml:"anythingllm" usage:"AnythingLLM: "`
+	Ollama      OllamaConfig      `yaml:"ollama" usage:"Ollama: "`
+	Mistral     MistralConfig     `yaml:"mistral" usage:"Mistral: "`
+	Anthropic   AnthropicConfig   `yaml:"anthropic" usage:"Anthropic: "`
+	CallOptions CallOptionsConfig `yaml:"call" usage:"LLM-CALL: "`
 }
 
 func (c *LLMConfig) GetUsage(field string) string {

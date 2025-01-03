@@ -3,7 +3,7 @@ export namespace config {
 	export class PrinterConfig {
 	    Format: string;
 	    Targets: any[];
-	    TargetsRaw: string;
+	    TargetsRaw: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new PrinterConfig(source);
@@ -20,7 +20,7 @@ export namespace config {
 	    DefaultDirectory: string;
 	    ShowHiddenFiles: boolean;
 	    CanCreateDirectories: boolean;
-	    ResolvesAliases: boolean;
+	    ResolveAliases: boolean;
 	    TreatPackagesAsDirectories: boolean;
 	    FilterDisplay: string[];
 	    FilterPattern: string[];
@@ -34,7 +34,7 @@ export namespace config {
 	        this.DefaultDirectory = source["DefaultDirectory"];
 	        this.ShowHiddenFiles = source["ShowHiddenFiles"];
 	        this.CanCreateDirectories = source["CanCreateDirectories"];
-	        this.ResolvesAliases = source["ResolvesAliases"];
+	        this.ResolveAliases = source["ResolveAliases"];
 	        this.TreatPackagesAsDirectories = source["TreatPackagesAsDirectories"];
 	        this.FilterDisplay = source["FilterDisplay"];
 	        this.FilterPattern = source["FilterPattern"];

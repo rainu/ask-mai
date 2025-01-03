@@ -22,6 +22,7 @@ https://github.com/user-attachments/assets/a6d16332-55a1-4866-9f3e-31490a488935
   * [Anthropic](https://www.anthropic.com/)
 * Scriptable
   * All settings can be set via:
+    * yaml configuration file 
     * environment variables
     * command line arguments
   * The users questions and models answers will be printed out in the terminal

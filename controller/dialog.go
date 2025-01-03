@@ -23,7 +23,7 @@ func (c *Controller) OpenFileDialog(args OpenFileDialogArgs) ([]string, error) {
 		DefaultDirectory:           c.appConfig.UI.FileDialog.DefaultDirectory,
 		ShowHiddenFiles:            c.appConfig.UI.FileDialog.ShowHiddenFiles,
 		CanCreateDirectories:       c.appConfig.UI.FileDialog.CanCreateDirectories,
-		ResolvesAliases:            c.appConfig.UI.FileDialog.ResolvesAliases,
+		ResolvesAliases:            c.appConfig.UI.FileDialog.ResolveAliases,
 		TreatPackagesAsDirectories: c.appConfig.UI.FileDialog.TreatPackagesAsDirectories,
 	})
 }

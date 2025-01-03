@@ -6,9 +6,9 @@ import (
 )
 
 type AnthropicConfig struct {
-	Token   string `config:"api-key" usage:"API Key"`
-	BaseUrl string `config:"base-url" usage:"BaseUrl"`
-	Model   string `config:"model" usage:"Model"`
+	Token   string `yaml:"api-key" usage:"API Key"`
+	BaseUrl string `yaml:"base-url" usage:"BaseUrl"`
+	Model   string `yaml:"model" usage:"Model"`
 }
 
 func (c *AnthropicConfig) AsOptions() (opts []anthropic.Option) {

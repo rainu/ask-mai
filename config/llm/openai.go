@@ -2,18 +2,17 @@ package llm
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
 type OpenAIConfig struct {
-	APIKey     string `config:"api-key" usage:"API Key"`
-	APIType    string `config:"api-type"`
-	APIVersion string `config:"api-version" usage:"API Version"`
+	APIKey     string `yaml:"api-key" usage:"API Key"`
+	APIType    string `yaml:"api-type"`
+	APIVersion string `yaml:"api-version" usage:"API Version"`
 
-	Model        string `config:"model" usage:"Model"`
-	BaseUrl      string `config:"base-url" usage:"BaseUrl"`
-	Organization string `config:"organization" usage:"Organization"`
+	Model        string `yaml:"model" usage:"Model"`
+	BaseUrl      string `yaml:"base-url" usage:"BaseUrl"`
+	Organization string `yaml:"organization" usage:"Organization"`
 }
 
 func (c *OpenAIConfig) GetUsage(field string) string {
@@ -22,15 +21,6 @@ func (c *OpenAIConfig) GetUsage(field string) string {
 		return fmt.Sprintf("OpenAI API Type (%s, %s, %s)", openai.APITypeOpenAI, openai.APITypeAzure, openai.APITypeAzureAD)
 	}
 	return ""
-}
-
-func configureOpenai(c *OpenAIConfig) {
-	flag.StringVar(&c.APIKey, "openai-api-key", "", "OpenAI API Key")
-	flag.StringVar(&c.APIType, "openai-api-type", string(openai.APITypeOpenAI), fmt.Sprintf("OpenAI API Type (%s, %s, %s)", openai.APITypeOpenAI, openai.APITypeAzure, openai.APITypeAzureAD))
-	flag.StringVar(&c.APIVersion, "openai-api-version", "", "OpenAI API Version")
-	flag.StringVar(&c.Model, "openai-model", "gpt-4o-mini", "OpenAI chat model")
-	flag.StringVar(&c.BaseUrl, "openai-base-url", "", "OpenAI API Base-URL")
-	flag.StringVar(&c.Organization, "openai-organization", "", "OpenAI Organization")
 }
 
 func (c *OpenAIConfig) AsOptions() (opts []openai.Option) {

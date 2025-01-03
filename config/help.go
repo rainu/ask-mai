@@ -63,6 +63,24 @@ func printUsage(output io.Writer, fields resolvedFieldInfos) {
 		fmt.Fprintf(output, "  %s%s\t%s\n", env, strings.Repeat(" ", maxLen-len(env)), field.Usage)
 	}
 
+	sort.Slice(fields, func(i, j int) bool {
+		return strings.Join(fields[i].YamlPath, "") < strings.Join(fields[j].YamlPath, "")
+	})
+
+	fmt.Fprintf(output, "\nYaml keys:\n")
+	for _, field := range fields {
+		yamlKey := strings.TrimLeft(strings.Join(field.YamlPath, "."), ".")
+		if strings.HasSuffix(yamlKey, "-") {
+			continue
+		}
+		fmt.Fprintf(output, "  %s%s\t%s\n", yamlKey, strings.Repeat(" ", maxLen-len(yamlKey)), field.Usage)
+	}
+
+	fmt.Fprintf(output, "\nYaml lookup file locations:\n")
+	for _, location := range yamlLookupLocations() {
+		fmt.Fprintf(output, "  - %s\n", location)
+	}
+
 	fmt.Fprintf(output, "\nAvailable code styles:\n")
 	for _, style := range availableCodeStyles {
 		fmt.Fprintf(output, "  - %s\n", style)

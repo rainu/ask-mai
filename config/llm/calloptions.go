@@ -6,13 +6,13 @@ import (
 )
 
 type CallOptionsConfig struct {
-	SystemPrompt string  `config:"system-prompt" short:"S" usage:"System Prompt"`
-	MaxToken     int     `config:"max-token" usage:"Max Token"`
-	Temperature  float64 `config:"temperature" usage:"Temperature"`
-	TopK         int     `config:"top-k" usage:"Top-K"`
-	TopP         float64 `config:"top-p" usage:"Top-P"`
-	MinLength    int     `config:"min-length" usage:"Min Length"`
-	MaxLength    int     `config:"max-length" usage:"Max Length"`
+	SystemPrompt string  `yaml:"system-prompt" short:"S" usage:"System Prompt"`
+	MaxToken     int     `yaml:"max-token" usage:"Max Token"`
+	Temperature  float64 `yaml:"temperature" usage:"Temperature"`
+	TopK         int     `yaml:"top-k" usage:"Top-K"`
+	TopP         float64 `yaml:"top-p" usage:"Top-P"`
+	MinLength    int     `yaml:"min-length" usage:"Min Length"`
+	MaxLength    int     `yaml:"max-length" usage:"Max Length"`
 }
 
 func (c *CallOptionsConfig) AsOptions() (opts []llms.CallOption) {

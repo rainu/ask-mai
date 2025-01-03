@@ -113,7 +113,7 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set UI file dialog resolves aliases",
 			args: []string{"--ui-file-dialog-resolves-aliases=true"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.FileDialog.ResolvesAliases = true
+				c.UI.FileDialog.ResolveAliases = true
 			}),
 		},
 		{
@@ -257,8 +257,8 @@ func TestConfig_Parse(t *testing.T) {
 		{
 			name: "Set UI quit shortcut",
 			args: []string{
-				"--ui-quit-shortcut-key", "q",
-				"--ui-quit-shortcut-ctrl",
+				"--ui-quit-key", "q",
+				"--ui-quit-ctrl",
 			},
 			expected: modifiedConfig(func(c *Config) {
 				c.UI.QuitShortcut = Shortcut{Code: "q", Ctrl: true}
@@ -435,7 +435,7 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for UI file dialog resolves aliases",
 			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_RESOLVES_ALIASES=true"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.FileDialog.ResolvesAliases = true
+				c.UI.FileDialog.ResolveAliases = true
 			}),
 		},
 		{
@@ -544,8 +544,8 @@ func TestConfig_Parse(t *testing.T) {
 		{
 			name: "Set environment variable for UI quit shortcut",
 			env: []string{
-				EnvironmentPrefix + "UI_QUIT_SHORTCUT_KEY=q",
-				EnvironmentPrefix + "UI_QUIT_SHORTCUT_CTRL=true",
+				EnvironmentPrefix + "UI_QUIT_KEY=q",
+				EnvironmentPrefix + "UI_QUIT_CTRL=true",
 			},
 			expected: modifiedConfig(func(c *Config) {
 				c.UI.QuitShortcut = Shortcut{Code: "q", Ctrl: true}

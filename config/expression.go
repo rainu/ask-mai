@@ -9,8 +9,8 @@ import (
 )
 
 type ExpressionContainer struct {
-	Expression string  `config:""`
-	Value      float64 `config:"-"`
+	Expression string  `config:"" yaml:"expression"`
+	Value      float64 `config:"-" yaml:"value"`
 }
 
 type Expression string

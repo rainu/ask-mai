@@ -5,9 +5,9 @@ import (
 )
 
 type AnythingLLMConfig struct {
-	BaseURL   string `config:"base-url" usage:"Base URL"`
-	Token     string `config:"token" usage:"Token"`
-	Workspace string `config:"workspace" usage:"Workspace"`
+	BaseURL   string `yaml:"base-url" usage:"Base URL"`
+	Token     string `yaml:"token" usage:"Token"`
+	Workspace string `yaml:"workspace" usage:"Workspace"`
 }
 
 func (c *AnythingLLMConfig) Validate() error {

@@ -2,18 +2,12 @@ package llm
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"github.com/tmc/langchaingo/llms/ollama"
 )
 
 type OllamaConfig struct {
-	ServerURL string `config:"server-url" usage:"Server URL"`
-	Model     string `config:"model" usage:"Model"`
-}
-
-func configureOllama(c *OllamaConfig) {
-	flag.StringVar(&c.ServerURL, "ollama-server-url", "", "Server URL for Ollama")
-	flag.StringVar(&c.Model, "ollama-model", "", "Model for Ollama")
+	ServerURL string `yaml:"server-url" usage:"Server URL"`
+	Model     string `yaml:"model" usage:"Model"`
 }
 
 func (c *OllamaConfig) AsOptions() (opts []ollama.Option) {

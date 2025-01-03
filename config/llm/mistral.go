@@ -2,20 +2,13 @@ package llm
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"github.com/tmc/langchaingo/llms/mistral"
 )
 
 type MistralConfig struct {
-	ApiKey   string `config:"api-key" usage:"API Key"`
-	Endpoint string `config:"endpoint" usage:"Endpoint"`
-	Model    string `config:"model" usage:"Model"`
-}
-
-func configureMistral(c *MistralConfig) {
-	flag.StringVar(&c.ApiKey, "mistral-api-key", "", "API Key for Mistral")
-	flag.StringVar(&c.Endpoint, "mistral-endpoint", "", "Endpoint for Mistral")
-	flag.StringVar(&c.Model, "mistral-model", "", "Model for Mistral")
+	ApiKey   string `yaml:"api-key" usage:"API Key"`
+	Endpoint string `yaml:"endpoint" usage:"Endpoint"`
+	Model    string `yaml:"model" usage:"Model"`
 }
 
 func (c *MistralConfig) AsOptions() (opts []mistral.Option) {

@@ -2,20 +2,13 @@ package llm
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
 type LocalAIConfig struct {
-	APIKey  string `config:"api-key" usage:"API Key"`
-	Model   string `config:"model" usage:"Model"`
-	BaseUrl string `config:"base-url" usage:"BaseUrl"`
-}
-
-func configureLocalai(c *LocalAIConfig) {
-	flag.StringVar(&c.APIKey, "localai-api-key", "", "LocalAI API Key")
-	flag.StringVar(&c.Model, "localai-model", "", "LocalAI chat model")
-	flag.StringVar(&c.BaseUrl, "localai-base-url", "", "LocalAI API Base-URL")
+	APIKey  string `yaml:"api-key" usage:"API Key"`
+	Model   string `yaml:"model" usage:"Model"`
+	BaseUrl string `yaml:"base-url" usage:"BaseUrl"`
 }
 
 func (c *LocalAIConfig) AsOptions() (opts []openai.Option) {

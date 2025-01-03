@@ -7,14 +7,14 @@ import (
 )
 
 type Config struct {
-	UI UIConfig `config:"ui"`
+	UI UIConfig `yaml:"ui"`
 
-	LLM llm.LLMConfig `config:""`
+	LLM llm.LLMConfig `config:"" yaml:"llm"`
 
-	Printer PrinterConfig `config:"print"`
+	Printer PrinterConfig `yaml:"print"`
 
-	LogLevel     int  `config:"log-level"`
-	PrintVersion bool `config:"version" short:"v" usage:"Show the version"`
+	LogLevel     int  `yaml:"log-level"`
+	PrintVersion bool `config:"version" yaml:"-" short:"v" usage:"Show the version"`
 }
 
 func (c *Config) GetUsage(field string) string {

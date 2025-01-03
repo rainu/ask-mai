@@ -15,11 +15,12 @@ func Parse(arguments []string, env []string) *Config {
 
 	fields := scanConfigTags(nil, c)
 
+	processYamlFiles(c)
 	processEnvironment(env, fields)
 	processArguments(arguments, fields)
 
 	c.Printer.Targets = nil
-	for _, target := range strings.Split(c.Printer.TargetsRaw, ",") {
+	for _, target := range c.Printer.TargetsRaw {
 		target = strings.TrimSpace(target)
 
 		if target == PrinterTargetOut {
@@ -39,9 +40,10 @@ func Parse(arguments []string, env []string) *Config {
 }
 
 type fieldTagInfo struct {
-	Name  string
-	Short string
-	Usage string
+	Name    string
+	YamlKey string
+	Short   string
+	Usage   string
 }
 
 func scanConfigTags(parent []fieldTagInfo, v interface{}) (result resolvedFieldInfos) {
@@ -66,9 +68,10 @@ func scanConfigTags(parent []fieldTagInfo, v interface{}) (result resolvedFieldI
 
 		path := slices.Clone(parent)
 		path = append(path, fieldTagInfo{
-			Name:  getName(field),
-			Short: getShort(field),
-			Usage: getUsage(usageProvider, field),
+			Name:    getName(field),
+			YamlKey: getYamlKey(field),
+			Short:   getShort(field),
+			Usage:   getUsage(usageProvider, field),
 		})
 
 		fieldValue := val.Field(i)
@@ -88,6 +91,16 @@ func shouldSkip(field reflect.StructField) bool {
 
 func getName(field reflect.StructField) string {
 	if ct, ok := field.Tag.Lookup("config"); ok {
+		return ct
+	}
+	if ct, ok := field.Tag.Lookup("yaml"); ok {
+		return ct
+	}
+	return strings.ToLower(field.Name)
+}
+
+func getYamlKey(field reflect.StructField) string {
+	if ct, ok := field.Tag.Lookup("yaml"); ok {
 		return ct
 	}
 	return strings.ToLower(field.Name)
@@ -110,10 +123,11 @@ func getUsage(up UsageProvider, field reflect.StructField) string {
 }
 
 type resolvedFieldInfo struct {
-	Flag  string
-	Short string
-	Env   string
-	Usage string
+	YamlPath []string
+	Flag     string
+	Short    string
+	Env      string
+	Usage    string
 
 	Value reflect.Value
 }
@@ -125,7 +139,9 @@ func extractFieldInfo(path []fieldTagInfo, val reflect.Value) resolvedFieldInfo 
 	sbShort := strings.Builder{}
 	sbUsage := strings.Builder{}
 
+	var sPath []string
 	for i, p := range path {
+		sPath = append(sPath, p.YamlKey)
 		if i > 0 && p.Name != "" {
 			sbFlag.WriteString("-")
 			sbEnv.WriteString("_")
@@ -136,10 +152,11 @@ func extractFieldInfo(path []fieldTagInfo, val reflect.Value) resolvedFieldInfo 
 		sbUsage.WriteString(p.Usage)
 	}
 	return resolvedFieldInfo{
-		Flag:  strings.TrimLeft(sbFlag.String(), "-"),
-		Short: sbShort.String(),
-		Env:   EnvironmentPrefix + strings.TrimLeft(strings.ToUpper(sbEnv.String()), "_"),
-		Usage: strings.Trim(sbUsage.String(), " "),
-		Value: val,
+		YamlPath: sPath,
+		Flag:     strings.TrimLeft(sbFlag.String(), "-"),
+		Short:    sbShort.String(),
+		Env:      EnvironmentPrefix + strings.TrimLeft(strings.ToUpper(sbEnv.String()), "_"),
+		Usage:    strings.Trim(sbUsage.String(), " "),
+		Value:    val,
 	}
 }

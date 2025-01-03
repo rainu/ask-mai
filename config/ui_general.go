@@ -11,14 +11,14 @@ const (
 )
 
 type UIConfig struct {
-	Window       WindowConfig     `config:"window"`
-	Prompt       PromptConfig     `config:"prompt"`
-	FileDialog   FileDialogConfig `config:"file-dialog"`
-	Stream       bool             `config:"stream" short:"s" usage:"Should the output be streamed"`
-	QuitShortcut Shortcut         `config:"quit-shortcut" usage:"The shortcut for quitting the application: "`
-	Theme        string           `config:"theme"`
-	CodeStyle    string           `config:"code-style" usage:"The code style to use"`
-	Language     string           `config:"lang" usage:"The language to use"`
+	Window       WindowConfig     `yaml:"window"`
+	Prompt       PromptConfig     `yaml:"prompt"`
+	FileDialog   FileDialogConfig `yaml:"file-dialog"`
+	Stream       bool             `yaml:"stream" short:"s" usage:"Should the output be streamed"`
+	QuitShortcut Shortcut         `yaml:"quit" usage:"The shortcut for quitting the application: "`
+	Theme        string           `yaml:"theme"`
+	CodeStyle    string           `yaml:"code-style" usage:"The code style to use"`
+	Language     string           `yaml:"lang" usage:"The language to use"`
 }
 
 func (u *UIConfig) GetUsage(field string) string {

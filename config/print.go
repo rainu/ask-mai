@@ -13,9 +13,9 @@ const (
 )
 
 type PrinterConfig struct {
-	Format     string           `config:"format" short:"f"`
-	Targets    []io.WriteCloser `config:"-"`
-	TargetsRaw string           `config:"TargetsRaw"`
+	Format     string           `yaml:"format" short:"f"`
+	Targets    []io.WriteCloser `yaml:"-"`
+	TargetsRaw []string         `yaml:"targets"`
 }
 
 func (p *PrinterConfig) GetUsage(field string) string {
@@ -23,7 +23,7 @@ func (p *PrinterConfig) GetUsage(field string) string {
 	case "Format":
 		return fmt.Sprintf("Response printer format (%s, %s)", PrinterFormatPlain, PrinterFormatJSON)
 	case "TargetsRaw":
-		return fmt.Sprintf("Comma seperated response printer targets (%s, %s, <path/to/file>)", PrinterTargetOut, PrinterTargetErr)
+		return fmt.Sprintf("Response printer targets (%s, %s, <path/to/file>)", PrinterTargetOut, PrinterTargetErr)
 	}
 	return ""
 }

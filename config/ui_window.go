@@ -12,25 +12,25 @@ const (
 )
 
 type WindowConfig struct {
-	Title            string                `config:"title" usage:"The window title"`
-	InitialWidth     ExpressionContainer   `config:"init-width" usage:"Expression: The (initial) width of the window"`
-	MaxHeight        ExpressionContainer   `config:"max-height" usage:"Expression: The maximal height of the chat response area"`
-	InitialPositionX ExpressionContainer   `config:"init-pos-x" usage:"Expression: The (initial) x-position of the window"`
-	InitialPositionY ExpressionContainer   `config:"init-pos-y" usage:"Expression: The (initial) y-position of the window"`
-	InitialZoom      ExpressionContainer   `config:"init-zoom" usage:"Expression: The (initial) zoom level of the window"`
-	BackgroundColor  WindowBackgroundColor `config:"bg-color"`
-	StartState       int                   `config:"start-state"`
-	AlwaysOnTop      bool                  `config:"always-on-top" usage:"Should the window be always on top"`
-	Frameless        bool                  `config:"frameless" usage:"Should the window be frameless"`
-	Resizeable       bool                  `config:"resizeable" usage:"Should the window be resizeable"`
-	Translucent      string                `config:"translucent"`
+	Title            string                `yaml:"title" usage:"The window title"`
+	InitialWidth     ExpressionContainer   `yaml:"init-width" usage:"Expression: The (initial) width of the window"`
+	MaxHeight        ExpressionContainer   `yaml:"max-height" usage:"Expression: The maximal height of the chat response area"`
+	InitialPositionX ExpressionContainer   `yaml:"init-pos-x" usage:"Expression: The (initial) x-position of the window"`
+	InitialPositionY ExpressionContainer   `yaml:"init-pos-y" usage:"Expression: The (initial) y-position of the window"`
+	InitialZoom      ExpressionContainer   `yaml:"init-zoom" usage:"Expression: The (initial) zoom level of the window"`
+	BackgroundColor  WindowBackgroundColor `yaml:"bg-color"`
+	StartState       int                   `yaml:"start-state"`
+	AlwaysOnTop      bool                  `yaml:"always-on-top" usage:"Should the window be always on top"`
+	Frameless        bool                  `yaml:"frameless" usage:"Should the window be frameless"`
+	Resizeable       bool                  `yaml:"resizeable" usage:"Should the window be resizeable"`
+	Translucent      string                `yaml:"translucent"`
 }
 
 type WindowBackgroundColor struct {
-	R uint `config:"r" usage:"red value"`
-	G uint `config:"g" usage:"green value"`
-	B uint `config:"b" usage:"blue value"`
-	A uint `config:"a" usage:"alpha value"`
+	R uint `yaml:"r" usage:"red value"`
+	G uint `yaml:"g" usage:"green value"`
+	B uint `yaml:"b" usage:"blue value"`
+	A uint `yaml:"a" usage:"alpha value"`
 }
 
 func (w *WindowConfig) GetUsage(field string) string {

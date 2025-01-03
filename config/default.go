@@ -33,7 +33,7 @@ func defaultConfig() *Config {
 			},
 			FileDialog: FileDialogConfig{
 				ShowHiddenFiles:            true,
-				ResolvesAliases:            true,
+				ResolveAliases:             true,
 				TreatPackagesAsDirectories: true,
 				FilterDisplay:              []string{},
 				FilterPattern:              []string{},
@@ -60,7 +60,7 @@ func defaultConfig() *Config {
 		Printer: PrinterConfig{
 			Format:     PrinterFormatJSON,
 			Targets:    []io.WriteCloser{os.Stdout},
-			TargetsRaw: PrinterTargetOut,
+			TargetsRaw: []string{PrinterTargetOut},
 		},
 	}
 }
