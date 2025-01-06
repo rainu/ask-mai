@@ -65,6 +65,7 @@ export namespace config {
 	    InitAttachments: string[];
 	    MinRows: number;
 	    MaxRows: number;
+	    PinTop: boolean;
 	    SubmitShortcut: Shortcut;
 	
 	    static createFrom(source: any = {}) {
@@ -77,6 +78,7 @@ export namespace config {
 	        this.InitAttachments = source["InitAttachments"];
 	        this.MinRows = source["MinRows"];
 	        this.MaxRows = source["MaxRows"];
+	        this.PinTop = source["PinTop"];
 	        this.SubmitShortcut = this.convertValues(source["SubmitShortcut"], Shortcut);
 	    }
 	

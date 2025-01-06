@@ -29,6 +29,7 @@ func defaultConfig() *Config {
 				MinRows:         1,
 				MaxRows:         4,
 				SubmitShortcut:  Shortcut{Alt: true, Code: "enter"},
+				PinTop:          true,
 				InitAttachments: []string{},
 			},
 			FileDialog: FileDialogConfig{

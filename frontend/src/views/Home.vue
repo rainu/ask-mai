@@ -3,16 +3,33 @@
 		<ZoomDetector @onZoom="onZoom" />
 		<UserScrollDetector @onScroll="onUserScroll" />
 
-		<template v-if="chatHistory.length > 0 || outputStream || error">
+		<!-- app start state -->
+		<template v-if="!(chatHistory.length > 0 || outputStream[0].Content || error)">
 			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
 					<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
 				</div>
 			</v-app-bar>
 
-			<!-- div which is exactly high as the app-bar which is behind the appbar -->
+			<!-- this will trigger an redraw if attachments are added or removed -->
 			<div :style="{ height: `${appbarHeight}px` }">{{ input }}</div>
+		</template>
 
+		<!-- after first prompt -->
+		<template v-else>
+			<!-- header -->
+			<template v-if="$appConfig.UI.Prompt.PinTop">
+				<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
+					<div style="width: 100%" ref="appbar">
+						<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
+					</div>
+				</v-app-bar>
+
+				<!-- div which is exactly high as the app-bar which is behind the appbar -->
+				<div :style="{ height: `${appbarHeight}px` }">{{ input }}</div>
+			</template>
+
+			<!-- message section -->
 			<template v-for="(entry, index) in chatHistory" :key="index">
 				<ChatMessage :message="entry.ContentParts" :role="entry.Role" />
 			</template>
@@ -21,13 +38,16 @@
 			</template>
 
 			<v-alert v-if="error" type="error" :title="error.title" :text="error.message" />
-		</template>
 
-		<template v-else>
-			<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
+			<!-- footer -->
+			<template v-if="!$appConfig.UI.Prompt.PinTop">
+				<v-footer app class="pa-0 ma-0" density="compact" height="auto">
+					<div style="width: 100%" ref="appbar">
+						<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
+					</div>
+				</v-footer>
+			</template>
 		</template>
-
-		<a ref="bottom"></a>
 	</div>
 </template>
 
@@ -87,8 +107,7 @@ export default {
 				return
 			}
 
-			const bottomEl = this.$refs.bottom as HTMLElement
-			bottomEl.scrollIntoView({ block: 'end', behavior: 'smooth' })
+			window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
 		},
 		onUserScroll() {
 			this.userScroll = true

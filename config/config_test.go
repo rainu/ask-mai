@@ -89,6 +89,13 @@ func TestConfig_Parse(t *testing.T) {
 			}),
 		},
 		{
+			name: "Set UI prompt pin top",
+			args: []string{"--ui-prompt-pin-top=false"},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Prompt.PinTop = false
+			}),
+		},
+		{
 			name: "Set UI file dialog default directory",
 			args: []string{"--ui-file-dialog-default-dir", "/home/user"},
 			expected: modifiedConfig(func(c *Config) {
@@ -408,6 +415,15 @@ func TestConfig_Parse(t *testing.T) {
 			},
 			expected: modifiedConfig(func(c *Config) {
 				c.UI.Prompt.SubmitShortcut = Shortcut{Code: "space"}
+			}),
+		},
+		{
+			name: "Set environment variable for UI prompt pin top",
+			env: []string{
+				EnvironmentPrefix + "UI_PROMPT_PIN_TOP=false",
+			},
+			expected: modifiedConfig(func(c *Config) {
+				c.UI.Prompt.PinTop = false
 			}),
 		},
 		{
