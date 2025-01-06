@@ -7,7 +7,9 @@
 				<!-- at the moment, only user messages can have attachments -->
 				<template v-for="attachmentMeta of attachmentsMeta" :key="attachmentMeta.Path">
 					<template v-if="isImage(attachmentMeta)">
-						<v-img :src="attachmentMeta.Url" :max-width="imageWidth" class="ml-auto" />
+						<div class="text-end">
+							<img :src="attachmentMeta.Url" :alt="attachmentMeta.Url" :style="{'max-width': `${imageWidth}px`}" />
+						</div>
 					</template>
 					<template v-else>
 						<v-chip prepend-icon="mdi-file" color="primary" variant="flat">
@@ -93,7 +95,7 @@ export default defineComponent({
 			return this.message.filter((part) => part.Type === ContentType.Attachment).map((part) => part.Content)
 		},
 		imageWidth() {
-			return this.$appConfig.UI.Window.InitialWidth.Value / 5
+			return this.$appConfig.UI.Window.InitialWidth.Value * 0.9
 		},
 	},
 	methods: {
