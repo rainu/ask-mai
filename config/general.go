@@ -13,8 +13,14 @@ type Config struct {
 
 	Printer PrinterConfig `yaml:"print"`
 
-	LogLevel     int  `yaml:"log-level"`
-	PrintVersion bool `config:"version" yaml:"-" short:"v" usage:"Show the version"`
+	Debug DebugConfig `config:"" yaml:"debug"`
+}
+
+type DebugConfig struct {
+	LogLevel               int    `yaml:"log-level"`
+	PprofAddress           string `yaml:"pprof-address" usage:"Address for the pprof server (only available for debug binary)"`
+	OpenInspectorOnStartup bool   `yaml:"open-inspector-on-startup" usage:"Open the inspector on startup (only available for debug binary)"`
+	PrintVersion           bool   `config:"version" yaml:"-" short:"v" usage:"Show the version"`
 }
 
 func (c *Config) GetUsage(field string) string {
@@ -26,7 +32,7 @@ func (c *Config) GetUsage(field string) string {
 }
 
 func (c *Config) Validate() error {
-	if c.LogLevel < int(slog.LevelDebug) || c.LogLevel > int(slog.LevelError) {
+	if c.Debug.LogLevel < int(slog.LevelDebug) || c.Debug.LogLevel > int(slog.LevelError) {
 		return fmt.Errorf("Invalid log level")
 	}
 

@@ -11,7 +11,12 @@ import (
 
 func defaultConfig() *Config {
 	return &Config{
-		LogLevel: int(slog.LevelError),
+		Debug: DebugConfig{
+			LogLevel:               int(slog.LevelError),
+			PprofAddress:           ":6060",
+			OpenInspectorOnStartup: false,
+			PrintVersion:           false,
+		},
 		LLM: llm.LLMConfig{
 			Backend: llm.BackendCopilot,
 			CallOptions: llm.CallOptionsConfig{

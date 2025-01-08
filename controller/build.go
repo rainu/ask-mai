@@ -85,12 +85,15 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 			B: uint8(ac.UI.Window.BackgroundColor.B),
 			A: uint8(ac.UI.Window.BackgroundColor.A),
 		},
-		Menu:   nil,
+		Menu: nil,
+		Debug: options.Debug{
+			OpenInspectorOnStartup: ac.Debug.OpenInspectorOnStartup,
+		},
 		Logger: newDefaultLogger(),
 		LogLevel: func() logger.LogLevel {
-			switch ac.LogLevel {
+			switch ac.Debug.LogLevel {
 			case int(slog.LevelDebug):
-				return logger.DEBUG
+				return logger.TRACE
 			case int(slog.LevelInfo):
 				return logger.INFO
 			case int(slog.LevelWarn):

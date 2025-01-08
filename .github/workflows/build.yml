@@ -99,7 +99,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -debug -devtools -upx -o ${{ matrix.build.name }}-debug
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -debug -devtools -tags debug -upx -o ${{ matrix.build.name }}-debug
       - name: Windows - Build
         if: runner.os == 'Windows'
         shell: bash
@@ -116,7 +116,7 @@ jobs:
         if: runner.os == 'Windows' && matrix.build.platform != 'windows/arm64'  #currently broken in arm64 - don't know why
         shell: bash
         run: |
-          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }} -X 'main.windowMode=false'" -windowsconsole -devtools -debug -o ${{ matrix.build.name }}-console-debug.exe
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }} -X 'main.windowMode=false'" -windowsconsole -devtools -debug -tags debug -o ${{ matrix.build.name }}-console-debug.exe
       - name: MacOS - Build
         if: runner.os == 'macOS'
         shell: bash
@@ -132,7 +132,7 @@ jobs:
         run: |
           APP_DIR_NAME="$(cat wails.json | jq -r '.name' ).app"
 
-          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -devtools -debug -o ${{ matrix.build.name }}
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -devtools -debug -tags debug -o ${{ matrix.build.name }}
           ditto -c -k ./build/bin/${APP_DIR_NAME} ./build/bin/${{ matrix.build.name }}-debug.app.zip
           productbuild --component ./build/bin/${APP_DIR_NAME} ./build/bin/${{ matrix.build.name }}-debug.pkg
 

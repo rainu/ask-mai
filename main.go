@@ -31,13 +31,16 @@ func init() {
 	}
 }
 
+// this function will be set by debug.go:init() - if "debug" flag is available
+var onStartUp func(c *config.Config)
+
 func main() {
 	buildMode := slices.ContainsFunc(os.Environ(), func(s string) bool {
 		return strings.HasPrefix(s, "tsprefix=")
 	})
 
 	cfg := config.Parse(os.Args[1:], os.Environ())
-	if cfg.PrintVersion {
+	if cfg.Debug.PrintVersion {
 		fmt.Fprintln(os.Stderr, versionLine())
 		os.Exit(0)
 		return
@@ -48,9 +51,12 @@ func main() {
 			os.Exit(1)
 			return
 		}
-	}
 
-	slog.SetLogLoggerLevel(slog.Level(cfg.LogLevel))
+		slog.SetLogLoggerLevel(slog.Level(cfg.Debug.LogLevel))
+		if onStartUp != nil {
+			onStartUp(cfg)
+		}
+	}
 
 	ctrl, err := controller.BuildFromConfig(cfg)
 	if err != nil {

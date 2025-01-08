@@ -113,7 +113,10 @@ print:
     format: json
     targets: 
         - stdout
-log-level: 1
+debug:
+    log-level: 1
+    pprof-address: ":1312"
+    open-inspector-on-startup: true
 `)
 
 	require.NoError(t, processYaml(sr, c))
@@ -215,6 +218,10 @@ log-level: 1
 			Format:     "json",
 			TargetsRaw: []string{"stdout"},
 		},
-		LogLevel: 1,
+		Debug: DebugConfig{
+			LogLevel:               1,
+			PprofAddress:           ":1312",
+			OpenInspectorOnStartup: true,
+		},
 	}, c)
 }

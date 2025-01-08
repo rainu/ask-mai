@@ -29,7 +29,21 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set log level",
 			args: []string{"--log-level", "-4"},
 			expected: modifiedConfig(func(c *Config) {
-				c.LogLevel = int(slog.LevelDebug)
+				c.Debug.LogLevel = int(slog.LevelDebug)
+			}),
+		},
+		{
+			name: "Set pprof address",
+			args: []string{"--pprof-address", "localhost:6060"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.PprofAddress = "localhost:6060"
+			}),
+		},
+		{
+			name: "Set open inspector on startup",
+			args: []string{"--open-inspector-on-startup", "true"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.OpenInspectorOnStartup = true
 			}),
 		},
 		{
@@ -324,14 +338,14 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Enable print version",
 			args: []string{"--version"},
 			expected: modifiedConfig(func(c *Config) {
-				c.PrintVersion = true
+				c.Debug.PrintVersion = true
 			}),
 		},
 		{
 			name: "Enable print version - shorthand",
 			args: []string{"-v"},
 			expected: modifiedConfig(func(c *Config) {
-				c.PrintVersion = true
+				c.Debug.PrintVersion = true
 			}),
 		},
 		{
@@ -345,7 +359,21 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for log level",
 			env:  []string{EnvironmentPrefix + "LOG_LEVEL=-4"},
 			expected: modifiedConfig(func(c *Config) {
-				c.LogLevel = int(slog.LevelDebug)
+				c.Debug.LogLevel = int(slog.LevelDebug)
+			}),
+		},
+		{
+			name: "Set environment variable for pprof address",
+			env:  []string{EnvironmentPrefix + "PPROF_ADDRESS=:1312"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.PprofAddress = ":1312"
+			}),
+		},
+		{
+			name: "Set environment variable for open inspector on startup",
+			env:  []string{EnvironmentPrefix + "OPEN_INSPECTOR_ON_STARTUP=1"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.OpenInspectorOnStartup = true
 			}),
 		},
 		{
@@ -585,7 +613,7 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for print version",
 			env:  []string{EnvironmentPrefix + "VERSION=true"},
 			expected: modifiedConfig(func(c *Config) {
-				c.PrintVersion = true
+				c.Debug.PrintVersion = true
 			}),
 		},
 		{
