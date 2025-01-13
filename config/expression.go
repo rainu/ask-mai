@@ -112,13 +112,19 @@ func (c *Config) ResolveExpressions(variables Variables) (err error) {
 	if curErr != nil {
 		err = errors.Join(err, fmt.Errorf("error resolving initial x-position expression: %w", curErr))
 	}
+	c.UI.Window.InitialZoom.Value, curErr = Expression(c.UI.Window.InitialZoom.Expression).Calculate(variables)
+	if curErr != nil {
+		err = errors.Join(err, fmt.Errorf("error resolving initial zoom expression: %w", curErr))
+	}
+
 	c.UI.Window.InitialPositionY.Value, curErr = Expression(c.UI.Window.InitialPositionY.Expression).Calculate(variables)
 	if curErr != nil {
 		err = errors.Join(err, fmt.Errorf("error resolving initial y-position expression: %w", curErr))
 	}
-	c.UI.Window.InitialZoom.Value, curErr = Expression(c.UI.Window.InitialZoom.Expression).Calculate(variables)
-	if curErr != nil {
-		err = errors.Join(err, fmt.Errorf("error resolving initial zoom expression: %w", curErr))
+
+	// in case of grow top the axis is inverted (0,0 is left bottom - instead of left top)
+	if c.UI.Window.GrowTop {
+		c.UI.Window.InitialPositionY.Value = float64(variables.CurrentScreen.Dimension.Height) - c.UI.Window.InitialPositionY.Value
 	}
 
 	return

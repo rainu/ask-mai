@@ -52,8 +52,13 @@
 </template>
 
 <script lang="ts">
-import { AppMounted, LLMAsk, LLMInterrupt, LLMWait } from '../../wailsjs/go/controller/Controller'
-import { EventsOn, WindowGetSize, WindowSetSize } from '../../wailsjs/runtime'
+import {
+	AppMounted,
+	LLMAsk,
+	LLMInterrupt,
+	LLMWait,
+} from '../../wailsjs/go/controller/Controller'
+import { EventsOn, WindowGetSize, WindowSetPosition, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { ContentType, Role } from '../components/ChatMessage.vue'
 import ChatInput, { ChatInputType } from '../components/ChatInput.vue'
 import ZoomDetector from '../components/ZoomDetector.vue'
@@ -98,8 +103,18 @@ export default {
 			const currentSize = await WindowGetSize()
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
 			const combinedHeight = Math.ceil(pageHeight * this.zoom)
+			const heightDiff = Math.min(combinedHeight, this.$appConfig.UI.Window.MaxHeight.Value) - currentSize.h
 
 			await WindowSetSize(currentSize.w, combinedHeight)
+
+			if (this.$appConfig.UI.Window.GrowTop && heightDiff > 0) {
+				// move the window
+				const offset = Math.min(combinedHeight, this.$appConfig.UI.Window.MaxHeight.Value)
+				await WindowSetPosition(
+					this.$appConfig.UI.Window.InitialPositionX.Value,
+					this.$appConfig.UI.Window.InitialPositionY.Value - offset,
+				)
+			}
 		},
 		scrollToBottom() {
 			if (this.userScroll) {
@@ -117,7 +132,12 @@ export default {
 				Role: Role.User,
 				ContentParts: [
 					LLMMessageContentPart.createFrom({ Type: ContentType.Text, Content: input.prompt }),
-					...input.attachments.map((a) => LLMMessageContentPart.createFrom({ Type: ContentType.Attachment, Content: a })),
+					...input.attachments.map((a) =>
+						LLMMessageContentPart.createFrom({
+							Type: ContentType.Attachment,
+							Content: a,
+						}),
+					),
 				],
 			})
 		},
@@ -179,14 +199,13 @@ export default {
 			this.outputStream[0].Content += chunk
 		})
 
-		this.adjustHeight()
-			.then(() => AppMounted())
+		AppMounted()
 			.then(() => {
 				if (this.$appConfig.UI.Prompt.InitValue) {
 					this.waitForLLM()
 				}
 			})
-			.then(() => this.adjustHeight()) //sometimes the init height isnt correct - try to fix that issue
+			.then(() => this.adjustHeight())
 	},
 	updated() {
 		this.$nextTick(() => {

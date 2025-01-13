@@ -208,6 +208,7 @@ export namespace config {
 	    BackgroundColor: WindowBackgroundColor;
 	    StartState: number;
 	    AlwaysOnTop: boolean;
+	    GrowTop: boolean;
 	    Frameless: boolean;
 	    Resizeable: boolean;
 	    Translucent: string;
@@ -227,6 +228,7 @@ export namespace config {
 	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], WindowBackgroundColor);
 	        this.StartState = source["StartState"];
 	        this.AlwaysOnTop = source["AlwaysOnTop"];
+	        this.GrowTop = source["GrowTop"];
 	        this.Frameless = source["Frameless"];
 	        this.Resizeable = source["Resizeable"];
 	        this.Translucent = source["Translucent"];
@@ -330,6 +332,9 @@ export namespace config {
 		    return a;
 		}
 	}
+	
+	
+	
 	
 	
 	

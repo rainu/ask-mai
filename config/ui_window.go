@@ -16,11 +16,12 @@ type WindowConfig struct {
 	InitialWidth     ExpressionContainer   `yaml:"init-width" usage:"Expression: The (initial) width of the window"`
 	MaxHeight        ExpressionContainer   `yaml:"max-height" usage:"Expression: The maximal height of the chat response area"`
 	InitialPositionX ExpressionContainer   `yaml:"init-pos-x" usage:"Expression: The (initial) x-position of the window"`
-	InitialPositionY ExpressionContainer   `yaml:"init-pos-y" usage:"Expression: The (initial) y-position of the window"`
+	InitialPositionY ExpressionContainer   `yaml:"init-pos-y" usage:"Expression: The (initial) y-position of the window (if grow-top is set, the y-position is inverted -> 0 is bottom instead of top)"`
 	InitialZoom      ExpressionContainer   `yaml:"init-zoom" usage:"Expression: The (initial) zoom level of the window"`
 	BackgroundColor  WindowBackgroundColor `yaml:"bg-color"`
 	StartState       int                   `yaml:"start-state"`
 	AlwaysOnTop      bool                  `yaml:"always-on-top" usage:"Should the window be always on top"`
+	GrowTop          bool                  `yaml:"grow-top" usage:"Should the window grow from bottom to the top"`
 	Frameless        bool                  `yaml:"frameless" usage:"Should the window be frameless"`
 	Resizeable       bool                  `yaml:"resizeable" usage:"Should the window be resizeable"`
 	Translucent      string                `yaml:"translucent"`

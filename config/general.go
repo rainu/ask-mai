@@ -1,9 +1,7 @@
 package config
 
 import (
-	"fmt"
 	"github.com/rainu/ask-mai/config/llm"
-	"log/slog"
 )
 
 type Config struct {

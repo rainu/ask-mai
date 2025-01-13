@@ -20,9 +20,10 @@ func (c *Controller) AppMounted() {
 }
 
 func (c *Controller) applyInitialWindowConfig() {
+	_, height := runtime.WindowGetSize(c.ctx)
+
 	initWidth := int(c.appConfig.UI.Window.InitialWidth.Value)
 	if int(initWidth) > 0 {
-		_, height := runtime.WindowGetSize(c.ctx)
 		runtime.WindowSetSize(c.ctx, initWidth, height)
 	}
 
@@ -34,7 +35,11 @@ func (c *Controller) applyInitialWindowConfig() {
 	posX := int(c.appConfig.UI.Window.InitialPositionX.Value)
 	posY := int(c.appConfig.UI.Window.InitialPositionY.Value)
 
-	if posX >= 0 && posY >= 0 {
+	if c.appConfig.UI.Window.GrowTop {
+		posY = posY - height
+	}
+
+	if posX >= 0 || posY >= 0 {
 		runtime.WindowSetPosition(c.ctx, posX, posY)
 	} else {
 		runtime.WindowCenter(c.ctx)
