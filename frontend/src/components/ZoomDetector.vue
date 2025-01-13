@@ -14,12 +14,12 @@ export default defineComponent({
 	},
 	methods: {
 		zoomIn() {
-			if (this.zoom < 3) {
+			if (this.zoom < 5) {
 				this.zoom += 0.1
 			}
 		},
 		zoomOut() {
-			if (this.zoom > 0.3) {
+			if (this.zoom > 0.1) {
 				this.zoom -= 0.1
 			}
 		},
