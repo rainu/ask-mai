@@ -87,7 +87,7 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		},
 		Menu: nil,
 		Debug: options.Debug{
-			OpenInspectorOnStartup: ac.Debug.OpenInspectorOnStartup,
+			OpenInspectorOnStartup: ac.Debug.WebKit.OpenInspectorOnStartup,
 		},
 		Logger: newDefaultLogger(),
 		LogLevel: func() logger.LogLevel {

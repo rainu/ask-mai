@@ -116,7 +116,12 @@ print:
 debug:
     log-level: 1
     pprof-address: ":1312"
-    open-inspector-on-startup: true
+    vue-dev-tools:
+        host: "localhost"
+        port: 1312
+    webkit:
+        open-inspector: true
+        http-server: "127.0.0.1:5000"
 `)
 
 	require.NoError(t, processYaml(sr, c))
@@ -219,9 +224,16 @@ debug:
 			TargetsRaw: []string{"stdout"},
 		},
 		Debug: DebugConfig{
-			LogLevel:               1,
-			PprofAddress:           ":1312",
-			OpenInspectorOnStartup: true,
+			LogLevel:     1,
+			PprofAddress: ":1312",
+			VueDevTools: VueDevToolsConfig{
+				Host: "localhost",
+				Port: 1312,
+			},
+			WebKit: WebKitInspectorConfig{
+				OpenInspectorOnStartup: true,
+				HttpServerAddress:      "127.0.0.1:5000",
+			},
 		},
 	}, c)
 }

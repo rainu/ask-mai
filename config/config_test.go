@@ -40,10 +40,31 @@ func TestConfig_Parse(t *testing.T) {
 			}),
 		},
 		{
-			name: "Set open inspector on startup",
-			args: []string{"--open-inspector-on-startup", "true"},
+			name: "Set vue dev tools host",
+			args: []string{"--vue-dev-tools-host", "localhost"},
 			expected: modifiedConfig(func(c *Config) {
-				c.Debug.OpenInspectorOnStartup = true
+				c.Debug.VueDevTools.Host = "localhost"
+			}),
+		},
+		{
+			name: "Set vue dev tools port",
+			args: []string{"--vue-dev-tools-port", "1312"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.VueDevTools.Port = 1312
+			}),
+		},
+		{
+			name: "Set open inspector on startup",
+			args: []string{"--webkit-open-inspector", "true"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.WebKit.OpenInspectorOnStartup = true
+			}),
+		},
+		{
+			name: "Set webkit inspector http server address",
+			args: []string{"--webkit-http-server", "127.0.0.1:5000"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.WebKit.HttpServerAddress = "127.0.0.1:5000"
 			}),
 		},
 		{
@@ -370,10 +391,31 @@ func TestConfig_Parse(t *testing.T) {
 			}),
 		},
 		{
-			name: "Set environment variable for open inspector on startup",
-			env:  []string{EnvironmentPrefix + "OPEN_INSPECTOR_ON_STARTUP=1"},
+			name: "Set environment variable for vue dev tools host",
+			env:  []string{EnvironmentPrefix + "VUE_DEV_TOOLS_HOST=localhost"},
 			expected: modifiedConfig(func(c *Config) {
-				c.Debug.OpenInspectorOnStartup = true
+				c.Debug.VueDevTools.Host = "localhost"
+			}),
+		},
+		{
+			name: "Set environment variable for vue dev tools port",
+			env:  []string{EnvironmentPrefix + "VUE_DEV_TOOLS_PORT=1312"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.VueDevTools.Port = 1312
+			}),
+		},
+		{
+			name: "Set environment variable for open inspector on startup",
+			env:  []string{EnvironmentPrefix + "WEBKIT_OPEN_INSPECTOR=1"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.WebKit.OpenInspectorOnStartup = true
+			}),
+		},
+		{
+			name: "Set environment variable for webkit http server address",
+			env:  []string{EnvironmentPrefix + "WEBKIT_HTTP_SERVER=127.0.0.1:5000"},
+			expected: modifiedConfig(func(c *Config) {
+				c.Debug.WebKit.HttpServerAddress = "127.0.0.1:5000"
 			}),
 		},
 		{

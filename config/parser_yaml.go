@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"io"
+	"log/slog"
 	"os"
 	"path"
 )
@@ -52,6 +53,7 @@ func processYamlFile(path string, c *Config) {
 	}
 	defer f.Close()
 
+	slog.Debug("Processing yaml file", "file", path)
 	err = processYaml(f, c)
 	if err != nil {
 		panic(fmt.Errorf("unable to process yaml file %s: %w", path, err))

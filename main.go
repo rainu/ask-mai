@@ -66,6 +66,11 @@ func main() {
 	}
 
 	// Create application with options
+	if cfg.Debug.WebKit.HttpServerAddress != "" {
+		// the underlying webview library will use this environment variable to start the inspector server
+		os.Setenv("WEBKIT_INSPECTOR_HTTP_SERVER", cfg.Debug.WebKit.HttpServerAddress)
+	}
+
 	err = wails.Run(controller.GetOptions(ctrl, icon, assets))
 
 	if err != nil {

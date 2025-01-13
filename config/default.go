@@ -12,10 +12,17 @@ import (
 func defaultConfig() *Config {
 	return &Config{
 		Debug: DebugConfig{
-			LogLevel:               int(slog.LevelError),
-			PprofAddress:           ":6060",
-			OpenInspectorOnStartup: false,
-			PrintVersion:           false,
+			LogLevel:     int(slog.LevelError),
+			PprofAddress: ":6060",
+			VueDevTools: VueDevToolsConfig{
+				Host: "",
+				Port: 8098,
+			},
+			WebKit: WebKitInspectorConfig{
+				OpenInspectorOnStartup: false,
+				HttpServerAddress:      "",
+			},
+			PrintVersion: false,
 		},
 		LLM: llm.LLMConfig{
 			Backend: llm.BackendCopilot,
