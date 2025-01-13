@@ -8,6 +8,7 @@ import (
 	"github.com/rainu/ask-mai/llms"
 	"github.com/rainu/ask-mai/sync"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"os"
 )
 
 type Controller struct {
@@ -50,6 +51,11 @@ func (c *Controller) domReady(ctx context.Context) {
 
 func (c *Controller) beforeClose(ctx context.Context) (prevent bool) {
 	return false
+}
+
+func (c *Controller) Shutdown() {
+	c.shutdown(c.ctx)
+	os.Exit(0)
 }
 
 func (c *Controller) shutdown(ctx context.Context) {

@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Quit } from '../wailsjs/runtime'
+import { Shutdown } from '../wailsjs/go/controller/Controller'
 
 export default defineComponent({
 	data() {
@@ -43,7 +43,7 @@ export default defineComponent({
 			const meta = event.metaKey === this.$appConfig.UI.QuitShortcut.Meta
 
 			if (code && ctrl && shift && alt && meta) {
-				Quit()
+				Shutdown()
 			}
 		},
 		opacityValue(isHovering: boolean | null): number {

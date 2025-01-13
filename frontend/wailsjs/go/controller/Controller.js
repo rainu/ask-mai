@@ -29,3 +29,7 @@ export function LLMWait() {
 export function OpenFileDialog(arg1) {
   return window['go']['controller']['Controller']['OpenFileDialog'](arg1);
 }
+
+export function Shutdown() {
+  return window['go']['controller']['Controller']['Shutdown']();
+}
