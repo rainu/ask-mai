@@ -15,6 +15,8 @@ export function LLMInterrupt():Promise<void>;
 
 export function LLMWait():Promise<string>;
 
+export function Log(arg1:string,arg2:string):Promise<void>;
+
 export function OpenFileDialog(arg1:controller.OpenFileDialogArgs):Promise<Array<string>>;
 
 export function Shutdown():Promise<void>;

@@ -26,6 +26,10 @@ export function LLMWait() {
   return window['go']['controller']['Controller']['LLMWait']();
 }
 
+export function Log(arg1, arg2) {
+  return window['go']['controller']['Controller']['Log'](arg1, arg2);
+}
+
 export function OpenFileDialog(arg1) {
   return window['go']['controller']['Controller']['OpenFileDialog'](arg1);
 }

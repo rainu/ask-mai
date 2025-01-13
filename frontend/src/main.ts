@@ -1,3 +1,6 @@
+import './log.ts'
+import './debug.ts'
+
 import { createApp } from 'vue'
 
 // Vuetify
