@@ -56,12 +56,18 @@ Available Features:
 * console - The binary is console application (only for windows)
 * debug - The binary contains devtools (you can inspect the GUI-Sources)
 
-## How to Build this application
+## How to build this application
 
 1. Install dependencies [see wails documentation](https://wails.io/docs/gettingstarted/installation)
 2. Build the application:
 ```sh
 wails build
+```
+
+## How to build and install this application (flatpak)
+
+```
+flatpak-builder .flatpak-build de.rainu.ask-mai.yml --force-clean --install --user
 ```
 
 ## Application starts not fast enough
