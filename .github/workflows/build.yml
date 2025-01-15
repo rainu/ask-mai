@@ -151,3 +151,20 @@ jobs:
         with:
           files: |
             */bin/*
+
+  build-flatpak:
+    name: "Build Flatpak"
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-47
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: de.rainu.ask-mai.yml
+          cache-key: flatpak-builder-${{ github.sha }}
+          bundle: ask-mai.flatpak
+      - name: List
+        shell: bash
+        run: ls -la

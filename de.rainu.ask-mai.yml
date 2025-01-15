@@ -1,0 +1,54 @@
+app-id: de.rainu.ask-mai
+runtime: org.gnome.Platform
+runtime-version: '47'
+sdk: org.gnome.Sdk
+command: ask-mai
+finish-args:
+  - --share=ipc # Share IPC namespace with the host (necessary for X11).
+  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri # OpenGL rendering support.
+  - --talk-name=org.freedesktop.Notifications
+  - --filesystem=home
+  - --filesystem=host
+  - --share=network
+build-options:
+  build-args:
+    - --share=network
+  env:
+    - GOROOT=/app/sdk/golang
+    - GOBIN=/app/go/bin
+    - CGO_ENABLED=0
+    - NODEROOT=/app/sdk/node
+modules:
+  - name: golang
+    buildsystem: simple
+    build-commands:
+      - mkdir -p $GOROOT
+      - mv $(pwd)/* $GOROOT
+    sources:
+      - type: archive
+        url: https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
+        sha256: 6924efde5de86fe277676e929dc9917d466efa02fb934197bc2eba35d5680971
+  - name: nodejs
+    buildsystem: simple
+    build-commands:
+      - mkdir -p $NODEROOT
+      - mv $(pwd)/* $NODEROOT
+    sources:
+      - type: archive
+        url: https://nodejs.org/dist/v23.6.0/node-v23.6.0-linux-x64.tar.xz
+        sha256: 90e3c96e2464978e8309db2e8bb7c5c1b606f85afa80314195f01c30eccf4ffc
+  - name: wails
+    buildsystem: simple
+    build-commands:
+      - $GOROOT/bin/go install github.com/wailsapp/wails/v2/cmd/wails@v2.9.2
+  - name: ask-mai
+    buildsystem: simple
+    build-commands:
+      - PATH=$PATH:$GOROOT/bin:$NODEROOT/bin $GOBIN/wails build -debug -devtools -tags "debug webkit2_41"
+      - install -Dm00755 build/bin/ask-mai $FLATPAK_DEST/bin/ask-mai
+    sources:
+      - type: dir
+        path: ./
