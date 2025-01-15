@@ -171,7 +171,7 @@ jobs:
           echo -n " -X 'main.built=$(date +%s%3N)'" >> .ldflags
 
       - name: Linux - Build (debug)
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6.3
         with:
           verbose: true
           manifest-path: de.rainu.ask-mai.yml
