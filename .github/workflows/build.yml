@@ -153,18 +153,33 @@ jobs:
             */bin/*
 
   build-flatpak:
-    name: "Build Flatpak"
+    name: "Build (ask-mai-flatpak)"
+    needs: test
     runs-on: ubuntu-latest
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-47
       options: --privileged
     steps:
       - uses: actions/checkout@v4
-      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+      # Version ldflags
+      - name: Common - Set version flags
+        id: ldflags
+        run: |
+          echo -n " -X 'main.commitHash=$(git rev-parse HEAD)'" >> .ldflags
+          echo -n " -X 'main.branch=$(git rev-parse --abbrev-ref HEAD)'" >> .ldflags
+          echo -n " -X 'main.tag=${GITHUB_REF#refs/tags/}'" >> .ldflags
+          echo -n " -X 'main.built=$(date +%s%3N)'" >> .ldflags
+
+      - name: Linux - Build (debug)
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           manifest-path: de.rainu.ask-mai.yml
           cache-key: flatpak-builder-${{ github.sha }}
           bundle: ask-mai.flatpak
-      - name: List
-        shell: bash
-        run: ls -la
+
+      - name: Common - Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            ask-mai.flatpak
