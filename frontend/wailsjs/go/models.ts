@@ -301,6 +301,7 @@ export namespace config {
 	    LLM: llm.LLMConfig;
 	    Printer: PrinterConfig;
 	    Debug: DebugConfig;
+	    Config: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);
@@ -312,6 +313,7 @@ export namespace config {
 	        this.LLM = this.convertValues(source["LLM"], llm.LLMConfig);
 	        this.Printer = this.convertValues(source["Printer"], PrinterConfig);
 	        this.Debug = this.convertValues(source["Debug"], DebugConfig);
+	        this.Config = source["Config"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

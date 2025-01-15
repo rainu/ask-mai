@@ -44,6 +44,9 @@ func processYamlFiles(c *Config) {
 	for _, location := range yamlLookupLocations() {
 		processYamlFile(location, c)
 	}
+	if c.Config != "" {
+		processYamlFile(c.Config, c)
+	}
 }
 
 func processYamlFile(path string, c *Config) {

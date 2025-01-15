@@ -15,7 +15,13 @@ func Parse(arguments []string, env []string) *Config {
 
 	fields := scanConfigTags(nil, c)
 
+	// for possible config file path
+	processArguments(arguments, fields)
+	processEnvironment(env, fields)
+
 	processYamlFiles(c)
+
+	// again because otherwise the config content will override the command line arguments and environment variables
 	processEnvironment(env, fields)
 	processArguments(arguments, fields)
 

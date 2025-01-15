@@ -12,6 +12,8 @@ type Config struct {
 	Printer PrinterConfig `yaml:"print"`
 
 	Debug DebugConfig `config:"" yaml:"debug"`
+
+	Config string `config:"config" short:"c" yaml:"-" usage:"Path to the configuration yaml file"`
 }
 
 func (c *Config) Validate() error {
