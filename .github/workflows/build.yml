@@ -178,9 +178,13 @@ jobs:
 #          cache-key: flatpak-builder-${{ github.sha }}
 #          bundle: ask-mai-linux-amd64-debug.flatpak
 
-      - name: Linux - Build (debug)
+      - name: Common - Setup Flatpak
         run: |
           sudo apt-get update && sudo apt-get install flatpak flatpak-builder
+          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Linux - Build (debug)
+        run: |
           flatpak-builder .flatpak-build de.rainu.ask-mai.yml --repo=.flatpak-repo --install-deps-from=flathub --force-clean --default-branch=master --arch=x86_64 --ccache
           flatpak build-bundle .flatpak-repo ask-mai-linux-amd64-debug.flatpak --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo --arch=x86_64 de.rainu.ask-mai master
 

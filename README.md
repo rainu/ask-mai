@@ -67,7 +67,9 @@ wails build
 ## How to build and install this application (flatpak)
 
 ```
-flatpak-builder .flatpak-build de.rainu.ask-mai.yml --force-clean --install --user
+flatpak-builder .flatpak-build de.rainu.ask-mai.yml --repo=.flatpak-repo --install-deps-from=flathub --force-clean --default-branch=master --arch=x86_64 --ccache
+flatpak build-bundle .flatpak-repo ask-mai.flatpak --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo --arch=x86_64 de.rainu.ask-mai master
+sudo flatpak install --reinstall ask-mai.flatpak
 ```
 
 ## Application starts not fast enough

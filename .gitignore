@@ -1,2 +1,2 @@
 build/bin
-.flatpak-build*
+*.flatpak*
