@@ -11,7 +11,6 @@ finish-args:
   - --device=dri # OpenGL rendering support.
   - --talk-name=org.freedesktop.Notifications
   - --filesystem=home
-  - --filesystem=host
   - --share=network
 build-options:
   build-args:
