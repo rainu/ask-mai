@@ -1,6 +1,6 @@
 app-id: de.rainu.ask-mai
 runtime: org.gnome.Platform
-runtime-version: '44'
+runtime-version: '3.38'
 sdk: org.gnome.Sdk
 command: ask-mai
 finish-args:
@@ -46,7 +46,7 @@ modules:
   - name: ask-mai
     buildsystem: simple
     build-commands:
-      - PATH=$PATH:$GOROOT/bin:$NODEROOT/bin $GOBIN/wails build -ldflags "$(cat .ldflags)" -debug -devtools -tags "debug webkit2_41"
+      - PATH=$PATH:$GOROOT/bin:$NODEROOT/bin $GOBIN/wails build -ldflags "$(cat .ldflags)" -debug -devtools -tags "debug"
       - install -Dm00755 build/bin/ask-mai $FLATPAK_DEST/bin/ask-mai
     sources:
       - type: dir

@@ -157,7 +157,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-44
+      image: bilelmoussaoui/flatpak-github-actions:gnome-3.38
       options: --privileged
     steps:
       - uses: actions/checkout@v4
@@ -165,8 +165,8 @@ jobs:
       - name: Common - Set version flags
         id: ldflags
         run: |
-          echo -n " -X 'main.commitHash=$(git rev-parse HEAD)'" >> .ldflags
-          echo -n " -X 'main.branch=$(git rev-parse --abbrev-ref HEAD)'" >> .ldflags
+          echo -n " -X 'main.commitHash=${GITHUB_SHA}'" >> .ldflags
+          echo -n " -X 'main.branch=${GITHUB_HEAD_REF}'" >> .ldflags
           echo -n " -X 'main.tag=${GITHUB_REF#refs/tags/}'" >> .ldflags
           echo -n " -X 'main.built=$(date +%s%3N)'" >> .ldflags
 
@@ -175,11 +175,11 @@ jobs:
         with:
           manifest-path: de.rainu.ask-mai.yml
           cache-key: flatpak-builder-${{ github.sha }}
-          bundle: ask-mai.flatpak
+          bundle: ask-mai-linux-amd64-debug.flatpak
 
       - name: Common - Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ask-mai.flatpak
+            ask-mai-linux-amd64-debug.flatpak
