@@ -41,6 +41,7 @@ import LLMMessageContentPart = controller.LLMMessageContentPart
 import hljs from 'highlight.js'
 import { type Options as MarkdownItOptions } from 'markdown-it'
 import { UseCodeStyle } from './code-style.ts'
+import { ClipboardSetText } from '../../wailsjs/runtime'
 
 export enum Role {
 	User = 'human',
@@ -124,7 +125,7 @@ export default defineComponent({
 					code = code.trim()
 				}
 
-				navigator.clipboard.writeText(code).then(() => {
+				ClipboardSetText(code).then(() => {
 					preElement.classList.add('copied')
 					setTimeout(() => {
 						preElement.classList.remove('copied')
