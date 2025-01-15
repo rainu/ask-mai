@@ -181,7 +181,7 @@ jobs:
       - name: Common - Setup Flatpak
         run: |
           sudo apt-get update && sudo apt-get install flatpak flatpak-builder
-          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
       - name: Linux - Build (debug)
         run: |
