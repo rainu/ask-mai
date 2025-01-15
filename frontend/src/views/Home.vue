@@ -31,7 +31,7 @@
 
 			<!-- message section -->
 			<template v-for="(entry, index) in chatHistory" :key="index">
-				<ChatMessage :message="entry.ContentParts" :role="entry.Role" />
+				<ChatMessage :message="entry.Message.ContentParts" :role="entry.Message.Role" />
 			</template>
 			<template v-if="outputStream[0].Content">
 				<ChatMessage :message="outputStream" :role="outputStreamRole" />
@@ -52,12 +52,7 @@
 </template>
 
 <script lang="ts">
-import {
-	AppMounted,
-	LLMAsk,
-	LLMInterrupt,
-	LLMWait,
-} from '../../wailsjs/go/controller/Controller'
+import { AppMounted, LLMAsk, LLMInterrupt, LLMWait } from '../../wailsjs/go/controller/Controller'
 import { EventsOn, WindowGetSize, WindowSetPosition, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { ContentType, Role } from '../components/ChatMessage.vue'
 import ChatInput, { ChatInputType } from '../components/ChatInput.vue'
@@ -67,6 +62,11 @@ import { controller } from '../../wailsjs/go/models.ts'
 import LLMAskArgs = controller.LLMAskArgs
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessage = controller.LLMMessage
+
+type HistoryEntry = {
+	Interrupted: boolean
+	Message: controller.LLMMessage
+}
 
 export default {
 	name: 'Home',
@@ -87,10 +87,15 @@ export default {
 			] as LLMMessageContentPart[],
 			outputStreamRole: Role.Bot,
 			error: null as { title: string; message: string } | null,
-			chatHistory: [] as controller.LLMMessage[],
+			chatHistory: [] as HistoryEntry[],
 			userScroll: false,
 			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
 		}
+	},
+	computed: {
+		purgedChatHistory(): controller.LLMMessage[] {
+			return this.chatHistory.filter((entry) => !entry.Interrupted).map((entry) => entry.Message)
+		},
 	},
 	methods: {
 		onZoom(factor: number) {
@@ -148,7 +153,10 @@ export default {
 				this.userScroll = false
 
 				const setInput = () => {
-					this.chatHistory.push(this.convertChatInputToLLMMessage(input))
+					this.chatHistory.push({
+						Interrupted: false,
+						Message: this.convertChatInputToLLMMessage(input),
+					})
 
 					this.input.prompt = ''
 					this.input.attachments = []
@@ -163,26 +171,41 @@ export default {
 					setInput()
 				}
 
-				this.chatHistory.push(
-					LLMMessage.createFrom({
+				this.chatHistory.push({
+					Interrupted: false,
+					Message: LLMMessage.createFrom({
 						Role: Role.Bot,
 						ContentParts: [LLMMessageContentPart.createFrom({ Type: ContentType.Text, Content: output })],
 					}),
-				)
+				})
 			} catch (err) {
+				console.error(err)
 				this.error = {
 					title: 'Error while processing LLM',
 					message: `${err}`,
 				}
-				console.error(err)
+
+				if (this.$appConfig.UI.Stream) {
+					// mark last input as "interrupted"
+					this.chatHistory[this.chatHistory.length - 1].Interrupted = true
+
+					this.chatHistory.push({
+						Interrupted: true,
+						Message: LLMMessage.createFrom({
+							Role: Role.Bot,
+							ContentParts: this.outputStream,
+						}),
+					})
+				}
 			} finally {
 				this.progress = false
 				this.outputStream[0].Content = ''
 			}
 		},
 		async onSubmit(input: ChatInputType) {
+			console.log(this.purgedChatHistory)
 			const args = LLMAskArgs.createFrom({
-				History: [...this.chatHistory, this.convertChatInputToLLMMessage(input)] as LLMMessage[],
+				History: [...this.purgedChatHistory, this.convertChatInputToLLMMessage(input)] as LLMMessage[],
 			})
 			await this.processLLM(input, () => LLMAsk(args))
 		},
