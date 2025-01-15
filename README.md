@@ -64,7 +64,7 @@ Available Features:
 wails build
 ```
 
-## How to build and install this application (flatpak)
+## How to build and install this application (flatpak) by yourself
 
 ```
 flatpak-builder .flatpak-build de.rainu.ask-mai.yml --repo=.flatpak-repo --install-deps-from=flathub --force-clean --default-branch=master --arch=x86_64 --ccache
