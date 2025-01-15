@@ -144,6 +144,7 @@ export default {
 		async processLLM(input: ChatInputType, processFn: () => Promise<string>) {
 			try {
 				this.progress = true
+				this.error = null
 				this.userScroll = false
 
 				const setInput = () => {
