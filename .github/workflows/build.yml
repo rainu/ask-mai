@@ -156,9 +156,6 @@ jobs:
     name: "Build (ask-mai-flatpak)"
     needs: test
     runs-on: ubuntu-latest
-#    container:
-#      image: bilelmoussaoui/flatpak-github-actions:gnome-40
-#      options: --privileged
     steps:
       - uses: actions/checkout@v4
       # Version ldflags
@@ -170,14 +167,6 @@ jobs:
           echo -n " -X 'main.tag=${GITHUB_REF#refs/tags/}'" >> .ldflags
           echo -n " -X 'main.built=$(date +%s%3N)'" >> .ldflags
 
-#      - name: Linux - Build (debug)
-#        uses: flatpak/flatpak-github-actions/flatpak-builder@v6.3
-#        with:
-#          verbose: true
-#          manifest-path: de.rainu.ask-mai.yml
-#          cache-key: flatpak-builder-${{ github.sha }}
-#          bundle: ask-mai-linux-amd64-debug.flatpak
-
       - name: Common - Setup Flatpak
         run: |
           sudo apt-get update && sudo apt-get install flatpak flatpak-builder
@@ -185,8 +174,13 @@ jobs:
 
       - name: Linux - Build (debug)
         run: |
+          echo "START BUILDING FLATPAK"
           sudo flatpak-builder .flatpak-build de.rainu.ask-mai.yml --repo=.flatpak-repo --install-deps-from=flathub --force-clean --default-branch=master --arch=x86_64 --ccache
+          echo "END BUILDING FLATPAK"
+          
+          echo "START BUNDLE FLATPAK"
           sudo flatpak build-bundle .flatpak-repo ask-mai-linux-amd64-debug.flatpak --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo --arch=x86_64 de.rainu.ask-mai master
+          echo "END BUNDLE FLATPAK"
 
       - name: Common - Release
         uses: softprops/action-gh-release@v1
