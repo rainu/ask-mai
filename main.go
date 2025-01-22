@@ -14,7 +14,6 @@ import (
 	"runtime"
 	"slices"
 	"strings"
-	"syscall"
 )
 
 const (
@@ -80,19 +79,14 @@ func main() {
 	}
 
 	if cfg.Debug.EnableCrashDetection {
-		threadId, _, errno := syscall.Syscall(syscall.SYS_GETTID, 0, 0, 0)
-		if errno != 0 {
-			slog.Warn("Error getting thread ID. Process health observation is inactive!", "error", errno)
-		} else {
-			oCtx, oCancel := context.WithCancel(context.Background())
-			health.ObserveProcess(oCtx, int32(threadId), 98.0, func() {
-				if ctrl.IsAppMounted() {
-					slog.Warn("Restarting application because of high CPU usage: Seems like a freeze.")
-					ctrl.TriggerRestart()
-					oCancel() //prevent multiple restarts
-				}
-			})
-		}
+		oCtx, oCancel := context.WithCancel(context.Background())
+		health.ObserveProcess(oCtx, 98.0, func() {
+			if ctrl.IsAppMounted() {
+				slog.Warn("Restarting application because of high CPU usage: Seems like a freeze.")
+				ctrl.TriggerRestart()
+				oCancel() //prevent multiple restarts
+			}
+		})
 	}
 
 	err = wails.Run(controller.GetOptions(ctrl, icon, assets))

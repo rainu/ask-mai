@@ -4,5 +4,5 @@ package health
 
 import "context"
 
-func ObserveProcess(ctx context.Context, pid int32, threshold float64, callback func()) {
+func ObserveProcess(ctx context.Context, threshold float64, callback func()) {
 }
