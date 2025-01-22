@@ -6,15 +6,17 @@ import (
 )
 
 type DebugConfig struct {
-	LogLevel     int                   `yaml:"log-level"`
-	PprofAddress string                `yaml:"pprof-address" usage:"Address for the pprof server (only available for debug binary)"`
-	VueDevTools  VueDevToolsConfig     `yaml:"vue-dev-tools"`
-	WebKit       WebKitInspectorConfig `yaml:"webkit" usage:"Webkit debug configuration (only available for debug binary): "`
-	PrintVersion bool                  `config:"version" yaml:"-" short:"v" usage:"Show the version"`
+	LogLevel             int                   `yaml:"log-level"`
+	PprofAddress         string                `yaml:"pprof-address" usage:"Address for the pprof server (only available for debug binary)"`
+	VueDevTools          VueDevToolsConfig     `yaml:"vue-dev-tools"`
+	WebKit               WebKitInspectorConfig `yaml:"webkit" usage:"Webkit debug configuration (only available for debug binary): "`
+	EnableCrashDetection bool                  `yaml:"enable" usage:"Enable crash detection. If a crash is detected the application will try to recover the last state"`
+	RestartShortcut      Shortcut              `yaml:"shortcut" usage:"The shortcut for triggering a restart"`
+	PrintVersion         bool                  `config:"version" yaml:"-" short:"v" usage:"Show the version"`
 }
 
 type VueDevToolsConfig struct {
-	Host string `yaml:"host" usage:"The host of the vue dev tools server. If empty the dev tools will be disabled."`
+	Host string `yaml:"host" usage:"The host of the vue dev tools server. If empty the dev tools will be disabled"`
 	Port int    `yaml:"port" usage:"The port of the vue dev tools server"`
 }
 

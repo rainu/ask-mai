@@ -1,16 +1,24 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"fmt"
 	"github.com/rainu/ask-mai/config"
 	"github.com/rainu/ask-mai/controller"
+	"github.com/rainu/ask-mai/health"
+	cmdchain "github.com/rainu/go-command-chain"
 	"github.com/wailsapp/wails/v2"
 	"log/slog"
 	"os"
 	"runtime"
 	"slices"
 	"strings"
+	"syscall"
+)
+
+const (
+	lastStateEnv = "_ASK_MAI_LAST_STATE"
 )
 
 //go:embed frontend/dist
@@ -58,7 +66,7 @@ func main() {
 		}
 	}
 
-	ctrl, err := controller.BuildFromConfig(cfg)
+	ctrl, err := controller.BuildFromConfig(cfg, os.Getenv(lastStateEnv))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(2)
@@ -71,7 +79,34 @@ func main() {
 		os.Setenv("WEBKIT_INSPECTOR_HTTP_SERVER", cfg.Debug.WebKit.HttpServerAddress)
 	}
 
+	if cfg.Debug.EnableCrashDetection {
+		threadId, _, errno := syscall.Syscall(syscall.SYS_GETTID, 0, 0, 0)
+		if errno != 0 {
+			slog.Warn("Error getting thread ID. Process health observation is inactive!", "error", errno)
+		} else {
+			oCtx, oCancel := context.WithCancel(context.Background())
+			health.ObserveProcess(oCtx, int32(threadId), 98.0, func() {
+				if ctrl.IsAppMounted() {
+					slog.Warn("Restarting application because of high CPU usage: Seems like a freeze.")
+					ctrl.TriggerRestart()
+					oCancel() //prevent multiple restarts
+				}
+			})
+		}
+	}
+
 	err = wails.Run(controller.GetOptions(ctrl, icon, assets))
+	if !buildMode && ctrl.GetLastState() != "" {
+		ae := map[any]any{
+			lastStateEnv: ctrl.GetLastState(),
+		}
+
+		//TODO: dont know why stdout doesnt work properly (os.Stderr would work)
+		cmdchain.Builder().WithInput(os.Stdin).
+			Join(os.Args[0], os.Args[1:]...).WithAdditionalEnvironmentMap(ae).
+			Finalize().WithError(os.Stderr).WithOutput(os.Stdout).
+			Run()
+	}
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())

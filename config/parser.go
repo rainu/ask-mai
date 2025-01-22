@@ -34,7 +34,7 @@ func Parse(arguments []string, env []string) *Config {
 		} else if target == PrinterTargetErr {
 			c.Printer.Targets = append(c.Printer.Targets, os.Stderr)
 		} else {
-			file, err := os.Create(target)
+			file, err := os.OpenFile(target, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 			if err != nil {
 				panic(fmt.Errorf("Error creating printer target file: %w", err))
 			}

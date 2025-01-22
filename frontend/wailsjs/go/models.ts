@@ -33,6 +33,8 @@ export namespace config {
 	    PprofAddress: string;
 	    VueDevTools: VueDevToolsConfig;
 	    WebKit: WebKitInspectorConfig;
+	    EnableCrashDetection: boolean;
+	    RestartShortcut: Shortcut;
 	    PrintVersion: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -45,6 +47,8 @@ export namespace config {
 	        this.PprofAddress = source["PprofAddress"];
 	        this.VueDevTools = this.convertValues(source["VueDevTools"], VueDevToolsConfig);
 	        this.WebKit = this.convertValues(source["WebKit"], WebKitInspectorConfig);
+	        this.EnableCrashDetection = source["EnableCrashDetection"];
+	        this.RestartShortcut = this.convertValues(source["RestartShortcut"], Shortcut);
 	        this.PrintVersion = source["PrintVersion"];
 	    }
 	

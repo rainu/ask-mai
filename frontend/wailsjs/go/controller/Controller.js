@@ -14,6 +14,14 @@ export function GetAssetMeta(arg1) {
   return window['go']['controller']['Controller']['GetAssetMeta'](arg1);
 }
 
+export function GetLastState() {
+  return window['go']['controller']['Controller']['GetLastState']();
+}
+
+export function IsAppMounted() {
+  return window['go']['controller']['Controller']['IsAppMounted']();
+}
+
 export function LLMAsk(arg1) {
   return window['go']['controller']['Controller']['LLMAsk'](arg1);
 }
@@ -34,6 +42,14 @@ export function OpenFileDialog(arg1) {
   return window['go']['controller']['Controller']['OpenFileDialog'](arg1);
 }
 
+export function Restart(arg1) {
+  return window['go']['controller']['Controller']['Restart'](arg1);
+}
+
 export function Shutdown() {
   return window['go']['controller']['Controller']['Shutdown']();
+}
+
+export function TriggerRestart() {
+  return window['go']['controller']['Controller']['TriggerRestart']();
 }

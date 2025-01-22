@@ -52,7 +52,14 @@
 </template>
 
 <script lang="ts">
-import { AppMounted, LLMAsk, LLMInterrupt, LLMWait } from '../../wailsjs/go/controller/Controller'
+import {
+	AppMounted,
+	GetLastState,
+	LLMAsk,
+	LLMInterrupt,
+	LLMWait,
+	Restart,
+} from '../../wailsjs/go/controller/Controller'
 import { EventsOn, WindowGetSize, WindowSetPosition, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { ContentType, Role } from '../components/ChatMessage.vue'
 import ChatInput, { ChatInputType } from '../components/ChatInput.vue'
@@ -66,6 +73,11 @@ import LLMMessage = controller.LLMMessage
 type HistoryEntry = {
 	Interrupted: boolean
 	Message: controller.LLMMessage
+}
+
+type State = {
+	input: ChatInputType
+	chatHistory: HistoryEntry[]
 }
 
 export default {
@@ -222,14 +234,40 @@ export default {
 		EventsOn('llm:stream:chunk', (chunk: string) => {
 			this.outputStream[0].Content += chunk
 		})
+		EventsOn('system:restart', () => {
+			// backend requested a restart
+			// so we have to save the current state and restart the app
+			// but we have to wait until the progress is done (if any)
+			const restartAfterProgress = () => {
+				if(this.progress) {
+					setTimeout(restartAfterProgress, 50)
+				} else {
+					const state = {
+						input: this.input,
+						chatHistory: this.chatHistory,
+					} as State
 
-		AppMounted()
-			.then(() => {
-				if (this.$appConfig.UI.Prompt.InitValue) {
-					this.waitForLLM()
+					Restart(JSON.stringify(state))
 				}
-			})
-			.then(() => this.adjustHeight())
+			}
+			restartAfterProgress()
+		})
+
+		GetLastState().then((stateAsString) => {
+			if (stateAsString) {
+				const state = JSON.parse(stateAsString) as State
+				this.input = state.input
+				this.chatHistory = state.chatHistory
+			}
+
+			AppMounted()
+				.then(() => {
+					if (this.$appConfig.UI.Prompt.InitValue && !stateAsString) {
+						this.waitForLLM()
+					}
+				})
+				.then(() => this.adjustHeight())
+		})
 	},
 	updated() {
 		this.$nextTick(() => {

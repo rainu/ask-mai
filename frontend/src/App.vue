@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Shutdown } from '../wailsjs/go/controller/Controller'
+import { TriggerRestart, Shutdown } from '../wailsjs/go/controller/Controller'
 
 export default defineComponent({
 	data() {
@@ -36,14 +36,23 @@ export default defineComponent({
 	},
 	methods: {
 		handleGlobalKeydown(event: KeyboardEvent) {
-			const code = event.code.toLowerCase() === this.$appConfig.UI.QuitShortcut.Code.toLowerCase()
-			const ctrl = event.ctrlKey === this.$appConfig.UI.QuitShortcut.Ctrl
-			const shift = event.shiftKey === this.$appConfig.UI.QuitShortcut.Shift
-			const alt = event.altKey === this.$appConfig.UI.QuitShortcut.Alt
-			const meta = event.metaKey === this.$appConfig.UI.QuitShortcut.Meta
+			let code = event.code.toLowerCase() === this.$appConfig.UI.QuitShortcut.Code.toLowerCase()
+			let ctrl = event.ctrlKey === this.$appConfig.UI.QuitShortcut.Ctrl
+			let shift = event.shiftKey === this.$appConfig.UI.QuitShortcut.Shift
+			let alt = event.altKey === this.$appConfig.UI.QuitShortcut.Alt
+			let meta = event.metaKey === this.$appConfig.UI.QuitShortcut.Meta
 
 			if (code && ctrl && shift && alt && meta) {
 				Shutdown()
+			}
+
+			code = event.code.toLowerCase() === this.$appConfig.Debug.RestartShortcut.Code.toLowerCase()
+			ctrl = event.ctrlKey === this.$appConfig.Debug.RestartShortcut.Ctrl
+			shift = event.shiftKey === this.$appConfig.Debug.RestartShortcut.Shift
+			alt = event.altKey === this.$appConfig.Debug.RestartShortcut.Alt
+			meta = event.metaKey === this.$appConfig.Debug.RestartShortcut.Meta
+			if (code && ctrl && shift && alt && meta) {
+				TriggerRestart()
 			}
 		},
 		opacityValue(isHovering: boolean | null): number {

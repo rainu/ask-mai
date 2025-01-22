@@ -25,6 +25,7 @@ type Controller struct {
 
 	vueAppMounted bool
 	streamBuffer  []byte
+	lastState     string
 }
 
 type llmAskResult struct {

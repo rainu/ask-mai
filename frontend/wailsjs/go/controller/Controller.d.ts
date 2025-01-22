@@ -9,6 +9,10 @@ export function GetApplicationConfig():Promise<config.Config>;
 
 export function GetAssetMeta(arg1:string):Promise<controller.AssetMeta>;
 
+export function GetLastState():Promise<string>;
+
+export function IsAppMounted():Promise<boolean>;
+
 export function LLMAsk(arg1:controller.LLMAskArgs):Promise<string>;
 
 export function LLMInterrupt():Promise<void>;
@@ -19,4 +23,8 @@ export function Log(arg1:string,arg2:string):Promise<void>;
 
 export function OpenFileDialog(arg1:controller.OpenFileDialogArgs):Promise<Array<string>>;
 
+export function Restart(arg1:string):Promise<void>;
+
 export function Shutdown():Promise<void>;
+
+export function TriggerRestart():Promise<void>;

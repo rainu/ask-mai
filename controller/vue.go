@@ -19,6 +19,10 @@ func (c *Controller) AppMounted() {
 	c.vueAppMounted = true
 }
 
+func (c *Controller) IsAppMounted() bool {
+	return c.vueAppMounted
+}
+
 func (c *Controller) applyInitialWindowConfig() {
 	_, height := runtime.WindowGetSize(c.ctx)
 

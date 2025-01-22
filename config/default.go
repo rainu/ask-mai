@@ -22,6 +22,11 @@ func defaultConfig() *Config {
 				OpenInspectorOnStartup: false,
 				HttpServerAddress:      "",
 			},
+			EnableCrashDetection: true,
+			RestartShortcut: Shortcut{
+				Alt:  true,
+				Code: "keyr",
+			},
 			PrintVersion: false,
 		},
 		LLM: llm.LLMConfig{
