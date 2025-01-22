@@ -7,7 +7,7 @@
 		<template v-if="!(chatHistory.length > 0 || outputStream[0].Content || error)">
 			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
-					<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
+					<ChatInputBar v-model="input" :progress="progress" :minimized="minimized" @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
 				</div>
 			</v-app-bar>
 
@@ -21,7 +21,7 @@
 			<template v-if="$appConfig.UI.Prompt.PinTop">
 				<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
-						<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
+						<ChatInputBar v-model="input" :progress="progress" :minimized="minimized" @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
 					</div>
 				</v-app-bar>
 
@@ -30,20 +30,22 @@
 			</template>
 
 			<!-- message section -->
-			<template v-for="(entry, index) in chatHistory" :key="index">
-				<ChatMessage :message="entry.Message.ContentParts" :role="entry.Message.Role" />
-			</template>
-			<template v-if="outputStream[0].Content">
-				<ChatMessage :message="outputStream" :role="outputStreamRole" />
-			</template>
+			<div v-show="!minimized">
+				<template v-for="(entry, index) in chatHistory" :key="index">
+					<ChatMessage :message="entry.Message.ContentParts" :role="entry.Message.Role" />
+				</template>
+				<template v-if="outputStream[0].Content">
+					<ChatMessage :message="outputStream" :role="outputStreamRole" />
+				</template>
 
-			<v-alert v-if="error" type="error" :title="error.title" :text="error.message" />
+				<v-alert v-if="error" type="error" :title="error.title" :text="error.message" />
+			</div>
 
 			<!-- footer -->
 			<template v-if="!$appConfig.UI.Prompt.PinTop">
 				<v-footer app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
-						<ChatInput v-model="input" :progress="progress" @submit="onSubmit" @interrupt="onInterrupt" />
+						<ChatInputBar v-model="input" :progress="progress" :minimized="minimized" @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
 					</div>
 				</v-footer>
 			</template>
@@ -66,6 +68,7 @@ import ChatInput, { ChatInputType } from '../components/ChatInput.vue'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import UserScrollDetector from '../components/UserScrollDetector.vue'
 import { controller } from '../../wailsjs/go/models.ts'
+import ChatInputBar from '../components/ChatInputBar.vue'
 import LLMAskArgs = controller.LLMAskArgs
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessage = controller.LLMMessage
@@ -82,7 +85,7 @@ type State = {
 
 export default {
 	name: 'Home',
-	components: { UserScrollDetector, ZoomDetector, ChatInput, ChatMessage },
+	components: { ChatInputBar, UserScrollDetector, ZoomDetector, ChatInput, ChatMessage },
 	data() {
 		return {
 			appbarHeight: 0,
@@ -101,6 +104,7 @@ export default {
 			error: null as { title: string; message: string } | null,
 			chatHistory: [] as HistoryEntry[],
 			userScroll: false,
+			minimized: false,
 			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
 		}
 	},
@@ -121,8 +125,9 @@ export default {
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
 			const combinedHeight = Math.ceil(pageHeight * this.zoom)
 			const heightDiff = Math.min(combinedHeight, this.$appConfig.UI.Window.MaxHeight.Value) - currentSize.h
+			const width = this.minimized ? Math.ceil(this.$appConfig.UI.Window.InitialWidth.Value / 12) : this.$appConfig.UI.Window.InitialWidth.Value
 
-			await WindowSetSize(currentSize.w, combinedHeight)
+			await WindowSetSize(width, combinedHeight)
 
 			if (this.$appConfig.UI.Window.GrowTop && heightDiff > 0) {
 				// move the window
@@ -143,6 +148,10 @@ export default {
 		},
 		onUserScroll() {
 			this.userScroll = true
+		},
+		async onMinMax() {
+			this.minimized = !this.minimized
+			this.adjustHeight()
 		},
 		convertChatInputToLLMMessage(input: ChatInputType): LLMMessage {
 			return LLMMessage.createFrom({
@@ -215,7 +224,6 @@ export default {
 			}
 		},
 		async onSubmit(input: ChatInputType) {
-			console.log(this.purgedChatHistory)
 			const args = LLMAskArgs.createFrom({
 				History: [...this.purgedChatHistory, this.convertChatInputToLLMMessage(input)] as LLMMessage[],
 			})
@@ -239,7 +247,7 @@ export default {
 			// so we have to save the current state and restart the app
 			// but we have to wait until the progress is done (if any)
 			const restartAfterProgress = () => {
-				if(this.progress) {
+				if (this.progress) {
 					setTimeout(restartAfterProgress, 50)
 				} else {
 					const state = {

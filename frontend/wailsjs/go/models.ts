@@ -263,6 +263,7 @@ export namespace config {
 	    Stream: boolean;
 	    QuitShortcut: Shortcut;
 	    Theme: string;
+	    MinMaxPosition: string;
 	    CodeStyle: string;
 	    Language: string;
 	
@@ -278,6 +279,7 @@ export namespace config {
 	        this.Stream = source["Stream"];
 	        this.QuitShortcut = this.convertValues(source["QuitShortcut"], Shortcut);
 	        this.Theme = source["Theme"];
+	        this.MinMaxPosition = source["MinMaxPosition"];
 	        this.CodeStyle = source["CodeStyle"];
 	        this.Language = source["Language"];
 	    }
