@@ -71,7 +71,7 @@ jobs:
         shell: bash
       - name: Linux - Install Wails deps
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install libgtk-3-0 libwebkit2gtk-4.0-dev gcc-aarch64-linux-gnu upx-ucl
+        run: sudo apt-get update && sudo apt-get install libgtk-3-0 libwebkit2gtk-4.1-dev gcc-aarch64-linux-gnu upx-ucl
         shell: bash
       - name: Windows - Install Wails deps
         if: runner.os == 'Windows' && matrix.build.platform != 'windows/arm64'
@@ -94,12 +94,12 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -upx -o ${{ matrix.build.name }}
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -tags "webkit2_41" -upx -o ${{ matrix.build.name }}
       - name: Linux - Build (debug)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -debug -devtools -tags debug -upx -o ${{ matrix.build.name }}-debug
+          wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -debug -devtools -tags "debug webkit2_41" -upx -o ${{ matrix.build.name }}-debug
       - name: Windows - Build
         if: runner.os == 'Windows'
         shell: bash
