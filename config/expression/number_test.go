@@ -1,4 +1,4 @@
-package config
+package expression
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -47,7 +47,7 @@ func TestExpression_Calculate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.expression, func(t *testing.T) {
-			result, err := Expression(tt.expression).Calculate(variables)
+			result, err := NumberExpression(tt.expression).Calculate(variables)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected, result)
 		})
@@ -55,6 +55,6 @@ func TestExpression_Calculate(t *testing.T) {
 }
 
 func TestExpression_Calculate_NaN(t *testing.T) {
-	_, err := Expression("log('test'); 'test'").Calculate(Variables{})
+	_, err := NumberExpression("log('test'); 'test'").Calculate(Variables{})
 	assert.Error(t, err)
 }

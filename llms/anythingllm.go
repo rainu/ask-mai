@@ -20,6 +20,7 @@ type AnythingLLM struct {
 	workspace string
 
 	threadSlug   string
+	threadName   string
 	threadDelete bool
 }
 
@@ -85,7 +86,7 @@ type threadResponse struct {
 	Message *string `json:"message"`
 }
 
-func NewAnythingLLM(baseURL, token, workspace string, deleteThread bool) (Model, error) {
+func NewAnythingLLM(baseURL, token, workspace, threadName string, deleteThread bool) (Model, error) {
 	result := &AnythingLLM{
 		client: &http.Client{},
 
@@ -93,6 +94,7 @@ func NewAnythingLLM(baseURL, token, workspace string, deleteThread bool) (Model,
 		baseURL:   baseURL,
 		workspace: workspace,
 
+		threadName:   threadName,
 		threadDelete: deleteThread,
 	}
 
@@ -297,7 +299,7 @@ func (a *AnythingLLM) createNewThread(ctx context.Context) error {
 	url := fmt.Sprintf("%s/api/v1/workspace/%s/thread/new", a.baseURL, a.workspace)
 
 	jsonPayload, err := json.Marshal(threadRequest{
-		Name: "ask mAI - " + time.Now().Format("2006-01-02T15:04:05"),
+		Name: a.threadName,
 	})
 	if err != nil {
 		return fmt.Errorf("error marshalling payload: %w", err)

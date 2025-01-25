@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -129,11 +130,11 @@ debug:
 		UI: UIConfig{
 			Window: WindowConfig{
 				Title:            "Test Window",
-				InitialWidth:     ExpressionContainer{Expression: "800"},
-				MaxHeight:        ExpressionContainer{Expression: "600"},
-				InitialPositionX: ExpressionContainer{Expression: "100"},
-				InitialPositionY: ExpressionContainer{Expression: "100"},
-				InitialZoom:      ExpressionContainer{Expression: "1.0"},
+				InitialWidth:     expression.NumberContainer{Expression: "800"},
+				MaxHeight:        expression.NumberContainer{Expression: "600"},
+				InitialPositionX: expression.NumberContainer{Expression: "100"},
+				InitialPositionY: expression.NumberContainer{Expression: "100"},
+				InitialZoom:      expression.NumberContainer{Expression: "1.0"},
 				BackgroundColor:  WindowBackgroundColor{R: 255, G: 255, B: 255, A: 255},
 				StartState:       1,
 				AlwaysOnTop:      true,

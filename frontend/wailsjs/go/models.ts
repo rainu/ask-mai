@@ -188,27 +188,13 @@ export namespace config {
 	        this.A = source["A"];
 	    }
 	}
-	export class ExpressionContainer {
-	    Expression: string;
-	    Value: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new ExpressionContainer(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Expression = source["Expression"];
-	        this.Value = source["Value"];
-	    }
-	}
 	export class WindowConfig {
 	    Title: string;
-	    InitialWidth: ExpressionContainer;
-	    MaxHeight: ExpressionContainer;
-	    InitialPositionX: ExpressionContainer;
-	    InitialPositionY: ExpressionContainer;
-	    InitialZoom: ExpressionContainer;
+	    InitialWidth: expression.NumberContainer;
+	    MaxHeight: expression.NumberContainer;
+	    InitialPositionX: expression.NumberContainer;
+	    InitialPositionY: expression.NumberContainer;
+	    InitialZoom: expression.NumberContainer;
 	    BackgroundColor: WindowBackgroundColor;
 	    StartState: number;
 	    AlwaysOnTop: boolean;
@@ -224,11 +210,11 @@ export namespace config {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Title = source["Title"];
-	        this.InitialWidth = this.convertValues(source["InitialWidth"], ExpressionContainer);
-	        this.MaxHeight = this.convertValues(source["MaxHeight"], ExpressionContainer);
-	        this.InitialPositionX = this.convertValues(source["InitialPositionX"], ExpressionContainer);
-	        this.InitialPositionY = this.convertValues(source["InitialPositionY"], ExpressionContainer);
-	        this.InitialZoom = this.convertValues(source["InitialZoom"], ExpressionContainer);
+	        this.InitialWidth = this.convertValues(source["InitialWidth"], expression.NumberContainer);
+	        this.MaxHeight = this.convertValues(source["MaxHeight"], expression.NumberContainer);
+	        this.InitialPositionX = this.convertValues(source["InitialPositionX"], expression.NumberContainer);
+	        this.InitialPositionY = this.convertValues(source["InitialPositionY"], expression.NumberContainer);
+	        this.InitialZoom = this.convertValues(source["InitialZoom"], expression.NumberContainer);
 	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], WindowBackgroundColor);
 	        this.StartState = source["StartState"];
 	        this.AlwaysOnTop = source["AlwaysOnTop"];
@@ -340,7 +326,6 @@ export namespace config {
 		    return a;
 		}
 	}
-	
 	
 	
 	
@@ -464,6 +449,39 @@ export namespace controller {
 
 }
 
+export namespace expression {
+	
+	export class NumberContainer {
+	    Expression: string;
+	    Value: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new NumberContainer(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Expression = source["Expression"];
+	        this.Value = source["Value"];
+	    }
+	}
+	export class StringContainer {
+	    Expression: string;
+	    Value: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new StringContainer(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Expression = source["Expression"];
+	        this.Value = source["Value"];
+	    }
+	}
+
+}
+
 export namespace llm {
 	
 	export class AnthropicConfig {
@@ -482,11 +500,43 @@ export namespace llm {
 	        this.Model = source["Model"];
 	    }
 	}
+	export class AnythingLLMThreadConfig {
+	    Name: expression.StringContainer;
+	    Delete: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new AnythingLLMThreadConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Name = this.convertValues(source["Name"], expression.StringContainer);
+	        this.Delete = source["Delete"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class AnythingLLMConfig {
 	    BaseURL: string;
 	    Token: string;
 	    Workspace: string;
-	    DeleteThread: boolean;
+	    Thread: AnythingLLMThreadConfig;
 	
 	    static createFrom(source: any = {}) {
 	        return new AnythingLLMConfig(source);
@@ -497,9 +547,28 @@ export namespace llm {
 	        this.BaseURL = source["BaseURL"];
 	        this.Token = source["Token"];
 	        this.Workspace = source["Workspace"];
-	        this.DeleteThread = source["DeleteThread"];
+	        this.Thread = this.convertValues(source["Thread"], AnythingLLMThreadConfig);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
+	
 	export class CallOptionsConfig {
 	    SystemPrompt: string;
 	    MaxToken: number;

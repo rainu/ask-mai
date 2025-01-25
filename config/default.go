@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm"
 	"github.com/tmc/langchaingo/llms/openai"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -37,7 +38,12 @@ func defaultConfig() *Config {
 				TopP:        -1,
 			},
 			AnythingLLM: llm.AnythingLLMConfig{
-				DeleteThread: false,
+				Thread: llm.AnythingLLMThreadConfig{
+					Delete: false,
+					Name: expression.StringContainer{
+						Expression: `'ask-mai - ' + new Date().toISOString()`,
+					},
+				},
 			},
 			OpenAI: llm.OpenAIConfig{
 				APIType: string(openai.APITypeOpenAI),
@@ -61,11 +67,11 @@ func defaultConfig() *Config {
 			},
 			Window: WindowConfig{
 				Title:            "Prompt - Ask mAI",
-				InitialWidth:     ExpressionContainer{Expression: "v.CurrentScreen.Dimension.Width/2"},
-				MaxHeight:        ExpressionContainer{Expression: "v.CurrentScreen.Dimension.Height/3"},
-				InitialPositionX: ExpressionContainer{Expression: "v.CurrentScreen.Dimension.Width/4"},
-				InitialPositionY: ExpressionContainer{Expression: "0"},
-				InitialZoom:      ExpressionContainer{Expression: "1.0"},
+				InitialWidth:     expression.NumberContainer{Expression: "v.CurrentScreen.Dimension.Width/2"},
+				MaxHeight:        expression.NumberContainer{Expression: "v.CurrentScreen.Dimension.Height/3"},
+				InitialPositionX: expression.NumberContainer{Expression: "v.CurrentScreen.Dimension.Width/4"},
+				InitialPositionY: expression.NumberContainer{Expression: "0"},
+				InitialZoom:      expression.NumberContainer{Expression: "1.0"},
 				BackgroundColor:  WindowBackgroundColor{R: 255, G: 255, B: 255, A: 192},
 				StartState:       int(options.Normal),
 				Translucent:      TranslucentHover,

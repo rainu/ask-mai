@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rainu/ask-mai/config/expression"
 	flag "github.com/spf13/pflag"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -88,7 +89,7 @@ func printUsage(output io.Writer, fields resolvedFieldInfos) {
 
 	fmt.Fprintf(output, "\nThe expression language is JavaScript. You can use the following variables and functions:\n")
 	fmt.Fprintf(output, "\nFunctions:\n")
-	fmt.Fprintf(output, "  - %s: writes a message to the console.\n", funcNameLog)
+	fmt.Fprintf(output, "  - %s: writes a message to the console.\n", expression.FuncNameLog)
 
 	fmt.Fprintf(output, "\nVariables:\n")
 
@@ -104,9 +105,9 @@ func printUsage(output io.Writer, fields resolvedFieldInfos) {
 				return
 			}
 
-			fmt.Fprintf(output, "  const %s = ", varNameVariables)
+			fmt.Fprintf(output, "  const %s = ", expression.VarNameVariables)
 
-			variables := FromScreens(screens)
+			variables := expression.FromScreens(screens)
 			je := json.NewEncoder(output)
 			je.SetIndent("  ", "  ")
 			je.Encode(variables)
