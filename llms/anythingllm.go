@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/tmc/langchaingo/llms"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -20,9 +21,16 @@ type AnythingLLM struct {
 }
 
 type chatRequest struct {
-	Message   string `json:"message"`
-	Mode      string `json:"mode"`
-	SessionID string `json:"sessionId,omitempty"`
+	Message     string           `json:"message"`
+	Attachments []chatAttachment `json:"attachments,omitempty"`
+	Mode        string           `json:"mode"`
+	SessionID   string           `json:"sessionId,omitempty"`
+}
+
+type chatAttachment struct {
+	Name    string `json:"name"`
+	Mime    string `json:"mime"`
+	Content string `json:"contentString"`
 }
 
 type chatResponse struct {
@@ -66,14 +74,30 @@ func (a *AnythingLLM) GenerateContent(ctx context.Context, messages []llms.Messa
 		return nil, fmt.Errorf("empty messages provided")
 	}
 
-	prompt := ""
+	err := a.ensureThread(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	req := chatRequest{Mode: "chat", SessionID: a.threadSlug}
 	for _, part := range messages[len(messages)-1].Parts {
-		if textPart, ok := part.(llms.TextContent); ok {
-			prompt += textPart.Text
+		switch p := part.(type) {
+		case llms.TextContent:
+			req.Message += p.Text
+		case llms.ImageURLContent:
+			attachment := chatAttachment{
+				Name:    fmt.Sprintf("image_%d", len(req.Attachments)),
+				Content: p.URL,
+			}
+			if strings.HasPrefix(p.URL, "data:") {
+				attachment.Mime = strings.Split(p.URL[len("data:"):], ";")[0]
+			}
+
+			req.Attachments = append(req.Attachments, attachment)
 		}
 	}
 
-	result, err := a.Call(ctx, prompt, options...)
+	result, err := a.doChat(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("error calling anythingllm: %w", err)
 	}
@@ -86,19 +110,31 @@ func (a *AnythingLLM) GenerateContent(ctx context.Context, messages []llms.Messa
 }
 
 func (a *AnythingLLM) Call(ctx context.Context, prompt string, options ...llms.CallOption) (string, error) {
-	if a.threadSlug == "" {
-		err := a.createNewThread(ctx)
-		if err != nil {
-			return "", fmt.Errorf("error creating new thread: %w", err)
-		}
+	err := a.ensureThread(ctx)
+	if err != nil {
+		return "", err
 	}
 
-	url := fmt.Sprintf("%s/api/v1/workspace/%s/thread/%s/chat", a.baseURL, a.workspace, a.threadSlug)
-	jsonPayload, err := json.Marshal(chatRequest{
+	return a.doChat(ctx, chatRequest{
 		Message:   prompt,
 		Mode:      "chat",
 		SessionID: a.threadSlug,
 	})
+}
+
+func (a *AnythingLLM) ensureThread(ctx context.Context) error {
+	if a.threadSlug == "" {
+		err := a.createNewThread(ctx)
+		if err != nil {
+			return fmt.Errorf("error creating new thread: %w", err)
+		}
+	}
+	return nil
+}
+
+func (a *AnythingLLM) doChat(ctx context.Context, request chatRequest) (string, error) {
+	url := fmt.Sprintf("%s/api/v1/workspace/%s/thread/%s/chat", a.baseURL, a.workspace, a.threadSlug)
+	jsonPayload, err := json.Marshal(request)
 	if err != nil {
 		return "", fmt.Errorf("error marshalling payload: %w", err)
 	}
