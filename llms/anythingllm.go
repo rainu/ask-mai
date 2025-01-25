@@ -75,7 +75,7 @@ func (a *AnythingLLM) GenerateContent(ctx context.Context, messages []llms.Messa
 
 	result, err := a.Call(ctx, prompt, options...)
 	if err != nil {
-		return nil, fmt.Errorf("error calling copilot: %w", err)
+		return nil, fmt.Errorf("error calling anythingllm: %w", err)
 	}
 
 	return &llms.ContentResponse{
