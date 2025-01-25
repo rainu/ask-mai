@@ -36,6 +36,9 @@ func defaultConfig() *Config {
 				TopK:        -1,
 				TopP:        -1,
 			},
+			AnythingLLM: llm.AnythingLLMConfig{
+				DeleteThread: false,
+			},
 			OpenAI: llm.OpenAIConfig{
 				APIType: string(openai.APITypeOpenAI),
 				Model:   "gpt-4o-mini",

@@ -486,6 +486,7 @@ export namespace llm {
 	    BaseURL: string;
 	    Token: string;
 	    Workspace: string;
+	    DeleteThread: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new AnythingLLMConfig(source);
@@ -496,6 +497,7 @@ export namespace llm {
 	        this.BaseURL = source["BaseURL"];
 	        this.Token = source["Token"];
 	        this.Workspace = source["Workspace"];
+	        this.DeleteThread = source["DeleteThread"];
 	    }
 	}
 	export class CallOptionsConfig {
@@ -590,8 +592,22 @@ export namespace llm {
 	        this.BaseUrl = source["BaseUrl"];
 	    }
 	}
+	export class CopilotConfig {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new CopilotConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
 	export class LLMConfig {
 	    Backend: string;
+	    // Go type: CopilotConfig
+	    Copilot: any;
 	    LocalAI: LocalAIConfig;
 	    OpenAI: OpenAIConfig;
 	    AnythingLLM: AnythingLLMConfig;
@@ -607,6 +623,7 @@ export namespace llm {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Backend = source["Backend"];
+	        this.Copilot = this.convertValues(source["Copilot"], null);
 	        this.LocalAI = this.convertValues(source["LocalAI"], LocalAIConfig);
 	        this.OpenAI = this.convertValues(source["OpenAI"], OpenAIConfig);
 	        this.AnythingLLM = this.convertValues(source["AnythingLLM"], AnythingLLMConfig);

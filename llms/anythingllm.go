@@ -14,10 +14,12 @@ import (
 type AnythingLLM struct {
 	client *http.Client
 
-	token      string
-	baseURL    string
-	workspace  string
-	threadSlug string
+	token     string
+	baseURL   string
+	workspace string
+
+	threadSlug   string
+	threadDelete bool
 }
 
 type chatRequest struct {
@@ -57,13 +59,15 @@ type threadResponse struct {
 	Message *string `json:"message"`
 }
 
-func NewAnythingLLM(baseURL, token, workspace string) (Model, error) {
+func NewAnythingLLM(baseURL, token, workspace string, deleteThread bool) (Model, error) {
 	result := &AnythingLLM{
 		client: &http.Client{},
 
 		token:     token,
 		baseURL:   baseURL,
 		workspace: workspace,
+
+		threadDelete: deleteThread,
 	}
 
 	return result, nil
@@ -232,6 +236,10 @@ func (a *AnythingLLM) deleteThread(ctx context.Context) error {
 }
 
 func (a *AnythingLLM) Close() error {
+	if !a.threadDelete {
+		return nil
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

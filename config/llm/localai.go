@@ -2,6 +2,7 @@ package llm
 
 import (
 	"fmt"
+	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
@@ -39,4 +40,8 @@ func (c *LocalAIConfig) Validate() error {
 	}
 
 	return nil
+}
+
+func (c *LocalAIConfig) BuildLLM() (llms.Model, error) {
+	return llms.NewLocalAI(c.AsOptions())
 }

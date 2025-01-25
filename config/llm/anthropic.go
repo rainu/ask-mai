@@ -2,6 +2,7 @@ package llm
 
 import (
 	"fmt"
+	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/anthropic"
 )
 
@@ -34,4 +35,8 @@ func (c *AnthropicConfig) Validate() error {
 	}
 
 	return nil
+}
+
+func (c *AnthropicConfig) BuildLLM() (llms.Model, error) {
+	return llms.NewAnthropic(c.AsOptions())
 }

@@ -2,6 +2,7 @@ package llm
 
 import (
 	"fmt"
+	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/mistral"
 )
 
@@ -31,4 +32,8 @@ func (c *MistralConfig) Validate() error {
 	}
 
 	return nil
+}
+
+func (c *MistralConfig) BuildLLM() (llms.Model, error) {
+	return llms.NewMistral(c.AsOptions())
 }
