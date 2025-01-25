@@ -40,7 +40,7 @@ func BuildFromConfig(cfg *config.Config, lastState string) (ctrl *Controller, er
 		return
 	}
 
-	if cfg.UI.Prompt.InitValue != "" {
+	if cfg.UI.Prompt.InitValue != "" && lastState == "" {
 		// ask the model the first question in background
 		message := LLMMessage{
 			ContentParts: []LLMMessageContentPart{{
