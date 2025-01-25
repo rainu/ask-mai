@@ -81,7 +81,7 @@ func defaultConfig() *Config {
 			},
 			QuitShortcut:   Shortcut{Code: "escape"},
 			Theme:          ThemeSystem,
-			MinMaxPosition: MinMaxPositionLeft,
+			MinMaxPosition: MinMaxPositionNone,
 			CodeStyle:      "github",
 			Language:       os.Getenv("LANG"),
 		},
