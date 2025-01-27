@@ -57,14 +57,11 @@ func (c *Controller) beforeClose(ctx context.Context) (prevent bool) {
 
 func (c *Controller) Shutdown() {
 	c.shutdown(c.ctx)
+	c.appConfig.Printer.Close()
 	os.Exit(0)
 }
 
 func (c *Controller) shutdown(ctx context.Context) {
 	c.LLMInterrupt()
 	c.aiModel.Close()
-
-	for _, target := range c.appConfig.Printer.Targets {
-		target.Close()
-	}
 }

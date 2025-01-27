@@ -64,6 +64,7 @@ func main() {
 			onStartUp(cfg)
 		}
 	}
+	defer cfg.Printer.Close()
 
 	ctrl, err := controller.BuildFromConfig(cfg, os.Getenv(lastStateEnv))
 	if err != nil {
@@ -95,7 +96,6 @@ func main() {
 			lastStateEnv: ctrl.GetLastState(),
 		}
 
-		//TODO: dont know why stdout doesnt work properly (os.Stderr would work)
 		cmdchain.Builder().WithInput(os.Stdin).
 			Join(os.Args[0], os.Args[1:]...).WithAdditionalEnvironmentMap(ae).
 			Finalize().WithError(os.Stderr).WithOutput(os.Stdout).

@@ -35,3 +35,9 @@ func (p *PrinterConfig) Validate() error {
 
 	return nil
 }
+
+func (p *PrinterConfig) Close() {
+	for _, target := range p.Targets {
+		target.Close()
+	}
+}
