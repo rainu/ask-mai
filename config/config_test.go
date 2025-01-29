@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/rainu/ask-mai/config/expression"
-	"github.com/rainu/ask-mai/config/llm"
 	"github.com/stretchr/testify/assert"
 	"log/slog"
 	"testing"
@@ -332,14 +331,14 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set backend",
 			args: []string{"--backend", "openai"},
 			expected: modifiedConfig(func(c *Config) {
-				c.LLM.Backend = llm.BackendOpenAI
+				c.LLM.Backend = "openai"
 			}),
 		},
 		{
 			name: "Set backend - shorthand",
 			args: []string{"-b", "openai"},
 			expected: modifiedConfig(func(c *Config) {
-				c.LLM.Backend = llm.BackendOpenAI
+				c.LLM.Backend = "openai"
 			}),
 		},
 		{
@@ -437,7 +436,7 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for backend",
 			env:  []string{EnvironmentPrefix + "BACKEND=openai"},
 			expected: modifiedConfig(func(c *Config) {
-				c.LLM.Backend = llm.BackendOpenAI
+				c.LLM.Backend = "openai"
 			}),
 		},
 		{

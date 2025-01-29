@@ -31,7 +31,7 @@ func defaultConfig() *Config {
 			PrintVersion: false,
 		},
 		LLM: llm.LLMConfig{
-			Backend: llm.BackendCopilot,
+			Backend: "copilot",
 			CallOptions: llm.CallOptionsConfig{
 				Temperature: -1,
 				TopK:        -1,

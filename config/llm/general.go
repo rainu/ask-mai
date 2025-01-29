@@ -3,16 +3,9 @@ package llm
 import (
 	"fmt"
 	"github.com/rainu/ask-mai/llms"
-)
-
-const (
-	BackendCopilot     = "copilot"
-	BackendLocalAI     = "localai"
-	BackendOpenAI      = "openai"
-	BackendAnythingLLM = "anythingllm"
-	BackendOllama      = "ollama"
-	BackendMistral     = "mistral"
-	BackendAnthropic   = "anthropic"
+	"reflect"
+	"slices"
+	"strings"
 )
 
 type llmConfig interface {
@@ -36,30 +29,33 @@ type LLMConfig struct {
 }
 
 func (c *LLMConfig) getBackend() llmConfig {
-	switch c.Backend {
-	case BackendCopilot:
-		return &c.Copilot
-	case BackendLocalAI:
-		return &c.LocalAI
-	case BackendOpenAI:
-		return &c.OpenAI
-	case BackendAnythingLLM:
-		return &c.AnythingLLM
-	case BackendOllama:
-		return &c.Ollama
-	case BackendMistral:
-		return &c.Mistral
-	case BackendAnthropic:
-		return &c.Anthropic
-	default:
-		return nil
+	val := reflect.ValueOf(c).Elem()
+	for i := 0; i < val.NumField(); i++ {
+		name := strings.ToLower(val.Type().Field(i).Name)
+		if name == strings.ToLower(c.Backend) {
+			return val.Field(i).Addr().Interface().(llmConfig)
+		}
 	}
+	return nil
+}
+
+func (c *LLMConfig) listBackends() (result []string) {
+	val := reflect.ValueOf(c).Elem()
+	for i := 0; i < val.NumField(); i++ {
+		f := val.Type().Field(i)
+		_, ok := f.Tag.Lookup("llm")
+		if ok {
+			result = append(result, strings.ToLower(f.Name))
+		}
+	}
+	slices.Sort(result)
+	return
 }
 
 func (c *LLMConfig) GetUsage(field string) string {
 	switch field {
 	case "Backend":
-		return fmt.Sprintf("The backend to use ('%s', '%s', '%s', '%s', '%s', '%s', '%s')", BackendCopilot, BackendOpenAI, BackendLocalAI, BackendAnythingLLM, BackendOllama, BackendMistral, BackendAnthropic)
+		return fmt.Sprintf("The backend to use (%s)", strings.Join(c.listBackends(), ", "))
 	}
 	return ""
 }
