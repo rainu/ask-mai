@@ -16,10 +16,15 @@ import (
 	"net/http"
 )
 
-func BuildFromConfig(cfg *config.Config, lastState string) (ctrl *Controller, err error) {
+func BuildFromConfig(cfg *config.Config, lastState string, buildMode bool) (ctrl *Controller, err error) {
 	ctrl = &Controller{
 		appConfig: cfg,
 		lastState: lastState,
+	}
+
+	if buildMode {
+		// in build mode the bindings will be generated
+		return ctrl, nil
 	}
 
 	printer := io.MultiResponsePrinter{}

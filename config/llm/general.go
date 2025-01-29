@@ -63,7 +63,7 @@ func (c *LLMConfig) GetUsage(field string) string {
 func (c *LLMConfig) Validate() error {
 	b := c.getBackend()
 	if b == nil {
-		return fmt.Errorf("Invalid backend %s", c.Backend)
+		return fmt.Errorf("Invalid backend '%s'", c.Backend)
 	}
 	if ve := b.Validate(); ve != nil {
 		return ve

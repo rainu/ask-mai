@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm"
+	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"io"
@@ -10,8 +11,8 @@ import (
 	"os"
 )
 
-func defaultConfig() *Config {
-	return &Config{
+func defaultConfig() (result *Config) {
+	result = &Config{
 		Debug: DebugConfig{
 			LogLevel:     int(slog.LevelError),
 			PprofAddress: ":6060",
@@ -31,7 +32,6 @@ func defaultConfig() *Config {
 			PrintVersion: false,
 		},
 		LLM: llm.LLMConfig{
-			Backend: "copilot",
 			CallOptions: llm.CallOptionsConfig{
 				Temperature: -1,
 				TopK:        -1,
@@ -94,4 +94,9 @@ func defaultConfig() *Config {
 			TargetsRaw: []string{PrinterTargetOut},
 		},
 	}
+	if llms.IsCopilotInstalled() {
+		result.LLM.Backend = "copilot"
+	}
+
+	return
 }

@@ -2,10 +2,17 @@ package llms
 
 import cmdchain "github.com/rainu/go-command-chain"
 
-func IsCopilotInstalled() bool {
-	err := cmdchain.Builder().
-		Join("gh", "copilot", "-v").
-		Finalize().Run()
+var copilotInstalled *bool
 
-	return err == nil
+func IsCopilotInstalled() bool {
+	if copilotInstalled == nil {
+		err := cmdchain.Builder().
+			Join("gh", "copilot", "-v").
+			Finalize().Run()
+
+		installed := err == nil
+		copilotInstalled = &installed
+	}
+
+	return *copilotInstalled
 }

@@ -66,7 +66,7 @@ func main() {
 	}
 	defer cfg.Printer.Close()
 
-	ctrl, err := controller.BuildFromConfig(cfg, os.Getenv(lastStateEnv))
+	ctrl, err := controller.BuildFromConfig(cfg, os.Getenv(lastStateEnv), buildMode)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(2)
