@@ -23,13 +23,15 @@ type llmConfig interface {
 type LLMConfig struct {
 	Backend string `yaml:"backend" short:"b"`
 
-	Copilot     CopilotConfig     `yaml:"copilot" usage:"Copilot: "`
-	LocalAI     LocalAIConfig     `yaml:"localai" usage:"LocalAI: "`
-	OpenAI      OpenAIConfig      `yaml:"openai" usage:"OpenAI: "`
-	AnythingLLM AnythingLLMConfig `yaml:"anythingllm" usage:"AnythingLLM: "`
-	Ollama      OllamaConfig      `yaml:"ollama" usage:"Ollama: "`
-	Mistral     MistralConfig     `yaml:"mistral" usage:"Mistral: "`
-	Anthropic   AnthropicConfig   `yaml:"anthropic" usage:"Anthropic: "`
+	Copilot     CopilotConfig     `yaml:"copilot" usage:"Copilot: " llm:""`
+	LocalAI     LocalAIConfig     `yaml:"localai" usage:"LocalAI: " llm:""`
+	OpenAI      OpenAIConfig      `yaml:"openai" usage:"OpenAI: " llm:""`
+	AnythingLLM AnythingLLMConfig `yaml:"anythingllm" usage:"AnythingLLM: " llm:""`
+	Ollama      OllamaConfig      `yaml:"ollama" usage:"Ollama: " llm:""`
+	Mistral     MistralConfig     `yaml:"mistral" usage:"Mistral: " llm:""`
+	Anthropic   AnthropicConfig   `yaml:"anthropic" usage:"Anthropic: " llm:""`
+	DeepSeek    DeepSeekConfig    `yaml:"deepseek" usage:"DeepSeek: " llm:""`
+
 	CallOptions CallOptionsConfig `yaml:"call" usage:"LLM-CALL: "`
 }
 

@@ -593,6 +593,22 @@ export namespace llm {
 	        this.MaxLength = source["MaxLength"];
 	    }
 	}
+	export class DeepSeekConfig {
+	    APIKey: string;
+	    Model: string;
+	    BaseUrl: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DeepSeekConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.APIKey = source["APIKey"];
+	        this.Model = source["Model"];
+	        this.BaseUrl = source["BaseUrl"];
+	    }
+	}
 	export class MistralConfig {
 	    ApiKey: string;
 	    Endpoint: string;
@@ -683,6 +699,7 @@ export namespace llm {
 	    Ollama: OllamaConfig;
 	    Mistral: MistralConfig;
 	    Anthropic: AnthropicConfig;
+	    DeepSeek: DeepSeekConfig;
 	    CallOptions: CallOptionsConfig;
 	
 	    static createFrom(source: any = {}) {
@@ -699,6 +716,7 @@ export namespace llm {
 	        this.Ollama = this.convertValues(source["Ollama"], OllamaConfig);
 	        this.Mistral = this.convertValues(source["Mistral"], MistralConfig);
 	        this.Anthropic = this.convertValues(source["Anthropic"], AnthropicConfig);
+	        this.DeepSeek = this.convertValues(source["DeepSeek"], DeepSeekConfig);
 	        this.CallOptions = this.convertValues(source["CallOptions"], CallOptionsConfig);
 	    }
 	

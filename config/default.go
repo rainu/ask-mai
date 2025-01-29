@@ -45,6 +45,9 @@ func defaultConfig() *Config {
 					},
 				},
 			},
+			DeepSeek: llm.DeepSeekConfig{
+				Model: "deepseek-chat",
+			},
 			OpenAI: llm.OpenAIConfig{
 				APIType: string(openai.APITypeOpenAI),
 				Model:   "gpt-4o-mini",
