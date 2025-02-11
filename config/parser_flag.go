@@ -22,6 +22,9 @@ func processArguments(arguments []string, fields resolvedFieldInfos) {
 	err := flag.CommandLine.Parse(arguments)
 	if errors.Is(err, flag.ErrHelp) {
 		os.Exit(0)
+	} else if err != nil {
+		println(err.Error())
+		os.Exit(1)
 	}
 }
 
