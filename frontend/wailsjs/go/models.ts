@@ -33,7 +33,7 @@ export namespace config {
 	    PprofAddress: string;
 	    VueDevTools: VueDevToolsConfig;
 	    WebKit: WebKitInspectorConfig;
-	    EnableCrashDetection: boolean;
+	    DisableCrashDetection: boolean;
 	    RestartShortcut: Shortcut;
 	    PrintVersion: boolean;
 	
@@ -47,7 +47,7 @@ export namespace config {
 	        this.PprofAddress = source["PprofAddress"];
 	        this.VueDevTools = this.convertValues(source["VueDevTools"], VueDevToolsConfig);
 	        this.WebKit = this.convertValues(source["WebKit"], WebKitInspectorConfig);
-	        this.EnableCrashDetection = source["EnableCrashDetection"];
+	        this.DisableCrashDetection = source["DisableCrashDetection"];
 	        this.RestartShortcut = this.convertValues(source["RestartShortcut"], Shortcut);
 	        this.PrintVersion = source["PrintVersion"];
 	    }

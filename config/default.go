@@ -24,7 +24,6 @@ func defaultConfig() (result *Config) {
 				OpenInspectorOnStartup: false,
 				HttpServerAddress:      "",
 			},
-			EnableCrashDetection: true,
 			RestartShortcut: Shortcut{
 				Alt:  true,
 				Code: "keyr",

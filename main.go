@@ -79,7 +79,7 @@ func main() {
 		os.Setenv("WEBKIT_INSPECTOR_HTTP_SERVER", cfg.Debug.WebKit.HttpServerAddress)
 	}
 
-	if cfg.Debug.EnableCrashDetection {
+	if !cfg.Debug.DisableCrashDetection {
 		oCtx, oCancel := context.WithCancel(context.Background())
 		health.ObserveProcess(oCtx, 98.0, func() {
 			if ctrl.IsAppMounted() {
