@@ -118,9 +118,12 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set UI prompt submit key",
-			args: []string{"--ui-prompt-submit-binding", "space"},
+			args: []string{
+				"--ui-prompt-submit-binding", "space",
+				"--ui-prompt-submit-binding", "escape",
+			},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Prompt.SubmitShortcut = Shortcut{Binding: "space"}
+				c.UI.Prompt.SubmitShortcut = Shortcut{Binding: []string{"space", "escape"}}
 			}),
 		},
 		{
@@ -302,7 +305,7 @@ func TestConfig_Parse(t *testing.T) {
 				"--ui-quit-binding", "ctrl+q",
 			},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.QuitShortcut = Shortcut{Binding: "ctrl+q"}
+				c.UI.QuitShortcut = Shortcut{Binding: []string{"ctrl+q"}}
 			}),
 		},
 		{
@@ -479,10 +482,10 @@ func TestConfig_Parse(t *testing.T) {
 		{
 			name: "Set environment variable for UI prompt submit key",
 			env: []string{
-				EnvironmentPrefix + "UI_PROMPT_SUBMIT_BINDING=space",
+				EnvironmentPrefix + "UI_PROMPT_SUBMIT_BINDING_0=space",
 			},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Prompt.SubmitShortcut = Shortcut{Binding: "space"}
+				c.UI.Prompt.SubmitShortcut = Shortcut{Binding: []string{"space"}}
 			}),
 		},
 		{
@@ -628,10 +631,10 @@ func TestConfig_Parse(t *testing.T) {
 		{
 			name: "Set environment variable for UI quit shortcut",
 			env: []string{
-				EnvironmentPrefix + "UI_QUIT_BINDING=ctrl+q",
+				EnvironmentPrefix + "UI_QUIT_BINDING_0=ctrl+q",
 			},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.QuitShortcut = Shortcut{Binding: "ctrl+q"}
+				c.UI.QuitShortcut = Shortcut{Binding: []string{"ctrl+q"}}
 			}),
 		},
 		{

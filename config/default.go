@@ -24,7 +24,7 @@ func defaultConfig() (result *Config) {
 				OpenInspectorOnStartup: false,
 				HttpServerAddress:      "",
 			},
-			RestartShortcut: Shortcut{Binding: "alt+keyr"},
+			RestartShortcut: Shortcut{Binding: []string{"Alt+KeyR"}},
 			PrintVersion:    false,
 		},
 		LLM: llm.LLMConfig{
@@ -53,7 +53,7 @@ func defaultConfig() (result *Config) {
 			Prompt: PromptConfig{
 				MinRows:         1,
 				MaxRows:         4,
-				SubmitShortcut:  Shortcut{Binding: "alt+enter"},
+				SubmitShortcut:  Shortcut{Binding: []string{"Alt+Enter", "Alt+NumpadEnter"}},
 				PinTop:          true,
 				InitAttachments: []string{},
 			},
@@ -78,7 +78,7 @@ func defaultConfig() (result *Config) {
 				AlwaysOnTop:      true,
 				Resizeable:       true,
 			},
-			QuitShortcut:   Shortcut{Binding: "escape"},
+			QuitShortcut:   Shortcut{Binding: []string{"Escape"}},
 			Theme:          ThemeSystem,
 			MinMaxPosition: MinMaxPositionNone,
 			CodeStyle:      "github",

@@ -91,14 +91,16 @@ export default defineComponent({
 	},
 	methods: {
 		onKeyup(event: KeyboardEvent) {
-			const code = event.code.toLowerCase() === this.$appConfig.UI.Prompt.SubmitShortcut.Code.toLowerCase()
-			const ctrl = event.ctrlKey === this.$appConfig.UI.Prompt.SubmitShortcut.Ctrl
-			const shift = event.shiftKey === this.$appConfig.UI.Prompt.SubmitShortcut.Shift
-			const alt = event.altKey === this.$appConfig.UI.Prompt.SubmitShortcut.Alt
-			const meta = event.metaKey === this.$appConfig.UI.Prompt.SubmitShortcut.Meta
+			for (let i = 0; i < this.$appConfig.UI.Prompt.SubmitShortcut.Code.length; i++) {
+				const code = event.code.toLowerCase() === this.$appConfig.UI.Prompt.SubmitShortcut.Code[i].toLowerCase()
+				const ctrl = event.ctrlKey === this.$appConfig.UI.Prompt.SubmitShortcut.Ctrl[i]
+				const shift = event.shiftKey === this.$appConfig.UI.Prompt.SubmitShortcut.Shift[i]
+				const alt = event.altKey === this.$appConfig.UI.Prompt.SubmitShortcut.Alt[i]
+				const meta = event.metaKey === this.$appConfig.UI.Prompt.SubmitShortcut.Meta[i]
 
-			if (code && ctrl && shift && alt && meta) {
-				this.onSubmit()
+				if (code && ctrl && shift && alt && meta) {
+					this.onSubmit()
+				}
 			}
 		},
 		onSubmit() {

@@ -49,7 +49,8 @@ ui:
         min-rows: 1
         max-rows: 10
         submit:
-            binding: alt+ctrl+meta+shift+enter
+            binding: 
+            - "alt+ctrl+meta+shift+enter"
     file-dialog:
         default-dir: /root
         show-hidden: true
@@ -62,7 +63,8 @@ ui:
             - '*.png'
     stream: true
     quit:
-        binding: alt+ctrl+meta+shift+escape
+        binding: 
+        - "alt+ctrl+meta+shift+escape"
     theme: dark
     code-style: default
     lang: en
@@ -140,7 +142,7 @@ debug:
 				MinRows:         1,
 				MaxRows:         10,
 				SubmitShortcut: Shortcut{
-					Binding: "alt+ctrl+meta+shift+enter",
+					Binding: []string{"alt+ctrl+meta+shift+enter"},
 				},
 			},
 			FileDialog: FileDialogConfig{
@@ -154,7 +156,7 @@ debug:
 			},
 			Stream: true,
 			QuitShortcut: Shortcut{
-				Binding: "alt+ctrl+meta+shift+escape",
+				Binding: []string{"alt+ctrl+meta+shift+escape"},
 			},
 			Theme:     "dark",
 			CodeStyle: "default",

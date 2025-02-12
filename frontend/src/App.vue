@@ -36,23 +36,30 @@ export default defineComponent({
 	},
 	methods: {
 		handleGlobalKeydown(event: KeyboardEvent) {
-			let code = event.code.toLowerCase() === this.$appConfig.UI.QuitShortcut.Code.toLowerCase()
-			let ctrl = event.ctrlKey === this.$appConfig.UI.QuitShortcut.Ctrl
-			let shift = event.shiftKey === this.$appConfig.UI.QuitShortcut.Shift
-			let alt = event.altKey === this.$appConfig.UI.QuitShortcut.Alt
-			let meta = event.metaKey === this.$appConfig.UI.QuitShortcut.Meta
+			console.log( event.code)
+			
+			for (let i = 0; i < this.$appConfig.UI.QuitShortcut.Code.length; i++) {
+				let code = event.code.toLowerCase() === this.$appConfig.UI.QuitShortcut.Code[i].toLowerCase()
+				let ctrl = event.ctrlKey === this.$appConfig.UI.QuitShortcut.Ctrl[i]
+				let shift = event.shiftKey === this.$appConfig.UI.QuitShortcut.Shift[i]
+				let alt = event.altKey === this.$appConfig.UI.QuitShortcut.Alt[i]
+				let meta = event.metaKey === this.$appConfig.UI.QuitShortcut.Meta[i]
 
-			if (code && ctrl && shift && alt && meta) {
-				Shutdown()
+				if (code && ctrl && shift && alt && meta) {
+					Shutdown()
+				}
 			}
 
-			code = event.code.toLowerCase() === this.$appConfig.Debug.RestartShortcut.Code.toLowerCase()
-			ctrl = event.ctrlKey === this.$appConfig.Debug.RestartShortcut.Ctrl
-			shift = event.shiftKey === this.$appConfig.Debug.RestartShortcut.Shift
-			alt = event.altKey === this.$appConfig.Debug.RestartShortcut.Alt
-			meta = event.metaKey === this.$appConfig.Debug.RestartShortcut.Meta
-			if (code && ctrl && shift && alt && meta) {
-				TriggerRestart()
+			for (let i = 0; i < this.$appConfig.Debug.RestartShortcut.Code.length; i++) {
+				let code = event.code.toLowerCase() === this.$appConfig.Debug.RestartShortcut.Code[i].toLowerCase()
+				let ctrl = event.ctrlKey === this.$appConfig.Debug.RestartShortcut.Ctrl[i]
+				let shift = event.shiftKey === this.$appConfig.Debug.RestartShortcut.Shift[i]
+				let alt = event.altKey === this.$appConfig.Debug.RestartShortcut.Alt[i]
+				let meta = event.metaKey === this.$appConfig.Debug.RestartShortcut.Meta[i]
+
+				if (code && ctrl && shift && alt && meta) {
+					TriggerRestart()
+				}
 			}
 		},
 		opacityValue(isHovering: boolean | null): number {

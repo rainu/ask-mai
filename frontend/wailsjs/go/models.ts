@@ -111,12 +111,12 @@ export namespace config {
 	    }
 	}
 	export class Shortcut {
-	    Binding: string;
-	    Code: string;
-	    Alt: boolean;
-	    Ctrl: boolean;
-	    Meta: boolean;
-	    Shift: boolean;
+	    Binding: string[];
+	    Code: string[];
+	    Alt: boolean[];
+	    Ctrl: boolean[];
+	    Meta: boolean[];
+	    Shift: boolean[];
 	
 	    static createFrom(source: any = {}) {
 	        return new Shortcut(source);
