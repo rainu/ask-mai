@@ -138,7 +138,7 @@ jobs:
 
       # Upload build assets (only for tags)
       - name: Common - Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Wails Build ${{ matrix.build.name }}
