@@ -11,7 +11,7 @@ type DebugConfig struct {
 	VueDevTools           VueDevToolsConfig     `yaml:"vue-dev-tools"`
 	WebKit                WebKitInspectorConfig `yaml:"webkit" usage:"Webkit debug configuration (only available for debug binary): "`
 	DisableCrashDetection bool                  `yaml:"disable-crash-detection" usage:"Disable crash detection. If a crash is detected the application will try to recover the last state"`
-	RestartShortcut       Shortcut              `yaml:"shortcut" usage:"The shortcut for triggering a restart"`
+	RestartShortcut       Shortcut              `yaml:"restart-shortcut" usage:"The shortcut for triggering a restart: "`
 	PrintVersion          bool                  `config:"version" yaml:"-" short:"v" usage:"Show the version"`
 }
 
@@ -36,6 +36,9 @@ func (d *DebugConfig) GetUsage(field string) string {
 func (d *DebugConfig) Validate() error {
 	if d.LogLevel < int(slog.LevelDebug) || d.LogLevel > int(slog.LevelError) {
 		return fmt.Errorf("Invalid log level")
+	}
+	if ve := d.RestartShortcut.Validate(); ve != nil {
+		return ve
 	}
 
 	return nil

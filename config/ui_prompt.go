@@ -8,3 +8,11 @@ type PromptConfig struct {
 	PinTop          bool     `yaml:"pin-top" usage:"Pin the prompt input at the top of the window (otherwise pin at the bottom)"`
 	SubmitShortcut  Shortcut `yaml:"submit" usage:"The shortcut for submit the prompt: "`
 }
+
+func (p *PromptConfig) Validate() error {
+	if ve := p.SubmitShortcut.Validate(); ve != nil {
+		return ve
+	}
+
+	return nil
+}

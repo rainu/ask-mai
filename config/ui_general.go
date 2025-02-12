@@ -26,10 +26,6 @@ type UIConfig struct {
 	Language       string           `yaml:"lang" usage:"The language to use"`
 }
 
-type MinMaxConfig struct {
-	Position string `yaml:"position"`
-}
-
 func (u *UIConfig) GetUsage(field string) string {
 	switch field {
 	case "Theme":
@@ -46,6 +42,14 @@ func (u *UIConfig) Validate() error {
 	}
 	if u.MinMaxPosition != MinMaxPositionLeft && u.MinMaxPosition != MinMaxPositionRight && u.MinMaxPosition != MinMaxPositionNone {
 		return fmt.Errorf("Invalid min-max position")
+	}
+
+	if ve := u.QuitShortcut.Validate(); ve != nil {
+		return ve
+	}
+
+	if ve := u.Prompt.Validate(); ve != nil {
+		return ve
 	}
 
 	if ve := u.FileDialog.Validate(); ve != nil {

@@ -111,6 +111,7 @@ export namespace config {
 	    }
 	}
 	export class Shortcut {
+	    Binding: string;
 	    Code: string;
 	    Alt: boolean;
 	    Ctrl: boolean;
@@ -123,6 +124,7 @@ export namespace config {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Binding = source["Binding"];
 	        this.Code = source["Code"];
 	        this.Alt = source["Alt"];
 	        this.Ctrl = source["Ctrl"];

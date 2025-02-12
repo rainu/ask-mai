@@ -49,11 +49,7 @@ ui:
         min-rows: 1
         max-rows: 10
         submit:
-            key: enter
-            alt: true
-            ctrl: true
-            meta: true
-            shift: true
+            binding: alt+ctrl+meta+shift+enter
     file-dialog:
         default-dir: /root
         show-hidden: true
@@ -66,11 +62,7 @@ ui:
             - '*.png'
     stream: true
     quit:
-        key: escape
-        alt: true
-        ctrl: true
-        meta: true
-        shift: true
+        binding: alt+ctrl+meta+shift+escape
     theme: dark
     code-style: default
     lang: en
@@ -148,11 +140,7 @@ debug:
 				MinRows:         1,
 				MaxRows:         10,
 				SubmitShortcut: Shortcut{
-					Code:  "enter",
-					Alt:   true,
-					Ctrl:  true,
-					Meta:  true,
-					Shift: true,
+					Binding: "alt+ctrl+meta+shift+enter",
 				},
 			},
 			FileDialog: FileDialogConfig{
@@ -166,11 +154,7 @@ debug:
 			},
 			Stream: true,
 			QuitShortcut: Shortcut{
-				Code:  "escape",
-				Alt:   true,
-				Ctrl:  true,
-				Meta:  true,
-				Shift: true,
+				Binding: "alt+ctrl+meta+shift+escape",
 			},
 			Theme:     "dark",
 			CodeStyle: "default",

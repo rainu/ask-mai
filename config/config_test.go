@@ -118,9 +118,9 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set UI prompt submit key",
-			args: []string{"--ui-prompt-submit-alt=false", "--ui-prompt-submit-key", "space"},
+			args: []string{"--ui-prompt-submit-binding", "space"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Prompt.SubmitShortcut = Shortcut{Code: "space"}
+				c.UI.Prompt.SubmitShortcut = Shortcut{Binding: "space"}
 			}),
 		},
 		{
@@ -153,7 +153,7 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set UI file dialog resolves aliases",
-			args: []string{"--ui-file-dialog-resolves-aliases=true"},
+			args: []string{"--ui-file-dialog-resolve-aliases=true"},
 			expected: modifiedConfig(func(c *Config) {
 				c.UI.FileDialog.ResolveAliases = true
 			}),
@@ -299,11 +299,10 @@ func TestConfig_Parse(t *testing.T) {
 		{
 			name: "Set UI quit shortcut",
 			args: []string{
-				"--ui-quit-key", "q",
-				"--ui-quit-ctrl",
+				"--ui-quit-binding", "ctrl+q",
 			},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.QuitShortcut = Shortcut{Code: "q", Ctrl: true}
+				c.UI.QuitShortcut = Shortcut{Binding: "ctrl+q"}
 			}),
 		},
 		{
@@ -480,11 +479,10 @@ func TestConfig_Parse(t *testing.T) {
 		{
 			name: "Set environment variable for UI prompt submit key",
 			env: []string{
-				EnvironmentPrefix + "UI_PROMPT_SUBMIT_ALT=false",
-				EnvironmentPrefix + "UI_PROMPT_SUBMIT_KEY=space",
+				EnvironmentPrefix + "UI_PROMPT_SUBMIT_BINDING=space",
 			},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Prompt.SubmitShortcut = Shortcut{Code: "space"}
+				c.UI.Prompt.SubmitShortcut = Shortcut{Binding: "space"}
 			}),
 		},
 		{
@@ -630,11 +628,10 @@ func TestConfig_Parse(t *testing.T) {
 		{
 			name: "Set environment variable for UI quit shortcut",
 			env: []string{
-				EnvironmentPrefix + "UI_QUIT_KEY=q",
-				EnvironmentPrefix + "UI_QUIT_CTRL=true",
+				EnvironmentPrefix + "UI_QUIT_BINDING=ctrl+q",
 			},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.QuitShortcut = Shortcut{Code: "q", Ctrl: true}
+				c.UI.QuitShortcut = Shortcut{Binding: "ctrl+q"}
 			}),
 		},
 		{
