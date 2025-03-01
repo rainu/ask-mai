@@ -33,6 +33,9 @@ func defaultConfig() (result *Config) {
 				TopK:        -1,
 				TopP:        -1,
 			},
+			Tools: llm.ToolsConfig{
+				RawTools: []string{},
+			},
 			AnythingLLM: llm.AnythingLLMConfig{
 				Thread: llm.AnythingLLMThreadConfig{
 					Delete: false,

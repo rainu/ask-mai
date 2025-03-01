@@ -358,9 +358,62 @@ export namespace controller {
 	        this.MimeType = source["MimeType"];
 	    }
 	}
+	export class LLMMessageCallResult {
+	    Content: string;
+	    Error: string;
+	    DurationMs: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new LLMMessageCallResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Content = source["Content"];
+	        this.Error = source["Error"];
+	        this.DurationMs = source["DurationMs"];
+	    }
+	}
+	export class LLMMessageCall {
+	    Id: string;
+	    Function: string;
+	    Arguments: string;
+	    Result?: LLMMessageCallResult;
+	
+	    static createFrom(source: any = {}) {
+	        return new LLMMessageCall(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Id = source["Id"];
+	        this.Function = source["Function"];
+	        this.Arguments = source["Arguments"];
+	        this.Result = this.convertValues(source["Result"], LLMMessageCallResult);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class LLMMessageContentPart {
 	    Type: string;
 	    Content: string;
+	    Call: LLMMessageCall;
 	
 	    static createFrom(source: any = {}) {
 	        return new LLMMessageContentPart(source);
@@ -370,9 +423,29 @@ export namespace controller {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Type = source["Type"];
 	        this.Content = source["Content"];
+	        this.Call = this.convertValues(source["Call"], LLMMessageCall);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class LLMMessage {
+	    Id: string;
 	    Role: string;
 	    ContentParts: LLMMessageContentPart[];
 	
@@ -382,6 +455,7 @@ export namespace controller {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Id = source["Id"];
 	        this.Role = source["Role"];
 	        this.ContentParts = this.convertValues(source["ContentParts"], LLMMessageContentPart);
 	    }
@@ -434,6 +508,8 @@ export namespace controller {
 		    return a;
 		}
 	}
+	
+	
 	
 	
 	export class OpenFileDialogArgs {
@@ -611,6 +687,56 @@ export namespace llm {
 	        this.BaseUrl = source["BaseUrl"];
 	    }
 	}
+	export class FunctionDefinition {
+	    name: string;
+	    description: string;
+	    parameters: any;
+	    command: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FunctionDefinition(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.description = source["description"];
+	        this.parameters = source["parameters"];
+	        this.command = source["command"];
+	    }
+	}
+	export class ToolsConfig {
+	    RawTools: string[];
+	    Tools: Record<string, FunctionDefinition>;
+	
+	    static createFrom(source: any = {}) {
+	        return new ToolsConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.RawTools = source["RawTools"];
+	        this.Tools = this.convertValues(source["Tools"], FunctionDefinition, true);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class MistralConfig {
 	    ApiKey: string;
 	    Endpoint: string;
@@ -703,6 +829,7 @@ export namespace llm {
 	    Anthropic: AnthropicConfig;
 	    DeepSeek: DeepSeekConfig;
 	    CallOptions: CallOptionsConfig;
+	    Tools: ToolsConfig;
 	
 	    static createFrom(source: any = {}) {
 	        return new LLMConfig(source);
@@ -720,6 +847,7 @@ export namespace llm {
 	        this.Anthropic = this.convertValues(source["Anthropic"], AnthropicConfig);
 	        this.DeepSeek = this.convertValues(source["DeepSeek"], DeepSeekConfig);
 	        this.CallOptions = this.convertValues(source["CallOptions"], CallOptionsConfig);
+	        this.Tools = this.convertValues(source["Tools"], ToolsConfig);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -740,6 +868,7 @@ export namespace llm {
 		    return a;
 		}
 	}
+	
 	
 	
 	

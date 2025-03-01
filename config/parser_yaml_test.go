@@ -14,109 +14,125 @@ func Test_processYaml(t *testing.T) {
 
 	sr := strings.NewReader(`
 ui:
-    window:
-        title: Test Window
-        init-width:
-            expression: "800"
-            value: 0
-        max-height:
-            expression: "600"
-            value: 0
-        init-pos-x:
-            expression: "100"
-            value: 0
-        init-pos-y:
-            expression: "100"
-            value: 0
-        init-zoom:
-            expression: "1.0"
-            value: 0
-        bg-color:
-            r: 255
-            g: 255
-            b: 255
-            a: 255
-        start-state: 1
-        always-on-top: true
-        frameless: true
-        resizeable: true
-        translucent: never
-    prompt:
-        value: Initial Prompt
-        attachments:
-            - attachment1
-            - attachment2
-        min-rows: 1
-        max-rows: 10
-        submit:
-            binding: 
-            - "alt+ctrl+meta+shift+enter"
-    file-dialog:
-        default-dir: /root
-        show-hidden: true
-        can-create-dirs: true
-        resolve-aliases: true
-        treat-packages-as-dirs: true
-        filter-display:
-            - Image
-        filter-pattern:
-            - '*.png'
-    stream: true
-    quit:
-        binding: 
-        - "alt+ctrl+meta+shift+escape"
-    theme: dark
-    code-style: default
-    lang: en
+  window:
+    title: Test Window
+    init-width:
+      expression: "800"
+      value: 0
+    max-height:
+      expression: "600"
+      value: 0
+    init-pos-x:
+      expression: "100"
+      value: 0
+    init-pos-y:
+      expression: "100"
+      value: 0
+    init-zoom:
+      expression: "1.0"
+      value: 0
+    bg-color:
+      r: 255
+      g: 255
+      b: 255
+      a: 255
+    start-state: 1
+    always-on-top: true
+    frameless: true
+    resizeable: true
+    translucent: never
+  prompt:
+    value: Initial Prompt
+    attachments:
+      - attachment1
+      - attachment2
+    min-rows: 1
+    max-rows: 10
+    submit:
+      binding:
+        - "alt+ctrl+meta+shift+enter"
+  file-dialog:
+    default-dir: /root
+    show-hidden: true
+    can-create-dirs: true
+    resolve-aliases: true
+    treat-packages-as-dirs: true
+    filter-display:
+      - Image
+    filter-pattern:
+      - '*.png'
+  stream: true
+  quit:
+    binding:
+      - "alt+ctrl+meta+shift+escape"
+  theme: dark
+  code-style: default
+  lang: en
 llm:
-    backend: anthropic
-    localai:
-        api-key: APIKey
-        model: model
-        base-url: baseurl
-    openai:
-        api-key: APIKey
-        api-type: APIType
-        api-version: APIVersion
-        model: Model
-        base-url: BaseUrl
-        organization: Organization
-    anythingllm:
-        base-url: BaseURL
-        token: Token
-        workspace: Workspace
-    ollama:
-        server-url: ServerURL
-        model: Model
-    mistral:
-        api-key: ApiKey
-        endpoint: Endpoint
-        model: Model
-    anthropic:
-        api-key: Token
-        base-url: BaseUrl
-        model: Model
-    call:
-        system-prompt: Your system prompt
-        max-token: 1000
-        temperature: 0.7
-        top-k: 50
-        top-p: 0.9
-        min-length: 10
-        max-length: 200
+  backend: anthropic
+  localai:
+    api-key: APIKey
+    model: model
+    base-url: baseurl
+  openai:
+    api-key: APIKey
+    api-type: APIType
+    api-version: APIVersion
+    model: Model
+    base-url: BaseUrl
+    organization: Organization
+  anythingllm:
+    base-url: BaseURL
+    token: Token
+    workspace: Workspace
+  ollama:
+    server-url: ServerURL
+    model: Model
+  mistral:
+    api-key: ApiKey
+    endpoint: Endpoint
+    model: Model
+  anthropic:
+    api-key: Token
+    base-url: BaseUrl
+    model: Model
+  call:
+    system-prompt: Your system prompt
+    max-token: 1000
+    temperature: 0.7
+    top-k: 50
+    top-p: 0.9
+    min-length: 10
+    max-length: 200
+  tool:
+    functions:
+      test:
+        description: This is a test function.
+        parameters:
+          type: object
+          properties:
+            arg1:
+              type: string
+              description: The first argument.
+            arg2:
+              type: number
+              description: The second argument.
+          required:
+            - arg1
+        command: doTest.sh
 print:
-    format: json
-    targets: 
-        - stdout
+  format: json
+  targets:
+    - stdout
 debug:
-    log-level: 1
-    pprof-address: ":1312"
-    vue-dev-tools:
-        host: "localhost"
-        port: 1312
-    webkit:
-        open-inspector: true
-        http-server: "127.0.0.1:5000"
+  log-level: 1
+  pprof-address: ":1312"
+  vue-dev-tools:
+    host: "localhost"
+    port: 1312
+  webkit:
+    open-inspector: true
+    http-server: "127.0.0.1:5000"
 `)
 
 	require.NoError(t, processYaml(sr, c))
@@ -204,6 +220,28 @@ debug:
 				TopP:         0.9,
 				MinLength:    10,
 				MaxLength:    200,
+			},
+			Tools: llm.ToolsConfig{
+				Tools: map[string]llm.FunctionDefinition{
+					"test": {
+						Description: "This is a test function.",
+						Parameters: map[string]any{
+							"type": "object",
+							"properties": map[string]any{
+								"arg1": map[string]any{
+									"type":        "string",
+									"description": "The first argument.",
+								},
+								"arg2": map[string]any{
+									"type":        "number",
+									"description": "The second argument.",
+								},
+							},
+							"required": []any{"arg1"},
+						},
+						Command: "doTest.sh",
+					},
+				},
 			},
 		},
 		Printer: PrinterConfig{

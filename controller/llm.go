@@ -15,30 +15,47 @@ type LLMAskArgs struct {
 }
 
 type LLMMessage struct {
+	Id           string
 	Role         string
 	ContentParts []LLMMessageContentPart
 }
 type LLMMessageContentPart struct {
 	Type    LLMMessageContentPartType
 	Content string
+	Call    LLMMessageCall
 }
+
+type LLMMessageCall struct {
+	Id        string
+	Function  string
+	Arguments string
+	Result    *LLMMessageCallResult
+}
+
+type LLMMessageCallResult struct {
+	Content    string
+	Error      string
+	DurationMs int64
+}
+
 type LLMMessageContentPartType string
 
 const (
 	LLMMessageContentPartTypeAttachment LLMMessageContentPartType = "attachment"
 	LLMMessageContentPartTypeText       LLMMessageContentPartType = "text"
+	LLMMessageContentPartTypeToolCall   LLMMessageContentPartType = "tool"
 )
 
 type LLMMessages []LLMMessage
 
 func (m LLMMessages) ToMessageContent(systemPrompt string) ([]llms.MessageContent, error) {
-	result := make([]llms.MessageContent, len(m))
-	for i, msg := range m {
-		result[i] = llms.MessageContent{
-			Role:  llms.ChatMessageType(msg.Role),
-			Parts: make([]llms.ContentPart, len(msg.ContentParts)),
+	var result []llms.MessageContent
+
+	for _, msg := range m {
+		msgResult := llms.MessageContent{
+			Role: llms.ChatMessageType(msg.Role),
 		}
-		for j, part := range msg.ContentParts {
+		for _, part := range msg.ContentParts {
 			switch part.Type {
 			case LLMMessageContentPartTypeAttachment:
 				path := part.Content // in case of attachment, the content is the file path
@@ -51,18 +68,42 @@ func (m LLMMessages) ToMessageContent(systemPrompt string) ([]llms.MessageConten
 					return nil, fmt.Errorf("error reading attachment: %w", err)
 				}
 				binaryPart := llms.BinaryPart(mime.String(), data)
-				result[i].Parts[j] = binaryPart
+				var msgPart llms.ContentPart = binaryPart
 
 				// special treatment for images (some llms supports image URLs but no binary containing image data)
 				if strings.HasPrefix(binaryPart.MIMEType, "image/") {
-					result[i].Parts[j] = llms.ImageURLPart(binaryPart.String())
+					msgPart = llms.ImageURLPart(binaryPart.String())
+				}
+				msgResult.Parts = append(msgResult.Parts, msgPart)
+			case LLMMessageContentPartTypeToolCall:
+				result = append(result, llms.MessageContent{
+					Role: llms.ChatMessageTypeAI,
+					Parts: []llms.ContentPart{llms.ToolCall{
+						ID:   part.Call.Id,
+						Type: string(llms.ChatMessageTypeFunction),
+						FunctionCall: &llms.FunctionCall{
+							Name:      part.Call.Function,
+							Arguments: part.Call.Arguments,
+						},
+					}},
+				})
+
+				if part.Call.Result != nil {
+					msgResult.Parts = append(msgResult.Parts, llms.ToolCallResponse{
+						ToolCallID: part.Call.Id,
+						Name:       part.Call.Function,
+						Content:    part.Call.Result.Content,
+					})
+					msgResult.Parts = append(msgResult.Parts)
 				}
 			case LLMMessageContentPartTypeText:
 				fallthrough
 			default:
-				result[i].Parts[j] = llms.TextPart(part.Content)
+				msgResult.Parts = append(msgResult.Parts, llms.TextPart(part.Content))
 			}
 		}
+
+		result = append(result, msgResult)
 	}
 
 	if systemPrompt != "" {
@@ -92,11 +133,6 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		return "", fmt.Errorf("error interrupting previous LLM: %w", err)
 	}
 
-	content, err := args.History.ToMessageContent(c.appConfig.LLM.CallOptions.SystemPrompt)
-	if err != nil {
-		return "", fmt.Errorf("error converting history to message content: %w", err)
-	}
-
 	c.aiModelMutex.Write(func() {
 		c.aiModelCtx, c.aiModelCancel = context.WithCancel(context.Background())
 	})
@@ -109,18 +145,38 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 	}()
 
 	opts := c.appConfig.LLM.CallOptions.AsOptions()
+	opts = append(opts, c.appConfig.LLM.Tools.AsOptions()...)
 	if c.appConfig.UI.Stream {
 		// streaming is enabled
 		opts = append(opts, llms.WithStreamingFunc(c.streamingFunc))
 	}
 
-	resp, err := c.aiModel.GenerateContent(c.aiModelCtx, content, opts...)
-	if err != nil {
-		return "", fmt.Errorf("error creating completion: %w", err)
-	}
+	var resp *llms.ContentResponse
+	for {
+		content, err := args.History.ToMessageContent(c.appConfig.LLM.CallOptions.SystemPrompt)
+		if err != nil {
+			return "", fmt.Errorf("error converting history to message content: %w", err)
+		}
 
-	if len(resp.Choices) == 0 {
-		return "", fmt.Errorf("no completion choices returned")
+		resp, err = c.aiModel.GenerateContent(c.aiModelCtx, content, opts...)
+		if err != nil {
+			return "", fmt.Errorf("error creating completion: %w", err)
+		}
+
+		if len(resp.Choices) == 0 {
+			return "", fmt.Errorf("no completion choices returned")
+		}
+
+		tcMessage, err := c.handleToolCall(resp)
+		if err != nil {
+			return "", fmt.Errorf("error handling tool call: %w", err)
+		}
+		if tcMessage != nil {
+			args.History = append(args.History, *tcMessage)
+			// and continue with the next iteration
+		} else {
+			break
+		}
 	}
 
 	result = resp.Choices[0].Content

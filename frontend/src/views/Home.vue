@@ -242,6 +242,21 @@ export default {
 		EventsOn('llm:stream:chunk', (chunk: string) => {
 			this.outputStream[0].Content += chunk
 		})
+		EventsOn('llm:message:add', (message: LLMMessage) => {
+			this.outputStream[0].Content = ''
+			this.chatHistory.push({
+				Interrupted: false,
+				Message: message
+			})
+		})
+		EventsOn('llm:message:update', (message: LLMMessage) => {
+			const i = this.chatHistory.findIndex((entry) => entry.Message.Id === message.Id)
+			if (i >= 0) {
+				this.chatHistory[i].Message = message
+			} else {
+				console.error('llm:message:update: message not found', message)
+			}
+		})
 		EventsOn('system:restart', () => {
 			// backend requested a restart
 			// so we have to save the current state and restart the app

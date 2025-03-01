@@ -26,6 +26,7 @@ type LLMConfig struct {
 	DeepSeek    DeepSeekConfig    `yaml:"deepseek" usage:"DeepSeek: " llm:""`
 
 	CallOptions CallOptionsConfig `yaml:"call" usage:"LLM-CALL: "`
+	Tools       ToolsConfig       `yaml:"tool" usage:"LLM-TOOLS: "`
 }
 
 func (c *LLMConfig) getBackend() llmConfig {
@@ -69,6 +70,9 @@ func (c *LLMConfig) Validate() error {
 		return ve
 	}
 	if ve := c.CallOptions.Validate(); ve != nil {
+		return ve
+	}
+	if ve := c.Tools.Validate(); ve != nil {
 		return ve
 	}
 

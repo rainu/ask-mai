@@ -20,6 +20,33 @@
 			</v-sheet>
 		</v-row>
 	</template>
+	<template v-else-if="isToolMessage">
+		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
+			<v-sheet color="grey-lighten-2" rounded>
+				<v-expansion-panels variant="accordion" bg-color="grey-lighten-2">
+					<v-expansion-panel>
+						<v-expansion-panel-title disable-icon-rotate class="pa-2">
+							<v-icon icon="mdi-function"></v-icon>
+							<span class="mr-2" v-html="highlight(`${tc.Function}(${tc.Arguments})`)"></span>
+							<template v-slot:actions>
+								<template v-if="tc.Result">
+									<v-icon color="error" icon="mdi-alert-circle" v-if="tc.Result.Error"></v-icon>
+									<v-icon color="success" icon="mdi-check-circle" v-else></v-icon>
+								</template>
+								<template v-else>
+									<v-progress-circular indeterminate size="small"></v-progress-circular>
+								</template>
+							</template>
+						</v-expansion-panel-title>
+						<v-expansion-panel-text v-if="tc.Result">
+							<pre>{{ tc.Result.Content }}</pre>
+							<v-alert type="error" v-if="tc.Result.Error" density="compact">{{ tc.Result.Error }}</v-alert>
+						</v-expansion-panel-text>
+					</v-expansion-panel>
+				</v-expansion-panels>
+			</v-sheet>
+		</v-row>
+	</template>
 	<template v-else>
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15">
 			<v-sheet color="grey-lighten-2" class="pa-2" rounded>
@@ -38,6 +65,7 @@ import { controller } from '../../wailsjs/go/models.ts'
 import { PathSeparator } from '../common/platform.ts'
 import AssetMeta = controller.AssetMeta
 import LLMMessageContentPart = controller.LLMMessageContentPart
+import LLMMessageCall = controller.LLMMessageCall
 import hljs from 'highlight.js'
 import { type Options as MarkdownItOptions } from 'markdown-it'
 import { UseCodeStyle } from './code-style.ts'
@@ -46,11 +74,13 @@ import { ClipboardSetText } from '../../wailsjs/runtime'
 export enum Role {
 	User = 'human',
 	Bot = 'ai',
+	Tool = 'tool',
 }
 
 export enum ContentType {
 	Text = 'text',
 	Attachment = 'attachment',
+	ToolCall = 'tool',
 }
 
 export default defineComponent({
@@ -86,11 +116,17 @@ export default defineComponent({
 		isUserMessage() {
 			return this.role === Role.User
 		},
+		isToolMessage() {
+			return this.role === Role.Tool
+		},
 		textMessage() {
 			return this.message
 				.filter((part) => part.Type === ContentType.Text)
 				.map((part) => part.Content)
 				.join('')
+		},
+		toolCalls(): LLMMessageCall[] {
+			return this.message.filter((part) => part.Type === ContentType.ToolCall).map((part) => part.Call)
 		},
 		attachments() {
 			return this.message.filter((part) => part.Type === ContentType.Attachment).map((part) => part.Content)
@@ -139,6 +175,9 @@ export default defineComponent({
 		isImage(asset: AssetMeta) {
 			return asset.MimeType.startsWith('image/')
 		},
+		highlight(code: string) {
+			return hljs.highlight(code, { language: 'JavaScript' }).value
+		}
 	},
 	watch: {
 		textMessage() {

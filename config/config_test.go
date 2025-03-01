@@ -666,6 +666,13 @@ func TestConfig_Parse(t *testing.T) {
 				c.UI.Prompt.InitValue = "arg-prompt"
 			}),
 		},
+		{
+			name: "Set tools",
+			args: []string{"--tool-function", "JSON_CONTENT"},
+			expected: modifiedConfig(func(c *Config) {
+				c.LLM.Tools.RawTools = []string{"JSON_CONTENT"}
+			}),
+		},
 	}
 
 	for _, tt := range tests {
