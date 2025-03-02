@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rainu/ask-mai/config/expression"
+	"github.com/rainu/ask-mai/config/llm"
 	flag "github.com/spf13/pflag"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -86,6 +87,8 @@ func printUsage(output io.Writer, fields resolvedFieldInfos) {
 	for _, style := range availableCodeStyles {
 		fmt.Fprintf(output, "  - %s\n", style)
 	}
+
+	llm.PrintToolsUsage(output)
 
 	fmt.Fprintf(output, "\nThe expression language is JavaScript. You can use the following variables and functions:\n")
 	fmt.Fprintf(output, "\nFunctions:\n")
