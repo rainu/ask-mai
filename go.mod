@@ -3,13 +3,13 @@ module github.com/rainu/ask-mai
 go 1.23.1
 
 require (
-	github.com/dop251/goja v0.0.0-20241024094426-79f3a7efcdbd
-	github.com/gabriel-vasile/mimetype v1.4.7
+	github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17
+	github.com/gabriel-vasile/mimetype v1.4.8
 	github.com/rainu/go-command-chain v0.4.0
-	github.com/shirou/gopsutil/v4 v4.24.12
-	github.com/spf13/pflag v1.0.5
+	github.com/shirou/gopsutil/v4 v4.25.2
+	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
-	github.com/tmc/langchaingo v0.1.12
+	github.com/tmc/langchaingo v0.1.13
 	github.com/wailsapp/wails/v2 v2.10.1
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -18,8 +18,8 @@ require (
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dlclark/regexp2 v1.11.4 // indirect
-	github.com/ebitengine/purego v0.8.1 // indirect
-	github.com/gage-technologies/mistral-go v1.0.0 // indirect
+	github.com/ebitengine/purego v0.8.2 // indirect
+	github.com/gage-technologies/mistral-go v1.1.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
@@ -55,5 +55,3 @@ require (
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 )
-
-// replace github.com/wailsapp/wails/v2 v2.9.2 => /tmp
