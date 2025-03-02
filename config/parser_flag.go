@@ -15,8 +15,16 @@ func processArguments(arguments []string, fields resolvedFieldInfos) {
 
 	fields.setupFlags()
 
+	var helpArgs, helpEnv, helpYaml, helpStyles, helpExpr, helpTool bool
+	flag.BoolVarP(&helpArgs, "help-arg", "", false, "Show this help")
+	flag.BoolVarP(&helpEnv, "help-env", "", false, "Show help for environment variables")
+	flag.BoolVarP(&helpYaml, "help-config", "", false, "Show help for config file")
+	flag.BoolVarP(&helpStyles, "help-styles", "", false, "Show help of code styles")
+	flag.BoolVarP(&helpExpr, "help-expression", "", false, "Show help for expressions")
+	flag.BoolVarP(&helpTool, "help-tool", "", false, "Show help for tools")
+
 	flag.Usage = func() {
-		printUsage(os.Stderr, fields)
+		printHelpArgs(os.Stderr, fields)
 	}
 
 	err := flag.CommandLine.Parse(arguments)
@@ -25,6 +33,26 @@ func processArguments(arguments []string, fields resolvedFieldInfos) {
 	} else if err != nil {
 		println(err.Error())
 		os.Exit(1)
+	}
+
+	if helpArgs {
+		printHelpArgs(os.Stdout, fields)
+		os.Exit(0)
+	} else if helpEnv {
+		printHelpEnv(os.Stdout, fields)
+		os.Exit(0)
+	} else if helpYaml {
+		printHelpConfig(os.Stdout, fields)
+		os.Exit(0)
+	} else if helpStyles {
+		printHelpStyles(os.Stdout)
+		os.Exit(0)
+	} else if helpExpr {
+		printHelpExpression(os.Stdout)
+		os.Exit(0)
+	} else if helpTool {
+		printHelpTool(os.Stdout)
+		os.Exit(0)
 	}
 }
 

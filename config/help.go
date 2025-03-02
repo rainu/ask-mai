@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
 	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm"
 	flag "github.com/spf13/pflag"
@@ -11,6 +12,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"gopkg.in/yaml.v3"
 	"io"
 	"net/http"
 	"os"
@@ -42,19 +44,20 @@ func (n NoopLooger) Error(message string) {
 func (n NoopLooger) Fatal(message string) {
 }
 
-func printUsage(output io.Writer, fields resolvedFieldInfos) {
+func printHelpArgs(output io.Writer, fields resolvedFieldInfos) {
 	fmt.Fprintf(output, "Usage of %s:\n", os.Args[0])
 	flag.PrintDefaults()
+}
 
-	fmt.Fprintf(output, "\nAvailable environment variables:\n")
+func printHelpEnv(output io.Writer, fields resolvedFieldInfos) {
+	fmt.Fprintf(output, "Available environment variables:\n")
 
-	maxLen := 0
+	table := tablewriter.NewWriter(output)
+	table.SetBorder(false)
+	table.SetHeader([]string{"Name", "Usage"})
+	table.SetAutoWrapText(false)
+
 	sort.Slice(fields, func(i, j int) bool {
-		//the sort algorithm must iterate all elements
-		//so here we "recycle" the loop to determine max-length
-		if len(fields[i].Env) > maxLen {
-			maxLen = len(fields[i].Env)
-		}
 		return fields[i].Env < fields[j].Env
 	})
 	for _, field := range fields {
@@ -62,35 +65,47 @@ func printUsage(output io.Writer, fields resolvedFieldInfos) {
 		if strings.HasPrefix(field.Value.Type().String(), "*[]") {
 			env += "_N"
 		}
-		fmt.Fprintf(output, "  %s%s\t%s\n", env, strings.Repeat(" ", maxLen-len(env)), field.Usage)
+		table.Append([]string{env, field.Usage})
 	}
+	table.Render()
+}
 
+func printHelpConfig(output io.Writer, fields resolvedFieldInfos) {
 	sort.Slice(fields, func(i, j int) bool {
 		return strings.Join(fields[i].YamlPath, "") < strings.Join(fields[j].YamlPath, "")
 	})
 
-	fmt.Fprintf(output, "\nYaml keys:\n")
+	fmt.Fprintf(output, "Yaml keys:\n")
+
+	table := tablewriter.NewWriter(output)
+	table.SetBorder(false)
+	table.SetHeader([]string{"Name", "Usage"})
+	table.SetAutoWrapText(false)
+
 	for _, field := range fields {
 		yamlKey := strings.TrimLeft(strings.Join(field.YamlPath, "."), ".")
 		if strings.HasSuffix(yamlKey, "-") {
 			continue
 		}
-		fmt.Fprintf(output, "  %s%s\t%s\n", yamlKey, strings.Repeat(" ", maxLen-len(yamlKey)), field.Usage)
+		table.Append([]string{yamlKey, field.Usage})
 	}
+	table.Render()
 
 	fmt.Fprintf(output, "\nYaml lookup file locations:\n")
 	for _, location := range yamlLookupLocations() {
 		fmt.Fprintf(output, "  - %s\n", location)
 	}
+}
 
+func printHelpStyles(output io.Writer) {
 	fmt.Fprintf(output, "\nAvailable code styles:\n")
 	for _, style := range availableCodeStyles {
 		fmt.Fprintf(output, "  - %s\n", style)
 	}
+}
 
-	llm.PrintToolsUsage(output)
-
-	fmt.Fprintf(output, "\nThe expression language is JavaScript. You can use the following variables and functions:\n")
+func printHelpExpression(output io.Writer) {
+	fmt.Fprintf(output, "The expression language is JavaScript. You can use the following variables and functions:\n")
 	fmt.Fprintf(output, "\nFunctions:\n")
 	fmt.Fprintf(output, "  - %s: writes a message to the console.\n", expression.FuncNameLog)
 
@@ -123,5 +138,81 @@ func printUsage(output io.Writer, fields resolvedFieldInfos) {
 		},
 		Logger:           &NoopLooger{},
 		WindowStartState: options.Minimised,
+	})
+}
+
+func printHelpTool(output io.Writer) {
+	fmt.Fprintf(output, "Tool-Usage:"+
+		"\nYou can define many functions that can be used by the LLM."+
+		"\nThe functions can be given by argument (JSON), Environment (JSON) or config file (YAML)."+
+		"\nThe fields are more or less the same for all three methods:\n")
+
+	table := tablewriter.NewWriter(output)
+	table.SetBorder(false)
+	table.SetHeader([]string{"Name", "Type", "Usage"})
+	table.SetAutoWrapText(false)
+
+	fields := scanConfigTags(nil, &llm.FunctionDefinition{})
+	for _, field := range fields {
+		t := strings.TrimPrefix(field.Value.Type().String(), "*")
+		if strings.HasPrefix(t, "interface") {
+			t = "any"
+		}
+		table.Append([]string{field.Flag, t, field.Usage})
+	}
+	table.Render()
+
+	fmt.Fprintf(output, "\nJSON:\n")
+
+	exampleDefs := []llm.FunctionDefinition{
+		{
+			Name:        "createFile",
+			Description: "This function creates a file.",
+			Parameters: map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"path": map[string]any{
+						"type":        "string",
+						"description": "The path to the file.",
+					},
+				},
+				"required": []string{"path"},
+			},
+			Command:       "/usr/bin/touch",
+			NeedsApproval: true,
+		},
+		{
+			Name:        "echo",
+			Description: "This function echoes a message.",
+			Parameters: map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"message": map[string]any{
+						"type":        "string",
+						"description": "The message to echo.",
+					},
+				},
+				"required": []string{"message"},
+			},
+			Command:       "/usr/bin/echo",
+			NeedsApproval: false,
+		},
+	}
+
+	fdm := map[string]llm.FunctionDefinition{}
+	for _, def := range exampleDefs {
+		jsonDef, _ := json.MarshalIndent(def, "", " ")
+		fmt.Fprintf(output, "\n%s\n", jsonDef)
+
+		fdm[def.Name] = def
+	}
+
+	fmt.Fprintf(output, "\nYAML:\n\n")
+	ye := yaml.NewEncoder(output)
+	ye.SetIndent(2)
+	ye.Encode(map[string]any{
+		"llm": map[string]any{
+			"tool": llm.ToolsConfig{Tools: fdm},
+		},
 	})
 }
