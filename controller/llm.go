@@ -26,10 +26,11 @@ type LLMMessageContentPart struct {
 }
 
 type LLMMessageCall struct {
-	Id        string
-	Function  string
-	Arguments string
-	Result    *LLMMessageCallResult
+	Id            string
+	Function      string
+	Arguments     string
+	NeedsApproval bool
+	Result        *LLMMessageCallResult
 }
 
 type LLMMessageCallResult struct {

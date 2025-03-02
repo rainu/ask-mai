@@ -120,6 +120,7 @@ llm:
           required:
             - arg1
         command: doTest.sh
+        approval: true
 print:
   format: json
   targets:
@@ -239,7 +240,8 @@ debug:
 							},
 							"required": []any{"arg1"},
 						},
-						Command: "doTest.sh",
+						Command:       "doTest.sh",
+						NeedsApproval: true,
 					},
 				},
 			},

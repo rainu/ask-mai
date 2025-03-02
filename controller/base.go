@@ -21,6 +21,9 @@ type Controller struct {
 	aiModelMutex  sync.Mutex
 	lastAskResult llmAskResult
 
+	toolApprovalChannel map[string]chan bool
+	toolApprovalMutex   sync.Mutex
+
 	appConfig *config.Config
 	printer   io.ResponsePrinter
 

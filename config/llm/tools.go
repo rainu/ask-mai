@@ -13,10 +13,11 @@ type ToolsConfig struct {
 }
 
 type FunctionDefinition struct {
-	Name        string `yaml:"-" json:"name"`
-	Description string `yaml:"description" json:"description"`
-	Parameters  any    `yaml:"parameters" json:"parameters"`
-	Command     string `yaml:"command" json:"command"`
+	Name          string `yaml:"-" json:"name"`
+	Description   string `yaml:"description" json:"description"`
+	Parameters    any    `yaml:"parameters" json:"parameters"`
+	Command       string `yaml:"command" json:"command"`
+	NeedsApproval bool   `yaml:"approval" json:"approval"`
 }
 
 func (t *ToolsConfig) Validate() error {

@@ -378,6 +378,7 @@ export namespace controller {
 	    Id: string;
 	    Function: string;
 	    Arguments: string;
+	    NeedsApproval: boolean;
 	    Result?: LLMMessageCallResult;
 	
 	    static createFrom(source: any = {}) {
@@ -389,6 +390,7 @@ export namespace controller {
 	        this.Id = source["Id"];
 	        this.Function = source["Function"];
 	        this.Arguments = source["Arguments"];
+	        this.NeedsApproval = source["NeedsApproval"];
 	        this.Result = this.convertValues(source["Result"], LLMMessageCallResult);
 	    }
 	
@@ -692,6 +694,7 @@ export namespace llm {
 	    description: string;
 	    parameters: any;
 	    command: string;
+	    approval: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new FunctionDefinition(source);
@@ -703,6 +706,7 @@ export namespace llm {
 	        this.description = source["description"];
 	        this.parameters = source["parameters"];
 	        this.command = source["command"];
+	        this.approval = source["approval"];
 	    }
 	}
 	export class ToolsConfig {

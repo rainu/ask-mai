@@ -8,7 +8,7 @@
 				<template v-for="attachmentMeta of attachmentsMeta" :key="attachmentMeta.Path">
 					<template v-if="isImage(attachmentMeta)">
 						<div class="text-end">
-							<img :src="attachmentMeta.Url" :alt="attachmentMeta.Url" :style="{'max-width': `${imageWidth}px`}" />
+							<img :src="attachmentMeta.Url" :alt="attachmentMeta.Url" :style="{ 'max-width': `${imageWidth}px` }" />
 						</div>
 					</template>
 					<template v-else>
@@ -33,15 +33,29 @@
 									<v-icon color="error" icon="mdi-alert-circle" v-if="tc.Result.Error"></v-icon>
 									<v-icon color="success" icon="mdi-check-circle" v-else></v-icon>
 								</template>
-								<template v-else>
-									<v-progress-circular indeterminate size="small"></v-progress-circular>
-								</template>
 							</template>
 						</v-expansion-panel-title>
 						<v-expansion-panel-text v-if="tc.Result">
 							<pre>{{ tc.Result.Content }}</pre>
 							<v-alert type="error" v-if="tc.Result.Error" density="compact">{{ tc.Result.Error }}</v-alert>
 						</v-expansion-panel-text>
+
+						<v-progress-linear indeterminate size="small" v-if="!tc.NeedsApproval"></v-progress-linear>
+
+						<template v-if="tc.NeedsApproval && !tc.Result">
+							<v-row dense>
+								<v-col cols="6" class="pr-0">
+									<v-btn block color="success" @click="setToolCallApproval(tc, true)">
+										<v-icon icon="mdi-check"></v-icon>
+									</v-btn>
+								</v-col>
+								<v-col cols="6" class="pl-0">
+									<v-btn block color="error" @click="setToolCallApproval(tc, false)">
+										<v-icon icon="mdi-close"></v-icon>
+									</v-btn>
+								</v-col>
+							</v-row>
+						</template>
 					</v-expansion-panel>
 				</v-expansion-panels>
 			</v-sheet>
@@ -60,7 +74,7 @@
 import { defineComponent, PropType } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 
-import { GetAssetMeta } from '../../wailsjs/go/controller/Controller'
+import { GetAssetMeta, LLMApproveToolCall, LLMRejectToolCall } from '../../wailsjs/go/controller/Controller'
 import { controller } from '../../wailsjs/go/models.ts'
 import { PathSeparator } from '../common/platform.ts'
 import AssetMeta = controller.AssetMeta
@@ -177,7 +191,15 @@ export default defineComponent({
 		},
 		highlight(code: string) {
 			return hljs.highlight(code, { language: 'JavaScript' }).value
-		}
+		},
+		setToolCallApproval(call: LLMMessageCall, approved: boolean) {
+			call.NeedsApproval = false
+			if (approved) {
+				LLMApproveToolCall(call.Id)
+			} else {
+				LLMRejectToolCall(call.Id)
+			}
+		},
 	},
 	watch: {
 		textMessage() {

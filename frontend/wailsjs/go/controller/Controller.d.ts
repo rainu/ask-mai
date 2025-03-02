@@ -13,9 +13,13 @@ export function GetLastState():Promise<string>;
 
 export function IsAppMounted():Promise<boolean>;
 
+export function LLMApproveToolCall(arg1:string):Promise<void>;
+
 export function LLMAsk(arg1:controller.LLMAskArgs):Promise<string>;
 
 export function LLMInterrupt():Promise<void>;
+
+export function LLMRejectToolCall(arg1:string):Promise<void>;
 
 export function LLMWait():Promise<string>;
 
