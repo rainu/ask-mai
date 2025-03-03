@@ -20,6 +20,8 @@ https://github.com/user-attachments/assets/a6d16332-55a1-4866-9f3e-31490a488935
   * [Ollama](https://ollama.com/)
   * [Mistral](https://mistral.ai/)
   * [Anthropic](https://www.anthropic.com/)
+* Tool Support
+  * You can define your own tools which can be called from the LLM
 * Scriptable
   * All settings can be set via:
     * yaml configuration file 
