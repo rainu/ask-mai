@@ -13,6 +13,7 @@ require (
 	github.com/tmc/langchaingo v0.1.13
 	github.com/wailsapp/wails/v2 v2.10.1
 	gopkg.in/yaml.v3 v3.0.1
+	mvdan.cc/sh/v3 v3.7.0
 )
 
 require (

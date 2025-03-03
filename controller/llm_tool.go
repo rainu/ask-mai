@@ -117,17 +117,20 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall) (result L
 		}
 	}
 
-	cmd := toolDefinition.Command
+	cmd, args, err := toolDefinition.GetCommandWithArgs(call.FunctionCall.Arguments)
+	if err != nil {
+		return result, fmt.Errorf("error creating command for tool '%s': %w", call.FunctionCall.Name, err)
+	}
 
 	buf := bytes.NewBuffer([]byte{})
 	t := time.Now()
 
 	slog.Debug("Start running command.",
-		"command", cmd,
+		"command", toolDefinition.Command,
 		"argument", call.FunctionCall.Arguments,
 	)
 	err = cmdchain.Builder().
-		JoinWithContext(ctx, cmd, call.FunctionCall.Arguments).
+		JoinWithContext(ctx, cmd, args...).
 		Finalize().
 		WithGlobalErrorChecker(cmdchain.IgnoreExitErrors()).WithOutput(buf).WithError(buf).
 		Run()

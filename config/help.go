@@ -215,4 +215,21 @@ func printHelpTool(output io.Writer) {
 			"tool": llm.ToolsConfig{Tools: fdm},
 		},
 	})
+
+	fmt.Fprintf(output, "\nThe LLM will respond the arguments as JSON. You can use the following placeholders in the command:\n")
+	fmt.Fprintf(output, "  - $@: all arguments (1:1 the JSON from the LLM)\n")
+	fmt.Fprintf(output, "  - $<varName>: the value of <varName> in the LLM's JSON\n")
+	fmt.Fprintf(output, "\nExamples:\n")
+
+	table = tablewriter.NewWriter(output)
+	table.SetBorder(false)
+	table.SetHeader([]string{"Pattern", "LLM's JSON", "Result"})
+	table.SetAutoWrapText(false)
+
+	table.Append([]string{`/usr/bin/echo $@`, `{"message": "hello world"}`, `/usr/bin/echo {"message": "hello world"}`})
+	table.Append([]string{`/usr/bin/echo $message`, `{"message": "hello world"}`, `/usr/bin/echo hello world`})
+	table.Append([]string{`/usr/bin/echo "$message"`, `{"message": "hello world"}`, `/usr/bin/echo "hello world"`})
+	table.Append([]string{`/usr/bin/echo "$message"`, `{}`, `/usr/bin/echo ""`})
+
+	table.Render()
 }
