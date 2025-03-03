@@ -1,6 +1,6 @@
 module github.com/rainu/ask-mai
 
-go 1.23.1
+go 1.24.0
 
 require (
 	github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17
