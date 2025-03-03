@@ -38,7 +38,7 @@ jobs:
 #          { name: 'ask-mai-linux-arm64', platform: linux/arm64, os: ubuntu-latest },
 #          { name: 'ask-mai-linux-arm', platform: linux/arm, os: ubuntu-latest },
           { name: 'ask-mai-windows-amd64', platform: windows/amd64, os: windows-latest },
-          { name: 'ask-mai-windows-arm64', platform: windows/arm64, os: windows-latest },
+#          { name: 'ask-mai-windows-arm64', platform: windows/arm64, os: windows-latest },
           { name: 'ask-mai-windows-386', platform: windows/386, os: windows-latest },
           { name: 'ask-mai-darwin-amd64', platform: darwin/amd64, os: macos-latest },
           { name: 'ask-mai-darwin-arm64', platform: darwin/arm64, os: macos-latest },
