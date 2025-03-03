@@ -29,7 +29,7 @@ modules:
     sources:
       - type: archive
         url: https://go.dev/dl/go1.24.0.linux-amd64.tar.gz
-        sha256: 6924efde5de86fe277676e929dc9917d466efa02fb934197bc2eba35d5680971
+        sha256: dea9ca38a0b852a74e81c26134671af7c0fbe65d81b0dc1c5bfe22cf7d4c8858
   - name: nodejs
     buildsystem: simple
     build-commands:
