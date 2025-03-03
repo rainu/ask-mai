@@ -28,7 +28,7 @@ modules:
       - mv $(pwd)/* $GOROOT
     sources:
       - type: archive
-        url: https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
+        url: https://go.dev/dl/go1.24.0.linux-amd64.tar.gz
         sha256: 6924efde5de86fe277676e929dc9917d466efa02fb934197bc2eba35d5680971
   - name: nodejs
     buildsystem: simple
@@ -42,7 +42,7 @@ modules:
   - name: wails
     buildsystem: simple
     build-commands:
-      - $GOROOT/bin/go install github.com/wailsapp/wails/v2/cmd/wails@v2.9.2
+      - $GOROOT/bin/go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.1
   - name: ask-mai
     buildsystem: simple
     build-commands:
