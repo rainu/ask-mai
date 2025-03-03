@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestGetCommandWithArgs(t *testing.T) {
+func TestFunctionDefinition_GetCommandWithArgs(t *testing.T) {
 	tests := []struct {
 		command     string
 		args        string
@@ -81,6 +81,12 @@ func TestGetCommandWithArgs(t *testing.T) {
 			expectArgs: []string{},
 		},
 		{
+			command:    `$cmd $args`,
+			args:       `{"cmd": "/usr/bin/echo", "args": "hello world"}`,
+			expectCmd:  "/usr/bin/echo",
+			expectArgs: []string{"hello", "world"},
+		},
+		{
 			command:     `/usr/bin/echo $msg`,
 			args:        `BROKEN_JSON`,
 			expectError: true,
@@ -100,6 +106,109 @@ func TestGetCommandWithArgs(t *testing.T) {
 
 			assert.Equal(t, tc.expectCmd, cmd)
 			assert.Equal(t, tc.expectArgs, args)
+		})
+	}
+}
+
+func TestFunctionDefinition_GetEnvironment(t *testing.T) {
+	tests := []struct {
+		env         map[string]string
+		args        string
+		expectEnv   map[any]any
+		expectError bool
+	}{
+		{
+			env: map[string]string{
+				"USER": "rainu",
+				"ENV1": "$msg",
+			},
+			args: `{"msg": "hello world"}`,
+			expectEnv: map[any]any{
+				"USER": "rainu",
+				"ENV1": "hello world",
+			},
+		},
+		{
+			env: map[string]string{
+				"USER": "rainu",
+				"ENV1": "$@",
+			},
+			args: `{"msg": "hello world"}`,
+			expectEnv: map[any]any{
+				"USER": "rainu",
+				"ENV1": `{"msg": "hello world"}`,
+			},
+		},
+		{
+			env: map[string]string{
+				"USER": "rainu",
+				"ENV1": "$@",
+			},
+			args:        `BROKEN_JSON`,
+			expectError: true,
+		},
+	}
+
+	for i, tc := range tests {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			fn := &FunctionDefinition{Environment: tc.env}
+			re, err := fn.GetEnvironment(tc.args)
+
+			if tc.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, tc.expectEnv, re)
+		})
+
+		t.Run(fmt.Sprintf("Additional_%d", i), func(t *testing.T) {
+			fn := &FunctionDefinition{AdditionalEnvironment: tc.env}
+			re, err := fn.GetAdditionalEnvironment(tc.args)
+
+			if tc.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, tc.expectEnv, re)
+		})
+	}
+}
+
+func TestFunctionDefinition_GetWorkingDirectory(t *testing.T) {
+	tests := []struct {
+		workDir     string
+		args        string
+		expectWD    string
+		expectError bool
+	}{
+		{
+			workDir:  "/usr/$user/home",
+			args:     `{"user":"rainu"}`,
+			expectWD: "/usr/rainu/home",
+		},
+		{
+			workDir:     "/usr/$user/home",
+			args:        `BROKEN_JSON`,
+			expectError: true,
+		},
+	}
+
+	for i, tc := range tests {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			fn := &FunctionDefinition{WorkingDir: tc.workDir}
+			re, err := fn.GetWorkingDirectory(tc.args)
+
+			if tc.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, tc.expectWD, re)
 		})
 	}
 }

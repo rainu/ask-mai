@@ -129,9 +129,31 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall) (result L
 		"command", toolDefinition.Command,
 		"argument", call.FunctionCall.Arguments,
 	)
-	err = cmdchain.Builder().
-		JoinWithContext(ctx, cmd, args...).
-		Finalize().
+	cmdBuild := cmdchain.Builder().JoinWithContext(ctx, cmd, args...)
+
+	if len(toolDefinition.Environment) > 0 {
+		env, err := toolDefinition.GetEnvironment(call.FunctionCall.Arguments)
+		if err != nil {
+			return result, fmt.Errorf("error creating environment for tool '%s': %w", call.FunctionCall.Name, err)
+		}
+		cmdBuild = cmdBuild.WithEnvironmentMap(env)
+	}
+	if len(toolDefinition.AdditionalEnvironment) > 0 {
+		env, err := toolDefinition.GetAdditionalEnvironment(call.FunctionCall.Arguments)
+		if err != nil {
+			return result, fmt.Errorf("error creating additional environment for tool '%s': %w", call.FunctionCall.Name, err)
+		}
+		cmdBuild = cmdBuild.WithAdditionalEnvironmentMap(env)
+	}
+	if toolDefinition.WorkingDir != "" {
+		wd, err := toolDefinition.GetWorkingDirectory(call.FunctionCall.Arguments)
+		if err != nil {
+			return result, fmt.Errorf("error creating working directory for tool '%s': %w", call.FunctionCall.Name, err)
+		}
+		cmdBuild = cmdBuild.WithWorkingDirectory(wd)
+	}
+
+	err = cmdBuild.Finalize().
 		WithGlobalErrorChecker(cmdchain.IgnoreExitErrors()).WithOutput(buf).WithError(buf).
 		Run()
 

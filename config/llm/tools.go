@@ -6,6 +6,7 @@ import (
 	"github.com/tmc/langchaingo/llms"
 	"log/slog"
 	"mvdan.cc/sh/v3/shell"
+	"strings"
 )
 
 const FunctionArgumentNameAll = "@"
@@ -20,8 +21,12 @@ type FunctionDefinition struct {
 	Name          string `config:"name" yaml:"-" json:"name" usage:"The name of the function"`
 	Description   string `yaml:"description" json:"description" usage:"The description of the function"`
 	Parameters    any    `yaml:"parameters" json:"parameters" usage:"The parameter definition of the function"`
-	Command       string `yaml:"command" json:"command" usage:"The command to execute. This is a format string with placeholders for the parameters. Example: /usr/bin/touch $path"`
 	NeedsApproval bool   `yaml:"approval" json:"approval" usage:"Needs user approval to be executed"`
+
+	Command               string            `yaml:"command" json:"command" usage:"The command to execute. This is a format string with placeholders for the parameters. Example: /usr/bin/touch $path"`
+	Environment           map[string]string `yaml:"env,omitempty" json:"env,omitempty" usage:"Environment variables to pass to the command (will overwrite the default environment)"`
+	AdditionalEnvironment map[string]string `yaml:"additionalEnv,omitempty" json:"additionalEnv,omitempty" usage:"Additional environment variables to pass to the command (will be merged with the default environment)"`
+	WorkingDir            string            `yaml:"workingDir,omitempty" json:"workingDir,omitempty" usage:"The working directory for the command"`
 }
 
 func (t *ToolsConfig) Validate() error {
@@ -64,8 +69,30 @@ func (t *ToolsConfig) AsOptions() (opts []llms.CallOption) {
 	return
 }
 
+type parsedArgs map[string]interface{}
+
+func (p parsedArgs) Get(varName string) (string, error) {
+	varValue, exists := p[varName]
+	if !exists {
+		return "", nil
+	}
+
+	val, err := json.Marshal(varValue)
+	if err != nil {
+		return "", err
+	}
+	sVal := string(val)
+	if len(sVal) > 0 && sVal[0] == '"' {
+		sVal = sVal[1:]
+	}
+	if len(sVal) > 0 && sVal[len(sVal)-1] == '"' {
+		sVal = sVal[:len(sVal)-1]
+	}
+	return sVal, nil
+}
+
 func (f *FunctionDefinition) GetCommandWithArgs(jsonArgs string) (string, []string, error) {
-	var data map[string]interface{}
+	var data parsedArgs
 	if err := json.Unmarshal([]byte(jsonArgs), &data); err != nil {
 		return "", nil, fmt.Errorf("failed to parse JSON: %w", err)
 	}
@@ -74,32 +101,66 @@ func (f *FunctionDefinition) GetCommandWithArgs(jsonArgs string) (string, []stri
 		if varName == FunctionArgumentNameAll {
 			return jsonArgs
 		}
-
-		varValue, exists := data[varName]
-		if !exists {
-			return ""
-		}
-
-		val, err := json.Marshal(varValue)
+		r, err := data.Get(varName)
 		if err != nil {
 			slog.Error("Failed to marshal value",
 				"varName", varName,
-				"value", data[varName],
+				"value", r,
 				"error", err,
 			)
-			return ""
 		}
-		sVal := string(val)
-		if len(sVal) > 0 && sVal[0] == '"' {
-			sVal = sVal[1:]
-		}
-		if len(sVal) > 0 && sVal[len(sVal)-1] == '"' {
-			sVal = sVal[:len(sVal)-1]
-		}
-		return sVal
+		return r
 	})
 	if err != nil {
 		return "", nil, fmt.Errorf("failed to parse command: %w", err)
 	}
 	return fields[0], fields[1:], nil
+}
+
+func (f *FunctionDefinition) GetEnvironment(jsonArgs string) (map[any]any, error) {
+	return processEnv(f.Environment, jsonArgs)
+}
+
+func (f *FunctionDefinition) GetAdditionalEnvironment(jsonArgs string) (map[any]any, error) {
+	return processEnv(f.AdditionalEnvironment, jsonArgs)
+}
+
+func processEnv(env map[string]string, jsonArgs string) (map[any]any, error) {
+	var data parsedArgs
+	if err := json.Unmarshal([]byte(jsonArgs), &data); err != nil {
+		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+	}
+
+	result := map[any]any{}
+	for key, value := range env {
+		for vk := range data {
+			v, err := data.Get(vk)
+			if err != nil {
+				return nil, err
+			}
+			value = strings.Replace(value, "$"+vk, v, -1)
+		}
+		value = strings.Replace(value, "$@", jsonArgs, -1)
+		result[key] = value
+	}
+
+	return result, nil
+}
+
+func (f *FunctionDefinition) GetWorkingDirectory(jsonArgs string) (string, error) {
+	var data parsedArgs
+	if err := json.Unmarshal([]byte(jsonArgs), &data); err != nil {
+		return "", fmt.Errorf("failed to parse JSON: %w", err)
+	}
+
+	value := f.WorkingDir
+	for vk := range data {
+		v, err := data.Get(vk)
+		if err != nil {
+			return "", err
+		}
+		value = strings.Replace(value, "$"+vk, v, -1)
+	}
+
+	return value, nil
 }

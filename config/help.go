@@ -178,7 +178,12 @@ func printHelpTool(output io.Writer) {
 				},
 				"required": []string{"path"},
 			},
-			Command:       "/usr/bin/touch",
+			Command: "/usr/bin/touch",
+			Environment: map[string]string{
+				"USER":  "rainu",
+				"SHELL": "/bin/bash",
+			},
+			WorkingDir:    "/tmp",
 			NeedsApproval: true,
 		},
 		{
@@ -193,6 +198,9 @@ func printHelpTool(output io.Writer) {
 					},
 				},
 				"required": []string{"message"},
+			},
+			AdditionalEnvironment: map[string]string{
+				"ASK_MAI_ARGS": "$@",
 			},
 			Command:       "/usr/bin/echo",
 			NeedsApproval: false,
@@ -232,4 +240,6 @@ func printHelpTool(output io.Writer) {
 	table.Append([]string{`/usr/bin/echo "$message"`, `{}`, `/usr/bin/echo ""`})
 
 	table.Render()
+
+	fmt.Fprintf(output, "\nYou can also use these placeholder in (additional) environment and working directory variables.\n")
 }

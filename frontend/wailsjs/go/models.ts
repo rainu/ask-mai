@@ -693,8 +693,11 @@ export namespace llm {
 	    name: string;
 	    description: string;
 	    parameters: any;
-	    command: string;
 	    approval: boolean;
+	    command: string;
+	    env?: Record<string, string>;
+	    additionalEnv?: Record<string, string>;
+	    workingDir?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new FunctionDefinition(source);
@@ -705,8 +708,11 @@ export namespace llm {
 	        this.name = source["name"];
 	        this.description = source["description"];
 	        this.parameters = source["parameters"];
-	        this.command = source["command"];
 	        this.approval = source["approval"];
+	        this.command = source["command"];
+	        this.env = source["env"];
+	        this.additionalEnv = source["additionalEnv"];
+	        this.workingDir = source["workingDir"];
 	    }
 	}
 	export class ToolsConfig {
