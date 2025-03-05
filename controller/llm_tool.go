@@ -57,6 +57,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result *LLMMess
 			Call: LLMMessageCall{
 				Id:            call.ID,
 				NeedsApproval: fnDefinition.NeedsApproval,
+				BuiltIn:       fnDefinition.IsBuiltIn(),
 				Function:      call.FunctionCall.Name,
 				Arguments:     call.FunctionCall.Arguments,
 			},
@@ -150,7 +151,7 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefin
 	}
 
 	if execErr != nil {
-		result.Error = fmt.Sprintf("Execution error: %s", err.Error())
+		result.Error = fmt.Sprintf("Execution error: %s", execErr.Error())
 		err = nil // do not treat execution errors as error - the LLM will receive the error message
 	}
 
