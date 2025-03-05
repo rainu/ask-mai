@@ -23,7 +23,7 @@
 	<template v-else-if="isToolMessage">
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
 			<BuiltinToolCallFileCreation :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('createFile')" />
-			<BuiltinToolCallCommandExecution :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
+			<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
 			<GeneralToolCall :tc="tc" v-else />
 		</v-row>
 	</template>
