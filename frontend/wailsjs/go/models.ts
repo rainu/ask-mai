@@ -842,6 +842,34 @@ export namespace tools {
 	        this["no-approval"] = source["no-approval"];
 	    }
 	}
+	export class FileCreation {
+	    Disable: boolean;
+	    approval: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileCreation(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.approval = source["approval"];
+	    }
+	}
+	export class SystemTime {
+	    Disable: boolean;
+	    approval: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new SystemTime(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.approval = source["approval"];
+	    }
+	}
 	export class SystemInfo {
 	    Disable: boolean;
 	    approval: boolean;
@@ -858,6 +886,8 @@ export namespace tools {
 	}
 	export class BuiltIns {
 	    SystemInfo: SystemInfo;
+	    SystemTime: SystemTime;
+	    FileCreation: FileCreation;
 	    CommandExec: CommandExecution;
 	
 	    static createFrom(source: any = {}) {
@@ -867,6 +897,8 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.SystemInfo = this.convertValues(source["SystemInfo"], SystemInfo);
+	        this.SystemTime = this.convertValues(source["SystemTime"], SystemTime);
+	        this.FileCreation = this.convertValues(source["FileCreation"], FileCreation);
 	        this.CommandExec = this.convertValues(source["CommandExec"], CommandExecution);
 	    }
 	
@@ -949,6 +981,8 @@ export namespace tools {
 		    return a;
 		}
 	}
+	
+	
 	
 
 }

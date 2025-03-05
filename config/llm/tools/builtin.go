@@ -5,9 +5,10 @@ import "reflect"
 const BuiltInPrefix = "__"
 
 type BuiltIns struct {
-	SystemInfo  SystemInfo       `config:"system-info" yaml:"system-info" usage:"System information tool: "`
-	SystemTime  SystemTime       `config:"system-time" yaml:"system-time" usage:"System time tool: "`
-	CommandExec CommandExecution `config:"command-execution" yaml:"command-execution" usage:"Command execution tool: "`
+	SystemInfo   SystemInfo       `config:"system-info" yaml:"system-info" usage:"System information tool: "`
+	SystemTime   SystemTime       `config:"system-time" yaml:"system-time" usage:"System time tool: "`
+	FileCreation FileCreation     `config:"file-creation" yaml:"file-creation" usage:"File creation tool: "`
+	CommandExec  CommandExecution `config:"command-execution" yaml:"command-execution" usage:"Command execution tool: "`
 }
 
 func (b BuiltIns) AsFunctionDefinitions() []FunctionDefinition {
