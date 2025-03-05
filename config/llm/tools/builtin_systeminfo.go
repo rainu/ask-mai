@@ -44,13 +44,16 @@ func (s SystemInfo) Command(ctx context.Context, jsonArguments string) ([]byte, 
 			}
 			return home
 		}(),
-		"current_dir": func() string {
+		"user_id":  os.Getuid(),
+		"group_id": os.Getgid(),
+		"working_directory": func() string {
 			dir, err := os.Getwd()
 			if err != nil {
 				return "unknown"
 			}
 			return dir
 		}(),
+		"process_id": os.Getpid(),
 	}
 
 	return json.Marshal(info)
