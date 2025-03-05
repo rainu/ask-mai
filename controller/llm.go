@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/tmc/langchaingo/llms"
@@ -90,10 +91,17 @@ func (m LLMMessages) ToMessageContent(systemPrompt string) ([]llms.MessageConten
 				})
 
 				if part.Call.Result != nil {
+					resultAsJson, err := json.Marshal(map[string]string{
+						"output": part.Call.Result.Content,
+						"error":  part.Call.Result.Error,
+					})
+					if err != nil {
+						return nil, fmt.Errorf("error serializing tool call result: %w", err)
+					}
 					msgResult.Parts = append(msgResult.Parts, llms.ToolCallResponse{
 						ToolCallID: part.Call.Id,
 						Name:       part.Call.Function,
-						Content:    part.Call.Result.Content,
+						Content:    string(resultAsJson),
 					})
 					msgResult.Parts = append(msgResult.Parts)
 				}

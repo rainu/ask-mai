@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/rainu/ask-mai/config/llm/tools"
 	cmdchain "github.com/rainu/go-command-chain"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -37,8 +38,9 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result *LLMMess
 	}()
 
 	//validate tool calls
+	availableTools := c.appConfig.LLM.Tools.GetTools()
 	for _, call := range resp.Choices[0].ToolCalls {
-		fnDefinition, exists := c.appConfig.LLM.Tools.Tools[call.FunctionCall.Name]
+		fnDefinition, exists := availableTools[call.FunctionCall.Name]
 		if !exists {
 			return nil, fmt.Errorf("unknown tool: %s", call.FunctionCall.Name)
 		}
@@ -69,14 +71,15 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result *LLMMess
 		go func(i int) {
 			defer wg.Done()
 
-			r, e := c.callTool(c.aiModelCtx, resp.Choices[0].ToolCalls[i])
+			call := resp.Choices[0].ToolCalls[i]
+			r, e := c.callTool(c.aiModelCtx, call, availableTools[call.FunctionCall.Name])
 			c.aiModelMutex.Write(func() {
 				if e != nil {
 					err = errors.Join(err, e)
 				}
 
 				for p := range result.ContentParts {
-					if result.ContentParts[p].Call.Id == resp.Choices[0].ToolCalls[i].ID {
+					if result.ContentParts[p].Call.Id == call.ID {
 						result.ContentParts[p].Call.Result = &r
 						break
 					}
@@ -90,9 +93,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result *LLMMess
 	return
 }
 
-func (c *Controller) callTool(ctx context.Context, call llms.ToolCall) (result LLMMessageCallResult, err error) {
-	toolDefinition := c.appConfig.LLM.Tools.Tools[call.FunctionCall.Name]
-
+func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.FunctionDefinition) (result LLMMessageCallResult, err error) {
 	if toolDefinition.NeedsApproval {
 		// wait for user's approval (see llmApplyToolCallApproval())
 		var approvalChan chan bool
@@ -110,68 +111,89 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall) (result L
 			slog.Debug("Approval received for tool.", "tool", call.FunctionCall.Name, "approved", approved)
 
 			if !approved {
-				return result, fmt.Errorf("approval for tool '%s' was rejected", call.FunctionCall.Name)
+				result.Error = "The user rejected the tool call!"
+				return result, nil
 			}
 		case <-ctx.Done():
 			return result, fmt.Errorf("approval for tool '%s' timed out", call.FunctionCall.Name)
 		}
 	}
 
-	cmd, args, err := toolDefinition.GetCommandWithArgs(call.FunctionCall.Arguments)
-	if err != nil {
-		return result, fmt.Errorf("error creating command for tool '%s': %w", call.FunctionCall.Name, err)
-	}
-
-	buf := bytes.NewBuffer([]byte{})
-	t := time.Now()
-
 	slog.Debug("Start running command.",
+		"name", toolDefinition.Name,
 		"command", toolDefinition.Command,
 		"argument", call.FunctionCall.Arguments,
 	)
+	t := time.Now()
+
+	var out []byte
+	var execErr error
+	if toolDefinition.CommandFn == nil {
+		out, execErr, err = c.executeCommand(ctx, toolDefinition, call)
+	} else {
+		out, execErr = toolDefinition.CommandFn(ctx, call.FunctionCall.Arguments)
+	}
+
+	result.DurationMs = time.Since(t).Milliseconds()
+	result.Content = string(out)
+
+	slog.Debug("Command stopped.",
+		"name", toolDefinition.Name,
+		"command", toolDefinition.Command,
+		"argument", call.FunctionCall.Arguments,
+		"duration", result.DurationMs,
+		"error", result.Error,
+	)
+
+	if err != nil {
+		return
+	}
+
+	if execErr != nil {
+		result.Error = fmt.Sprintf("Execution error: %s", err.Error())
+		err = nil // do not treat execution errors as error - the LLM will receive the error message
+	}
+
+	return
+}
+
+func (c *Controller) executeCommand(ctx context.Context, toolDefinition tools.FunctionDefinition, call llms.ToolCall) ([]byte, error, error) {
+	cmd, args, err := toolDefinition.GetCommandWithArgs(call.FunctionCall.Arguments)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error creating command for tool '%s': %w", call.FunctionCall.Name, err)
+	}
+
 	cmdBuild := cmdchain.Builder().JoinWithContext(ctx, cmd, args...)
 
 	if len(toolDefinition.Environment) > 0 {
 		env, err := toolDefinition.GetEnvironment(call.FunctionCall.Arguments)
 		if err != nil {
-			return result, fmt.Errorf("error creating environment for tool '%s': %w", call.FunctionCall.Name, err)
+			return nil, nil, fmt.Errorf("error creating environment for tool '%s': %w", call.FunctionCall.Name, err)
 		}
 		cmdBuild = cmdBuild.WithEnvironmentMap(env)
 	}
 	if len(toolDefinition.AdditionalEnvironment) > 0 {
 		env, err := toolDefinition.GetAdditionalEnvironment(call.FunctionCall.Arguments)
 		if err != nil {
-			return result, fmt.Errorf("error creating additional environment for tool '%s': %w", call.FunctionCall.Name, err)
+			return nil, nil, fmt.Errorf("error creating additional environment for tool '%s': %w", call.FunctionCall.Name, err)
 		}
 		cmdBuild = cmdBuild.WithAdditionalEnvironmentMap(env)
 	}
 	if toolDefinition.WorkingDir != "" {
 		wd, err := toolDefinition.GetWorkingDirectory(call.FunctionCall.Arguments)
 		if err != nil {
-			return result, fmt.Errorf("error creating working directory for tool '%s': %w", call.FunctionCall.Name, err)
+			return nil, nil, fmt.Errorf("error creating working directory for tool '%s': %w", call.FunctionCall.Name, err)
 		}
 		cmdBuild = cmdBuild.WithWorkingDirectory(wd)
 	}
 
-	err = cmdBuild.Finalize().
-		WithGlobalErrorChecker(cmdchain.IgnoreExitErrors()).WithOutput(buf).WithError(buf).
+	buf := bytes.NewBuffer([]byte{})
+	execErr := cmdBuild.Finalize().
+		WithOutput(buf).
+		WithError(buf).
 		Run()
 
-	result.Content = buf.String()
-	result.DurationMs = time.Since(t).Milliseconds()
-	if err != nil {
-		result.Error = err.Error()
-		err = fmt.Errorf("error calling tool '%s': %w", cmd, err)
-	}
-
-	slog.Debug("Command stopped.",
-		"command", cmd,
-		"argument", call.FunctionCall.Arguments,
-		"duration", result.DurationMs,
-		"error", result.Error,
-	)
-
-	return
+	return buf.Bytes(), execErr, nil
 }
 
 func (c *Controller) LLMApproveToolCall(callId string) {

@@ -26,21 +26,19 @@
 				<v-expansion-panels variant="accordion" bg-color="grey-lighten-2">
 					<v-expansion-panel>
 						<v-expansion-panel-title disable-icon-rotate class="pa-2">
+							<template v-if="tc.Result">
+								<v-icon color="error" icon="mdi-alert-circle" v-if="tc.Result.Error"></v-icon>
+								<v-icon color="success" icon="mdi-check-circle" v-else></v-icon>
+							</template>
 							<v-icon icon="mdi-function"></v-icon>
 							<span class="mr-2" v-html="highlight(`${tc.Function}(${tc.Arguments})`)"></span>
-							<template v-slot:actions>
-								<template v-if="tc.Result">
-									<v-icon color="error" icon="mdi-alert-circle" v-if="tc.Result.Error"></v-icon>
-									<v-icon color="success" icon="mdi-check-circle" v-else></v-icon>
-								</template>
-							</template>
 						</v-expansion-panel-title>
 						<v-expansion-panel-text v-if="tc.Result">
 							<pre>{{ tc.Result.Content }}</pre>
 							<v-alert type="error" v-if="tc.Result.Error" density="compact">{{ tc.Result.Error }}</v-alert>
 						</v-expansion-panel-text>
 
-						<v-progress-linear indeterminate size="small" v-if="!tc.NeedsApproval"></v-progress-linear>
+						<v-progress-linear indeterminate size="small" v-if="!tc.Result"></v-progress-linear>
 
 						<template v-if="tc.NeedsApproval && !tc.Result">
 							<v-row dense>

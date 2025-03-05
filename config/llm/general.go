@@ -2,6 +2,7 @@ package llm
 
 import (
 	"fmt"
+	"github.com/rainu/ask-mai/config/llm/tools"
 	"github.com/rainu/ask-mai/llms"
 	"reflect"
 	"slices"
@@ -26,7 +27,7 @@ type LLMConfig struct {
 	DeepSeek    DeepSeekConfig    `yaml:"deepseek" usage:"DeepSeek: " llm:""`
 
 	CallOptions CallOptionsConfig `yaml:"call" usage:"LLM-CALL: "`
-	Tools       ToolsConfig       `yaml:"tool" usage:"LLM-TOOLS: "`
+	Tools       tools.Config      `yaml:"tool" usage:"LLM-TOOLS: "`
 }
 
 func (c *LLMConfig) getBackend() llmConfig {

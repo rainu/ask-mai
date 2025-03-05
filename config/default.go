@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm"
+	"github.com/rainu/ask-mai/config/llm/tools"
 	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -33,7 +34,7 @@ func defaultConfig() (result *Config) {
 				TopK:        -1,
 				TopP:        -1,
 			},
-			Tools: llm.ToolsConfig{
+			Tools: tools.Config{
 				RawTools: []string{},
 			},
 			AnythingLLM: llm.AnythingLLMConfig{

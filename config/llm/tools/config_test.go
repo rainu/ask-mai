@@ -1,4 +1,4 @@
-package llm
+package tools
 
 import (
 	"fmt"
@@ -211,4 +211,21 @@ func TestFunctionDefinition_GetWorkingDirectory(t *testing.T) {
 			assert.Equal(t, tc.expectWD, re)
 		})
 	}
+}
+
+func TestConfig_GetTools(t *testing.T) {
+	toTest := Config{}
+
+	result := toTest.GetTools()
+
+	_, contains := result[BuiltInPrefix+"getSystemInformation"]
+	assert.True(t, contains)
+	_, contains = result[BuiltInPrefix+"executeCommand"]
+	assert.True(t, contains)
+
+	// deactivate builtin tool
+
+	toTest.BuiltInTools.SystemInfo.Disable = true
+	toTest.BuiltInTools.CommandExec.Disable = true
+	assert.Empty(t, toTest.GetTools())
 }

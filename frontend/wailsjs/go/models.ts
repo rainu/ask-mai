@@ -689,64 +689,6 @@ export namespace llm {
 	        this.BaseUrl = source["BaseUrl"];
 	    }
 	}
-	export class FunctionDefinition {
-	    name: string;
-	    description: string;
-	    parameters: any;
-	    approval: boolean;
-	    command: string;
-	    env?: Record<string, string>;
-	    additionalEnv?: Record<string, string>;
-	    workingDir?: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new FunctionDefinition(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.name = source["name"];
-	        this.description = source["description"];
-	        this.parameters = source["parameters"];
-	        this.approval = source["approval"];
-	        this.command = source["command"];
-	        this.env = source["env"];
-	        this.additionalEnv = source["additionalEnv"];
-	        this.workingDir = source["workingDir"];
-	    }
-	}
-	export class ToolsConfig {
-	    RawTools: string[];
-	    Tools: Record<string, FunctionDefinition>;
-	
-	    static createFrom(source: any = {}) {
-	        return new ToolsConfig(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.RawTools = source["RawTools"];
-	        this.Tools = this.convertValues(source["Tools"], FunctionDefinition, true);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
 	export class MistralConfig {
 	    ApiKey: string;
 	    Endpoint: string;
@@ -839,7 +781,7 @@ export namespace llm {
 	    Anthropic: AnthropicConfig;
 	    DeepSeek: DeepSeekConfig;
 	    CallOptions: CallOptionsConfig;
-	    Tools: ToolsConfig;
+	    Tools: tools.Config;
 	
 	    static createFrom(source: any = {}) {
 	        return new LLMConfig(source);
@@ -857,7 +799,7 @@ export namespace llm {
 	        this.Anthropic = this.convertValues(source["Anthropic"], AnthropicConfig);
 	        this.DeepSeek = this.convertValues(source["DeepSeek"], DeepSeekConfig);
 	        this.CallOptions = this.convertValues(source["CallOptions"], CallOptionsConfig);
-	        this.Tools = this.convertValues(source["Tools"], ToolsConfig);
+	        this.Tools = this.convertValues(source["Tools"], tools.Config);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -881,6 +823,132 @@ export namespace llm {
 	
 	
 	
+
+}
+
+export namespace tools {
+	
+	export class CommandExecution {
+	    Disable: boolean;
+	    "no-approval": boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new CommandExecution(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this["no-approval"] = source["no-approval"];
+	    }
+	}
+	export class SystemInfo {
+	    Disable: boolean;
+	    approval: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new SystemInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.approval = source["approval"];
+	    }
+	}
+	export class BuiltIns {
+	    SystemInfo: SystemInfo;
+	    CommandExec: CommandExecution;
+	
+	    static createFrom(source: any = {}) {
+	        return new BuiltIns(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.SystemInfo = this.convertValues(source["SystemInfo"], SystemInfo);
+	        this.CommandExec = this.convertValues(source["CommandExec"], CommandExecution);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	export class FunctionDefinition {
+	    name: string;
+	    description: string;
+	    parameters: any;
+	    approval: boolean;
+	    command: string;
+	    env?: Record<string, string>;
+	    additionalEnv?: Record<string, string>;
+	    workingDir?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FunctionDefinition(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.description = source["description"];
+	        this.parameters = source["parameters"];
+	        this.approval = source["approval"];
+	        this.command = source["command"];
+	        this.env = source["env"];
+	        this.additionalEnv = source["additionalEnv"];
+	        this.workingDir = source["workingDir"];
+	    }
+	}
+	export class Config {
+	    RawTools: string[];
+	    Tools: Record<string, FunctionDefinition>;
+	    BuiltInTools: BuiltIns;
+	
+	    static createFrom(source: any = {}) {
+	        return new Config(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.RawTools = source["RawTools"];
+	        this.Tools = this.convertValues(source["Tools"], FunctionDefinition, true);
+	        this.BuiltInTools = this.convertValues(source["BuiltInTools"], BuiltIns);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	
 
 }

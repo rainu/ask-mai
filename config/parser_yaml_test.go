@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm"
+	"github.com/rainu/ask-mai/config/llm/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"strings"
@@ -105,6 +106,9 @@ llm:
     min-length: 10
     max-length: 200
   tool:
+    builtin:
+      command-execution:
+        disable: true
     functions:
       test:
         description: This is a test function.
@@ -222,8 +226,13 @@ debug:
 				MinLength:    10,
 				MaxLength:    200,
 			},
-			Tools: llm.ToolsConfig{
-				Tools: map[string]llm.FunctionDefinition{
+			Tools: tools.Config{
+				BuiltInTools: tools.BuiltIns{
+					CommandExec: tools.CommandExecution{
+						Disable: true,
+					},
+				},
+				Tools: map[string]tools.FunctionDefinition{
 					"test": {
 						Description: "This is a test function.",
 						Parameters: map[string]any{

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"github.com/rainu/ask-mai/config/expression"
-	"github.com/rainu/ask-mai/config/llm"
+	"github.com/rainu/ask-mai/config/llm/tools"
 	flag "github.com/spf13/pflag"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -152,7 +152,7 @@ func printHelpTool(output io.Writer) {
 	table.SetHeader([]string{"Name", "Type", "Usage"})
 	table.SetAutoWrapText(false)
 
-	fields := scanConfigTags(nil, &llm.FunctionDefinition{})
+	fields := scanConfigTags(nil, &tools.FunctionDefinition{})
 	for _, field := range fields {
 		t := strings.TrimPrefix(field.Value.Type().String(), "*")
 		if strings.HasPrefix(t, "interface") {
@@ -164,7 +164,7 @@ func printHelpTool(output io.Writer) {
 
 	fmt.Fprintf(output, "\nJSON:\n")
 
-	exampleDefs := []llm.FunctionDefinition{
+	exampleDefs := []tools.FunctionDefinition{
 		{
 			Name:        "createFile",
 			Description: "This function creates a file.",
@@ -207,7 +207,7 @@ func printHelpTool(output io.Writer) {
 		},
 	}
 
-	fdm := map[string]llm.FunctionDefinition{}
+	fdm := map[string]tools.FunctionDefinition{}
 	for _, def := range exampleDefs {
 		jsonDef, _ := json.MarshalIndent(def, "", " ")
 		fmt.Fprintf(output, "\n%s\n", jsonDef)
@@ -220,7 +220,7 @@ func printHelpTool(output io.Writer) {
 	ye.SetIndent(2)
 	ye.Encode(map[string]any{
 		"llm": map[string]any{
-			"tool": llm.ToolsConfig{Tools: fdm},
+			"tool": tools.Config{Tools: fdm},
 		},
 	})
 

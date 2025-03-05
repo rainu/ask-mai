@@ -1,6 +1,7 @@
-package llm
+package tools
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/tmc/langchaingo/llms"
@@ -11,11 +12,15 @@ import (
 
 const FunctionArgumentNameAll = "@"
 
-type ToolsConfig struct {
+type Config struct {
 	RawTools []string `config:"function" yaml:"-" usage:"Function definition (json) to use. See Tool-Help (--help-tool) for more information."`
 
 	Tools map[string]FunctionDefinition `config:"-" yaml:"functions"`
+
+	BuiltInTools BuiltIns `config:"builtin" yaml:"builtin" usage:"Built-in tools: "`
 }
+
+type CommandFn func(ctx context.Context, jsonArguments string) ([]byte, error)
 
 type FunctionDefinition struct {
 	Name          string `config:"name" yaml:"-" json:"name" usage:"The name of the function"`
@@ -27,9 +32,11 @@ type FunctionDefinition struct {
 	Environment           map[string]string `yaml:"env,omitempty" json:"env,omitempty" usage:"Environment variables to pass to the command (will overwrite the default environment)"`
 	AdditionalEnvironment map[string]string `yaml:"additionalEnv,omitempty" json:"additionalEnv,omitempty" usage:"Additional environment variables to pass to the command (will be merged with the default environment)"`
 	WorkingDir            string            `yaml:"workingDir,omitempty" json:"workingDir,omitempty" usage:"The working directory for the command"`
+
+	CommandFn CommandFn `config:"-" yaml:"-" json:"-"` // BuiltIn functions
 }
 
-func (t *ToolsConfig) Validate() error {
+func (t *Config) Validate() error {
 	for i, tool := range t.RawTools {
 		var result FunctionDefinition
 
@@ -50,15 +57,16 @@ func (t *ToolsConfig) Validate() error {
 	return nil
 }
 
-func (t *ToolsConfig) AsOptions() (opts []llms.CallOption) {
+func (t *Config) AsOptions() (opts []llms.CallOption) {
 	var tools []llms.Tool
-	for name, tool := range t.Tools {
+
+	for name, definition := range t.GetTools() {
 		tools = append(tools, llms.Tool{
 			Type: "function",
 			Function: &llms.FunctionDefinition{
 				Name:        name,
-				Description: tool.Description,
-				Parameters:  tool.Parameters,
+				Description: definition.Description,
+				Parameters:  definition.Parameters,
 			},
 		})
 	}
@@ -67,6 +75,20 @@ func (t *ToolsConfig) AsOptions() (opts []llms.CallOption) {
 		opts = append(opts, llms.WithTools(tools))
 	}
 	return
+}
+
+func (t *Config) GetTools() map[string]FunctionDefinition {
+	allFunctions := map[string]FunctionDefinition{}
+
+	for _, fd := range t.BuiltInTools.AsFunctionDefinitions() {
+		allFunctions[fd.Name] = fd
+	}
+
+	for name, tool := range t.Tools {
+		allFunctions[name] = tool
+	}
+
+	return allFunctions
 }
 
 type parsedArgs map[string]interface{}
