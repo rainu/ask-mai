@@ -5,7 +5,8 @@ import "reflect"
 const BuiltInPrefix = "__"
 
 type BuiltIns struct {
-	SystemInfo  SystemInfo       `config:"systeminfo" yaml:"systeminfo" usage:"System information tool: "`
+	SystemInfo  SystemInfo       `config:"system-info" yaml:"system-info" usage:"System information tool: "`
+	SystemTime  SystemTime       `config:"system-time" yaml:"system-time" usage:"System time tool: "`
 	CommandExec CommandExecution `config:"command-execution" yaml:"command-execution" usage:"Command execution tool: "`
 }
 

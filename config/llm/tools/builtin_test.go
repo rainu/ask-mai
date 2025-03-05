@@ -25,6 +25,9 @@ func TestBuiltIns_AsFunctionDefinitions(t *testing.T) {
 		SystemInfo: SystemInfo{
 			Disable: true,
 		},
+		SystemTime: SystemTime{
+			Disable: true,
+		},
 		CommandExec: CommandExecution{
 			Disable: true,
 		},

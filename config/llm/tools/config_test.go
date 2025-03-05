@@ -220,12 +220,15 @@ func TestConfig_GetTools(t *testing.T) {
 
 	_, contains := result[BuiltInPrefix+"getSystemInformation"]
 	assert.True(t, contains)
+	_, contains = result[BuiltInPrefix+"getSystemTime"]
+	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"executeCommand"]
 	assert.True(t, contains)
 
 	// deactivate builtin tool
 
 	toTest.BuiltInTools.SystemInfo.Disable = true
+	toTest.BuiltInTools.SystemTime.Disable = true
 	toTest.BuiltInTools.CommandExec.Disable = true
 	assert.Empty(t, toTest.GetTools())
 }
