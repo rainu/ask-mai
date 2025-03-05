@@ -31,6 +31,7 @@ type LLMMessageCall struct {
 	Function      string
 	Arguments     string
 	NeedsApproval bool
+	BuiltIn       bool
 	Result        *LLMMessageCallResult
 }
 

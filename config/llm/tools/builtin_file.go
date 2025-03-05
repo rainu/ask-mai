@@ -13,6 +13,10 @@ import (
 type FileCreation struct {
 	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
 	NeedsApproval bool `yaml:"approval" json:"approval" usage:"Needs user approval to be executed"`
+
+	//only for wails to generate TypeScript types
+	Y FileCreationResult    `config:"-"`
+	Z FileCreationArguments `config:"-"`
 }
 
 func (f FileCreation) AsFunctionDefinition() *FunctionDefinition {
@@ -50,15 +54,20 @@ func (f FileCreation) AsFunctionDefinition() *FunctionDefinition {
 	}
 }
 
-type fileArguments struct {
+type FileCreationArguments struct {
 	Path       string `json:"path"`
 	Content    string `json:"content"`
 	Append     bool   `json:"append"`
 	Permission string `json:"permission"`
 }
 
+type FileCreationResult struct {
+	Path string `json:"path"`
+	Size int    `json:"size"`
+}
+
 func (f FileCreation) Command(ctx context.Context, jsonArguments string) ([]byte, error) {
-	var pArgs fileArguments
+	var pArgs FileCreationArguments
 	err := json.Unmarshal([]byte(jsonArguments), &pArgs)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing arguments: %w", err)
@@ -97,5 +106,8 @@ func (f FileCreation) Command(ctx context.Context, jsonArguments string) ([]byte
 	}
 
 	s, err := file.WriteString(pArgs.Content)
-	return []byte(fmt.Sprintf("%s - %d", absolutePath, s)), err
+	return json.Marshal(FileCreationResult{
+		Path: absolutePath,
+		Size: s,
+	})
 }

@@ -11,6 +11,9 @@ import (
 type CommandExecution struct {
 	Disable    bool `config:"disable" yaml:"disable" usage:"Disable tool"`
 	NoApproval bool `yaml:"no-approval" json:"no-approval" usage:"Needs no user approval to be executed"`
+
+	//only for wails to generate TypeScript types
+	Z CommandExecutionArguments `config:"-"`
 }
 
 func (c CommandExecution) AsFunctionDefinition() *FunctionDefinition {
@@ -52,7 +55,7 @@ func (c CommandExecution) AsFunctionDefinition() *FunctionDefinition {
 	}
 }
 
-type commandArguments struct {
+type CommandExecutionArguments struct {
 	Name             string            `json:"name"`
 	Arguments        []string          `json:"arguments"`
 	WorkingDirectory string            `json:"working_directory"`
@@ -60,7 +63,7 @@ type commandArguments struct {
 }
 
 func (c CommandExecution) Command(ctx context.Context, jsonArguments string) ([]byte, error) {
-	var pArgs commandArguments
+	var pArgs CommandExecutionArguments
 	err := json.Unmarshal([]byte(jsonArguments), &pArgs)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing arguments: %w", err)

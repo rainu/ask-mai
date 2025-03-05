@@ -22,41 +22,9 @@
 	</template>
 	<template v-else-if="isToolMessage">
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
-			<v-sheet color="grey-lighten-2" rounded>
-				<v-expansion-panels variant="accordion" bg-color="grey-lighten-2">
-					<v-expansion-panel>
-						<v-expansion-panel-title disable-icon-rotate class="pa-2">
-							<template v-if="tc.Result">
-								<v-icon color="error" icon="mdi-alert-circle" v-if="tc.Result.Error"></v-icon>
-								<v-icon color="success" icon="mdi-check-circle" v-else></v-icon>
-							</template>
-							<v-icon icon="mdi-function"></v-icon>
-							<span class="mr-2" v-html="highlight(`${tc.Function}(${tc.Arguments})`)"></span>
-						</v-expansion-panel-title>
-						<v-expansion-panel-text v-if="tc.Result">
-							<pre>{{ tc.Result.Content }}</pre>
-							<v-alert type="error" v-if="tc.Result.Error" density="compact">{{ tc.Result.Error }}</v-alert>
-						</v-expansion-panel-text>
-
-						<v-progress-linear indeterminate size="small" v-if="!tc.Result"></v-progress-linear>
-
-						<template v-if="tc.NeedsApproval && !tc.Result">
-							<v-row dense>
-								<v-col cols="6" class="pr-0">
-									<v-btn block color="success" @click="setToolCallApproval(tc, true)">
-										<v-icon icon="mdi-check"></v-icon>
-									</v-btn>
-								</v-col>
-								<v-col cols="6" class="pl-0">
-									<v-btn block color="error" @click="setToolCallApproval(tc, false)">
-										<v-icon icon="mdi-close"></v-icon>
-									</v-btn>
-								</v-col>
-							</v-row>
-						</template>
-					</v-expansion-panel>
-				</v-expansion-panels>
-			</v-sheet>
+			<BuiltinToolCallFileCreation :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('createFile')" />
+			<BuiltinToolCallCommandExecution :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
+			<GeneralToolCall :tc="tc" v-else />
 		</v-row>
 	</template>
 	<template v-else>
@@ -72,7 +40,7 @@
 import { defineComponent, PropType } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 
-import { GetAssetMeta, LLMApproveToolCall, LLMRejectToolCall } from '../../wailsjs/go/controller/Controller'
+import { GetAssetMeta } from '../../wailsjs/go/controller/Controller'
 import { controller } from '../../wailsjs/go/models.ts'
 import { PathSeparator } from '../common/platform.ts'
 import AssetMeta = controller.AssetMeta
@@ -82,6 +50,9 @@ import hljs from 'highlight.js'
 import { type Options as MarkdownItOptions } from 'markdown-it'
 import { UseCodeStyle } from './code-style.ts'
 import { ClipboardSetText } from '../../wailsjs/runtime'
+import GeneralToolCall from './toolcall/GeneralToolCall.vue'
+import BuiltinToolCallFileCreation from './toolcall/BuiltinToolCallFileCreation.vue'
+import BuiltinToolCallCommandExecution from './toolcall/BuiltinToolCallCommandExecution.vue'
 
 export enum Role {
 	User = 'human',
@@ -97,7 +68,7 @@ export enum ContentType {
 
 export default defineComponent({
 	name: 'ChatMessage',
-	components: { VueMarkdown },
+	components: { GeneralToolCall, BuiltinToolCallCommandExecution, BuiltinToolCallFileCreation, VueMarkdown },
 	props: {
 		message: {
 			type: Array as PropType<LLMMessageContentPart[]>,
@@ -186,17 +157,6 @@ export default defineComponent({
 		},
 		isImage(asset: AssetMeta) {
 			return asset.MimeType.startsWith('image/')
-		},
-		highlight(code: string) {
-			return hljs.highlight(code, { language: 'JavaScript' }).value
-		},
-		setToolCallApproval(call: LLMMessageCall, approved: boolean) {
-			call.NeedsApproval = false
-			if (approved) {
-				LLMApproveToolCall(call.Id)
-			} else {
-				LLMRejectToolCall(call.Id)
-			}
 		},
 	},
 	watch: {

@@ -379,6 +379,7 @@ export namespace controller {
 	    Function: string;
 	    Arguments: string;
 	    NeedsApproval: boolean;
+	    BuiltIn: boolean;
 	    Result?: LLMMessageCallResult;
 	
 	    static createFrom(source: any = {}) {
@@ -391,6 +392,7 @@ export namespace controller {
 	        this.Function = source["Function"];
 	        this.Arguments = source["Arguments"];
 	        this.NeedsApproval = source["NeedsApproval"];
+	        this.BuiltIn = source["BuiltIn"];
 	        this.Result = this.convertValues(source["Result"], LLMMessageCallResult);
 	    }
 	
@@ -828,9 +830,28 @@ export namespace llm {
 
 export namespace tools {
 	
+	export class CommandExecutionArguments {
+	    name: string;
+	    arguments: string[];
+	    working_directory: string;
+	    environment: Record<string, string>;
+	
+	    static createFrom(source: any = {}) {
+	        return new CommandExecutionArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.arguments = source["arguments"];
+	        this.working_directory = source["working_directory"];
+	        this.environment = source["environment"];
+	    }
+	}
 	export class CommandExecution {
 	    Disable: boolean;
 	    "no-approval": boolean;
+	    Z: CommandExecutionArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new CommandExecution(source);
@@ -840,11 +861,64 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this["no-approval"] = source["no-approval"];
+	        this.Z = this.convertValues(source["Z"], CommandExecutionArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class FileCreationArguments {
+	    path: string;
+	    content: string;
+	    append: boolean;
+	    permission: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileCreationArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.content = source["content"];
+	        this.append = source["append"];
+	        this.permission = source["permission"];
+	    }
+	}
+	export class FileCreationResult {
+	    path: string;
+	    size: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileCreationResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.size = source["size"];
 	    }
 	}
 	export class FileCreation {
 	    Disable: boolean;
 	    approval: boolean;
+	    Y: FileCreationResult;
+	    Z: FileCreationArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new FileCreation(source);
@@ -854,7 +928,27 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.approval = source["approval"];
+	        this.Y = this.convertValues(source["Y"], FileCreationResult);
+	        this.Z = this.convertValues(source["Z"], FileCreationArguments);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class SystemTime {
 	    Disable: boolean;
@@ -921,6 +1015,7 @@ export namespace tools {
 		}
 	}
 	
+	
 	export class FunctionDefinition {
 	    name: string;
 	    description: string;
@@ -981,6 +1076,8 @@ export namespace tools {
 		    return a;
 		}
 	}
+	
+	
 	
 	
 	

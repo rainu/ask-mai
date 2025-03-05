@@ -113,6 +113,10 @@ func (p parsedArgs) Get(varName string) (string, error) {
 	return sVal, nil
 }
 
+func (f *FunctionDefinition) IsBuiltIn() bool {
+	return f.CommandFn != nil
+}
+
 func (f *FunctionDefinition) GetCommandWithArgs(jsonArgs string) (string, []string, error) {
 	var data parsedArgs
 	if err := json.Unmarshal([]byte(jsonArgs), &data); err != nil {
