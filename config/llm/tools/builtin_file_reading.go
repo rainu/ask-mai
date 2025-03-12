@@ -31,8 +31,7 @@ func (f FileReading) AsFunctionDefinition() *FunctionDefinition {
 		Description: "Reading a text file from the user's system.",
 		CommandFn:   f.Command,
 		Parameters: map[string]any{
-			"type":   "object",
-			"strict": true,
+			"type": "object",
 			"properties": map[string]any{
 				"path": map[string]any{
 					"type":        "string",

@@ -18,8 +18,13 @@ func (s SystemInfo) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "getSystemInformation",
-		Description:   "Get some information about the user's system.",
+		Name:        "getSystemInformation",
+		Description: "Get the following information about the user's system: OS, architecture, number of CPUs, hostname, user directory, user ID, group ID, working directory, process ID.",
+		Parameters: map[string]any{
+			"type":       "object",
+			"properties": map[string]any{},
+			"required":   []string{},
+		},
 		CommandFn:     s.Command,
 		NeedsApproval: s.NeedsApproval,
 	}

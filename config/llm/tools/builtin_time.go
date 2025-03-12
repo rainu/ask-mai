@@ -16,8 +16,13 @@ func (s SystemTime) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "getSystemTime",
-		Description:   "Get the current system time.",
+		Name:        "getSystemTime",
+		Description: "Get the current system time.",
+		Parameters: map[string]any{
+			"type":       "object",
+			"properties": map[string]any{},
+			"required":   []string{},
+		},
 		CommandFn:     s.Command,
 		NeedsApproval: s.NeedsApproval,
 	}
