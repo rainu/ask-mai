@@ -48,7 +48,8 @@ func (f FileCreation) AsFunctionDefinition() *FunctionDefinition {
 					"description": "The permission of the file. Default is 0644.",
 				},
 			},
-			"required": []string{"path"},
+			"additionalProperties": false,
+			"required":             []string{"path"},
 		},
 		NeedsApproval: f.NeedsApproval,
 	}

@@ -23,6 +23,7 @@
 	<template v-else-if="isToolMessage">
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
 			<BuiltinToolCallFileCreation :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('createFile')" />
+			<BuiltinToolCallFileReading :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('readTextFile')" />
 			<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
 			<GeneralToolCall :tc="tc" v-else />
 		</v-row>
@@ -53,6 +54,7 @@ import { ClipboardSetText } from '../../wailsjs/runtime'
 import GeneralToolCall from './toolcall/GeneralToolCall.vue'
 import BuiltinToolCallFileCreation from './toolcall/BuiltinToolCallFileCreation.vue'
 import BuiltinToolCallCommandExecution from './toolcall/BuiltinToolCallCommandExecution.vue'
+import BuiltinToolCallFileReading from './toolcall/BuiltinToolCallFileReading.vue'
 
 export enum Role {
 	User = 'human',
@@ -68,7 +70,13 @@ export enum ContentType {
 
 export default defineComponent({
 	name: 'ChatMessage',
-	components: { GeneralToolCall, BuiltinToolCallCommandExecution, BuiltinToolCallFileCreation, VueMarkdown },
+	components: {
+		BuiltinToolCallFileReading,
+		GeneralToolCall,
+		BuiltinToolCallCommandExecution,
+		BuiltinToolCallFileCreation,
+		VueMarkdown,
+	},
 	props: {
 		message: {
 			type: Array as PropType<LLMMessageContentPart[]>,

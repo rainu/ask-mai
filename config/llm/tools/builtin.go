@@ -8,6 +8,7 @@ type BuiltIns struct {
 	SystemInfo   SystemInfo       `config:"system-info" yaml:"system-info" usage:"System information tool: "`
 	SystemTime   SystemTime       `config:"system-time" yaml:"system-time" usage:"System time tool: "`
 	FileCreation FileCreation     `config:"file-creation" yaml:"file-creation" usage:"File creation tool: "`
+	FileReading  FileReading      `config:"file-reading" yaml:"file-reading" usage:"File reading tool: "`
 	CommandExec  CommandExecution `config:"command-execution" yaml:"command-execution" usage:"Command execution tool: "`
 }
 

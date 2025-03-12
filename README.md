@@ -26,6 +26,8 @@ https://github.com/user-attachments/assets/a6d16332-55a1-4866-9f3e-31490a488935
     * "__getSystemInformation" - Get some information about the system
     * "__getSystemTime" - Get the current system time
     * "__executeCommand" - Execute a command on the system
+    * "__createFile" - Create a file on the system
+    * "__readTextFile" - Read a text file from the system
 * Scriptable
   * All settings can be set via:
     * yaml configuration file 

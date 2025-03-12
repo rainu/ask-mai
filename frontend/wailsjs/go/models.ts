@@ -882,6 +882,104 @@ export namespace tools {
 		    return a;
 		}
 	}
+	export class FileReadingLimits {
+	    m: string;
+	    o: number;
+	    l: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileReadingLimits(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.m = source["m"];
+	        this.o = source["o"];
+	        this.l = source["l"];
+	    }
+	}
+	export class FileReadingArguments {
+	    path: string;
+	    limits?: FileReadingLimits;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileReadingArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.limits = this.convertValues(source["limits"], FileReadingLimits);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class FileReadingResult {
+	    path: string;
+	    content: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileReadingResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.content = source["content"];
+	    }
+	}
+	export class FileReading {
+	    Disable: boolean;
+	    approval: boolean;
+	    Y: FileReadingResult;
+	    Z: FileReadingArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileReading(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.approval = source["approval"];
+	        this.Y = this.convertValues(source["Y"], FileReadingResult);
+	        this.Z = this.convertValues(source["Z"], FileReadingArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class FileCreationArguments {
 	    path: string;
 	    content: string;
@@ -982,6 +1080,7 @@ export namespace tools {
 	    SystemInfo: SystemInfo;
 	    SystemTime: SystemTime;
 	    FileCreation: FileCreation;
+	    FileReading: FileReading;
 	    CommandExec: CommandExecution;
 	
 	    static createFrom(source: any = {}) {
@@ -993,6 +1092,7 @@ export namespace tools {
 	        this.SystemInfo = this.convertValues(source["SystemInfo"], SystemInfo);
 	        this.SystemTime = this.convertValues(source["SystemTime"], SystemTime);
 	        this.FileCreation = this.convertValues(source["FileCreation"], FileCreation);
+	        this.FileReading = this.convertValues(source["FileReading"], FileReading);
 	        this.CommandExec = this.convertValues(source["CommandExec"], CommandExecution);
 	    }
 	
@@ -1076,6 +1176,10 @@ export namespace tools {
 		    return a;
 		}
 	}
+	
+	
+	
+	
 	
 	
 	

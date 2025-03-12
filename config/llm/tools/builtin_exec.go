@@ -25,7 +25,8 @@ func (c CommandExecution) AsFunctionDefinition() *FunctionDefinition {
 		Name:        "executeCommand",
 		Description: "Execute a command on the user's system.",
 		Parameters: map[string]any{
-			"type": "object",
+			"type":   "object",
+			"strict": true,
 			"properties": map[string]any{
 				"name": map[string]any{
 					"type":        "string",
