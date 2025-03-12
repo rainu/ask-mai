@@ -37,6 +37,9 @@ func defaultConfig() (result *Config) {
 			Tools: tools.Config{
 				RawTools: []string{},
 			},
+			Anthropic: llm.AnthropicConfig{
+				Model: "claude-3-5-haiku-latest",
+			},
 			AnythingLLM: llm.AnythingLLMConfig{
 				Thread: llm.AnythingLLMThreadConfig{
 					Delete: false,
