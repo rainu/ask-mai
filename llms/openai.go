@@ -15,6 +15,18 @@ func NewOpenAI(opts []openai.Option) (Model, error) {
 	result := &OpenAI{}
 
 	var err error
+
+	// prevent streaming of function calls
+	opts = append(opts, openai.WithStreamingChunkFilter(func(chunkMeta openai.StreamingChunkMetaData) bool {
+		if chunkMeta.IsFunctionCall {
+			return false
+		}
+		if chunkMeta.IsToolCall {
+			return false
+		}
+		return true
+	}))
+
 	result.client, err = openai.New(opts...)
 	if err != nil {
 		return nil, fmt.Errorf("error creating OpenAI LLM: %w", err)
