@@ -24,8 +24,7 @@
 					<pre v-if="parsedResult">{{ parsedResult.content }}</pre>
 					<v-alert type="error" v-if="tc.Result.Error" density="compact">{{ tc.Result.Error }}</v-alert>
 				</v-expansion-panel-text>
-
-				<v-progress-linear indeterminate size="small" v-if="!tc.Result"></v-progress-linear>
+				<v-progress-linear indeterminate size="small" v-else></v-progress-linear>
 
 				<template v-if="tc.NeedsApproval && !tc.Result">
 					<v-row dense>
@@ -68,7 +67,11 @@ export default defineComponent({
 		},
 		parsedResult(): FileReadingResult | null {
 			if(this.tc.Result) {
-				return JSON.parse(this.tc.Result.Content) as FileReadingResult
+				try {
+					return JSON.parse(this.tc.Result.Content) as FileReadingResult
+				} catch (e) {
+					// ignore JSON-Parse error
+				}
 			}
 			return null
 		},

@@ -36,8 +36,6 @@ export default defineComponent({
 	},
 	methods: {
 		handleGlobalKeydown(event: KeyboardEvent) {
-			console.log( event.code)
-
 			for (let i = 0; i < this.$appConfig.UI.QuitShortcut.Code.length; i++) {
 				let code = event.code.toLowerCase() === this.$appConfig.UI.QuitShortcut.Code[i].toLowerCase()
 				let ctrl = event.ctrlKey === this.$appConfig.UI.QuitShortcut.Ctrl[i]
