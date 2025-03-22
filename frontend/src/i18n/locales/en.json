@@ -10,5 +10,13 @@
     "files": {
       "title": "Dateien auswählen"
     }
+  },
+  "toolCall": {
+    "builtin": {
+      "changeTimes": {
+        "access": "Access time",
+        "mod": "Modification time"
+      }
+    }
   }
 }

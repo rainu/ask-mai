@@ -230,6 +230,8 @@ func TestConfig_GetTools(t *testing.T) {
 	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"changeOwner"]
 	assert.True(t, contains)
+	_, contains = result[BuiltInPrefix+"changeTimes"]
+	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"appendFile"]
 	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"createFile"]
@@ -257,6 +259,7 @@ func TestConfig_GetTools(t *testing.T) {
 	toTest.BuiltInTools.Stats.Disable = true
 	toTest.BuiltInTools.ChangeMode.Disable = true
 	toTest.BuiltInTools.ChangeOwner.Disable = true
+	toTest.BuiltInTools.ChangeTimes.Disable = true
 	toTest.BuiltInTools.FileAppending.Disable = true
 	toTest.BuiltInTools.FileCreation.Disable = true
 	toTest.BuiltInTools.FileTempCreation.Disable = true

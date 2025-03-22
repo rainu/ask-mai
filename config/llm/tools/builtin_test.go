@@ -40,6 +40,9 @@ func TestBuiltIns_AsFunctionDefinitions(t *testing.T) {
 		ChangeOwner: ChangeOwner{
 			Disable: true,
 		},
+		ChangeTimes: ChangeTimes{
+			Disable: true,
+		},
 		FileCreation: FileCreation{
 			Disable: true,
 		},

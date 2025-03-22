@@ -28,6 +28,7 @@
 
 			<BuiltinToolCallChangeMode :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeMode')" />
 			<BuiltinToolCallChangeOwner :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeOwner')" />
+			<BuiltinToolCallChangeTimes :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeTimes')" />
 
 			<BuiltinToolCallStats :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getStats')" />
 
@@ -80,6 +81,7 @@ import BuiltinToolCallStats from './toolcall/BuiltinToolCallStats.vue'
 import BuiltinToolCallEnvironment from './toolcall/BuiltinToolCallEnvironment.vue'
 import BuiltinToolCallChangeMode from './toolcall/BuiltinToolCallChangeMode.vue'
 import BuiltinToolCallChangeOwner from './toolcall/BuiltinToolCallChangeOwner.vue'
+import BuiltinToolCallChangeTimes from './toolcall/BuiltinToolCallChangeTimes.vue'
 
 export enum Role {
 	User = 'human',
@@ -96,6 +98,7 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		BuiltinToolCallChangeTimes,
 		BuiltinToolCallChangeOwner,
 		BuiltinToolCallChangeMode,
 		BuiltinToolCallEnvironment,

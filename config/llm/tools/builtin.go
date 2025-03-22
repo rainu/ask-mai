@@ -13,6 +13,7 @@ type BuiltIns struct {
 
 	ChangeMode  ChangeMode  `config:"change-mode" yaml:"change-mode" usage:"Change mode tool: "`
 	ChangeOwner ChangeOwner `config:"change-owner" yaml:"change-owner" usage:"Change owner tool: "`
+	ChangeTimes ChangeTimes `config:"change-times" yaml:"change-times" usage:"Change times tool: "`
 
 	FileCreation     FileCreation     `config:"file-creation" yaml:"file-creation" usage:"File creation tool: "`
 	FileTempCreation FileTempCreation `config:"temp-file-creation" yaml:"temp-file-creation" usage:"Temporary file creation tool: "`
