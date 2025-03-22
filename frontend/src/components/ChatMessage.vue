@@ -22,8 +22,12 @@
 	</template>
 	<template v-else-if="isToolMessage">
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
-			<BuiltinToolCallFileCreation :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('createFile')" />
+			<BuiltinToolCallSystemInfo :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('getSystemInformation')" />
+			<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getSystemTime')" />
+			<BuiltinToolCallFileCreation :tc="tc" v-else-if="tc.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))" />
+			<BuiltinToolCallFileAppending :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('appendFile')" />
 			<BuiltinToolCallFileReading :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('readTextFile')" />
+			<BuiltinToolCallFileDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteFile')" />
 			<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
 			<GeneralToolCall :tc="tc" v-else />
 		</v-row>
@@ -55,6 +59,10 @@ import GeneralToolCall from './toolcall/GeneralToolCall.vue'
 import BuiltinToolCallFileCreation from './toolcall/BuiltinToolCallFileCreation.vue'
 import BuiltinToolCallCommandExecution from './toolcall/BuiltinToolCallCommandExecution.vue'
 import BuiltinToolCallFileReading from './toolcall/BuiltinToolCallFileReading.vue'
+import BuiltinToolCallFileDeletion from './toolcall/BuiltinToolCallFileDeletion.vue'
+import BuiltinToolCallFileAppending from './toolcall/BuiltinToolCallFileAppending.vue'
+import BuiltinToolCallSystemInfo from './toolcall/BuiltinToolCallSystemInfo.vue'
+import BuiltinToolCallSystemTime from './toolcall/BuiltinToolCallSystemTime.vue'
 
 export enum Role {
 	User = 'human',
@@ -71,6 +79,10 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		BuiltinToolCallSystemTime,
+		BuiltinToolCallSystemInfo,
+		BuiltinToolCallFileAppending,
+		BuiltinToolCallFileDeletion,
 		BuiltinToolCallFileReading,
 		GeneralToolCall,
 		BuiltinToolCallCommandExecution,

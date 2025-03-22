@@ -67,7 +67,7 @@ func (f FileReading) AsFunctionDefinition() *FunctionDefinition {
 }
 
 type FileReadingArguments struct {
-	Path   string             `json:"path"`
+	Path   Path               `json:"path"`
 	Limits *FileReadingLimits `json:"limits"`
 }
 
@@ -89,8 +89,12 @@ func (f FileReading) Command(ctx context.Context, jsonArguments string) ([]byte,
 		return nil, fmt.Errorf("error parsing arguments: %w", err)
 	}
 
-	if pArgs.Path == "" {
+	if string(pArgs.Path) == "" {
 		return nil, fmt.Errorf("missing parameter: 'path'")
+	}
+	path, err := pArgs.Path.Get()
+	if err != nil {
+		return nil, err
 	}
 
 	mode := ""
@@ -107,15 +111,7 @@ func (f FileReading) Command(ctx context.Context, jsonArguments string) ([]byte,
 		mode = pArgs.Limits.Mode
 	}
 
-	if strings.HasPrefix(pArgs.Path, "~") {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return nil, fmt.Errorf("error getting user's home directory: %w", err)
-		}
-		pArgs.Path = filepath.Join(home, pArgs.Path[1:])
-	}
-
-	file, err := os.Open(pArgs.Path)
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("error opening file: %w", err)
 	}

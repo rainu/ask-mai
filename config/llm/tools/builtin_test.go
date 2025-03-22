@@ -31,7 +31,16 @@ func TestBuiltIns_AsFunctionDefinitions(t *testing.T) {
 		FileCreation: FileCreation{
 			Disable: true,
 		},
+		FileTempCreation: FileTempCreation{
+			Disable: true,
+		},
+		FileAppending: FileAppending{
+			Disable: true,
+		},
 		FileReading: FileReading{
+			Disable: true,
+		},
+		FileDeletion: FileDeletion{
 			Disable: true,
 		},
 		CommandExec: CommandExecution{

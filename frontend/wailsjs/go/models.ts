@@ -882,6 +882,66 @@ export namespace tools {
 		    return a;
 		}
 	}
+	export class FileDeletionArguments {
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileDeletionArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	    }
+	}
+	export class FileDeletionResult {
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileDeletionResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	    }
+	}
+	export class FileDeletion {
+	    Disable: boolean;
+	    "no-approval": boolean;
+	    Y: FileDeletionResult;
+	    Z: FileDeletionArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileDeletion(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this["no-approval"] = source["no-approval"];
+	        this.Y = this.convertValues(source["Y"], FileDeletionResult);
+	        this.Z = this.convertValues(source["Z"], FileDeletionArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class FileReadingLimits {
 	    m: string;
 	    o: number;
@@ -980,10 +1040,139 @@ export namespace tools {
 		    return a;
 		}
 	}
+	export class FileAppendingArguments {
+	    path: string;
+	    content: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileAppendingArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.content = source["content"];
+	    }
+	}
+	export class FileAppendingResult {
+	    path: string;
+	    written: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileAppendingResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.written = source["written"];
+	    }
+	}
+	export class FileAppending {
+	    Disable: boolean;
+	    "no-approval": boolean;
+	    Y: FileAppendingResult;
+	    Z: FileAppendingArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileAppending(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this["no-approval"] = source["no-approval"];
+	        this.Y = this.convertValues(source["Y"], FileAppendingResult);
+	        this.Z = this.convertValues(source["Z"], FileAppendingArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class FileTempCreationArguments {
+	    content: string;
+	    suffix: string;
+	    permission: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileTempCreationArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.content = source["content"];
+	        this.suffix = source["suffix"];
+	        this.permission = source["permission"];
+	    }
+	}
+	export class FileTempCreationResult {
+	    path: string;
+	    written: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileTempCreationResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.written = source["written"];
+	    }
+	}
+	export class FileTempCreation {
+	    Disable: boolean;
+	    approval: boolean;
+	    Y: FileTempCreationResult;
+	    Z: FileTempCreationArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileTempCreation(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.approval = source["approval"];
+	        this.Y = this.convertValues(source["Y"], FileTempCreationResult);
+	        this.Z = this.convertValues(source["Z"], FileTempCreationArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class FileCreationArguments {
 	    path: string;
 	    content: string;
-	    append: boolean;
 	    permission: string;
 	
 	    static createFrom(source: any = {}) {
@@ -994,13 +1183,12 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.path = source["path"];
 	        this.content = source["content"];
-	        this.append = source["append"];
 	        this.permission = source["permission"];
 	    }
 	}
 	export class FileCreationResult {
 	    path: string;
-	    size: number;
+	    written: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new FileCreationResult(source);
@@ -1009,7 +1197,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.path = source["path"];
-	        this.size = source["size"];
+	        this.written = source["written"];
 	    }
 	}
 	export class FileCreation {
@@ -1080,7 +1268,10 @@ export namespace tools {
 	    SystemInfo: SystemInfo;
 	    SystemTime: SystemTime;
 	    FileCreation: FileCreation;
+	    FileTempCreation: FileTempCreation;
+	    FileAppending: FileAppending;
 	    FileReading: FileReading;
+	    FileDeletion: FileDeletion;
 	    CommandExec: CommandExecution;
 	
 	    static createFrom(source: any = {}) {
@@ -1092,7 +1283,10 @@ export namespace tools {
 	        this.SystemInfo = this.convertValues(source["SystemInfo"], SystemInfo);
 	        this.SystemTime = this.convertValues(source["SystemTime"], SystemTime);
 	        this.FileCreation = this.convertValues(source["FileCreation"], FileCreation);
+	        this.FileTempCreation = this.convertValues(source["FileTempCreation"], FileTempCreation);
+	        this.FileAppending = this.convertValues(source["FileAppending"], FileAppending);
 	        this.FileReading = this.convertValues(source["FileReading"], FileReading);
+	        this.FileDeletion = this.convertValues(source["FileDeletion"], FileDeletion);
 	        this.CommandExec = this.convertValues(source["CommandExec"], CommandExecution);
 	    }
 	
@@ -1176,6 +1370,15 @@ export namespace tools {
 		    return a;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

@@ -10,34 +10,34 @@ import (
 	"strconv"
 )
 
-type FileCreation struct {
+type FileTempCreation struct {
 	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
 	NeedsApproval bool `yaml:"approval" json:"approval" usage:"Needs user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y FileCreationResult    `config:"-"`
-	Z FileCreationArguments `config:"-"`
+	Y FileTempCreationResult    `config:"-"`
+	Z FileTempCreationArguments `config:"-"`
 }
 
-func (f FileCreation) AsFunctionDefinition() *FunctionDefinition {
+func (f FileTempCreation) AsFunctionDefinition() *FunctionDefinition {
 	if f.Disable {
 		return nil
 	}
 
 	return &FunctionDefinition{
-		Name:        "createFile",
-		Description: "Creates a new file on the user's system.",
+		Name:        "createTempFile",
+		Description: "Creates a new temporary file on the user's system.",
 		CommandFn:   f.Command,
 		Parameters: map[string]any{
 			"type": "object",
 			"properties": map[string]any{
-				"path": map[string]any{
-					"type":        "string",
-					"description": "The path to the file to create. Use '~' for the user's home directory.",
-				},
 				"content": map[string]any{
 					"type":        "string",
 					"description": "The content of the file.",
+				},
+				"suffix": map[string]any{
+					"type":        "string",
+					"description": "The suffix of the file.",
 				},
 				"permission": map[string]any{
 					"type":        "string",
@@ -45,48 +45,29 @@ func (f FileCreation) AsFunctionDefinition() *FunctionDefinition {
 				},
 			},
 			"additionalProperties": false,
-			"required":             []string{"path"},
+			"required":             []string{},
 		},
 		NeedsApproval: f.NeedsApproval,
 	}
 }
 
-type FileCreationArguments struct {
-	Path       Path   `json:"path"`
+type FileTempCreationArguments struct {
 	Content    string `json:"content"`
+	Suffix     string `json:"suffix"`
 	Permission string `json:"permission"`
 }
 
-type FileCreationResult struct {
+type FileTempCreationResult struct {
 	Path    string `json:"path"`
 	Written int    `json:"written"`
 }
 
-func (f FileCreation) Command(ctx context.Context, jsonArguments string) ([]byte, error) {
-	var pArgs FileCreationArguments
+func (f FileTempCreation) Command(ctx context.Context, jsonArguments string) ([]byte, error) {
+	var pArgs FileTempCreationArguments
 	err := json.Unmarshal([]byte(jsonArguments), &pArgs)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing arguments: %w", err)
 	}
-
-	if string(pArgs.Path) == "" {
-		return nil, fmt.Errorf("missing parameter: 'path'")
-	}
-	path, err := pArgs.Path.Get()
-	if err != nil {
-		return nil, err
-	}
-
-	// Check if file already exists
-	fileInfo, fileErr := os.Stat(path)
-	if fileErr == nil {
-		if fileInfo.IsDir() {
-			return nil, fmt.Errorf("path exists but is a directory: %s", path)
-		}
-		return nil, fmt.Errorf("file already exists: %s", path)
-	}
-
-	flag := os.O_WRONLY | os.O_CREATE
 
 	perm := os.FileMode(0644)
 	if pArgs.Permission != "" {
@@ -97,11 +78,15 @@ func (f FileCreation) Command(ctx context.Context, jsonArguments string) ([]byte
 		perm = os.FileMode(pi)
 	}
 
-	file, err := os.OpenFile(path, flag, perm)
+	file, err := os.CreateTemp("", "ask-mai.*"+pArgs.Suffix)
 	if err != nil {
 		return nil, fmt.Errorf("error creating file: %w", err)
 	}
 	defer file.Close()
+
+	if err = os.Chmod(file.Name(), perm); err != nil {
+		return nil, fmt.Errorf("error setting file permission: %w", err)
+	}
 
 	absolutePath, err := filepath.Abs(file.Name())
 	if err != nil {
@@ -114,7 +99,7 @@ func (f FileCreation) Command(ctx context.Context, jsonArguments string) ([]byte
 		return nil, fmt.Errorf("error writing to file: %w", err)
 	}
 
-	return json.Marshal(FileCreationResult{
+	return json.Marshal(FileTempCreationResult{
 		Path:    absolutePath,
 		Written: s,
 	})

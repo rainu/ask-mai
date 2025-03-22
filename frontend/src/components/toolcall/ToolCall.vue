@@ -11,7 +11,7 @@
 		</template>
 
 		<template v-slot:subtitle>
-			<span class="ml-2 mr-2">
+			<span :class="withoutTitle ? '' : 'ml-2 mr-2'">
 				<slot name="title"></slot>
 			</span>
 		</template>
@@ -57,6 +57,11 @@ export default defineComponent({
 			type: String,
 			required: false,
 			default: 'mdi-function',
+		},
+		withoutTitle: {
+			type: Boolean,
+			required: false,
+			default: false,
 		}
 	},
 	data(){
