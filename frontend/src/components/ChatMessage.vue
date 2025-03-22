@@ -23,6 +23,7 @@
 	<template v-else-if="isToolMessage">
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
 			<BuiltinToolCallSystemInfo :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('getSystemInformation')" />
+			<BuiltinToolCallEnvironment :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getEnvironment')" />
 			<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getSystemTime')" />
 
 			<BuiltinToolCallStats :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getStats')" />
@@ -73,6 +74,7 @@ import BuiltinToolCallSystemTime from './toolcall/BuiltinToolCallSystemTime.vue'
 import BuiltinToolCallDirectoryDeletion from './toolcall/BuiltinToolCallDirectoryDeletion.vue'
 import BuiltinToolCallDirectoryCreation from './toolcall/BuiltinToolCallDirectoryCreation.vue'
 import BuiltinToolCallStats from './toolcall/BuiltinToolCallStats.vue'
+import BuiltinToolCallEnvironment from './toolcall/BuiltinToolCallEnvironment.vue'
 
 export enum Role {
 	User = 'human',
@@ -89,6 +91,7 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		BuiltinToolCallEnvironment,
 		BuiltinToolCallStats,
 		BuiltinToolCallDirectoryCreation,
 		BuiltinToolCallDirectoryDeletion,

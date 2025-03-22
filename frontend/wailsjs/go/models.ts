@@ -1522,6 +1522,67 @@ export namespace tools {
 	        this.approval = source["approval"];
 	    }
 	}
+	export class EnvironmentArguments {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new EnvironmentArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
+	export class EnvironmentResult {
+	    env: Record<string, string>;
+	
+	    static createFrom(source: any = {}) {
+	        return new EnvironmentResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.env = source["env"];
+	    }
+	}
+	export class Environment {
+	    Disable: boolean;
+	    approval: boolean;
+	    Y: EnvironmentResult;
+	    // Go type: EnvironmentArguments
+	    Z: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new Environment(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.approval = source["approval"];
+	        this.Y = this.convertValues(source["Y"], EnvironmentResult);
+	        this.Z = this.convertValues(source["Z"], null);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class SystemInfoArguments {
 	
 	
@@ -1601,6 +1662,7 @@ export namespace tools {
 	}
 	export class BuiltIns {
 	    SystemInfo: SystemInfo;
+	    Environment: Environment;
 	    SystemTime: SystemTime;
 	    Stats: Stats;
 	    FileCreation: FileCreation;
@@ -1620,6 +1682,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.SystemInfo = this.convertValues(source["SystemInfo"], SystemInfo);
+	        this.Environment = this.convertValues(source["Environment"], Environment);
 	        this.SystemTime = this.convertValues(source["SystemTime"], SystemTime);
 	        this.Stats = this.convertValues(source["Stats"], Stats);
 	        this.FileCreation = this.convertValues(source["FileCreation"], FileCreation);
@@ -1713,6 +1776,8 @@ export namespace tools {
 		    return a;
 		}
 	}
+	
+	
 	
 	
 	

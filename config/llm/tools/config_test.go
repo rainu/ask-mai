@@ -220,6 +220,8 @@ func TestConfig_GetTools(t *testing.T) {
 
 	_, contains := result[BuiltInPrefix+"getSystemInformation"]
 	assert.True(t, contains)
+	_, contains = result[BuiltInPrefix+"getEnvironment"]
+	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"getSystemTime"]
 	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"getStats"]
@@ -247,6 +249,7 @@ func TestConfig_GetTools(t *testing.T) {
 
 	toTest.BuiltInTools.SystemInfo.Disable = true
 	toTest.BuiltInTools.SystemTime.Disable = true
+	toTest.BuiltInTools.Environment.Disable = true
 	toTest.BuiltInTools.Stats.Disable = true
 	toTest.BuiltInTools.FileAppending.Disable = true
 	toTest.BuiltInTools.FileCreation.Disable = true

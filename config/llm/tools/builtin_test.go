@@ -25,6 +25,9 @@ func TestBuiltIns_AsFunctionDefinitions(t *testing.T) {
 		SystemInfo: SystemInfo{
 			Disable: true,
 		},
+		Environment: Environment{
+			Disable: true,
+		},
 		SystemTime: SystemTime{
 			Disable: true,
 		},
