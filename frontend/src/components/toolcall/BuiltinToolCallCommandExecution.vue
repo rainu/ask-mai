@@ -1,12 +1,11 @@
 <template>
 	<ToolCall :tc="tc" icon="mdi-tools">
 		<template v-slot:title>
-			{{ parsedArguments.name }} {{ parsedArguments.arguments.join(' ') }}
+			{{ title }}
 		</template>
 
 		<template v-slot:content v-if="tc.Result">
-			<code>{{ code }}</code>
-			<pre>{{ tc.Result.Content }}</pre>
+			<vue-markdown :source="resultAsMarkdown"></vue-markdown>
 		</template>
 	</ToolCall>
 </template>
@@ -17,10 +16,11 @@ import { controller, tools } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
 import CommandExecutionArguments = tools.CommandExecutionArguments
 import ToolCall from './ToolCall.vue'
+import VueMarkdown from 'vue-markdown-render'
 
 export default defineComponent({
 	name: 'BuiltinToolCallCommandExecution',
-	components: { ToolCall },
+	components: { ToolCall, VueMarkdown },
 	props: {
 		tc: {
 			type: Object as () => LLMMessageCall,
@@ -31,11 +31,19 @@ export default defineComponent({
 		parsedArguments(): CommandExecutionArguments {
 			return JSON.parse(this.tc.Arguments) as CommandExecutionArguments
 		},
-		code(){
-			let line = ""
+		title(){
+			let line = this.parsedArguments.name
+			if(this.parsedArguments.arguments) {
+				line += " " + this.parsedArguments.arguments.join(' ')
+			}
+			return line
+		},
+		resultAsMarkdown() {
+			if(!this.tc.Result) return null;
 
+			let line = "```\n$> "
 			if(this.parsedArguments.working_directory){
-				line += "cd " + this.parsedArguments.working_directory + ";\n"
+				line += "cd " + this.parsedArguments.working_directory + "\n"
 			}
 
 			if(this.parsedArguments.environment) {
@@ -44,7 +52,11 @@ export default defineComponent({
 				})
 			}
 
-			line += this.parsedArguments.name + " " + this.parsedArguments.arguments.join(' ')
+			line += this.parsedArguments.name
+			if(this.parsedArguments.arguments) {
+				line += " " + this.parsedArguments.arguments.join(' ')
+			}
+			line += '\n' + this.tc.Result.Content.trim() + '\n```'
 
 			return line
 		}

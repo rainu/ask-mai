@@ -10,7 +10,7 @@
 		</template>
 
 		<template v-slot:content>
-			<div>{{ parsedArguments.content }}</div>
+			<vue-markdown :source="contentAsMarkdown"></vue-markdown>
 		</template>
 	</ToolCall>
 </template>
@@ -22,10 +22,11 @@ import LLMMessageCall = controller.LLMMessageCall
 import FileCreationArguments = tools.FileCreationArguments
 import FileCreationResult = tools.FileCreationResult
 import ToolCall from './ToolCall.vue'
+import VueMarkdown from 'vue-markdown-render'
 
 export default defineComponent({
 	name: 'BuiltinToolCallFileCreation',
-	components: { ToolCall },
+	components: { ToolCall, VueMarkdown },
 	props: {
 		tc: {
 			type: Object as () => LLMMessageCall,
@@ -46,6 +47,9 @@ export default defineComponent({
 			}
 			return null
 		},
+		contentAsMarkdown(){
+			return '```\n' + this.parsedArguments.content + '\n```'
+		}
 	},
 })
 </script>

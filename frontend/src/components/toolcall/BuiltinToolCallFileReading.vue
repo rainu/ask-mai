@@ -13,7 +13,7 @@
 			<div v-if="parsedArguments.limits">
 				<span>{{ parsedArguments.limits.m }}: {{ offset }} - {{ limit }}</span>
 			</div>
-			<div v-if="parsedResult">{{ parsedResult.content }}</div>
+			<vue-markdown v-if="parsedResult" :source="contentAsMarkdown"></vue-markdown>
 		</template>
 	</ToolCall>
 </template>
@@ -25,10 +25,11 @@ import LLMMessageCall = controller.LLMMessageCall
 import FileReadingArguments = tools.FileReadingArguments
 import FileReadingResult = tools.FileReadingResult
 import ToolCall from './ToolCall.vue'
+import VueMarkdown from 'vue-markdown-render'
 
 export default defineComponent({
 	name: 'BuiltinToolCallFileReading',
-	components: { ToolCall },
+	components: { ToolCall, VueMarkdown },
 	props: {
 		tc: {
 			type: Object as () => LLMMessageCall,
@@ -54,6 +55,12 @@ export default defineComponent({
 		},
 		limit(): number {
 			return this.parsedArguments.limits?.l || 0
+		},
+		contentAsMarkdown(){
+			if(this.parsedResult) {
+				return '```\n' + this.parsedResult.content + '\n```'
+			}
+			return null
 		}
 	},
 })
