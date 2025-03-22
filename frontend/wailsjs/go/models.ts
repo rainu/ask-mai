@@ -1522,9 +1522,52 @@ export namespace tools {
 	        this.approval = source["approval"];
 	    }
 	}
+	export class SystemInfoArguments {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new SystemInfoArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
+	export class SystemInfoResult {
+	    os: string;
+	    arch: string;
+	    cpus: number;
+	    hostname: string;
+	    user_dir: string;
+	    user_id: number;
+	    group_id: number;
+	    working_directory: string;
+	    process_id: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new SystemInfoResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.os = source["os"];
+	        this.arch = source["arch"];
+	        this.cpus = source["cpus"];
+	        this.hostname = source["hostname"];
+	        this.user_dir = source["user_dir"];
+	        this.user_id = source["user_id"];
+	        this.group_id = source["group_id"];
+	        this.working_directory = source["working_directory"];
+	        this.process_id = source["process_id"];
+	    }
+	}
 	export class SystemInfo {
 	    Disable: boolean;
 	    approval: boolean;
+	    Y: SystemInfoResult;
+	    // Go type: SystemInfoArguments
+	    Z: any;
 	
 	    static createFrom(source: any = {}) {
 	        return new SystemInfo(source);

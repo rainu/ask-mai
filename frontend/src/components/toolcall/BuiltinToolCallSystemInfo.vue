@@ -1,5 +1,5 @@
 <template>
-	<ToolCall :tc="tc" icon="mdi-information-box" without-title>
+	<ToolCall :tc="tc" icon="mdi-information-outline" without-title>
 		<template v-slot:content>
 			<vue-markdown :source="contentAsMarkdown"></vue-markdown>
 		</template>
@@ -8,8 +8,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller } from '../../../wailsjs/go/models.ts'
+import { controller, tools } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
+import SystemInfoResult = tools.SystemInfoResult
 import ToolCall from './ToolCall.vue'
 import VueMarkdown from 'vue-markdown-render'
 
@@ -23,8 +24,21 @@ export default defineComponent({
 		},
 	},
 	computed: {
+		parsedResult(): SystemInfoResult | null {
+			if(this.tc.Result) {
+				try {
+					return JSON.parse(this.tc.Result.Content) as SystemInfoResult
+				} catch (e) {
+					// ignore JSON-Parse error
+				}
+			}
+			return null
+		},
 		contentAsMarkdown(){
-			return '```\n' + this.tc.Result?.Content + '\n```'
+			if(this.parsedResult) {
+				return '```\n' + JSON.stringify(this.parsedResult, null, 3) + '\n```'
+			}
+			return null
 		}
 	}
 })
