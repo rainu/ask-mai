@@ -222,6 +222,8 @@ func TestConfig_GetTools(t *testing.T) {
 	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"getSystemTime"]
 	assert.True(t, contains)
+	_, contains = result[BuiltInPrefix+"getStats"]
+	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"appendFile"]
 	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"createFile"]
@@ -245,6 +247,7 @@ func TestConfig_GetTools(t *testing.T) {
 
 	toTest.BuiltInTools.SystemInfo.Disable = true
 	toTest.BuiltInTools.SystemTime.Disable = true
+	toTest.BuiltInTools.Stats.Disable = true
 	toTest.BuiltInTools.FileAppending.Disable = true
 	toTest.BuiltInTools.FileCreation.Disable = true
 	toTest.BuiltInTools.FileTempCreation.Disable = true

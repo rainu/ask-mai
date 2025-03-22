@@ -28,6 +28,9 @@ func TestBuiltIns_AsFunctionDefinitions(t *testing.T) {
 		SystemTime: SystemTime{
 			Disable: true,
 		},
+		Stats: Stats{
+			Disable: true,
+		},
 		FileCreation: FileCreation{
 			Disable: true,
 		},

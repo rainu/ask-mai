@@ -8,6 +8,8 @@ type BuiltIns struct {
 	SystemInfo SystemInfo `config:"system-info" yaml:"system-info" usage:"System information tool: "`
 	SystemTime SystemTime `config:"system-time" yaml:"system-time" usage:"System time tool: "`
 
+	Stats Stats `config:"stats" yaml:"stats" usage:"Stats tool: "`
+
 	FileCreation     FileCreation     `config:"file-creation" yaml:"file-creation" usage:"File creation tool: "`
 	FileTempCreation FileTempCreation `config:"temp-file-creation" yaml:"temp-file-creation" usage:"Temporary file creation tool: "`
 	FileAppending    FileAppending    `config:"file-appending" yaml:"file-appending" usage:"File appending tool: "`

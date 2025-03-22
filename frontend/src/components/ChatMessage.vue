@@ -25,6 +25,8 @@
 			<BuiltinToolCallSystemInfo :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('getSystemInformation')" />
 			<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getSystemTime')" />
 
+			<BuiltinToolCallStats :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getStats')" />
+
 			<BuiltinToolCallFileCreation :tc="tc" v-else-if="tc.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))" />
 			<BuiltinToolCallFileAppending :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('appendFile')" />
 			<BuiltinToolCallFileReading :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('readTextFile')" />
@@ -70,6 +72,7 @@ import BuiltinToolCallSystemInfo from './toolcall/BuiltinToolCallSystemInfo.vue'
 import BuiltinToolCallSystemTime from './toolcall/BuiltinToolCallSystemTime.vue'
 import BuiltinToolCallDirectoryDeletion from './toolcall/BuiltinToolCallDirectoryDeletion.vue'
 import BuiltinToolCallDirectoryCreation from './toolcall/BuiltinToolCallDirectoryCreation.vue'
+import BuiltinToolCallStats from './toolcall/BuiltinToolCallStats.vue'
 
 export enum Role {
 	User = 'human',
@@ -86,6 +89,7 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		BuiltinToolCallStats,
 		BuiltinToolCallDirectoryCreation,
 		BuiltinToolCallDirectoryDeletion,
 		BuiltinToolCallSystemTime,
