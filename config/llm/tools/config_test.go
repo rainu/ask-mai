@@ -230,6 +230,12 @@ func TestConfig_GetTools(t *testing.T) {
 	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"createTempFile"]
 	assert.True(t, contains)
+	_, contains = result[BuiltInPrefix+"createDirectory"]
+	assert.True(t, contains)
+	_, contains = result[BuiltInPrefix+"deleteDirectory"]
+	assert.True(t, contains)
+	_, contains = result[BuiltInPrefix+"createTempDirectory"]
+	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"readTextFile"]
 	assert.True(t, contains)
 	_, contains = result[BuiltInPrefix+"executeCommand"]
@@ -244,6 +250,9 @@ func TestConfig_GetTools(t *testing.T) {
 	toTest.BuiltInTools.FileTempCreation.Disable = true
 	toTest.BuiltInTools.FileReading.Disable = true
 	toTest.BuiltInTools.FileDeletion.Disable = true
+	toTest.BuiltInTools.DirectoryCreation.Disable = true
+	toTest.BuiltInTools.DirectoryTempCreation.Disable = true
+	toTest.BuiltInTools.DirectoryDeletion.Disable = true
 	toTest.BuiltInTools.CommandExec.Disable = true
 	assert.Empty(t, toTest.GetTools())
 }

@@ -24,10 +24,15 @@
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
 			<BuiltinToolCallSystemInfo :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('getSystemInformation')" />
 			<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getSystemTime')" />
+
 			<BuiltinToolCallFileCreation :tc="tc" v-else-if="tc.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))" />
 			<BuiltinToolCallFileAppending :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('appendFile')" />
 			<BuiltinToolCallFileReading :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('readTextFile')" />
 			<BuiltinToolCallFileDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteFile')" />
+
+			<BuiltinToolCallDirectoryCreation :tc="tc" v-else-if=" tc.BuiltIn && (tc.Function.endsWith('createDirectory') || tc.Function.endsWith('createTempDirectory'))" />
+			<BuiltinToolCallDirectoryDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteDirectory')" />
+
 			<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
 			<GeneralToolCall :tc="tc" v-else />
 		</v-row>
@@ -63,6 +68,8 @@ import BuiltinToolCallFileDeletion from './toolcall/BuiltinToolCallFileDeletion.
 import BuiltinToolCallFileAppending from './toolcall/BuiltinToolCallFileAppending.vue'
 import BuiltinToolCallSystemInfo from './toolcall/BuiltinToolCallSystemInfo.vue'
 import BuiltinToolCallSystemTime from './toolcall/BuiltinToolCallSystemTime.vue'
+import BuiltinToolCallDirectoryDeletion from './toolcall/BuiltinToolCallDirectoryDeletion.vue'
+import BuiltinToolCallDirectoryCreation from './toolcall/BuiltinToolCallDirectoryCreation.vue'
 
 export enum Role {
 	User = 'human',
@@ -79,6 +86,8 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		BuiltinToolCallDirectoryCreation,
+		BuiltinToolCallDirectoryDeletion,
 		BuiltinToolCallSystemTime,
 		BuiltinToolCallSystemInfo,
 		BuiltinToolCallFileAppending,

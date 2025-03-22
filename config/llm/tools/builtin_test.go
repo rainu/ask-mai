@@ -43,6 +43,15 @@ func TestBuiltIns_AsFunctionDefinitions(t *testing.T) {
 		FileDeletion: FileDeletion{
 			Disable: true,
 		},
+		DirectoryCreation: DirectoryCreation{
+			Disable: true,
+		},
+		DirectoryTempCreation: DirectoryTempCreation{
+			Disable: true,
+		},
+		DirectoryDeletion: DirectoryDeletion{
+			Disable: true,
+		},
 		CommandExec: CommandExecution{
 			Disable: true,
 		},

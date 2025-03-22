@@ -35,7 +35,7 @@ func (f FileReading) AsFunctionDefinition() *FunctionDefinition {
 			"properties": map[string]any{
 				"path": map[string]any{
 					"type":        "string",
-					"description": "The absolute path to the text file to be read. Use '~' for the user's home directory.",
+					"description": "The absolute path to the text file to be read. Use '~' as placeholder for the user's home directory.",
 				},
 				"limits": map[string]any{
 					"type":        "object",

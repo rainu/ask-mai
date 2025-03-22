@@ -9,30 +9,30 @@ import (
 	"path/filepath"
 )
 
-type FileDeletion struct {
+type DirectoryDeletion struct {
 	Disable    bool `config:"disable" yaml:"disable" usage:"Disable tool"`
 	NoApproval bool `yaml:"no-approval" json:"no-approval" usage:"Needs no user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y FileDeletionResult    `config:"-"`
-	Z FileDeletionArguments `config:"-"`
+	Y DirectoryDeletionResult    `config:"-"`
+	Z DirectoryDeletionArguments `config:"-"`
 }
 
-func (f FileDeletion) AsFunctionDefinition() *FunctionDefinition {
+func (f DirectoryDeletion) AsFunctionDefinition() *FunctionDefinition {
 	if f.Disable {
 		return nil
 	}
 
 	return &FunctionDefinition{
-		Name:        "deleteFile",
-		Description: "Delete a file on the user's system.",
+		Name:        "deleteDirectory",
+		Description: "Delete a directory (including all files ans subdirectories) on the user's system.",
 		CommandFn:   f.Command,
 		Parameters: map[string]any{
 			"type": "object",
 			"properties": map[string]any{
 				"path": map[string]any{
 					"type":        "string",
-					"description": "The path to the file to delete. Use '~' as placeholder for the user's home directory.",
+					"description": "The path to the directory to delete. Use '~' as placeholder for the user's home directory.",
 				},
 			},
 			"additionalProperties": false,
@@ -42,16 +42,16 @@ func (f FileDeletion) AsFunctionDefinition() *FunctionDefinition {
 	}
 }
 
-type FileDeletionArguments struct {
+type DirectoryDeletionArguments struct {
 	Path Path `json:"path"`
 }
 
-type FileDeletionResult struct {
+type DirectoryDeletionResult struct {
 	Path string `json:"path"`
 }
 
-func (f FileDeletion) Command(ctx context.Context, jsonArguments string) ([]byte, error) {
-	var pArgs FileDeletionArguments
+func (f DirectoryDeletion) Command(ctx context.Context, jsonArguments string) ([]byte, error) {
+	var pArgs DirectoryDeletionArguments
 	err := json.Unmarshal([]byte(jsonArguments), &pArgs)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing arguments: %w", err)
@@ -65,18 +65,18 @@ func (f FileDeletion) Command(ctx context.Context, jsonArguments string) ([]byte
 		return nil, err
 	}
 
+	err = os.RemoveAll(path)
+	if err != nil {
+		return nil, fmt.Errorf("error deleting directory: %w", err)
+	}
+
 	absolutePath, err := filepath.Abs(path)
 	if err != nil {
 		slog.Warn("Error getting absolute path!", "error", err)
 		absolutePath = path
 	}
 
-	err = os.Remove(path)
-	if err != nil {
-		return nil, fmt.Errorf("error deleting file: %w", err)
-	}
-
-	return json.Marshal(FileDeletionResult{
+	return json.Marshal(DirectoryDeletionResult{
 		Path: absolutePath,
 	})
 }

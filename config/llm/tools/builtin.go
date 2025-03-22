@@ -5,14 +5,20 @@ import "reflect"
 const BuiltInPrefix = "__"
 
 type BuiltIns struct {
-	SystemInfo       SystemInfo       `config:"system-info" yaml:"system-info" usage:"System information tool: "`
-	SystemTime       SystemTime       `config:"system-time" yaml:"system-time" usage:"System time tool: "`
+	SystemInfo SystemInfo `config:"system-info" yaml:"system-info" usage:"System information tool: "`
+	SystemTime SystemTime `config:"system-time" yaml:"system-time" usage:"System time tool: "`
+
 	FileCreation     FileCreation     `config:"file-creation" yaml:"file-creation" usage:"File creation tool: "`
 	FileTempCreation FileTempCreation `config:"temp-file-creation" yaml:"temp-file-creation" usage:"Temporary file creation tool: "`
 	FileAppending    FileAppending    `config:"file-appending" yaml:"file-appending" usage:"File appending tool: "`
 	FileReading      FileReading      `config:"file-reading" yaml:"file-reading" usage:"File reading tool: "`
 	FileDeletion     FileDeletion     `config:"file-deletion" yaml:"file-deletion" usage:"File deletion tool: "`
-	CommandExec      CommandExecution `config:"command-execution" yaml:"command-execution" usage:"Command execution tool: "`
+
+	DirectoryCreation     DirectoryCreation     `config:"dir-creation" yaml:"dir-creation" usage:"Directory creation tool: "`
+	DirectoryTempCreation DirectoryTempCreation `config:"temp-dir-creation" yaml:"temp-dir-creation" usage:"Temporary directory creation tool: "`
+	DirectoryDeletion     DirectoryDeletion     `config:"dir-deletion" yaml:"dir-deletion" usage:"Directory deletion tool: "`
+
+	CommandExec CommandExecution `config:"command-execution" yaml:"command-execution" usage:"Command execution tool: "`
 }
 
 func (b BuiltIns) AsFunctionDefinitions() []FunctionDefinition {

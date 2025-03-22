@@ -32,7 +32,7 @@ func (f FileAppending) AsFunctionDefinition() *FunctionDefinition {
 			"properties": map[string]any{
 				"path": map[string]any{
 					"type":        "string",
-					"description": "The path to the file to create. Use '~' for the user's home directory.",
+					"description": "The path to the file to create. Use '~' as placeholder for the user's home directory.",
 				},
 				"content": map[string]any{
 					"type":        "string",
