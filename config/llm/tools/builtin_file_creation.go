@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 type FileCreation struct {
@@ -52,9 +51,9 @@ func (f FileCreation) AsFunctionDefinition() *FunctionDefinition {
 }
 
 type FileCreationArguments struct {
-	Path       Path   `json:"path"`
-	Content    string `json:"content"`
-	Permission string `json:"permission"`
+	Path       Path       `json:"path"`
+	Content    string     `json:"content"`
+	Permission Permission `json:"permission"`
 }
 
 type FileCreationResult struct {
@@ -88,13 +87,9 @@ func (f FileCreation) Command(ctx context.Context, jsonArguments string) ([]byte
 
 	flag := os.O_WRONLY | os.O_CREATE
 
-	perm := os.FileMode(0644)
-	if pArgs.Permission != "" {
-		pi, pe := strconv.ParseInt(pArgs.Permission, 8, 32)
-		if pe != nil {
-			return nil, fmt.Errorf("error parsing permissions: %w", pe)
-		}
-		perm = os.FileMode(pi)
+	perm, err := pArgs.Permission.Get(os.FileMode(0644))
+	if err != nil {
+		return nil, err
 	}
 
 	file, err := os.OpenFile(path, flag, perm)

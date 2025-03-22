@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 type DirectoryCreation struct {
@@ -48,8 +47,8 @@ func (f DirectoryCreation) AsFunctionDefinition() *FunctionDefinition {
 }
 
 type DirectoryCreationArguments struct {
-	Path       Path   `json:"path"`
-	Permission string `json:"permission"`
+	Path       Path       `json:"path"`
+	Permission Permission `json:"permission"`
 }
 
 type DirectoryCreationResult struct {
@@ -80,13 +79,9 @@ func (f DirectoryCreation) Command(ctx context.Context, jsonArguments string) ([
 		return nil, fmt.Errorf("directory already exists: %s", path)
 	}
 
-	perm := os.FileMode(0644)
-	if pArgs.Permission != "" {
-		pi, pe := strconv.ParseInt(pArgs.Permission, 8, 32)
-		if pe != nil {
-			return nil, fmt.Errorf("error parsing permissions: %w", pe)
-		}
-		perm = os.FileMode(pi)
+	perm, err := pArgs.Permission.Get(os.FileMode(0644))
+	if err != nil {
+		return nil, err
 	}
 
 	err = os.MkdirAll(path, perm)

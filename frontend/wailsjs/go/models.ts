@@ -1419,6 +1419,134 @@ export namespace tools {
 		    return a;
 		}
 	}
+	export class ChangeOwnerArguments {
+	    path: string;
+	    user_id: number;
+	    group_id: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeOwnerArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.user_id = source["user_id"];
+	        this.group_id = source["group_id"];
+	    }
+	}
+	export class ChangeOwnerResult {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeOwnerResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
+	export class ChangeOwner {
+	    Disable: boolean;
+	    "no-approval": boolean;
+	    // Go type: ChangeOwnerResult
+	    Y: any;
+	    Z: ChangeOwnerArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeOwner(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this["no-approval"] = source["no-approval"];
+	        this.Y = this.convertValues(source["Y"], null);
+	        this.Z = this.convertValues(source["Z"], ChangeOwnerArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class ChangeModeArguments {
+	    path: string;
+	    permission: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeModeArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.permission = source["permission"];
+	    }
+	}
+	export class ChangeModeResult {
+	
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeModeResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	
+	    }
+	}
+	export class ChangeMode {
+	    Disable: boolean;
+	    "no-approval": boolean;
+	    // Go type: ChangeModeResult
+	    Y: any;
+	    Z: ChangeModeArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeMode(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this["no-approval"] = source["no-approval"];
+	        this.Y = this.convertValues(source["Y"], null);
+	        this.Z = this.convertValues(source["Z"], ChangeModeArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class StatsArguments {
 	    path: string;
 	
@@ -1665,6 +1793,8 @@ export namespace tools {
 	    Environment: Environment;
 	    SystemTime: SystemTime;
 	    Stats: Stats;
+	    ChangeMode: ChangeMode;
+	    ChangeOwner: ChangeOwner;
 	    FileCreation: FileCreation;
 	    FileTempCreation: FileTempCreation;
 	    FileAppending: FileAppending;
@@ -1685,6 +1815,8 @@ export namespace tools {
 	        this.Environment = this.convertValues(source["Environment"], Environment);
 	        this.SystemTime = this.convertValues(source["SystemTime"], SystemTime);
 	        this.Stats = this.convertValues(source["Stats"], Stats);
+	        this.ChangeMode = this.convertValues(source["ChangeMode"], ChangeMode);
+	        this.ChangeOwner = this.convertValues(source["ChangeOwner"], ChangeOwner);
 	        this.FileCreation = this.convertValues(source["FileCreation"], FileCreation);
 	        this.FileTempCreation = this.convertValues(source["FileTempCreation"], FileTempCreation);
 	        this.FileAppending = this.convertValues(source["FileAppending"], FileAppending);
@@ -1714,6 +1846,10 @@ export namespace tools {
 		    return a;
 		}
 	}
+	
+	
+	
+	
 	
 	
 	export class FunctionDefinition {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -18,4 +19,18 @@ func (p Path) Get() (string, error) {
 		return filepath.Join(home, string(p)[1:]), nil
 	}
 	return string(p), nil
+}
+
+type Permission string
+
+func (p Permission) Get(defaultPerm os.FileMode) (os.FileMode, error) {
+	if string(p) != "" {
+		pi, pe := strconv.ParseInt(string(p), 8, 32)
+		if pe != nil {
+			return defaultPerm, fmt.Errorf("error parsing permissions: %w", pe)
+		}
+		return os.FileMode(pi), nil
+	}
+
+	return defaultPerm, nil
 }

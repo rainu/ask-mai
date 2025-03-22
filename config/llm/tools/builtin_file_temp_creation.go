@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 type FileTempCreation struct {
@@ -52,9 +51,9 @@ func (f FileTempCreation) AsFunctionDefinition() *FunctionDefinition {
 }
 
 type FileTempCreationArguments struct {
-	Content    string `json:"content"`
-	Suffix     string `json:"suffix"`
-	Permission string `json:"permission"`
+	Content    string     `json:"content"`
+	Suffix     string     `json:"suffix"`
+	Permission Permission `json:"permission"`
 }
 
 type FileTempCreationResult struct {
@@ -69,13 +68,9 @@ func (f FileTempCreation) Command(ctx context.Context, jsonArguments string) ([]
 		return nil, fmt.Errorf("error parsing arguments: %w", err)
 	}
 
-	perm := os.FileMode(0644)
-	if pArgs.Permission != "" {
-		pi, pe := strconv.ParseInt(pArgs.Permission, 8, 32)
-		if pe != nil {
-			return nil, fmt.Errorf("error parsing permissions: %w", pe)
-		}
-		perm = os.FileMode(pi)
+	perm, err := pArgs.Permission.Get(os.FileMode(0644))
+	if err != nil {
+		return nil, err
 	}
 
 	file, err := os.CreateTemp("", "ask-mai.*"+pArgs.Suffix)

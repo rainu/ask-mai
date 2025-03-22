@@ -26,6 +26,9 @@
 			<BuiltinToolCallEnvironment :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getEnvironment')" />
 			<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getSystemTime')" />
 
+			<BuiltinToolCallChangeMode :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeMode')" />
+			<BuiltinToolCallChangeOwner :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeOwner')" />
+
 			<BuiltinToolCallStats :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getStats')" />
 
 			<BuiltinToolCallFileCreation :tc="tc" v-else-if="tc.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))" />
@@ -75,6 +78,8 @@ import BuiltinToolCallDirectoryDeletion from './toolcall/BuiltinToolCallDirector
 import BuiltinToolCallDirectoryCreation from './toolcall/BuiltinToolCallDirectoryCreation.vue'
 import BuiltinToolCallStats from './toolcall/BuiltinToolCallStats.vue'
 import BuiltinToolCallEnvironment from './toolcall/BuiltinToolCallEnvironment.vue'
+import BuiltinToolCallChangeMode from './toolcall/BuiltinToolCallChangeMode.vue'
+import BuiltinToolCallChangeOwner from './toolcall/BuiltinToolCallChangeOwner.vue'
 
 export enum Role {
 	User = 'human',
@@ -91,6 +96,8 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		BuiltinToolCallChangeOwner,
+		BuiltinToolCallChangeMode,
 		BuiltinToolCallEnvironment,
 		BuiltinToolCallStats,
 		BuiltinToolCallDirectoryCreation,

@@ -34,6 +34,12 @@ func TestBuiltIns_AsFunctionDefinitions(t *testing.T) {
 		Stats: Stats{
 			Disable: true,
 		},
+		ChangeMode: ChangeMode{
+			Disable: true,
+		},
+		ChangeOwner: ChangeOwner{
+			Disable: true,
+		},
 		FileCreation: FileCreation{
 			Disable: true,
 		},
