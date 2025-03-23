@@ -191,7 +191,15 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 
 	result = resp.Choices[0].Content
 	if result != "" {
-		c.printer.Print(args.History[len(args.History)-1].ContentParts[0].Content, result)
+		question := ""
+		for i := len(args.History) - 1; i >= 0; i-- {
+			if args.History[i].Role == string(llms.ChatMessageTypeHuman) {
+				question = args.History[i].ContentParts[0].Content
+				break
+			}
+		}
+
+		c.printer.Print(question, result)
 	}
 
 	return result, nil
