@@ -26,7 +26,7 @@ func (f Stats) AsFunctionDefinition() *FunctionDefinition {
 
 	return &FunctionDefinition{
 		Name:        "getStats",
-		Description: "Get stats of an file or directory on the user's system.",
+		Description: "Get stats of a file or directory on the user's system.",
 		CommandFn:   f.Command,
 		Parameters: map[string]any{
 			"type": "object",

@@ -25,7 +25,7 @@ func (f FileAppending) AsFunctionDefinition() *FunctionDefinition {
 
 	return &FunctionDefinition{
 		Name:        "appendFile",
-		Description: "Append content to a existing file on the user's system.",
+		Description: "Append content to an existing file on the user's system.",
 		CommandFn:   f.Command,
 		Parameters: map[string]any{
 			"type": "object",

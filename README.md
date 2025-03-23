@@ -22,12 +22,23 @@ https://github.com/user-attachments/assets/a6d16332-55a1-4866-9f3e-31490a488935
   * [Anthropic](https://www.anthropic.com/)
 * Tool Support
   * You can define your own tools which can be called from the LLM
-  * There are some built in tools:
+  * There are some built-in tools:
     * "__getSystemInformation" - Get some information about the system
+    * "__getEnvironment" - Read environment variables from the system
     * "__getSystemTime" - Get the current system time
-    * "__executeCommand" - Execute a command on the system
+    * "__getStats" - Get stats of a file or directory
+    * "__changeMode" - Changes the mode of file or directory
+    * "__changeOwner" - Changes the owner of file or directory
+    * "__changeTimes" - Changes the access and/or modification time of file or directory
     * "__createFile" - Create a file on the system
+    * "__createTempFile" - Create a temporary file on the system
+    * "__appendFile" - Append content to an existing file
     * "__readTextFile" - Read a text file from the system
+    * "__deleteFile" - Delete a file from the system
+    * "__createDirectory" - Creates a new directory on the system
+    * "__createTempDirectory" - Creates a new temporary directory on the system
+    * "__deleteDirectory" - Delete a directory from the system
+    * "__executeCommand" - Execute a command on the system
 * Scriptable
   * All settings can be set via:
     * yaml configuration file 
