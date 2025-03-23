@@ -14,14 +14,28 @@ import (
 	"time"
 )
 
-func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result *LLMMessage, err error) {
+func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessages, err error) {
 	if len(resp.Choices[0].ToolCalls) == 0 {
 		return nil, nil
 	}
 
-	result = &LLMMessage{
+	tcMessage := &LLMMessage{
 		Id:   fmt.Sprintf("%d", time.Now().UnixNano()),
 		Role: string(llms.ChatMessageTypeTool),
+	}
+
+	if resp.Choices[0].Content != "" {
+		txtMessage := LLMMessage{
+			Id:   tcMessage.Id + "-0",
+			Role: string(llms.ChatMessageTypeAI),
+			ContentParts: []LLMMessageContentPart{{
+				Type:    LLMMessageContentPartTypeText,
+				Content: resp.Choices[0].Content,
+			}},
+		}
+
+		runtime.EventsEmit(c.ctx, "llm:message:add", txtMessage)
+		result = append(result, txtMessage)
 	}
 
 	c.toolApprovalMutex.Write(func() {
@@ -52,7 +66,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result *LLMMess
 			})
 		}
 
-		result.ContentParts = append(result.ContentParts, LLMMessageContentPart{
+		tcMessage.ContentParts = append(tcMessage.ContentParts, LLMMessageContentPart{
 			Type: LLMMessageContentPartTypeToolCall,
 			Call: LLMMessageCall{
 				Id:            call.ID,
@@ -63,7 +77,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result *LLMMess
 			},
 		})
 	}
-	runtime.EventsEmit(c.ctx, "llm:message:add", result)
+	runtime.EventsEmit(c.ctx, "llm:message:add", tcMessage)
 
 	wg := sync.WaitGroup{}
 
@@ -79,18 +93,20 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result *LLMMess
 					err = errors.Join(err, e)
 				}
 
-				for p := range result.ContentParts {
-					if result.ContentParts[p].Call.Id == call.ID {
-						result.ContentParts[p].Call.Result = &r
+				for p := range tcMessage.ContentParts {
+					if tcMessage.ContentParts[p].Call.Id == call.ID {
+						tcMessage.ContentParts[p].Call.Result = &r
 						break
 					}
 				}
-				runtime.EventsEmit(c.ctx, "llm:message:update", result)
+				runtime.EventsEmit(c.ctx, "llm:message:update", tcMessage)
 			})
 		}(i)
 	}
 
 	wg.Wait()
+
+	result = append(result, *tcMessage)
 	return
 }
 

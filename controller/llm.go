@@ -181,8 +181,8 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		if err != nil {
 			return "", fmt.Errorf("error handling tool call: %w", err)
 		}
-		if tcMessage != nil {
-			args.History = append(args.History, *tcMessage)
+		if len(tcMessage) > 0 {
+			args.History = append(args.History, tcMessage...)
 			// and continue with the next iteration
 		} else {
 			break
