@@ -9,7 +9,7 @@ import (
 const VarNameVariables = "v"
 const FuncNameLog = "log"
 
-func setupLog(vm *goja.Runtime) error {
+func SetupLog(vm *goja.Runtime) error {
 	return vm.Set(FuncNameLog, func(args ...interface{}) {
 		fmt.Fprint(os.Stderr, "EXPRESSION_LOG: ")
 		fmt.Fprintln(os.Stderr, args...)

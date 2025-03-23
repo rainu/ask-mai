@@ -12,7 +12,7 @@ import (
 
 type Stats struct {
 	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NeedsApproval bool `yaml:"approval" json:"approval" usage:"Needs user approval to be executed"`
+	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
 
 	//only for wails to generate TypeScript types
 	Y StatsResult    `config:"-"`

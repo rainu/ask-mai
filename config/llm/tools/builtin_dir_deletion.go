@@ -11,7 +11,7 @@ import (
 
 type DirectoryDeletion struct {
 	Disable    bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NoApproval bool `yaml:"no-approval" json:"no-approval" usage:"Needs no user approval to be executed"`
+	NoApproval bool `config:"no-approval" yaml:"no-approval" usage:"Needs no user approval to be executed"`
 
 	//only for wails to generate TypeScript types
 	Y DirectoryDeletionResult    `config:"-"`

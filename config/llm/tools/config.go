@@ -21,6 +21,7 @@ type Config struct {
 }
 
 type CommandFn func(ctx context.Context, jsonArguments string) ([]byte, error)
+type ApprovalFn func(ctx context.Context, jsonArguments string) bool
 
 type FunctionDefinition struct {
 	Name          string `config:"name" yaml:"-" json:"name" usage:"The name of the function"`
@@ -33,7 +34,9 @@ type FunctionDefinition struct {
 	AdditionalEnvironment map[string]string `yaml:"additionalEnv,omitempty" json:"additionalEnv,omitempty" usage:"Additional environment variables to pass to the command (will be merged with the default environment)"`
 	WorkingDir            string            `yaml:"workingDir,omitempty" json:"workingDir,omitempty" usage:"The working directory for the command"`
 
-	CommandFn CommandFn `config:"-" yaml:"-" json:"-"` // BuiltIn functions
+	// for BuiltIn functions:
+	CommandFn  CommandFn  `config:"-" yaml:"-" json:"-"`
+	ApprovalFn ApprovalFn `config:"-" yaml:"-" json:"-"`
 }
 
 func (t *Config) Validate() error {
@@ -111,6 +114,13 @@ func (p parsedArgs) Get(varName string) (string, error) {
 		sVal = sVal[:len(sVal)-1]
 	}
 	return sVal, nil
+}
+
+func (f *FunctionDefinition) CheckApproval(ctx context.Context, jsonArgs string) bool {
+	if f.ApprovalFn == nil {
+		return f.NeedsApproval
+	}
+	return f.ApprovalFn(ctx, jsonArgs)
 }
 
 func (f *FunctionDefinition) IsBuiltIn() bool {

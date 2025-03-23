@@ -36,6 +36,12 @@ func defaultConfig() (result *Config) {
 			},
 			Tools: tools.Config{
 				RawTools: []string{},
+				BuiltInTools: tools.BuiltIns{
+					CommandExec: tools.CommandExecution{
+						NoApprovalCommands:     []string{},
+						NoApprovalCommandsExpr: []string{},
+					},
+				},
 			},
 			Anthropic: llm.AnthropicConfig{
 				Model: "claude-3-5-haiku-latest",

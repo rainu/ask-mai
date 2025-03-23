@@ -851,6 +851,8 @@ export namespace tools {
 	export class CommandExecution {
 	    Disable: boolean;
 	    "no-approval": boolean;
+	    allow: string[];
+	    "allow-expr": string[];
 	    Z: CommandExecutionArguments;
 	
 	    static createFrom(source: any = {}) {
@@ -861,6 +863,8 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this["no-approval"] = source["no-approval"];
+	        this.allow = source["allow"];
+	        this["allow-expr"] = source["allow-expr"];
 	        this.Z = this.convertValues(source["Z"], CommandExecutionArguments);
 	    }
 	

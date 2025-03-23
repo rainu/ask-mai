@@ -14,7 +14,7 @@ type StringExpression string
 
 func (e StringExpression) Calculate() (string, error) {
 	vm := goja.New()
-	err := setupLog(vm)
+	err := SetupLog(vm)
 	if err != nil {
 		return "", fmt.Errorf("error setting functions: %w", err)
 	}

@@ -18,7 +18,7 @@ func (e NumberExpression) Calculate(v Variables) (float64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("error setting variables: %w", err)
 	}
-	err = setupLog(vm)
+	err = SetupLog(vm)
 	if err != nil {
 		return 0, fmt.Errorf("error setting functions: %w", err)
 	}

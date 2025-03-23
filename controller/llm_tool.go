@@ -60,7 +60,8 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 		}
 
 		//create approval channel for tool calls that need approval
-		if fnDefinition.NeedsApproval {
+		needsApproval := fnDefinition.CheckApproval(c.aiModelCtx, call.FunctionCall.Arguments)
+		if needsApproval {
 			c.toolApprovalMutex.Write(func() {
 				c.toolApprovalChannel[call.ID] = make(chan bool)
 			})
@@ -70,7 +71,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			Type: LLMMessageContentPartTypeToolCall,
 			Call: LLMMessageCall{
 				Id:            call.ID,
-				NeedsApproval: fnDefinition.NeedsApproval,
+				NeedsApproval: needsApproval,
 				BuiltIn:       fnDefinition.IsBuiltIn(),
 				Function:      call.FunctionCall.Name,
 				Arguments:     call.FunctionCall.Arguments,
@@ -111,7 +112,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 }
 
 func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.FunctionDefinition) (result LLMMessageCallResult, err error) {
-	if toolDefinition.NeedsApproval {
+	if toolDefinition.CheckApproval(ctx, call.FunctionCall.Arguments) {
 		// wait for user's approval (see llmApplyToolCallApproval())
 		var approvalChan chan bool
 		c.toolApprovalMutex.Read(func() {
