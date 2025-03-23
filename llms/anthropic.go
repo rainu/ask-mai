@@ -28,7 +28,28 @@ func (o *Anthropic) Call(ctx context.Context, prompt string, options ...llms.Cal
 }
 
 func (o *Anthropic) GenerateContent(ctx context.Context, messages []llms.MessageContent, options ...llms.CallOption) (*llms.ContentResponse, error) {
-	return o.client.GenerateContent(ctx, messages, options...)
+	resp, err := o.client.GenerateContent(ctx, messages, options...)
+	if err != nil {
+		return resp, err
+	}
+
+	if len(resp.Choices) > 1 {
+		// handle tool call -
+		// instead of put tool calls into the same choice as text generating (such like openai does),
+		// the anthropic implementation will put tool calls in separate choices!
+		// To streamline the process, here we will put the tool calls in the first message of the response.
+
+		for i := len(resp.Choices) - 1; i > 0; i-- {
+			if len(resp.Choices[i].ToolCalls) > 0 {
+				resp.Choices[0].ToolCalls = append(resp.Choices[0].ToolCalls, resp.Choices[i].ToolCalls...)
+			}
+
+			// remove the tool call choice
+			resp.Choices = resp.Choices[:i]
+		}
+	}
+
+	return resp, err
 }
 
 func (o *Anthropic) Close() error {

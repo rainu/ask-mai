@@ -59,4 +59,4 @@ require (
 	golang.org/x/text v0.22.0 // indirect
 )
 
-replace github.com/tmc/langchaingo => github.com/rainu/langchaingo v0.0.0-20250317220248-fa90ec74eaa7
+replace github.com/tmc/langchaingo => github.com/rainu/langchaingo v0.0.0-20250323132615-631dc38a49fd
