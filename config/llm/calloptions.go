@@ -35,6 +35,9 @@ func (c *CallOptionsConfig) AsOptions() (opts []llms.CallOption) {
 		opts = append(opts, llms.WithMaxLength(c.MaxLength))
 	}
 
+	// ask-mai can only handle one choice - to here we will "force" the llm to only generate one choice
+	opts = append(opts, llms.WithN(1))
+
 	return
 }
 
