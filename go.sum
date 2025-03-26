@@ -69,6 +69,8 @@ github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWb
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/olekukonko/tablewriter v0.0.5 h1:P2Ga83D34wi1o9J6Wh1mRuqd4mF/x/lgBS7N7AbDhec=
 github.com/olekukonko/tablewriter v0.0.5/go.mod h1:hPp6KlRPjbx+hW8ykQs1w3UBbZlj6HuIJcUGPhkA7kY=
+github.com/ollama/ollama v0.6.2 h1:IMUxPByUqXY4fvt/5Rsm6zuffN1X+7jEWIjkqo4arK4=
+github.com/ollama/ollama v0.6.2/go.mod h1:pGgtoNyc9DdM6oZI6yMfI6jTk2Eh4c36c2GpfQCH7PY=
 github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c h1:+mdjkGKdHQG3305AYmdv1U2eRNDiU2ErMBj1gwrq8eQ=
 github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c/go.mod h1:7rwL4CYBLnjLxUqIJNnCWiEdr3bn6IUYi15bNlnbCCU=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
@@ -81,8 +83,8 @@ github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c h1:ncq/mPwQF
 github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c/go.mod h1:OmDBASR4679mdNQnz2pUhc2G8CO2JrUAVFDRBDP/hJE=
 github.com/rainu/go-command-chain v0.4.0 h1:qgrNbNsqkTfJHdwGzVuGPPK+p+XSnGAhAT/8x1A8SLE=
 github.com/rainu/go-command-chain v0.4.0/go.mod h1:RvLsDKnTGD9XoUY7nmBz73ayffI0bFCDH/EVJPRgfks=
-github.com/rainu/langchaingo v0.0.0-20250323132615-631dc38a49fd h1:VLgle+7TGttwC80JRZAdcHPq0BTixvntim8kXKK5QZU=
-github.com/rainu/langchaingo v0.0.0-20250323132615-631dc38a49fd/go.mod h1:vpQ5NOIhpzxDfTZK9B6tf2GM/MoaHewPWM5KXXGh7hg=
+github.com/rainu/langchaingo v0.0.0-20250326142153-c860a5d21c81 h1:aKF/Uin8Wm/WgZVrUev42dU5gX36/OewN2errPZbO50=
+github.com/rainu/langchaingo v0.0.0-20250326142153-c860a5d21c81/go.mod h1:P6W595/jWuzP+isArIuFO7stnYQq6HLmSm84/epr/jY=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
 github.com/rivo/uniseg v0.4.7/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
