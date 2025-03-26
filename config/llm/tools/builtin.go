@@ -26,9 +26,15 @@ type BuiltIns struct {
 	DirectoryDeletion     DirectoryDeletion     `config:"dir-deletion" yaml:"dir-deletion" usage:"Directory deletion tool: "`
 
 	CommandExec CommandExecution `config:"command-execution" yaml:"command-execution" usage:"Command execution tool: "`
+
+	Disable bool `config:"disable" yaml:"disable" usage:"Disable all builtin tools."`
 }
 
 func (b BuiltIns) AsFunctionDefinitions() []FunctionDefinition {
+	if b.Disable {
+		return []FunctionDefinition{}
+	}
+
 	var functions []FunctionDefinition
 
 	v := reflect.ValueOf(b)
