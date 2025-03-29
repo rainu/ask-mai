@@ -8,7 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"os"
+	"strings"
 	"testing"
+	"time"
 )
 
 func TestCommandExpression_CommandFn(t *testing.T) {
@@ -33,7 +35,11 @@ func TestCommandExpression_CommandFn(t *testing.T) {
 			Environment: map[string]string{
 				"TEST_ENV": "test",
 			},
+			AdditionalEnvironment: map[string]string{
+				"ADDITIONAL_ENV_VAR": "value",
+			},
 			WorkingDir:  "/home/test",
+			Command:     "EMPTY",
 			CommandExpr: string(toTest),
 		},
 		Arguments: `{"path": "/tmp/"}`,
@@ -138,4 +144,85 @@ r.trim()`,
 			exec(ce)
 		})
 	}
+}
+
+func TestCommandExpression_CommandFn_RunCommand(t *testing.T) {
+	toTest := CommandExpression(`
+const pa = JSON.parse(v.args)
+const cmdDescriptor = {
+ "command": "echo",
+ "arguments": ["Echo:", pa.message]
+}
+
+` + FuncNameRun + `(cmdDescriptor)
+`)
+	require.NoError(t, toTest.Validate())
+
+	llmArgs := `{"message": "Hello World"}`
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	result, err := toTest.CommandFn(FunctionDefinition{})(ctx, llmArgs)
+	assert.NoError(t, err)
+	assert.Equal(t, `Echo: Hello World`, strings.TrimSpace(string(result)))
+}
+
+func TestCommandExpression_CommandFn_RunCommand_WithEnv(t *testing.T) {
+	toTest := CommandExpression(`
+const pa = JSON.parse(v.args)
+const cmdDescriptor = {
+ "command": "env",
+ "env": {"TEST_ENV": "test"},
+ "additionalEnv": {"ADDITIONAL_ENV_VAR": "value"},
+}
+
+` + FuncNameRun + `(cmdDescriptor)
+`)
+	require.NoError(t, toTest.Validate())
+
+	llmArgs := `{"message": "Hello World"}`
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	result, err := toTest.CommandFn(FunctionDefinition{})(ctx, llmArgs)
+	assert.NoError(t, err)
+	assert.Contains(t, strings.TrimSpace(string(result)), `TEST_ENV=test`)
+	assert.Contains(t, strings.TrimSpace(string(result)), `ADDITIONAL_ENV_VAR=value`)
+}
+
+func TestCommandExpression_CommandFn_RunCommand_WithError(t *testing.T) {
+	toTest := CommandExpression(`
+` + FuncNameRun + `({
+ "command": "__DoesNotExistOnAnySystem__"
+})
+`)
+	require.NoError(t, toTest.Validate())
+
+	llmArgs := `{}`
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	_, err := toTest.CommandFn(FunctionDefinition{})(ctx, llmArgs)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "executable file not found in $PATH")
+}
+
+func TestCommandExpression_CommandFn_RunCommand_CatchError(t *testing.T) {
+	toTest := CommandExpression(`
+let result = ""
+try {
+	result = ` + FuncNameRun + `({
+		"command": "__DoesNotExistOnAnySystem__"
+	})
+} catch (e) {
+	result = "Error: " + e
+}
+
+result
+`)
+	require.NoError(t, toTest.Validate())
+
+	llmArgs := `{}`
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	result, err := toTest.CommandFn(FunctionDefinition{})(ctx, llmArgs)
+	assert.NoError(t, err)
+	assert.Equal(t, `Error: failed to start command: exec: "__DoesNotExistOnAnySystem__": executable file not found in $PATH`, strings.TrimSpace(string(result)))
 }

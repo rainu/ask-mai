@@ -2,13 +2,14 @@ package tools
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja/parser"
 	"github.com/rainu/ask-mai/config/expression"
 	"os"
 )
+
+const FuncNameRun = "runCommand"
 
 type CommandExpression string
 
@@ -51,26 +52,20 @@ func (c CommandExpression) Validate() error {
 func (c CommandExpression) CommandFn(fd FunctionDefinition) CommandFn {
 	return func(ctx context.Context, args string) ([]byte, error) {
 		vm := goja.New()
+		vm.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
 
-		cvJson, err := json.Marshal(CommandVariables{
+		err := vm.Set(expression.VarNameVariables, CommandVariables{
 			FunctionDefinition: fd,
 			Arguments:          args,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("error marshalling variables: %w", err)
-		}
-
-		var v any
-		err = json.Unmarshal(cvJson, &v)
-		if err != nil {
-			return nil, fmt.Errorf("error unmarshalling variables: %w", err)
-		}
-
-		err = vm.Set(expression.VarNameVariables, v)
-		if err != nil {
 			return nil, fmt.Errorf("error setting variables: %w", err)
 		}
 		err = expression.SetupLog(vm)
+		if err != nil {
+			return nil, fmt.Errorf("error setting functions: %w", err)
+		}
+		err = vm.Set(FuncNameRun, runCommand(ctx, vm))
 		if err != nil {
 			return nil, fmt.Errorf("error setting functions: %w", err)
 		}
@@ -83,5 +78,16 @@ func (c CommandExpression) CommandFn(fd FunctionDefinition) CommandFn {
 		}
 
 		return []byte(result.String()), nil
+	}
+}
+
+func runCommand(ctx context.Context, vm *goja.Runtime) func(CommandDescriptor) string {
+	return func(cmd CommandDescriptor) string {
+		r, err := cmd.Run(ctx)
+		if err != nil {
+			panic(vm.ToValue(err.Error()))
+		}
+
+		return string(r)
 	}
 }

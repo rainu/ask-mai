@@ -57,7 +57,7 @@ func (t *Config) Validate() error {
 			}
 			definition.CommandFn = CommandExpression(definition.CommandExpr).CommandFn(definition)
 		} else if definition.Command != "" {
-			if ve := CommandExpression(definition.Command).Validate(); ve != nil {
+			if ve := Command(definition.Command).Validate(); ve != nil {
 				return ve
 			}
 			definition.CommandFn = Command(definition.Command).CommandFn(definition)

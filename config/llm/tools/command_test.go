@@ -117,7 +117,7 @@ func TestFunctionDefinition_GetEnvironment(t *testing.T) {
 	tests := []struct {
 		env         map[string]string
 		args        string
-		expectEnv   map[any]any
+		expectEnv   map[string]string
 		expectError bool
 	}{
 		{
@@ -126,7 +126,7 @@ func TestFunctionDefinition_GetEnvironment(t *testing.T) {
 				"ENV1": "$msg",
 			},
 			args: `{"msg": "hello world"}`,
-			expectEnv: map[any]any{
+			expectEnv: map[string]string{
 				"USER": "rainu",
 				"ENV1": "hello world",
 			},
@@ -137,7 +137,7 @@ func TestFunctionDefinition_GetEnvironment(t *testing.T) {
 				"ENV1": "$@",
 			},
 			args: `{"msg": "hello world"}`,
-			expectEnv: map[any]any{
+			expectEnv: map[string]string{
 				"USER": "rainu",
 				"ENV1": `{"msg": "hello world"}`,
 			},

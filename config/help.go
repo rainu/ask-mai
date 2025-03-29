@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -248,12 +249,28 @@ func printHelpTool(output io.Writer) {
 	fmt.Fprintf(output, "\nIt is also possible to define a JavaScript expression (file).\n")
 	fmt.Fprintf(output, "You can use the following variables and functions:\n")
 	fmt.Fprintf(output, "\nFunctions:\n")
-	fmt.Fprintf(output, "  - %s: writes a message to the console.\n", expression.FuncNameLog)
+	fmt.Fprintf(output, "  - %s(...args): writes a message to the console.\n", expression.FuncNameLog)
+
+	js := bytes.Buffer{}
+	je := json.NewEncoder(&js)
+	je.SetIndent("   ", "  ")
+	je.Encode(tools.CommandDescriptor{
+		Command:   "/path/to/command",
+		Arguments: []string{"arg1", "...argN"},
+		Environment: map[string]string{
+			"ENV_VAR": "value",
+		},
+		AdditionalEnvironment: map[string]string{
+			"ADDITIONAL_ENV_VAR": "value",
+		},
+		WorkingDirectory: "/path/to/working/dir",
+	})
+	fmt.Fprintf(output, "  - %s(%s): run a command.\n", tools.FuncNameRun, strings.TrimSpace(js.String()))
 
 	fmt.Fprintf(output, "\nVariables:\n")
 	fmt.Fprintf(output, "  const %s = ", expression.VarNameVariables)
 
-	je := json.NewEncoder(output)
+	je = json.NewEncoder(output)
 	je.SetIndent("  ", "  ")
 	je.Encode(tools.CommandVariables{
 		FunctionDefinition: tools.FunctionDefinition{
@@ -274,5 +291,27 @@ func printHelpTool(output io.Writer) {
 		},
 		Arguments: `{"message": "hello world"}`,
 	})
+
+	fmt.Fprintf(output, "\nJavaScript command expression examples:")
+	fmt.Fprintf(output, "\n\n  // parse llm's JSON, run the command and return its result\n")
+	fmt.Fprintf(output, `
+  const pa = JSON.parse(v.args)
+  const cmdDescriptor = {
+   "command": "echo",
+   "arguments": ["Echo:", pa.message]
+  }
+  
+  `+tools.FuncNameRun+`(cmdDescriptor)`)
+
+	fmt.Fprintf(output, "\n\n  // catches possible execution error\n")
+	fmt.Fprintf(output, `
+  let result = ""
+  try {
+     result = `+tools.FuncNameRun+`({ "command": "__doesNotExists__" })
+  } catch (e) {
+     result = "Error: " + e
+  }
+  result
+`)
 
 }
