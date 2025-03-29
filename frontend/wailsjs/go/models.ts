@@ -1874,6 +1874,7 @@ export namespace tools {
 	    DirectoryTempCreation: DirectoryTempCreation;
 	    DirectoryDeletion: DirectoryDeletion;
 	    CommandExec: CommandExecution;
+	    Disable: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new BuiltIns(source);
@@ -1897,6 +1898,7 @@ export namespace tools {
 	        this.DirectoryTempCreation = this.convertValues(source["DirectoryTempCreation"], DirectoryTempCreation);
 	        this.DirectoryDeletion = this.convertValues(source["DirectoryDeletion"], DirectoryDeletion);
 	        this.CommandExec = this.convertValues(source["CommandExec"], CommandExecution);
+	        this.Disable = source["Disable"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

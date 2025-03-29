@@ -1,6 +1,6 @@
 <template>
 	<v-row dense class="pa-0 ma-0">
-		<v-col id="chat-input-text-area" :cols="progress ? 11 : 12" class="pa-0 ma-0">
+		<v-col id="chat-input-text-area" :cols="progress ? 8 : 12" :sm="progress ? 11 : 12" class="pa-0 ma-0">
 			<v-textarea
 				v-model="value.prompt"
 				:rows="rows"
@@ -38,7 +38,7 @@
 				</template>
 			</v-textarea>
 		</v-col>
-		<v-col :cols="progress ? 1 : 0" v-show="progress" class="pa-0 ma-0">
+		<v-col :cols="progress ? 4 : 0" :sm="progress ? 1 : 0" v-show="progress" class="pa-0 ma-0">
 			<v-btn @click="onStop" variant="flat" color="error" block style="height: 100%">
 				<v-icon size="x-large">mdi-stop-circle</v-icon>
 			</v-btn>
