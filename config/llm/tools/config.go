@@ -5,9 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/tmc/langchaingo/llms"
-	"log/slog"
-	"mvdan.cc/sh/v3/shell"
-	"strings"
 )
 
 const FunctionArgumentNameAll = "@"
@@ -35,7 +32,8 @@ type FunctionDefinition struct {
 	AdditionalEnvironment map[string]string `yaml:"additionalEnv,omitempty" json:"additionalEnv,omitempty" usage:"Additional environment variables to pass to the command (will be merged with the default environment)"`
 	WorkingDir            string            `yaml:"workingDir,omitempty" json:"workingDir,omitempty" usage:"The working directory for the command"`
 
-	// for BuiltIn functions:
+	//will be filled at runtime (and should not be filled by user in any way)
+	isBuiltIn  bool
 	CommandFn  CommandFn  `config:"-" yaml:"-" json:"-"`
 	ApprovalFn ApprovalFn `config:"-" yaml:"-" json:"-"`
 }
@@ -58,7 +56,12 @@ func (t *Config) Validate() error {
 				return ve
 			}
 			definition.CommandFn = CommandExpression(definition.CommandExpr).CommandFn(definition)
-		} else if definition.Command == "" {
+		} else if definition.Command != "" {
+			if ve := CommandExpression(definition.Command).Validate(); ve != nil {
+				return ve
+			}
+			definition.CommandFn = Command(definition.Command).CommandFn(definition)
+		} else {
 			return fmt.Errorf("Command for tool '%s' is missing", cmd)
 		}
 	}
@@ -90,6 +93,7 @@ func (t *Config) GetTools() map[string]FunctionDefinition {
 	allFunctions := map[string]FunctionDefinition{}
 
 	for _, fd := range t.BuiltInTools.AsFunctionDefinitions() {
+		fd.isBuiltIn = true
 		allFunctions[fd.Name] = fd
 	}
 
@@ -130,79 +134,5 @@ func (f *FunctionDefinition) CheckApproval(ctx context.Context, jsonArgs string)
 }
 
 func (f *FunctionDefinition) IsBuiltIn() bool {
-	return f.CommandFn != nil
-}
-
-func (f *FunctionDefinition) GetCommandWithArgs(jsonArgs string) (string, []string, error) {
-	var data parsedArgs
-	if err := json.Unmarshal([]byte(jsonArgs), &data); err != nil {
-		return "", nil, fmt.Errorf("failed to parse JSON: %w", err)
-	}
-
-	fields, err := shell.Fields(f.Command, func(varName string) string {
-		if varName == FunctionArgumentNameAll {
-			return jsonArgs
-		}
-		r, err := data.Get(varName)
-		if err != nil {
-			slog.Error("Failed to marshal value",
-				"varName", varName,
-				"value", r,
-				"error", err,
-			)
-		}
-		return r
-	})
-	if err != nil {
-		return "", nil, fmt.Errorf("failed to parse command: %w", err)
-	}
-	return fields[0], fields[1:], nil
-}
-
-func (f *FunctionDefinition) GetEnvironment(jsonArgs string) (map[any]any, error) {
-	return processEnv(f.Environment, jsonArgs)
-}
-
-func (f *FunctionDefinition) GetAdditionalEnvironment(jsonArgs string) (map[any]any, error) {
-	return processEnv(f.AdditionalEnvironment, jsonArgs)
-}
-
-func processEnv(env map[string]string, jsonArgs string) (map[any]any, error) {
-	var data parsedArgs
-	if err := json.Unmarshal([]byte(jsonArgs), &data); err != nil {
-		return nil, fmt.Errorf("failed to parse JSON: %w", err)
-	}
-
-	result := map[any]any{}
-	for key, value := range env {
-		for vk := range data {
-			v, err := data.Get(vk)
-			if err != nil {
-				return nil, err
-			}
-			value = strings.Replace(value, "$"+vk, v, -1)
-		}
-		value = strings.Replace(value, "$@", jsonArgs, -1)
-		result[key] = value
-	}
-
-	return result, nil
-}
-
-func (f *FunctionDefinition) GetWorkingDirectory(jsonArgs string) (string, error) {
-	var data parsedArgs
-	if err := json.Unmarshal([]byte(jsonArgs), &data); err != nil {
-		return "", fmt.Errorf("failed to parse JSON: %w", err)
-	}
-
-	value := f.WorkingDir
-	for vk := range data {
-		v, err := data.Get(vk)
-		if err != nil {
-			return "", err
-		}
-		value = strings.Replace(value, "$"+vk, v, -1)
-	}
-
-	return value, nil
+	return f.isBuiltIn
 }

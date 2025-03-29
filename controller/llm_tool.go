@@ -1,12 +1,10 @@
 package controller
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"github.com/rainu/ask-mai/config/llm/tools"
-	cmdchain "github.com/rainu/go-command-chain"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"log/slog"
@@ -144,13 +142,7 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefin
 	)
 	t := time.Now()
 
-	var out []byte
-	var execErr error
-	if toolDefinition.CommandFn == nil {
-		out, execErr, err = c.executeCommand(ctx, toolDefinition, call)
-	} else {
-		out, execErr = toolDefinition.CommandFn(ctx, call.FunctionCall.Arguments)
-	}
+	out, execErr := toolDefinition.CommandFn(ctx, call.FunctionCall.Arguments)
 
 	result.DurationMs = time.Since(t).Milliseconds()
 	result.Content = string(out)
@@ -173,45 +165,6 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefin
 	}
 
 	return
-}
-
-func (c *Controller) executeCommand(ctx context.Context, toolDefinition tools.FunctionDefinition, call llms.ToolCall) ([]byte, error, error) {
-	cmd, args, err := toolDefinition.GetCommandWithArgs(call.FunctionCall.Arguments)
-	if err != nil {
-		return nil, nil, fmt.Errorf("error creating command for tool '%s': %w", call.FunctionCall.Name, err)
-	}
-
-	cmdBuild := cmdchain.Builder().JoinWithContext(ctx, cmd, args...)
-
-	if len(toolDefinition.Environment) > 0 {
-		env, err := toolDefinition.GetEnvironment(call.FunctionCall.Arguments)
-		if err != nil {
-			return nil, nil, fmt.Errorf("error creating environment for tool '%s': %w", call.FunctionCall.Name, err)
-		}
-		cmdBuild = cmdBuild.WithEnvironmentMap(env)
-	}
-	if len(toolDefinition.AdditionalEnvironment) > 0 {
-		env, err := toolDefinition.GetAdditionalEnvironment(call.FunctionCall.Arguments)
-		if err != nil {
-			return nil, nil, fmt.Errorf("error creating additional environment for tool '%s': %w", call.FunctionCall.Name, err)
-		}
-		cmdBuild = cmdBuild.WithAdditionalEnvironmentMap(env)
-	}
-	if toolDefinition.WorkingDir != "" {
-		wd, err := toolDefinition.GetWorkingDirectory(call.FunctionCall.Arguments)
-		if err != nil {
-			return nil, nil, fmt.Errorf("error creating working directory for tool '%s': %w", call.FunctionCall.Name, err)
-		}
-		cmdBuild = cmdBuild.WithWorkingDirectory(wd)
-	}
-
-	buf := bytes.NewBuffer([]byte{})
-	execErr := cmdBuild.Finalize().
-		WithOutput(buf).
-		WithError(buf).
-		Run()
-
-	return buf.Bytes(), execErr, nil
 }
 
 func (c *Controller) LLMApproveToolCall(callId string) {
