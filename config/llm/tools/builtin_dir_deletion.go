@@ -14,8 +14,8 @@ type DirectoryDeletion struct {
 	NoApproval bool `config:"no-approval" yaml:"no-approval" usage:"Needs no user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y DirectoryDeletionResult    `config:"-"`
-	Z DirectoryDeletionArguments `config:"-"`
+	Y DirectoryDeletionResult    `config:"-" yaml:"-"`
+	Z DirectoryDeletionArguments `config:"-" yaml:"-"`
 }
 
 func (f DirectoryDeletion) AsFunctionDefinition() *FunctionDefinition {

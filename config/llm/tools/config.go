@@ -29,7 +29,8 @@ type FunctionDefinition struct {
 	Parameters    any    `yaml:"parameters" json:"parameters" usage:"The parameter definition of the function"`
 	NeedsApproval bool   `yaml:"approval" json:"approval" usage:"Needs user approval to be executed"`
 
-	Command               string            `yaml:"command" json:"command" usage:"The command to execute. This is a format string with placeholders for the parameters. Example: /usr/bin/touch $path"`
+	Command               string            `yaml:"command,omitempty" json:"command,omitempty" usage:"The command to execute. This is a format string with placeholders for the parameters. Example: /usr/bin/touch $path"`
+	CommandExpr           string            `yaml:"commandExpr,omitempty" json:"commandExpr,omitempty" usage:"JavaScript expression (or path to JS-file) to execute. See Tool-Help (--help-tool) for more information."`
 	Environment           map[string]string `yaml:"env,omitempty" json:"env,omitempty" usage:"Environment variables to pass to the command (will overwrite the default environment)"`
 	AdditionalEnvironment map[string]string `yaml:"additionalEnv,omitempty" json:"additionalEnv,omitempty" usage:"Additional environment variables to pass to the command (will be merged with the default environment)"`
 	WorkingDir            string            `yaml:"workingDir,omitempty" json:"workingDir,omitempty" usage:"The working directory for the command"`
@@ -52,7 +53,12 @@ func (t *Config) Validate() error {
 	}
 
 	for cmd, definition := range t.Tools {
-		if definition.Command == "" {
+		if definition.CommandExpr != "" {
+			if ve := CommandExpression(definition.CommandExpr).Validate(); ve != nil {
+				return ve
+			}
+			definition.CommandFn = CommandExpression(definition.CommandExpr).CommandFn(definition)
+		} else if definition.Command == "" {
 			return fmt.Errorf("Command for tool '%s' is missing", cmd)
 		}
 	}

@@ -14,8 +14,8 @@ type FileAppending struct {
 	NoApproval bool `config:"no-approval" yaml:"no-approval" usage:"Needs no user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y FileAppendingResult    `config:"-"`
-	Z FileAppendingArguments `config:"-"`
+	Y FileAppendingResult    `config:"-" yaml:"-"`
+	Z FileAppendingArguments `config:"-" yaml:"-"`
 }
 
 func (f FileAppending) AsFunctionDefinition() *FunctionDefinition {

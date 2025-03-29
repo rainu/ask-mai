@@ -17,8 +17,8 @@ type FileReading struct {
 	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y FileReadingResult    `config:"-"`
-	Z FileReadingArguments `config:"-"`
+	Y FileReadingResult    `config:"-" yaml:"-"`
+	Z FileReadingArguments `config:"-" yaml:"-"`
 }
 
 func (f FileReading) AsFunctionDefinition() *FunctionDefinition {

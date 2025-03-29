@@ -12,8 +12,8 @@ type SystemInfo struct {
 	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y SystemInfoResult    `config:"-"`
-	Z SystemInfoArguments `config:"-"`
+	Y SystemInfoResult    `config:"-" yaml:"-"`
+	Z SystemInfoArguments `config:"-" yaml:"-"`
 }
 
 func (s SystemInfo) AsFunctionDefinition() *FunctionDefinition {

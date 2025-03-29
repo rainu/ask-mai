@@ -158,11 +158,9 @@ func printHelpTool(output io.Writer) {
 		if strings.HasPrefix(t, "interface") {
 			t = "any"
 		}
-		table.Append([]string{field.Flag, t, field.Usage})
+		table.Append([]string{strings.Replace(field.Flag, ",omitempty", "", -1), t, field.Usage})
 	}
 	table.Render()
-
-	fmt.Fprintf(output, "\nJSON:\n")
 
 	exampleDefs := []tools.FunctionDefinition{
 		{
@@ -207,6 +205,8 @@ func printHelpTool(output io.Writer) {
 		},
 	}
 
+	fmt.Fprintf(output, "\nJSON:\n")
+
 	fdm := map[string]tools.FunctionDefinition{}
 	for _, def := range exampleDefs {
 		jsonDef, _ := json.MarshalIndent(def, "", " ")
@@ -220,7 +220,9 @@ func printHelpTool(output io.Writer) {
 	ye.SetIndent(2)
 	ye.Encode(map[string]any{
 		"llm": map[string]any{
-			"tool": tools.Config{Tools: fdm},
+			"tool": map[string]any{
+				"functions": fdm,
+			},
 		},
 	})
 
@@ -242,4 +244,35 @@ func printHelpTool(output io.Writer) {
 	table.Render()
 
 	fmt.Fprintf(output, "\nYou can also use these placeholder in (additional) environment and working directory variables.\n")
+
+	fmt.Fprintf(output, "\nIt is also possible to define a JavaScript expression (file).\n")
+	fmt.Fprintf(output, "You can use the following variables and functions:\n")
+	fmt.Fprintf(output, "\nFunctions:\n")
+	fmt.Fprintf(output, "  - %s: writes a message to the console.\n", expression.FuncNameLog)
+
+	fmt.Fprintf(output, "\nVariables:\n")
+	fmt.Fprintf(output, "  const %s = ", expression.VarNameVariables)
+
+	je := json.NewEncoder(output)
+	je.SetIndent("  ", "  ")
+	je.Encode(tools.CommandVariables{
+		FunctionDefinition: tools.FunctionDefinition{
+			Name:        "jsEcho",
+			Description: "This function echoes a message.",
+			Parameters: map[string]any{
+				"type": "object",
+				"properties": map[string]any{
+					"message": map[string]any{
+						"type":        "string",
+						"description": "The message to echo.",
+					},
+				},
+				"required": []string{"message"},
+			},
+			CommandExpr:   fmt.Sprintf(`"Echo: " + JSON.parse(%s.args).message`, expression.VarNameVariables),
+			NeedsApproval: false,
+		},
+		Arguments: `{"message": "hello world"}`,
+	})
+
 }

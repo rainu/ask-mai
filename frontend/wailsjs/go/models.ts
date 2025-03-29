@@ -1932,7 +1932,8 @@ export namespace tools {
 	    description: string;
 	    parameters: any;
 	    approval: boolean;
-	    command: string;
+	    command?: string;
+	    commandExpr?: string;
 	    env?: Record<string, string>;
 	    additionalEnv?: Record<string, string>;
 	    workingDir?: string;
@@ -1948,6 +1949,7 @@ export namespace tools {
 	        this.parameters = source["parameters"];
 	        this.approval = source["approval"];
 	        this.command = source["command"];
+	        this.commandExpr = source["commandExpr"];
 	        this.env = source["env"];
 	        this.additionalEnv = source["additionalEnv"];
 	        this.workingDir = source["workingDir"];

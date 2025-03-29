@@ -13,8 +13,8 @@ type Environment struct {
 	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y EnvironmentResult    `config:"-"`
-	Z EnvironmentArguments `config:"-"`
+	Y EnvironmentResult    `config:"-" yaml:"-"`
+	Z EnvironmentArguments `config:"-" yaml:"-"`
 }
 
 func (f Environment) AsFunctionDefinition() *FunctionDefinition {

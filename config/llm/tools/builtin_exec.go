@@ -19,7 +19,7 @@ type CommandExecution struct {
 	NoApprovalCommandsExpr []string `config:"allow-expr" yaml:"allow-expr" usage:"Needs no user approval for the specific command-line to be executed\nJavaScript expression - Return true if the command should be allowed:\n\tv.Name : string - contains the commands name\n\tv.Arguments : []string - contains the arguments\n\tv.WorkingDirectory: string - contains the working directory\n\tv.Environment : map[string]string - contains the environment variables\nExamples:\n\tv.Name == 'ls' && v.Arguments.length == 0\n\tv.Name == 'find' && v.Arguments.findIndex(a => a === \"-exec\") == -1"`
 
 	//only for wails to generate TypeScript types
-	Z CommandExecutionArguments `config:"-"`
+	Z CommandExecutionArguments `config:"-" yaml:"-"`
 }
 
 func (c CommandExecution) AsFunctionDefinition() *FunctionDefinition {
@@ -127,7 +127,7 @@ func CalcApprovalExpr(e string, v CommandExecutionArguments) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("error setting functions: %w", err)
 	}
-	result, err := vm.RunString(string(e))
+	result, err := vm.RunString(e)
 	if err != nil {
 		return false, fmt.Errorf("error running expression: %w", err)
 	}

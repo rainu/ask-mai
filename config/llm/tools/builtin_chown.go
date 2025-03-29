@@ -12,8 +12,8 @@ type ChangeOwner struct {
 	NoApproval bool `config:"no-approval" yaml:"no-approval" usage:"Needs no user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y ChangeOwnerResult    `config:"-"`
-	Z ChangeOwnerArguments `config:"-"`
+	Y ChangeOwnerResult    `config:"-" yaml:"-"`
+	Z ChangeOwnerArguments `config:"-" yaml:"-"`
 }
 
 func (f ChangeOwner) AsFunctionDefinition() *FunctionDefinition {

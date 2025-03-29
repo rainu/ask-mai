@@ -14,8 +14,8 @@ type DirectoryCreation struct {
 	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y DirectoryCreationResult    `config:"-"`
-	Z DirectoryCreationArguments `config:"-"`
+	Y DirectoryCreationResult    `config:"-" yaml:"-"`
+	Z DirectoryCreationArguments `config:"-" yaml:"-"`
 }
 
 func (f DirectoryCreation) AsFunctionDefinition() *FunctionDefinition {

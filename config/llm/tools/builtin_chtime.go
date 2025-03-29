@@ -14,8 +14,8 @@ type ChangeTimes struct {
 	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y ChangeTimesResult    `config:"-"`
-	Z ChangeTimesArguments `config:"-"`
+	Y ChangeTimesResult    `config:"-" yaml:"-"`
+	Z ChangeTimesArguments `config:"-" yaml:"-"`
 }
 
 func (f ChangeTimes) AsFunctionDefinition() *FunctionDefinition {

@@ -12,8 +12,8 @@ type ChangeMode struct {
 	NoApproval bool `config:"no-approval" yaml:"no-approval" usage:"Needs no user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y ChangeModeResult    `config:"-"`
-	Z ChangeModeArguments `config:"-"`
+	Y ChangeModeResult    `config:"-" yaml:"-"`
+	Z ChangeModeArguments `config:"-" yaml:"-"`
 }
 
 func (f ChangeMode) AsFunctionDefinition() *FunctionDefinition {

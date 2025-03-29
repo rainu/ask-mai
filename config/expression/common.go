@@ -10,8 +10,10 @@ const VarNameVariables = "v"
 const FuncNameLog = "log"
 
 func SetupLog(vm *goja.Runtime) error {
-	return vm.Set(FuncNameLog, func(args ...interface{}) {
-		fmt.Fprint(os.Stderr, "EXPRESSION_LOG: ")
-		fmt.Fprintln(os.Stderr, args...)
-	})
+	return vm.Set(FuncNameLog, Log)
+}
+
+var Log = func(args ...interface{}) {
+	fmt.Fprint(os.Stderr, "EXPRESSION_LOG: ")
+	fmt.Fprintln(os.Stderr, args...)
 }

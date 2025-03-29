@@ -15,8 +15,8 @@ type Stats struct {
 	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Y StatsResult    `config:"-"`
-	Z StatsArguments `config:"-"`
+	Y StatsResult    `config:"-" yaml:"-"`
+	Z StatsArguments `config:"-" yaml:"-"`
 }
 
 func (f Stats) AsFunctionDefinition() *FunctionDefinition {
