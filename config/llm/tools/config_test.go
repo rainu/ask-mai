@@ -58,6 +58,9 @@ func TestConfig_GetTools(t *testing.T) {
 	fd, contains = result[BuiltInPrefix+"executeCommand"]
 	assert.True(t, contains)
 	assert.True(t, fd.IsBuiltIn())
+	fd, contains = result[BuiltInPrefix+"callHttp"]
+	assert.True(t, contains)
+	assert.True(t, fd.IsBuiltIn())
 
 	// deactivate builtin tool
 
@@ -77,5 +80,6 @@ func TestConfig_GetTools(t *testing.T) {
 	toTest.BuiltInTools.DirectoryTempCreation.Disable = true
 	toTest.BuiltInTools.DirectoryDeletion.Disable = true
 	toTest.BuiltInTools.CommandExec.Disable = true
+	toTest.BuiltInTools.Http.Disable = true
 	assert.Empty(t, toTest.GetTools())
 }

@@ -70,6 +70,9 @@ func TestBuiltIns_AsFunctionDefinitions(t *testing.T) {
 		CommandExec: CommandExecution{
 			Disable: true,
 		},
+		Http: Http{
+			Disable: true,
+		},
 	}
 	assert.Equal(t, 0, len(toTest.AsFunctionDefinitions()))
 }

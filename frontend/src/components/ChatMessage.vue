@@ -41,6 +41,9 @@
 			<BuiltinToolCallDirectoryDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteDirectory')" />
 
 			<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
+
+			<BuiltinToolCallHttpCall :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('callHttp')" />
+
 			<GeneralToolCall :tc="tc" v-else />
 		</v-row>
 	</template>
@@ -82,6 +85,7 @@ import BuiltinToolCallEnvironment from './toolcall/BuiltinToolCallEnvironment.vu
 import BuiltinToolCallChangeMode from './toolcall/BuiltinToolCallChangeMode.vue'
 import BuiltinToolCallChangeOwner from './toolcall/BuiltinToolCallChangeOwner.vue'
 import BuiltinToolCallChangeTimes from './toolcall/BuiltinToolCallChangeTimes.vue'
+import BuiltinToolCallHttpCall from './toolcall/BuiltinToolCallHttpCall.vue'
 
 export enum Role {
 	User = 'human',
@@ -98,6 +102,7 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		BuiltinToolCallHttpCall,
 		BuiltinToolCallChangeTimes,
 		BuiltinToolCallChangeOwner,
 		BuiltinToolCallChangeMode,

@@ -39,6 +39,7 @@ https://github.com/user-attachments/assets/a6d16332-55a1-4866-9f3e-31490a488935
     * "__createTempDirectory" - Creates a new temporary directory on the system
     * "__deleteDirectory" - Delete a directory from the system
     * "__executeCommand" - Execute a command on the system
+    * "__callHttp" - Do a http call
 * Scriptable
   * All settings can be set via:
     * yaml configuration file 

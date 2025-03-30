@@ -27,6 +27,8 @@ type BuiltIns struct {
 
 	CommandExec CommandExecution `config:"command-execution" yaml:"command-execution" usage:"Command execution tool: "`
 
+	Http Http `config:"http" yaml:"http" usage:"HTTP tool: "`
+
 	Disable bool `config:"disable" yaml:"disable" usage:"Disable all builtin tools."`
 }
 
