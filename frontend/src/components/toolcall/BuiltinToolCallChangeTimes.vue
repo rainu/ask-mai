@@ -26,9 +26,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, tools } from '../../../wailsjs/go/models.ts'
+import { controller, file } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
-import ChangeTimesArguments = tools.ChangeTimesArguments
+import ChangeTimesArguments = file.ChangeTimesArguments
 import ToolCall from './ToolCall.vue'
 
 export default defineComponent({

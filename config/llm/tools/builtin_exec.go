@@ -1,13 +1,12 @@
 package tools
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/dop251/goja"
 	"github.com/rainu/ask-mai/config/expression"
-	cmdchain "github.com/rainu/go-command-chain"
+	"github.com/rainu/ask-mai/llms/tools/command"
 	"log/slog"
 	"strings"
 )
@@ -19,7 +18,7 @@ type CommandExecution struct {
 	NoApprovalCommandsExpr []string `config:"allow-expr" yaml:"allow-expr" usage:"Needs no user approval for the specific command-line to be executed\nJavaScript expression - Return true if the command should be allowed:\n\tv.Name : string - contains the commands name\n\tv.Arguments : []string - contains the arguments\n\tv.WorkingDirectory: string - contains the working directory\n\tv.Environment : map[string]string - contains the environment variables\nExamples:\n\tv.Name == 'ls' && v.Arguments.length == 0\n\tv.Name == 'find' && v.Arguments.findIndex(a => a === \"-exec\") == -1"`
 
 	//only for wails to generate TypeScript types
-	Z CommandExecutionArguments `config:"-" yaml:"-"`
+	Z command.CommandExecutionArguments `config:"-" yaml:"-"`
 }
 
 func (c CommandExecution) AsFunctionDefinition() *FunctionDefinition {
@@ -29,44 +28,11 @@ func (c CommandExecution) AsFunctionDefinition() *FunctionDefinition {
 
 	return &FunctionDefinition{
 		Name:        "executeCommand",
-		Description: "Execute a command on the user's system.",
-		Parameters: map[string]any{
-			"type":   "object",
-			"strict": true,
-			"properties": map[string]any{
-				"name": map[string]any{
-					"type":        "string",
-					"description": "The name / path to the command to execute.",
-				},
-				"arguments": map[string]any{
-					"type":        "array",
-					"description": "The arguments for the command.",
-					"items": map[string]any{
-						"type": "string",
-					},
-				},
-				"working_directory": map[string]any{
-					"type":        "string",
-					"description": "The working directory for the command.",
-				},
-				"environment": map[string]any{
-					"type":                 "object",
-					"description":          "Additional environment variables to pass to the command.",
-					"additionalProperties": true,
-				},
-			},
-			"required": []string{"name"},
-		},
-		CommandFn:  c.Command,
-		ApprovalFn: c.CheckApproval,
+		ApprovalFn:  c.CheckApproval,
+		Description: command.CommandExecutionDefinition.Description,
+		Parameters:  command.CommandExecutionDefinition.Parameter,
+		CommandFn:   command.CommandExecutionDefinition.Function,
 	}
-}
-
-type CommandExecutionArguments struct {
-	Name             string            `json:"name"`
-	Arguments        []string          `json:"arguments"`
-	WorkingDirectory string            `json:"working_directory"`
-	Environment      map[string]string `json:"environment"`
 }
 
 func (c CommandExecution) CheckApproval(ctx context.Context, jsonArguments string) bool {
@@ -75,7 +41,7 @@ func (c CommandExecution) CheckApproval(ctx context.Context, jsonArguments strin
 		return false
 	}
 
-	var pArgs CommandExecutionArguments
+	var pArgs command.CommandExecutionArguments
 	err := json.Unmarshal([]byte(jsonArguments), &pArgs)
 	if err != nil {
 		slog.Error("Error parsing argument!", "error", err)
@@ -117,7 +83,7 @@ func (c CommandExecution) CheckApproval(ctx context.Context, jsonArguments strin
 	return true
 }
 
-func CalcApprovalExpr(e string, v CommandExecutionArguments) (bool, error) {
+func CalcApprovalExpr(e string, v command.CommandExecutionArguments) (bool, error) {
 	vm := goja.New()
 	err := vm.Set(expression.VarNameVariables, v)
 	if err != nil {
@@ -133,37 +99,4 @@ func CalcApprovalExpr(e string, v CommandExecutionArguments) (bool, error) {
 	}
 
 	return result.ToBoolean(), nil
-}
-
-func (c CommandExecution) Command(ctx context.Context, jsonArguments string) ([]byte, error) {
-	var pArgs CommandExecutionArguments
-	err := json.Unmarshal([]byte(jsonArguments), &pArgs)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing arguments: %w", err)
-	}
-
-	if pArgs.Name == "" {
-		return nil, fmt.Errorf("missing parameter: 'name'")
-	}
-
-	cmd := cmdchain.Builder().JoinWithContext(ctx, pArgs.Name, pArgs.Arguments...)
-
-	if pArgs.WorkingDirectory != "" {
-		cmd = cmd.WithWorkingDirectory(pArgs.WorkingDirectory)
-	}
-	if len(pArgs.Environment) > 0 {
-		envMap := map[any]any{}
-		for k, v := range pArgs.Environment {
-			envMap[k] = v
-		}
-		cmd = cmd.WithAdditionalEnvironmentMap(envMap)
-	}
-
-	buf := bytes.NewBuffer([]byte{})
-	execErr := cmd.Finalize().
-		WithOutput(buf).
-		WithError(buf).
-		Run()
-
-	return buf.Bytes(), execErr
 }

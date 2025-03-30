@@ -1,8 +1,7 @@
 package tools
 
 import (
-	"context"
-	"time"
+	"github.com/rainu/ask-mai/llms/tools"
 )
 
 type SystemTime struct {
@@ -16,18 +15,10 @@ func (s SystemTime) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:        "getSystemTime",
-		Description: "Get the current system time.",
-		Parameters: map[string]any{
-			"type":       "object",
-			"properties": map[string]any{},
-			"required":   []string{},
-		},
-		CommandFn:     s.Command,
+		Name:          "getSystemTime",
 		NeedsApproval: s.NeedsApproval,
+		Description:   tools.SystemTimeDefinition.Description,
+		Parameters:    tools.SystemTimeDefinition.Parameter,
+		CommandFn:     tools.SystemTimeDefinition.Function,
 	}
-}
-
-func (s SystemTime) Command(ctx context.Context, jsonArguments string) ([]byte, error) {
-	return []byte(time.Now().String()), nil
 }

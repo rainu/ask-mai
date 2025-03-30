@@ -8,9 +8,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, tools } from '../../../wailsjs/go/models.ts'
+import { controller, file } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
-import ChangeModeArguments = tools.ChangeModeArguments
+import ChangeModeArguments = file.ChangeModeArguments
 import ToolCall from './ToolCall.vue'
 
 export default defineComponent({

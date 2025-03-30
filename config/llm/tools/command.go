@@ -1,11 +1,10 @@
 package tools
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	cmdchain "github.com/rainu/go-command-chain"
+	"github.com/rainu/ask-mai/llms/tools/command"
 	"log/slog"
 	"mvdan.cc/sh/v3/shell"
 	"strings"
@@ -23,7 +22,7 @@ func (c Command) Validate() error {
 
 func (c Command) CommandFn(fd FunctionDefinition) CommandFn {
 	return func(ctx context.Context, argsAsJson string) ([]byte, error) {
-		cmdDesc := CommandDescriptor{}
+		cmdDesc := command.CommandDescriptor{}
 		var err error
 
 		cmdDesc.Command, cmdDesc.Arguments, err = fd.GetCommandWithArgs(argsAsJson)
@@ -52,44 +51,6 @@ func (c Command) CommandFn(fd FunctionDefinition) CommandFn {
 
 		return cmdDesc.Run(ctx)
 	}
-}
-
-type CommandDescriptor struct {
-	Command               string            `json:"command"`
-	Arguments             []string          `json:"arguments"`
-	Environment           map[string]string `json:"env"`
-	AdditionalEnvironment map[string]string `json:"additionalEnv"`
-	WorkingDirectory      string            `json:"workingDir"`
-}
-
-func (c CommandDescriptor) Run(ctx context.Context) ([]byte, error) {
-	cmdBuild := cmdchain.Builder().JoinWithContext(ctx, c.Command, c.Arguments...)
-
-	if len(c.Environment) > 0 {
-		cmdBuild = cmdBuild.WithEnvironmentMap(toAnyMap(c.Environment))
-	}
-	if len(c.AdditionalEnvironment) > 0 {
-		cmdBuild = cmdBuild.WithAdditionalEnvironmentMap(toAnyMap(c.AdditionalEnvironment))
-	}
-	if c.WorkingDirectory != "" {
-		cmdBuild = cmdBuild.WithWorkingDirectory(c.WorkingDirectory)
-	}
-
-	buf := bytes.NewBuffer([]byte{})
-	execErr := cmdBuild.Finalize().
-		WithOutput(buf).
-		WithError(buf).
-		Run()
-
-	return buf.Bytes(), execErr
-}
-
-func toAnyMap(m map[string]string) map[any]any {
-	result := map[any]any{}
-	for k, v := range m {
-		result[k] = v
-	}
-	return result
 }
 
 func (f *FunctionDefinition) GetCommandWithArgs(jsonArgs string) (string, []string, error) {

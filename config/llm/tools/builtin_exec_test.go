@@ -1,17 +1,20 @@
 package tools
 
-import "testing"
+import (
+	"github.com/rainu/ask-mai/llms/tools/command"
+	"testing"
+)
 
 func TestCalcApprovalExpr(t *testing.T) {
 	tests := []struct {
 		expression  string
-		args        CommandExecutionArguments
+		args        command.CommandExecutionArguments
 		expected    bool
 		expectedErr error
 	}{
 		{
 			"v.Name == 'test'",
-			CommandExecutionArguments{
+			command.CommandExecutionArguments{
 				Name: "test",
 			},
 			true,
@@ -19,7 +22,7 @@ func TestCalcApprovalExpr(t *testing.T) {
 		},
 		{
 			`v.Name.endsWith('find') && v.Arguments.findIndex(a => a === "-exec") === -1`,
-			CommandExecutionArguments{
+			command.CommandExecutionArguments{
 				Name:      "find",
 				Arguments: []string{"/"},
 			},
@@ -28,7 +31,7 @@ func TestCalcApprovalExpr(t *testing.T) {
 		},
 		{
 			`v.Name.endsWith('find') && v.Arguments.findIndex(a => a === "-exec") === -1`,
-			CommandExecutionArguments{
+			command.CommandExecutionArguments{
 				Name:      "find",
 				Arguments: []string{"/", "-exec", "rm", "{}", ";"},
 			},

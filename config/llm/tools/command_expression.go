@@ -6,6 +6,7 @@ import (
 	"github.com/dop251/goja"
 	"github.com/dop251/goja/parser"
 	"github.com/rainu/ask-mai/config/expression"
+	"github.com/rainu/ask-mai/llms/tools/command"
 	"os"
 )
 
@@ -81,8 +82,8 @@ func (c CommandExpression) CommandFn(fd FunctionDefinition) CommandFn {
 	}
 }
 
-func runCommand(ctx context.Context, vm *goja.Runtime) func(CommandDescriptor) string {
-	return func(cmd CommandDescriptor) string {
+func runCommand(ctx context.Context, vm *goja.Runtime) func(command.CommandDescriptor) string {
+	return func(cmd command.CommandDescriptor) string {
 		r, err := cmd.Run(ctx)
 		if err != nil {
 			panic(vm.ToValue(err.Error()))

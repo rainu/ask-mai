@@ -12,9 +12,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, tools } from '../../../wailsjs/go/models.ts'
+import { controller, command } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
-import CommandExecutionArguments = tools.CommandExecutionArguments
+import CommandExecutionArguments = command.CommandExecutionArguments
 import ToolCall from './ToolCall.vue'
 import VueMarkdown from 'vue-markdown-render'
 

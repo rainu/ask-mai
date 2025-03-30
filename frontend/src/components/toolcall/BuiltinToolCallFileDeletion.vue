@@ -13,10 +13,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, tools } from '../../../wailsjs/go/models.ts'
+import { controller, file } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
-import FileDeletionArguments = tools.FileDeletionArguments
-import FileDeletionResult = tools.FileDeletionResult
+import FileDeletionArguments = file.FileDeletionArguments
+import FileDeletionResult = file.FileDeletionResult
 import ToolCall from './ToolCall.vue'
 
 export default defineComponent({

@@ -1,3 +1,26 @@
+export namespace command {
+	
+	export class CommandExecutionArguments {
+	    name: string;
+	    arguments: string[];
+	    working_directory: string;
+	    environment: Record<string, string>;
+	
+	    static createFrom(source: any = {}) {
+	        return new CommandExecutionArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.arguments = source["arguments"];
+	        this.working_directory = source["working_directory"];
+	        this.environment = source["environment"];
+	    }
+	}
+
+}
+
 export namespace config {
 	
 	export class WebKitInspectorConfig {
@@ -564,6 +587,347 @@ export namespace expression {
 
 }
 
+export namespace file {
+	
+	export class ChangeModeArguments {
+	    path: string;
+	    permission: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeModeArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.permission = source["permission"];
+	    }
+	}
+	export class ChangeOwnerArguments {
+	    path: string;
+	    user_id: number;
+	    group_id: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeOwnerArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.user_id = source["user_id"];
+	        this.group_id = source["group_id"];
+	    }
+	}
+	export class ChangeTimesArguments {
+	    path: string;
+	    access_time: string;
+	    modification_time: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeTimesArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.access_time = source["access_time"];
+	        this.modification_time = source["modification_time"];
+	    }
+	}
+	export class DirectoryCreationArguments {
+	    path: string;
+	    permission: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DirectoryCreationArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.permission = source["permission"];
+	    }
+	}
+	export class DirectoryCreationResult {
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DirectoryCreationResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	    }
+	}
+	export class DirectoryDeletionArguments {
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DirectoryDeletionArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	    }
+	}
+	export class DirectoryDeletionResult {
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DirectoryDeletionResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	    }
+	}
+	export class DirectoryTempCreationResult {
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DirectoryTempCreationResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	    }
+	}
+	export class FileAppendingArguments {
+	    path: string;
+	    content: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileAppendingArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.content = source["content"];
+	    }
+	}
+	export class FileAppendingResult {
+	    path: string;
+	    written: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileAppendingResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.written = source["written"];
+	    }
+	}
+	export class FileCreationArguments {
+	    path: string;
+	    content: string;
+	    permission: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileCreationArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.content = source["content"];
+	        this.permission = source["permission"];
+	    }
+	}
+	export class FileCreationResult {
+	    path: string;
+	    written: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileCreationResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.written = source["written"];
+	    }
+	}
+	export class FileDeletionArguments {
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileDeletionArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	    }
+	}
+	export class FileDeletionResult {
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileDeletionResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	    }
+	}
+	export class FileReadingLimits {
+	    m: string;
+	    o: number;
+	    l: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileReadingLimits(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.m = source["m"];
+	        this.o = source["o"];
+	        this.l = source["l"];
+	    }
+	}
+	export class FileReadingArguments {
+	    path: string;
+	    limits?: FileReadingLimits;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileReadingArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.limits = this.convertValues(source["limits"], FileReadingLimits);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	export class FileReadingResult {
+	    path: string;
+	    content: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileReadingResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.content = source["content"];
+	    }
+	}
+	export class FileTempCreationArguments {
+	    content: string;
+	    suffix: string;
+	    permission: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileTempCreationArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.content = source["content"];
+	        this.suffix = source["suffix"];
+	        this.permission = source["permission"];
+	    }
+	}
+	export class FileTempCreationResult {
+	    path: string;
+	    written: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileTempCreationResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.written = source["written"];
+	    }
+	}
+	export class StatsArguments {
+	    path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new StatsArguments(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	    }
+	}
+	export class StatsResult {
+	    path: string;
+	    isDirectory: boolean;
+	    isRegular: boolean;
+	    permissions: string;
+	    size: number;
+	    // Go type: time
+	    modTime: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new StatsResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
+	        this.isDirectory = source["isDirectory"];
+	        this.isRegular = source["isRegular"];
+	        this.permissions = source["permissions"];
+	        this.size = source["size"];
+	        this.modTime = this.convertValues(source["modTime"], null);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+
+}
+
 export namespace llm {
 	
 	export class AnthropicConfig {
@@ -830,30 +1194,12 @@ export namespace llm {
 
 export namespace tools {
 	
-	export class CommandExecutionArguments {
-	    name: string;
-	    arguments: string[];
-	    working_directory: string;
-	    environment: Record<string, string>;
-	
-	    static createFrom(source: any = {}) {
-	        return new CommandExecutionArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.name = source["name"];
-	        this.arguments = source["arguments"];
-	        this.working_directory = source["working_directory"];
-	        this.environment = source["environment"];
-	    }
-	}
 	export class CommandExecution {
 	    Disable: boolean;
 	    NoApproval: boolean;
 	    NoApprovalCommands: string[];
 	    NoApprovalCommandsExpr: string[];
-	    Z: CommandExecutionArguments;
+	    Z: command.CommandExecutionArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new CommandExecution(source);
@@ -865,7 +1211,7 @@ export namespace tools {
 	        this.NoApproval = source["NoApproval"];
 	        this.NoApprovalCommands = source["NoApprovalCommands"];
 	        this.NoApprovalCommandsExpr = source["NoApprovalCommandsExpr"];
-	        this.Z = this.convertValues(source["Z"], CommandExecutionArguments);
+	        this.Z = this.convertValues(source["Z"], command.CommandExecutionArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -886,35 +1232,11 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class DirectoryDeletionArguments {
-	    path: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new DirectoryDeletionArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	    }
-	}
-	export class DirectoryDeletionResult {
-	    path: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new DirectoryDeletionResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	    }
-	}
 	export class DirectoryDeletion {
 	    Disable: boolean;
 	    NoApproval: boolean;
-	    Y: DirectoryDeletionResult;
-	    Z: DirectoryDeletionArguments;
+	    Y: file.DirectoryDeletionResult;
+	    Z: file.DirectoryDeletionArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new DirectoryDeletion(source);
@@ -924,8 +1246,8 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.NoApproval = source["NoApproval"];
-	        this.Y = this.convertValues(source["Y"], DirectoryDeletionResult);
-	        this.Z = this.convertValues(source["Z"], DirectoryDeletionArguments);
+	        this.Y = this.convertValues(source["Y"], file.DirectoryDeletionResult);
+	        this.Z = this.convertValues(source["Z"], file.DirectoryDeletionArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -946,35 +1268,11 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class DirectoryTempCreationArguments {
-	
-	
-	    static createFrom(source: any = {}) {
-	        return new DirectoryTempCreationArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	
-	    }
-	}
-	export class DirectoryTempCreationResult {
-	    path: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new DirectoryTempCreationResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	    }
-	}
 	export class DirectoryTempCreation {
 	    Disable: boolean;
 	    NeedsApproval: boolean;
-	    Y: DirectoryTempCreationResult;
-	    // Go type: DirectoryTempCreationArguments
+	    Y: file.DirectoryTempCreationResult;
+	    // Go type: file
 	    Z: any;
 	
 	    static createFrom(source: any = {}) {
@@ -985,7 +1283,7 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.NeedsApproval = source["NeedsApproval"];
-	        this.Y = this.convertValues(source["Y"], DirectoryTempCreationResult);
+	        this.Y = this.convertValues(source["Y"], file.DirectoryTempCreationResult);
 	        this.Z = this.convertValues(source["Z"], null);
 	    }
 	
@@ -1007,37 +1305,11 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class DirectoryCreationArguments {
-	    path: string;
-	    permission: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new DirectoryCreationArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.permission = source["permission"];
-	    }
-	}
-	export class DirectoryCreationResult {
-	    path: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new DirectoryCreationResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	    }
-	}
 	export class DirectoryCreation {
 	    Disable: boolean;
 	    NeedsApproval: boolean;
-	    Y: DirectoryCreationResult;
-	    Z: DirectoryCreationArguments;
+	    Y: file.DirectoryCreationResult;
+	    Z: file.DirectoryCreationArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new DirectoryCreation(source);
@@ -1047,8 +1319,8 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.NeedsApproval = source["NeedsApproval"];
-	        this.Y = this.convertValues(source["Y"], DirectoryCreationResult);
-	        this.Z = this.convertValues(source["Z"], DirectoryCreationArguments);
+	        this.Y = this.convertValues(source["Y"], file.DirectoryCreationResult);
+	        this.Z = this.convertValues(source["Z"], file.DirectoryCreationArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1069,35 +1341,11 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class FileDeletionArguments {
-	    path: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileDeletionArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	    }
-	}
-	export class FileDeletionResult {
-	    path: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileDeletionResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	    }
-	}
 	export class FileDeletion {
 	    Disable: boolean;
 	    NoApproval: boolean;
-	    Y: FileDeletionResult;
-	    Z: FileDeletionArguments;
+	    Y: file.FileDeletionResult;
+	    Z: file.FileDeletionArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new FileDeletion(source);
@@ -1107,8 +1355,8 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.NoApproval = source["NoApproval"];
-	        this.Y = this.convertValues(source["Y"], FileDeletionResult);
-	        this.Z = this.convertValues(source["Z"], FileDeletionArguments);
+	        this.Y = this.convertValues(source["Y"], file.FileDeletionResult);
+	        this.Z = this.convertValues(source["Z"], file.FileDeletionArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1128,74 +1376,12 @@ export namespace tools {
 		    }
 		    return a;
 		}
-	}
-	export class FileReadingLimits {
-	    m: string;
-	    o: number;
-	    l: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileReadingLimits(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.m = source["m"];
-	        this.o = source["o"];
-	        this.l = source["l"];
-	    }
-	}
-	export class FileReadingArguments {
-	    path: string;
-	    limits?: FileReadingLimits;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileReadingArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.limits = this.convertValues(source["limits"], FileReadingLimits);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class FileReadingResult {
-	    path: string;
-	    content: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileReadingResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.content = source["content"];
-	    }
 	}
 	export class FileReading {
 	    Disable: boolean;
 	    NeedsApproval: boolean;
-	    Y: FileReadingResult;
-	    Z: FileReadingArguments;
+	    Y: file.FileReadingResult;
+	    Z: file.FileReadingArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new FileReading(source);
@@ -1205,8 +1391,8 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.NeedsApproval = source["NeedsApproval"];
-	        this.Y = this.convertValues(source["Y"], FileReadingResult);
-	        this.Z = this.convertValues(source["Z"], FileReadingArguments);
+	        this.Y = this.convertValues(source["Y"], file.FileReadingResult);
+	        this.Z = this.convertValues(source["Z"], file.FileReadingArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1227,39 +1413,11 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class FileAppendingArguments {
-	    path: string;
-	    content: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileAppendingArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.content = source["content"];
-	    }
-	}
-	export class FileAppendingResult {
-	    path: string;
-	    written: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileAppendingResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.written = source["written"];
-	    }
-	}
 	export class FileAppending {
 	    Disable: boolean;
 	    NoApproval: boolean;
-	    Y: FileAppendingResult;
-	    Z: FileAppendingArguments;
+	    Y: file.FileAppendingResult;
+	    Z: file.FileAppendingArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new FileAppending(source);
@@ -1269,8 +1427,8 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.NoApproval = source["NoApproval"];
-	        this.Y = this.convertValues(source["Y"], FileAppendingResult);
-	        this.Z = this.convertValues(source["Z"], FileAppendingArguments);
+	        this.Y = this.convertValues(source["Y"], file.FileAppendingResult);
+	        this.Z = this.convertValues(source["Z"], file.FileAppendingArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1291,41 +1449,11 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class FileTempCreationArguments {
-	    content: string;
-	    suffix: string;
-	    permission: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileTempCreationArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.content = source["content"];
-	        this.suffix = source["suffix"];
-	        this.permission = source["permission"];
-	    }
-	}
-	export class FileTempCreationResult {
-	    path: string;
-	    written: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileTempCreationResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.written = source["written"];
-	    }
-	}
 	export class FileTempCreation {
 	    Disable: boolean;
 	    NeedsApproval: boolean;
-	    Y: FileTempCreationResult;
-	    Z: FileTempCreationArguments;
+	    Y: file.FileTempCreationResult;
+	    Z: file.FileTempCreationArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new FileTempCreation(source);
@@ -1335,8 +1463,8 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.NeedsApproval = source["NeedsApproval"];
-	        this.Y = this.convertValues(source["Y"], FileTempCreationResult);
-	        this.Z = this.convertValues(source["Z"], FileTempCreationArguments);
+	        this.Y = this.convertValues(source["Y"], file.FileTempCreationResult);
+	        this.Z = this.convertValues(source["Z"], file.FileTempCreationArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1357,41 +1485,11 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class FileCreationArguments {
-	    path: string;
-	    content: string;
-	    permission: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileCreationArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.content = source["content"];
-	        this.permission = source["permission"];
-	    }
-	}
-	export class FileCreationResult {
-	    path: string;
-	    written: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileCreationResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.written = source["written"];
-	    }
-	}
 	export class FileCreation {
 	    Disable: boolean;
 	    NeedsApproval: boolean;
-	    Y: FileCreationResult;
-	    Z: FileCreationArguments;
+	    Y: file.FileCreationResult;
+	    Z: file.FileCreationArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new FileCreation(source);
@@ -1401,8 +1499,8 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.NeedsApproval = source["NeedsApproval"];
-	        this.Y = this.convertValues(source["Y"], FileCreationResult);
-	        this.Z = this.convertValues(source["Z"], FileCreationArguments);
+	        this.Y = this.convertValues(source["Y"], file.FileCreationResult);
+	        this.Z = this.convertValues(source["Z"], file.FileCreationArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1423,40 +1521,12 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class ChangeTimesArguments {
-	    path: string;
-	    access_time: string;
-	    modification_time: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new ChangeTimesArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.access_time = source["access_time"];
-	        this.modification_time = source["modification_time"];
-	    }
-	}
-	export class ChangeTimesResult {
-	
-	
-	    static createFrom(source: any = {}) {
-	        return new ChangeTimesResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	
-	    }
-	}
 	export class ChangeTimes {
 	    Disable: boolean;
 	    NeedsApproval: boolean;
-	    // Go type: ChangeTimesResult
+	    // Go type: file
 	    Y: any;
-	    Z: ChangeTimesArguments;
+	    Z: file.ChangeTimesArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new ChangeTimes(source);
@@ -1467,7 +1537,7 @@ export namespace tools {
 	        this.Disable = source["Disable"];
 	        this.NeedsApproval = source["NeedsApproval"];
 	        this.Y = this.convertValues(source["Y"], null);
-	        this.Z = this.convertValues(source["Z"], ChangeTimesArguments);
+	        this.Z = this.convertValues(source["Z"], file.ChangeTimesArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1488,40 +1558,12 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class ChangeOwnerArguments {
-	    path: string;
-	    user_id: number;
-	    group_id: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new ChangeOwnerArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.user_id = source["user_id"];
-	        this.group_id = source["group_id"];
-	    }
-	}
-	export class ChangeOwnerResult {
-	
-	
-	    static createFrom(source: any = {}) {
-	        return new ChangeOwnerResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	
-	    }
-	}
 	export class ChangeOwner {
 	    Disable: boolean;
 	    NoApproval: boolean;
-	    // Go type: ChangeOwnerResult
+	    // Go type: file
 	    Y: any;
-	    Z: ChangeOwnerArguments;
+	    Z: file.ChangeOwnerArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new ChangeOwner(source);
@@ -1532,7 +1574,7 @@ export namespace tools {
 	        this.Disable = source["Disable"];
 	        this.NoApproval = source["NoApproval"];
 	        this.Y = this.convertValues(source["Y"], null);
-	        this.Z = this.convertValues(source["Z"], ChangeOwnerArguments);
+	        this.Z = this.convertValues(source["Z"], file.ChangeOwnerArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1553,38 +1595,12 @@ export namespace tools {
 		    return a;
 		}
 	}
-	export class ChangeModeArguments {
-	    path: string;
-	    permission: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new ChangeModeArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.permission = source["permission"];
-	    }
-	}
-	export class ChangeModeResult {
-	
-	
-	    static createFrom(source: any = {}) {
-	        return new ChangeModeResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	
-	    }
-	}
 	export class ChangeMode {
 	    Disable: boolean;
 	    NoApproval: boolean;
-	    // Go type: ChangeModeResult
+	    // Go type: file
 	    Y: any;
-	    Z: ChangeModeArguments;
+	    Z: file.ChangeModeArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new ChangeMode(source);
@@ -1595,60 +1611,7 @@ export namespace tools {
 	        this.Disable = source["Disable"];
 	        this.NoApproval = source["NoApproval"];
 	        this.Y = this.convertValues(source["Y"], null);
-	        this.Z = this.convertValues(source["Z"], ChangeModeArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class StatsArguments {
-	    path: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new StatsArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	    }
-	}
-	export class StatsResult {
-	    path: string;
-	    isDirectory: boolean;
-	    isRegular: boolean;
-	    permissions: string;
-	    size: number;
-	    // Go type: time
-	    modTime: any;
-	
-	    static createFrom(source: any = {}) {
-	        return new StatsResult(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.path = source["path"];
-	        this.isDirectory = source["isDirectory"];
-	        this.isRegular = source["isRegular"];
-	        this.permissions = source["permissions"];
-	        this.size = source["size"];
-	        this.modTime = this.convertValues(source["modTime"], null);
+	        this.Z = this.convertValues(source["Z"], file.ChangeModeArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1672,8 +1635,8 @@ export namespace tools {
 	export class Stats {
 	    Disable: boolean;
 	    NeedsApproval: boolean;
-	    Y: StatsResult;
-	    Z: StatsArguments;
+	    Y: file.StatsResult;
+	    Z: file.StatsArguments;
 	
 	    static createFrom(source: any = {}) {
 	        return new Stats(source);
@@ -1683,8 +1646,8 @@ export namespace tools {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
 	        this.NeedsApproval = source["NeedsApproval"];
-	        this.Y = this.convertValues(source["Y"], StatsResult);
-	        this.Z = this.convertValues(source["Z"], StatsArguments);
+	        this.Y = this.convertValues(source["Y"], file.StatsResult);
+	        this.Z = this.convertValues(source["Z"], file.StatsArguments);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1923,10 +1886,6 @@ export namespace tools {
 	
 	
 	
-	
-	
-	
-	
 	export class FunctionDefinition {
 	    name: string;
 	    description: string;
@@ -1989,24 +1948,6 @@ export namespace tools {
 		    return a;
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

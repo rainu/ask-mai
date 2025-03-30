@@ -17,10 +17,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, tools } from '../../../wailsjs/go/models.ts'
+import { controller, file } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
-import FileCreationArguments = tools.FileCreationArguments
-import FileCreationResult = tools.FileCreationResult
+import FileCreationArguments = file.FileCreationArguments
+import FileCreationResult = file.FileCreationResult
 import ToolCall from './ToolCall.vue'
 import VueMarkdown from 'vue-markdown-render'
 

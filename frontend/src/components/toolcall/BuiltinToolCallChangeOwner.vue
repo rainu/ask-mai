@@ -9,9 +9,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, tools } from '../../../wailsjs/go/models.ts'
+import { controller, file } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
-import ChangeOwnerArguments = tools.ChangeOwnerArguments
+import ChangeOwnerArguments = file.ChangeOwnerArguments
 import ToolCall from './ToolCall.vue'
 
 export default defineComponent({

@@ -8,6 +8,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm/tools"
+	"github.com/rainu/ask-mai/llms/tools/command"
 	flag "github.com/spf13/pflag"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -254,7 +255,7 @@ func printHelpTool(output io.Writer) {
 	js := bytes.Buffer{}
 	je := json.NewEncoder(&js)
 	je.SetIndent("   ", "  ")
-	je.Encode(tools.CommandDescriptor{
+	je.Encode(command.CommandDescriptor{
 		Command:   "/path/to/command",
 		Arguments: []string{"arg1", "...argN"},
 		Environment: map[string]string{
