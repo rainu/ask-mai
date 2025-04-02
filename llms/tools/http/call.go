@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type CallDescriptor struct {
-	Method string
-	Url    string
-	Header map[string]string
-	Body   io.Reader
+	Method     string            `json:"method"`
+	Url        string            `json:"url"`
+	Header     map[string]string `json:"header"`
+	Body       io.Reader         `json:"-"`
+	StringBody string            `json:"body"`
 }
 
 type CallResult struct {
@@ -22,6 +24,10 @@ type CallResult struct {
 }
 
 func (c *CallDescriptor) Run(ctx context.Context, client *http.Client) (*CallResult, error) {
+	if c.StringBody != "" {
+		c.Body = io.NopCloser(strings.NewReader(c.StringBody))
+	}
+
 	req, err := http.NewRequestWithContext(ctx, c.Method, c.Url, c.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)

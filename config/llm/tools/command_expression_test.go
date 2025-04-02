@@ -5,8 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rainu/ask-mai/config/expression"
+	http2 "github.com/rainu/ask-mai/llms/tools/http"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
@@ -225,4 +229,61 @@ result
 	result, err := toTest.CommandFn(FunctionDefinition{})(ctx, llmArgs)
 	assert.NoError(t, err)
 	assert.Equal(t, `Error: failed to start command: exec: "__DoesNotExistOnAnySystem__": executable file not found in $PATH`, strings.TrimSpace(string(result)))
+}
+
+func TestCommandExpression_CommandFn_RunFetch(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "test-value", r.Header.Get("X-Test-Header"))
+
+		// Request-Body lesen
+		body, err := io.ReadAll(r.Body)
+		assert.NoError(t, err)
+		defer r.Body.Close()
+
+		assert.Equal(t, `{"test":"data"}`, string(body))
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"message":"Success"}`))
+	}))
+	defer server.Close()
+
+	toTest := CommandExpression(`
+const pa = JSON.parse(v.args)
+const callDescriptor = {
+ "method": "GET",
+ "url": pa.url,
+ "header": {
+   "X-Test-Header": "test-value"
+ },
+ "body": JSON.stringify({"test":"data"})
+}
+
+const result = ` + FuncNameFetch + `(callDescriptor)
+
+JSON.stringify(result)
+`)
+	require.NoError(t, toTest.Validate())
+
+	llmArgs := `{"url": "` + server.URL + `"}`
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	result, err := toTest.CommandFn(FunctionDefinition{})(ctx, llmArgs)
+	assert.NoError(t, err)
+
+	var parsedResult http2.CallResult
+	err = json.Unmarshal(result, &parsedResult)
+
+	delete(parsedResult.Header, "Date")
+
+	assert.NoError(t, err)
+	assert.Equal(t, http2.CallResult{
+		StatusCode: 200,
+		Status:     "200 OK",
+		Header: map[string][]string{
+			"Content-Type":   {"application/json"},
+			"Content-Length": {"21"},
+		},
+		Body: `{"message":"Success"}`,
+	}, parsedResult)
 }

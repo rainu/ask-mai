@@ -9,6 +9,7 @@ import (
 	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm/tools"
 	"github.com/rainu/ask-mai/llms/tools/command"
+	http2 "github.com/rainu/ask-mai/llms/tools/http"
 	flag "github.com/spf13/pflag"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -267,6 +268,19 @@ func printHelpTool(output io.Writer) {
 		WorkingDirectory: "/path/to/working/dir",
 	})
 	fmt.Fprintf(output, "  - %s(%s): run a command.\n", tools.FuncNameRun, strings.TrimSpace(js.String()))
+
+	js = bytes.Buffer{}
+	je = json.NewEncoder(&js)
+	je.SetIndent("   ", "  ")
+	je.Encode(http2.CallDescriptor{
+		Method: http.MethodPost,
+		Url:    "https://example.com",
+		Header: map[string]string{
+			"Content-Type": "application/json",
+		},
+		StringBody: `{"msg": "hello world"}`,
+	})
+	fmt.Fprintf(output, "  - %s(%s): do a http call.\n", tools.FuncNameFetch, strings.TrimSpace(js.String()))
 
 	fmt.Fprintf(output, "\nVariables:\n")
 	fmt.Fprintf(output, "  const %s = ", expression.VarNameVariables)

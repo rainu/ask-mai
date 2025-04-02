@@ -7,10 +7,14 @@ import (
 	"github.com/dop251/goja/parser"
 	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/llms/tools/command"
+	"github.com/rainu/ask-mai/llms/tools/http"
 	"os"
 )
 
-const FuncNameRun = "runCommand"
+const (
+	FuncNameRun   = "runCommand"
+	FuncNameFetch = "fetch"
+)
 
 type CommandExpression string
 
@@ -70,6 +74,10 @@ func (c CommandExpression) CommandFn(fd FunctionDefinition) CommandFn {
 		if err != nil {
 			return nil, fmt.Errorf("error setting functions: %w", err)
 		}
+		err = vm.Set(FuncNameFetch, fetchCommand(ctx, vm))
+		if err != nil {
+			return nil, fmt.Errorf("error setting functions: %w", err)
+		}
 
 		prog := parsedPrograms[string(c)]
 
@@ -90,5 +98,16 @@ func runCommand(ctx context.Context, vm *goja.Runtime) func(command.CommandDescr
 		}
 
 		return string(r)
+	}
+}
+
+func fetchCommand(ctx context.Context, vm *goja.Runtime) func(http.CallDescriptor) *http.CallResult {
+	return func(call http.CallDescriptor) *http.CallResult {
+		r, err := call.Run(ctx, http.DefaultClient)
+		if err != nil {
+			panic(vm.ToValue(err.Error()))
+		}
+
+		return r
 	}
 }
