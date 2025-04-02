@@ -943,6 +943,212 @@ export namespace file {
 
 }
 
+export namespace history {
+	
+	export class MessageCallResult {
+	    c: string;
+	    e: string;
+	    d: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new MessageCallResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.c = source["c"];
+	        this.e = source["e"];
+	        this.d = source["d"];
+	    }
+	}
+	export class MessageCall {
+	    i?: string;
+	    f?: string;
+	    a?: string;
+	    r?: MessageCallResult;
+	
+	    static createFrom(source: any = {}) {
+	        return new MessageCall(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.i = source["i"];
+	        this.f = source["f"];
+	        this.a = source["a"];
+	        this.r = this.convertValues(source["r"], MessageCallResult);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class MessageContentPart {
+	    t?: string;
+	    c?: string;
+	    ca?: MessageCall;
+	
+	    static createFrom(source: any = {}) {
+	        return new MessageContentPart(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.t = source["t"];
+	        this.c = source["c"];
+	        this.ca = this.convertValues(source["ca"], MessageCall);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class Message {
+	    i?: string;
+	    r?: string;
+	    p?: MessageContentPart[];
+	
+	    static createFrom(source: any = {}) {
+	        return new Message(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.i = source["i"];
+	        this.r = source["r"];
+	        this.p = this.convertValues(source["p"], MessageContentPart);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class EntryContent {
+	    m: Message[];
+	
+	    static createFrom(source: any = {}) {
+	        return new EntryContent(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.m = this.convertValues(source["m"], Message);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class EntryMeta {
+	    v: number;
+	    t: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new EntryMeta(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.v = source["v"];
+	        this.t = source["t"];
+	    }
+	}
+	export class Entry {
+	    m: EntryMeta;
+	    c: EntryContent;
+	
+	    static createFrom(source: any = {}) {
+	        return new Entry(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.m = this.convertValues(source["m"], EntryMeta);
+	        this.c = this.convertValues(source["c"], EntryContent);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	
+	
+	
+	
+
+}
+
 export namespace http {
 	
 	export class CallArguments {

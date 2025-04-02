@@ -18,5 +18,8 @@
         "mod": "Änderungszeit"
       }
     }
+  },
+  "history": {
+    "placeholder": "Suche in Verlauf..."
   }
 }

@@ -3,11 +3,16 @@ package controller
 import (
 	"github.com/rainu/ask-mai/controller/history"
 	"log/slog"
-	"time"
+	"regexp"
+	"strings"
 )
 
 func (c *Controller) saveHistory() {
 	if c.appConfig.History.Path == "" {
+		return
+	}
+	if len(c.currentConversation) == 0 {
+		// prevent writing empty entries
 		return
 	}
 
@@ -19,15 +24,9 @@ func (c *Controller) saveHistory() {
 }
 
 func historyMessagesToEntry(messages LLMMessages) history.Entry {
-	entry := history.Entry{
-		Meta: history.EntryMeta{
-			Version:   1,
-			Timestamp: time.Now().UnixMilli(),
-		},
-		Content: history.EntryContent{
-			Messages: make([]history.Message, len(messages)),
-		},
-	}
+	entry := history.NewEntry(history.EntryContent{
+		Messages: make([]history.Message, len(messages)),
+	})
 
 	for i, msg := range messages {
 		entry.Content.Messages[i] = history.Message{
@@ -98,4 +97,57 @@ func historyEntry2Messages(entry history.Entry) LLMMessages {
 
 func (c *Controller) GetCurrentConversation() LLMMessages {
 	return c.currentConversation
+}
+
+func (c *Controller) HistoryGetCount() (int, error) {
+	if c.appConfig.History.Path == "" {
+		return 0, nil
+	}
+	hr := history.NewReader(c.appConfig.History.Path)
+
+	return hr.GetCount()
+}
+
+func (c *Controller) HistoryGetLast(skip, limit int) ([]history.Entry, error) {
+	if c.appConfig.History.Path == "" {
+		return nil, nil
+	}
+
+	hr := history.NewReader(c.appConfig.History.Path)
+
+	return hr.GetLast(skip, limit)
+}
+
+func (c *Controller) HistorySearch(query string) ([]history.Entry, error) {
+	if c.appConfig.History.Path == "" {
+		return nil, nil
+	}
+
+	queryExp, err := regexp.Compile(query)
+	if err != nil {
+		return nil, err
+	}
+
+	hr := history.NewReader(c.appConfig.History.Path)
+
+	return hr.Search(func(entry history.Entry) (bool, bool) {
+		content := strings.Builder{}
+		for _, message := range entry.Content.Messages {
+			for _, part := range message.ContentParts {
+				content.WriteString(part.Content)
+				if part.Call != nil {
+					content.WriteString(part.Call.Function)
+					content.WriteString("(")
+					content.WriteString(part.Call.Arguments)
+					content.WriteString(")")
+					if part.Call.Result != nil {
+						content.WriteString(" -> ")
+						content.WriteString(part.Call.Result.Content)
+					}
+				}
+			}
+		}
+
+		return queryExp.MatchString(content.String()), true
+	})
 }

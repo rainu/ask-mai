@@ -22,6 +22,18 @@ export function GetLastState() {
   return window['go']['controller']['Controller']['GetLastState']();
 }
 
+export function HistoryGetCount() {
+  return window['go']['controller']['Controller']['HistoryGetCount']();
+}
+
+export function HistoryGetLast(arg1, arg2) {
+  return window['go']['controller']['Controller']['HistoryGetLast'](arg1, arg2);
+}
+
+export function HistorySearch(arg1) {
+  return window['go']['controller']['Controller']['HistorySearch'](arg1);
+}
+
 export function IsAppMounted() {
   return window['go']['controller']['Controller']['IsAppMounted']();
 }

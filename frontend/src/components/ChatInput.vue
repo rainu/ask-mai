@@ -11,6 +11,9 @@
 				:placeholder="$t('prompt.placeholder')"
 			>
 				<template v-slot:prepend-inner>
+					<v-btn icon density="compact" to="/history">
+						<v-icon>mdi-history</v-icon>
+					</v-btn>
 					<v-btn icon density="compact" @click="onAddFile">
 						<v-icon>mdi-paperclip</v-icon>
 					</v-btn>

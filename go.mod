@@ -6,6 +6,7 @@ require (
 	github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17
 	github.com/gabriel-vasile/mimetype v1.4.8
 	github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
+	github.com/kteru/reversereader v0.0.0-20190328040929-bd5e29d6c056
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rainu/go-command-chain v0.4.0
 	github.com/shirou/gopsutil/v4 v4.25.2

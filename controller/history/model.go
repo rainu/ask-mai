@@ -1,5 +1,7 @@
 package history
 
+import "time"
+
 type Entry struct {
 	Meta    EntryMeta    `json:"m"`
 	Content EntryContent `json:"c"`
@@ -36,4 +38,14 @@ type MessageCallResult struct {
 	Content    string `json:"c"`
 	Error      string `json:"e"`
 	DurationMs int64  `json:"d"`
+}
+
+func NewEntry(content EntryContent) Entry {
+	return Entry{
+		Meta: EntryMeta{
+			Version:   1,
+			Timestamp: time.Now().UnixMilli(),
+		},
+		Content: content,
+	}
 }

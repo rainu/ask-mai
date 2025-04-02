@@ -8,7 +8,7 @@
   },
   "dialog": {
     "files": {
-      "title": "Dateien auswählen"
+      "title": "Choose files"
     }
   },
   "toolCall": {
@@ -18,5 +18,8 @@
         "mod": "Modification time"
       }
     }
+  },
+  "history": {
+    "placeholder": "Search in history..."
   }
 }
