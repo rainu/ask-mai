@@ -9,6 +9,8 @@ export function GetApplicationConfig():Promise<config.Config>;
 
 export function GetAssetMeta(arg1:string):Promise<controller.AssetMeta>;
 
+export function GetCurrentConversation():Promise<controller.LLMMessages>;
+
 export function GetLastState():Promise<string>;
 
 export function IsAppMounted():Promise<boolean>;

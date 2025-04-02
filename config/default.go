@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/kirsle/configdir"
 	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm"
 	"github.com/rainu/ask-mai/config/llm/tools"
@@ -10,9 +11,13 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"path"
 )
 
 func defaultConfig() (result *Config) {
+	confPath := configdir.LocalConfig("ask-mai")
+	confPath = path.Join(confPath, "history")
+
 	result = &Config{
 		Debug: DebugConfig{
 			LogLevel:     int(slog.LevelError),
@@ -96,6 +101,9 @@ func defaultConfig() (result *Config) {
 			MinMaxPosition: MinMaxPositionNone,
 			CodeStyle:      "github",
 			Language:       os.Getenv("LANG"),
+		},
+		History: History{
+			Path: confPath,
 		},
 		Printer: PrinterConfig{
 			Format:     PrinterFormatJSON,

@@ -126,6 +126,18 @@ func (m LLMMessages) ToMessageContent(systemPrompt string) ([]llms.MessageConten
 
 func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 	defer func() {
+		c.currentConversation = args.History
+		if err == nil {
+			c.currentConversation = append(c.currentConversation, LLMMessage{
+				Role: string(llms.ChatMessageTypeAI),
+				ContentParts: []LLMMessageContentPart{{
+					Type:    LLMMessageContentPartTypeText,
+					Content: result,
+				}},
+			})
+		}
+	}()
+	defer func() {
 		c.aiModelMutex.Write(func() {
 			// save the result for later usage (wait)
 			c.lastAskResult = llmAskResult{

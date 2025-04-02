@@ -93,6 +93,18 @@ export namespace config {
 		    return a;
 		}
 	}
+	export class History {
+	    Path: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new History(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Path = source["Path"];
+	    }
+	}
 	export class PrinterConfig {
 	    Format: string;
 	    Targets: any[];
@@ -317,6 +329,7 @@ export namespace config {
 	    UI: UIConfig;
 	    LLM: llm.LLMConfig;
 	    Printer: PrinterConfig;
+	    History: History;
 	    Debug: DebugConfig;
 	    Config: string;
 	
@@ -329,6 +342,7 @@ export namespace config {
 	        this.UI = this.convertValues(source["UI"], UIConfig);
 	        this.LLM = this.convertValues(source["LLM"], llm.LLMConfig);
 	        this.Printer = this.convertValues(source["Printer"], PrinterConfig);
+	        this.History = this.convertValues(source["History"], History);
 	        this.Debug = this.convertValues(source["Debug"], DebugConfig);
 	        this.Config = source["Config"];
 	    }
@@ -351,6 +365,7 @@ export namespace config {
 		    return a;
 		}
 	}
+	
 	
 	
 	

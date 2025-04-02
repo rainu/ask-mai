@@ -27,6 +27,8 @@ type Controller struct {
 	appConfig *config.Config
 	printer   io.ResponsePrinter
 
+	currentConversation LLMMessages
+
 	vueAppMounted bool
 	streamBuffer  []byte
 	lastState     string
@@ -61,6 +63,7 @@ func (c *Controller) beforeClose(ctx context.Context) (prevent bool) {
 func (c *Controller) Shutdown() {
 	c.shutdown(c.ctx)
 	c.appConfig.Printer.Close()
+	c.saveHistory()
 	os.Exit(0)
 }
 

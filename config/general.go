@@ -11,6 +11,8 @@ type Config struct {
 
 	Printer PrinterConfig `yaml:"print"`
 
+	History History `yaml:"history"`
+
 	Debug DebugConfig `config:"" yaml:"debug"`
 
 	Config string `config:"config" short:"c" yaml:"-" usage:"Path to the configuration yaml file"`

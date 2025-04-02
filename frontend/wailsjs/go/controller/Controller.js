@@ -14,6 +14,10 @@ export function GetAssetMeta(arg1) {
   return window['go']['controller']['Controller']['GetAssetMeta'](arg1);
 }
 
+export function GetCurrentConversation() {
+  return window['go']['controller']['Controller']['GetCurrentConversation']();
+}
+
 export function GetLastState() {
   return window['go']['controller']['Controller']['GetLastState']();
 }
