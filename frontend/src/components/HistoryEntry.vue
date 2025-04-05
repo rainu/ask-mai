@@ -10,10 +10,16 @@
 
 		<v-card-actions>
 			<v-row dense>
-				<v-col cols="4">
+				<v-col cols="6" md="4" >
 					<v-btn block @click="showConversation = !showConversation">
 						<v-icon size="x-large" v-if="showConversation">mdi-chevron-down-box</v-icon>
 						<v-icon size="x-large" v-else>mdi-chevron-up-box</v-icon>
+					</v-btn>
+				</v-col>
+				<v-col cols="0" md="4" />
+				<v-col cols="6" md="4" >
+					<v-btn block color="primary" @click="onImport">
+						<v-icon size="x-large">mdi-import</v-icon>
 					</v-btn>
 				</v-col>
 			</v-row>
@@ -39,6 +45,7 @@ import { ContentType, Role } from './ChatMessage.vue'
 
 export default defineComponent({
 	name: 'HistoryEntry',
+	emits: ['onImport'],
 	props: {
 		model: {
 			type: Object as () => history.Entry,
@@ -111,6 +118,11 @@ export default defineComponent({
 			})
 		},
 	},
+	methods: {
+		onImport(){
+			this.$emit('onImport', this.model)
+		}
+	}
 })
 </script>
 

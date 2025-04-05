@@ -1,5 +1,6 @@
 import './log.ts'
 import './debug.ts'
+import './transitive.ts'
 
 import { createApp } from 'vue'
 

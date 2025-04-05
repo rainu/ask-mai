@@ -7,8 +7,14 @@
 		<template v-if="!(chatHistory.length > 0 || outputStream[0].Content || error)">
 			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
-					<ChatInput v-model="input" :progress="progress" :minimized="minimized"
-										 @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
+					<ChatInput
+						v-model="input"
+						:progress="progress"
+						:minimized="minimized"
+						@submit="onSubmit"
+						@interrupt="onInterrupt"
+						@min-max="onMinMax"
+					/>
 				</div>
 			</v-app-bar>
 
@@ -22,8 +28,14 @@
 			<template v-if="$appConfig.UI.Prompt.PinTop">
 				<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
-						<ChatInput v-model="input" :progress="progress" :minimized="minimized"
-											 @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
+						<ChatInput
+							v-model="input"
+							:progress="progress"
+							:minimized="minimized"
+							@submit="onSubmit"
+							@interrupt="onInterrupt"
+							@min-max="onMinMax"
+						/>
 					</div>
 				</v-app-bar>
 
@@ -47,8 +59,14 @@
 			<template v-if="!$appConfig.UI.Prompt.PinTop">
 				<v-footer app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
-						<ChatInput v-model="input" :progress="progress" :minimized="minimized"
-											 @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
+						<ChatInput
+							v-model="input"
+							:progress="progress"
+							:minimized="minimized"
+							@submit="onSubmit"
+							@interrupt="onInterrupt"
+							@min-max="onMinMax"
+						/>
 					</div>
 				</v-footer>
 			</template>
@@ -239,6 +257,13 @@ export default {
 		async onInterrupt() {
 			await LLMInterrupt()
 		},
+	},
+	activated() {
+		if(!window.transitiveState.lastConversation) return
+
+		// we are coming from the history importer
+		this.chatHistory = window.transitiveState.lastConversation
+		window.transitiveState.lastConversation = null
 	},
 	mounted() {
 		EventsOn('llm:stream:chunk', (chunk: string) => {

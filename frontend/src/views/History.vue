@@ -17,7 +17,7 @@
 		<v-container>
 			<v-row dense>
 				<v-col cols="12" v-for="entry in history" :key="entry.m.t">
-					<HistoryEntry :model="entry" />
+					<HistoryEntry :model="entry" @onImport="onImport" />
 				</v-col>
 
 				<v-col cols="12" v-if="!queried && history.length < total">
@@ -47,13 +47,18 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { history } from '../../wailsjs/go/models.ts'
+import { controller, history } from '../../wailsjs/go/models.ts'
 import { HistoryGetCount, HistoryGetLast, HistorySearch } from '../../wailsjs/go/controller/Controller'
 import { WindowSetSize } from '../../wailsjs/runtime'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import HistoryEntry from '../components/HistoryEntry.vue'
 import InputRow from '../components/InputRow.vue'
 import HistoryInput from '../components/HistoryInput.vue'
+import LLMMessage = controller.LLMMessage
+import LLMMessageContentPart = controller.LLMMessageContentPart
+import LLMMessageCall = controller.LLMMessageCall
+import LLMMessageCallResult = controller.LLMMessageCallResult
+import MessageContentPart = history.MessageContentPart
 
 export default defineComponent({
 	name: 'History',
@@ -103,6 +108,44 @@ export default defineComponent({
 					this.adjustHeight()
 				})
 			}
+		},
+		onImport(entry: history.Entry) {
+			//transform history entry to LLMMessage array
+			window.transitiveState.lastConversation = entry.c.m.map(msg => {
+				let entry: HistoryEntry = {
+					Message: LLMMessage.createFrom({
+						Role: msg.r,
+					})
+				}
+				entry.Message.ContentParts = msg.p.map((msgPart: MessageContentPart) => {
+					let entryPart = LLMMessageContentPart.createFrom({
+						Type: msgPart.t,
+						Content: msgPart.c,
+					})
+
+					if(msgPart.ca) {
+						entryPart.Call = LLMMessageCall.createFrom({
+							Id: msgPart.ca.i,
+							Function: msgPart.ca.f,
+							Arguments: msgPart.ca.a,
+							BuiltIn: msgPart.ca.f?.startsWith("__")
+						})
+						if(msgPart.ca.r) {
+							entryPart.Call.Result = LLMMessageCallResult.createFrom({
+								Content: msgPart.ca.r.c,
+								Error: msgPart.ca.r.e,
+								DurationMs: msgPart.ca.r.d,
+							})
+						}
+					}
+
+					return entryPart
+				})
+
+				return entry
+			})
+
+			this.$router.push({ name: 'Home' })
 		}
 	},
 	mounted() {
