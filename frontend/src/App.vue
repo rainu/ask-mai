@@ -4,7 +4,11 @@
 			<v-app :theme="theme" v-bind="hoverProps" :style="{ opacity: opacityValue(isHovering) }">
 				<v-main>
 					<v-container class="pa-0 ma-0" fluid style="overflow-x: auto;">
-						<RouterView />
+						<router-view v-slot="{ Component }">
+							<keep-alive>
+								<component :is="Component" />
+							</keep-alive>
+						</router-view>
 					</v-container>
 				</v-main>
 			</v-app>

@@ -101,7 +101,7 @@ export default defineComponent({
 			await WindowSetSize(width, combinedHeight)
 		},
 		onNavigateBack() {
-			this.$router.push({ name: 'home' })
+			this.$router.push({ name: 'Home' })
 		},
 		onLoadNext(limit: number) {
 			HistoryGetLast(this.history.length, limit).then(entries => {
