@@ -1,5 +1,5 @@
 <template>
-	<v-row dense>
+	<v-row dense class="ma-0">
 		<v-col cols="12" class="pa-0 ma-0">
 			<v-input hide-details class="input">
 				<template v-slot:prepend>

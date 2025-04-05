@@ -2,28 +2,17 @@
 	<div ref="page" :style="{ zoom }">
 		<ZoomDetector @onZoom="onZoom" />
 
-		<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
-			<div style="width: 100%" ref="appbar">
-				<InputRow>
-					<template v-slot:prepend>
-						<v-btn icon density="compact" @click="onNavigateBack">
-							<v-icon>mdi-chat-processing-outline</v-icon>
-						</v-btn>
-					</template>
-					<v-text-field
-						v-model="query"
-						@change="onQueryChanged"
-						hide-details
-						autofocus
-						:placeholder="$t('history.placeholder')"
-					>
-					</v-text-field>
-				</InputRow>
-			</div>
-		</v-app-bar>
+		<!-- header -->
+		<template v-if="$appConfig.UI.Prompt.PinTop">
+			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
+				<div style="width: 100%" ref="appbar">
+					<HistoryInput @queryChanged="onQueryChanged" />
+				</div>
+			</v-app-bar>
 
-		<!-- this will trigger an redraw if attachments are added or removed -->
-		<div :style="{ height: `${appbarHeight}px` }"></div>
+			<!-- this will trigger an redraw if attachments are added or removed -->
+			<div :style="{ height: `${appbarHeight}px` }"></div>
+		</template>
 
 		<v-container>
 			<v-row dense>
@@ -44,6 +33,15 @@
 				</v-col>
 			</v-row>
 		</v-container>
+
+		<!-- footer -->
+		<template v-if="!$appConfig.UI.Prompt.PinTop">
+			<v-footer app class="pa-0 ma-0" density="compact" height="auto">
+				<div style="width: 100%" ref="appbar">
+					<HistoryInput @queryChanged="onQueryChanged" />
+				</div>
+			</v-footer>
+		</template>
 	</div>
 </template>
 
@@ -55,16 +53,16 @@ import { WindowSetSize } from '../../wailsjs/runtime'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import HistoryEntry from '../components/HistoryEntry.vue'
 import InputRow from '../components/InputRow.vue'
+import HistoryInput from '../components/HistoryInput.vue'
 
 export default defineComponent({
 	name: 'History',
-	components: { InputRow, HistoryEntry, ZoomDetector },
+	components: { HistoryInput, InputRow, HistoryEntry, ZoomDetector },
 	data() {
 		return {
 			appbarHeight: 0,
 			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
 
-			query: '',
 			queried: false,
 			total: 0,
 			history: [] as history.Entry[],
@@ -84,17 +82,14 @@ export default defineComponent({
 
 			await WindowSetSize(width, combinedHeight)
 		},
-		onNavigateBack() {
-			this.$router.push({ name: 'Home' })
-		},
 		onLoadNext(limit: number) {
 			HistoryGetLast(this.history.length, limit).then(entries => {
 				this.history.push(...entries)
 			})
 		},
-		onQueryChanged() {
-			if(this.query) {
-				HistorySearch(this.query).then(entries => {
+		onQueryChanged(query: string) {
+			if(query) {
+				HistorySearch(query).then(entries => {
 					this.queried = true
 					this.history = entries
 				}).then(() => {
@@ -114,7 +109,7 @@ export default defineComponent({
 		HistoryGetCount().then((count) => {
 			this.total = count
 		})
-		this.onQueryChanged()
+		this.onQueryChanged('')
 	},
 	updated() {
 		this.$nextTick(() => {
