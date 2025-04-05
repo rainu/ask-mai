@@ -46,7 +46,7 @@
 			<!-- message section -->
 			<div v-show="!minimized">
 				<template v-for="(entry, index) in chatHistory" :key="index">
-					<ChatMessage :message="entry.Message.ContentParts" :role="entry.Message.Role" />
+					<ChatMessage :message="entry.Message.ContentParts" :role="entry.Message.Role" :date="entry.Message.Created" />
 				</template>
 				<template v-if="outputStream[0].Content">
 					<ChatMessage :message="outputStream" :role="outputStreamRole" />
@@ -185,6 +185,7 @@ export default {
 						}),
 					),
 				],
+				Created: Math.floor(new Date().getTime() / 1000),
 			})
 		},
 		async processLLM(input: ChatInputType, processFn: () => Promise<string>) {
@@ -217,6 +218,7 @@ export default {
 					Message: LLMMessage.createFrom({
 						Role: Role.Bot,
 						ContentParts: [LLMMessageContentPart.createFrom({ Type: ContentType.Text, Content: output })],
+						Created: Math.floor(new Date().getTime() / 1000),
 					}),
 				})
 			} catch (err) {
@@ -235,6 +237,7 @@ export default {
 						Message: LLMMessage.createFrom({
 							Role: Role.Bot,
 							ContentParts: this.outputStream,
+							Created: Math.floor(new Date().getTime() / 1000),
 						}),
 					})
 				}

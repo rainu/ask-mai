@@ -14,6 +14,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 	"log/slog"
 	"net/http"
+	"time"
 )
 
 func BuildFromConfig(cfg *config.Config, lastState string, buildMode bool) (ctrl *Controller, err error) {
@@ -52,7 +53,8 @@ func BuildFromConfig(cfg *config.Config, lastState string, buildMode bool) (ctrl
 				Type:    LLMMessageContentPartTypeText,
 				Content: cfg.UI.Prompt.InitValue,
 			}},
-			Role: string(langChainLLM.ChatMessageTypeHuman),
+			Role:    string(langChainLLM.ChatMessageTypeHuman),
+			Created: time.Now().Unix(),
 		}
 		for _, attachment := range cfg.UI.Prompt.InitAttachments {
 			message.ContentParts = append(message.ContentParts, LLMMessageContentPart{

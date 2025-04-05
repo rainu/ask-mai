@@ -9,6 +9,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"os"
 	"strings"
+	"time"
 )
 
 type LLMAskArgs struct {
@@ -19,6 +20,7 @@ type LLMMessage struct {
 	Id           string
 	Role         string
 	ContentParts []LLMMessageContentPart
+	Created      int64
 }
 type LLMMessageContentPart struct {
 	Type    LLMMessageContentPartType
@@ -134,6 +136,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 					Type:    LLMMessageContentPartTypeText,
 					Content: result,
 				}},
+				Created: time.Now().Unix(),
 			})
 		}
 	}()

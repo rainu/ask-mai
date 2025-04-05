@@ -114,7 +114,9 @@ export default defineComponent({
 			window.transitiveState.lastConversation = entry.c.m.map(msg => {
 				let entry: HistoryEntry = {
 					Message: LLMMessage.createFrom({
+						Id: msg.i,
 						Role: msg.r,
+						Created: msg.t,
 					})
 				}
 				entry.Message.ContentParts = msg.p.map((msgPart: MessageContentPart) => {

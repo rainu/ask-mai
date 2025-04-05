@@ -20,6 +20,7 @@ type Message struct {
 	Id           string               `json:"i,omitempty"`
 	Role         string               `json:"r,omitempty"`
 	ContentParts []MessageContentPart `json:"p,omitempty"`
+	CreatedAt    int64                `json:"t,omitempty"`
 }
 type MessageContentPart struct {
 	Type    string       `json:"t,omitempty"`

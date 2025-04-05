@@ -17,6 +17,8 @@
 						</v-chip>
 					</template>
 				</template>
+
+				<small class="opacity-50 text-end">{{createdAt}}</small>
 			</v-sheet>
 		</v-row>
 	</template>
@@ -51,6 +53,7 @@
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15">
 			<v-sheet color="grey-lighten-2" class="pa-2" rounded>
 				<vue-markdown :source="textMessage" :options="options" />
+				<small class="opacity-50">{{createdAt}}</small>
 			</v-sheet>
 		</v-row>
 	</template>
@@ -129,6 +132,10 @@ export default defineComponent({
 			type: String,
 			required: true,
 		},
+		date: {
+			type: Number,
+			required: false,
+		}
 	},
 	data() {
 		return {
@@ -168,6 +175,18 @@ export default defineComponent({
 		imageWidth() {
 			return this.$appConfig.UI.Window.InitialWidth.Value * 0.9
 		},
+		createdAt() {
+			if(!this.date) return null
+
+			const d = new Date(this.date * 1000)
+			let result = d.toLocaleTimeString()
+
+			if(new Date().toLocaleDateString() !== d.toLocaleDateString()) {
+				result += " - " + d.toLocaleDateString()
+			}
+
+			return result
+		}
 	},
 	methods: {
 		enrichCopyButtons() {

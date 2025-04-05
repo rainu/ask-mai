@@ -18,8 +18,9 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 	}
 
 	tcMessage := &LLMMessage{
-		Id:   fmt.Sprintf("%d", time.Now().UnixNano()),
-		Role: string(llms.ChatMessageTypeTool),
+		Id:      fmt.Sprintf("%d", time.Now().UnixNano()),
+		Role:    string(llms.ChatMessageTypeTool),
+		Created: time.Now().Unix(),
 	}
 
 	if resp.Choices[0].Content != "" {
@@ -30,6 +31,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 				Type:    LLMMessageContentPartTypeText,
 				Content: resp.Choices[0].Content,
 			}},
+			Created: time.Now().Unix(),
 		}
 
 		runtime.EventsEmit(c.ctx, "llm:message:add", txtMessage)

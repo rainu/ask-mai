@@ -488,6 +488,7 @@ export namespace controller {
 	    Id: string;
 	    Role: string;
 	    ContentParts: LLMMessageContentPart[];
+	    Created: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new LLMMessage(source);
@@ -498,6 +499,7 @@ export namespace controller {
 	        this.Id = source["Id"];
 	        this.Role = source["Role"];
 	        this.ContentParts = this.convertValues(source["ContentParts"], LLMMessageContentPart);
+	        this.Created = source["Created"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1033,6 +1035,7 @@ export namespace history {
 	    i?: string;
 	    r?: string;
 	    p?: MessageContentPart[];
+	    t?: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Message(source);
@@ -1043,6 +1046,7 @@ export namespace history {
 	        this.i = source["i"];
 	        this.r = source["r"];
 	        this.p = this.convertValues(source["p"], MessageContentPart);
+	        this.t = source["t"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

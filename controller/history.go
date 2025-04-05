@@ -33,6 +33,7 @@ func historyMessagesToEntry(messages LLMMessages) history.Entry {
 			Id:           msg.Id,
 			Role:         msg.Role,
 			ContentParts: make([]history.MessageContentPart, len(msg.ContentParts)),
+			CreatedAt:    msg.Created,
 		}
 		for j, cp := range msg.ContentParts {
 			entry.Content.Messages[i].ContentParts[j] = history.MessageContentPart{
@@ -68,6 +69,7 @@ func historyEntry2Messages(entry history.Entry) LLMMessages {
 			Id:           msg.Id,
 			Role:         msg.Role,
 			ContentParts: make([]LLMMessageContentPart, len(msg.ContentParts)),
+			Created:      msg.CreatedAt,
 		}
 		for j, cp := range msg.ContentParts {
 			messages[i].ContentParts[j] = LLMMessageContentPart{
