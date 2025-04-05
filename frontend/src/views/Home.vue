@@ -7,7 +7,8 @@
 		<template v-if="!(chatHistory.length > 0 || outputStream[0].Content || error)">
 			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
-					<ChatInputBar v-model="input" :progress="progress" :minimized="minimized" @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
+					<ChatInput v-model="input" :progress="progress" :minimized="minimized"
+										 @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
 				</div>
 			</v-app-bar>
 
@@ -21,7 +22,8 @@
 			<template v-if="$appConfig.UI.Prompt.PinTop">
 				<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
-						<ChatInputBar v-model="input" :progress="progress" :minimized="minimized" @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
+						<ChatInput v-model="input" :progress="progress" :minimized="minimized"
+											 @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
 					</div>
 				</v-app-bar>
 
@@ -45,7 +47,8 @@
 			<template v-if="!$appConfig.UI.Prompt.PinTop">
 				<v-footer app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
-						<ChatInputBar v-model="input" :progress="progress" :minimized="minimized" @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
+						<ChatInput v-model="input" :progress="progress" :minimized="minimized"
+											 @submit="onSubmit" @interrupt="onInterrupt" @min-max="onMinMax" />
 					</div>
 				</v-footer>
 			</template>
@@ -68,7 +71,6 @@ import ChatInput, { ChatInputType } from '../components/ChatInput.vue'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import UserScrollDetector from '../components/UserScrollDetector.vue'
 import { controller } from '../../wailsjs/go/models.ts'
-import ChatInputBar from '../components/ChatInputBar.vue'
 import LLMAskArgs = controller.LLMAskArgs
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessage = controller.LLMMessage
@@ -85,7 +87,7 @@ type State = {
 
 export default {
 	name: 'Home',
-	components: { ChatInputBar, UserScrollDetector, ZoomDetector, ChatInput, ChatMessage },
+	components: { UserScrollDetector, ZoomDetector, ChatInput, ChatMessage },
 	data() {
 		return {
 			appbarHeight: 0,
@@ -125,7 +127,7 @@ export default {
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
 			const combinedHeight = Math.ceil(pageHeight * this.zoom)
 			const heightDiff = Math.min(combinedHeight, this.$appConfig.UI.Window.MaxHeight.Value) - currentSize.h
-			const width = this.minimized ? Math.ceil(this.$appConfig.UI.Window.InitialWidth.Value / 12) : this.$appConfig.UI.Window.InitialWidth.Value
+			const width = this.$appConfig.UI.Window.InitialWidth.Value
 
 			await WindowSetSize(width, combinedHeight)
 

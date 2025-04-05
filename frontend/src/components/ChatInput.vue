@@ -1,52 +1,50 @@
 <template>
-	<v-row dense class="pa-0 ma-0">
-		<v-col id="chat-input-text-area" :cols="progress ? 8 : 12" :sm="progress ? 11 : 12" class="pa-0 ma-0">
-			<v-textarea
-				v-model="value.prompt"
-				:rows="rows"
-				:disabled="progress"
-				@keyup="onKeyup"
-				:hide-details="value.attachments.length === 0"
-				autofocus
-				:placeholder="$t('prompt.placeholder')"
-			>
-				<template v-slot:prepend-inner>
-					<v-btn icon density="compact" to="/history">
-						<v-icon>mdi-history</v-icon>
-					</v-btn>
-					<v-btn icon density="compact" @click="onAddFile">
-						<v-icon>mdi-paperclip</v-icon>
-					</v-btn>
-				</template>
-				<template v-slot:append-inner>
-					<v-btn icon v-show="!progress && isSubmitable" @click="onSubmit">
-						<v-icon>mdi-send</v-icon>
-					</v-btn>
-				</template>
-				<template v-slot:details>
-					<v-container class="pa-0 ma-0" style="overflow-y: auto;">
-						<v-chip
-							v-for="(attachment, i) in value.attachments"
-							:key="attachment"
-							:title="attachment"
-							class="ma-1"
-							prepend-icon="mdi-file"
-							color="primary"
-							variant="flat"
-							@click="onRemoveFile(i)"
-						>
-							{{ shortFileName(attachment) }}
-						</v-chip>
-					</v-container>
-				</template>
-			</v-textarea>
-		</v-col>
-		<v-col :cols="progress ? 4 : 0" :sm="progress ? 1 : 0" v-show="progress" class="pa-0 ma-0">
-			<v-btn @click="onStop" variant="flat" color="error" block style="height: 100%">
+	<InputRow :minimized="minimized">
+		<template v-slot:prepend>
+			<v-btn icon density="compact" to="/history">
+				<v-icon>mdi-history</v-icon>
+			</v-btn>
+			<v-btn icon density="compact" @click="onAddFile">
+				<v-icon>mdi-paperclip</v-icon>
+			</v-btn>
+		</template>
+
+		<v-textarea
+			v-model="value.prompt"
+			:rows="rows"
+			:disabled="progress"
+			@keyup="onKeyup"
+			:hide-details="value.attachments.length === 0"
+			autofocus
+			:placeholder="$t('prompt.placeholder')"
+		>
+			<template v-slot:details>
+				<v-container class="pa-0 ma-0" style="overflow-y: auto;">
+					<v-chip
+						v-for="(attachment, i) in value.attachments"
+						:key="attachment"
+						:title="attachment"
+						class="ma-1"
+						prepend-icon="mdi-file"
+						color="primary"
+						variant="flat"
+						@click="onRemoveFile(i)"
+					>
+						{{ shortFileName(attachment) }}
+					</v-chip>
+				</v-container>
+			</template>
+		</v-textarea>
+
+		<template v-slot:append >
+			<v-btn block variant="flat" class="h-100" v-show="!progress && isSubmitable" @click="onSubmit">
+				<v-icon size="x-large">mdi-send</v-icon>
+			</v-btn>
+			<v-btn block variant="flat" class="h-100" color="error" v-show="progress" @click="onStop">
 				<v-icon size="x-large">mdi-stop-circle</v-icon>
 			</v-btn>
-		</v-col>
-	</v-row>
+		</template>
+	</InputRow>
 </template>
 
 <script lang="ts">
@@ -55,11 +53,13 @@ import { OpenFileDialog } from '../../wailsjs/go/controller/Controller'
 import { controller } from '../../wailsjs/go/models.ts'
 import { PathSeparator } from '../common/platform.ts'
 import OpenFileDialogArgs = controller.OpenFileDialogArgs
+import InputRow from './InputRow.vue'
 
 export type ChatInputType = { prompt: string; attachments: string[] }
 
 export default defineComponent({
 	name: 'ChatInput',
+	components: { InputRow },
 	emits: ['update:modelValue', 'submit', 'interrupt'],
 	props: {
 		progress: {
@@ -71,6 +71,11 @@ export default defineComponent({
 			type: Object as () => ChatInputType,
 			required: false,
 			default: () => ({ prompt: '', attachments: [] }),
+		},
+		minimized: {
+			type: Boolean,
+			required: false,
+			default: false,
 		},
 	},
 	computed: {

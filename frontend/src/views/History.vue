@@ -4,26 +4,21 @@
 
 		<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 			<div style="width: 100%" ref="appbar">
-				<v-row dense>
-					<v-col :cols="isMinMaxEnabled ? 1 : 0" class="pa-0 ma-0"></v-col>
-					<v-col :cols="isMinMaxEnabled ? 11 : 12" class="pa-0 ma-0">
-						<v-text-field
-							v-model="query"
-							@change="onQueryChanged"
-							hide-details
-							autofocus
-							:placeholder="$t('history.placeholder')"
-						>
-
-							<template v-slot:prepend-inner>
-								<v-btn icon density="compact" @click="onNavigateBack">
-									<v-icon>mdi-chat-processing-outline</v-icon>
-								</v-btn>
-							</template>
-						</v-text-field>
-					</v-col>
-				</v-row>
-
+				<InputRow>
+					<template v-slot:prepend>
+						<v-btn icon density="compact" @click="onNavigateBack">
+							<v-icon>mdi-chat-processing-outline</v-icon>
+						</v-btn>
+					</template>
+					<v-text-field
+						v-model="query"
+						@change="onQueryChanged"
+						hide-details
+						autofocus
+						:placeholder="$t('history.placeholder')"
+					>
+					</v-text-field>
+				</InputRow>
 			</div>
 		</v-app-bar>
 
@@ -56,14 +51,14 @@
 import { defineComponent } from 'vue'
 import { history } from '../../wailsjs/go/models.ts'
 import { HistoryGetCount, HistoryGetLast, HistorySearch } from '../../wailsjs/go/controller/Controller'
-import ChatInputBar from '../components/ChatInputBar.vue'
 import { WindowSetSize } from '../../wailsjs/runtime'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import HistoryEntry from '../components/HistoryEntry.vue'
+import InputRow from '../components/InputRow.vue'
 
 export default defineComponent({
 	name: 'History',
-	components: { HistoryEntry, ZoomDetector, ChatInputBar },
+	components: { InputRow, HistoryEntry, ZoomDetector },
 	data() {
 		return {
 			appbarHeight: 0,
@@ -74,17 +69,6 @@ export default defineComponent({
 			total: 0,
 			history: [] as history.Entry[],
 		}
-	},
-	computed: {
-		isMinMaxLeft(){
-			return this.$appConfig.UI.MinMaxPosition === 'left'
-		},
-		isMinMaxRight(){
-			return this.$appConfig.UI.MinMaxPosition === 'right'
-		},
-		isMinMaxEnabled(){
-			return this.isMinMaxLeft || this.isMinMaxRight
-		},
 	},
 	methods: {
 		onZoom(factor: number) {
