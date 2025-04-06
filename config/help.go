@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
-	"github.com/rainu/ask-mai/config/expression"
 	"github.com/rainu/ask-mai/config/llm/tools"
+	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms/tools/command"
 	http2 "github.com/rainu/ask-mai/llms/tools/http"
 	flag "github.com/spf13/pflag"
@@ -126,9 +126,9 @@ func printHelpExpression(output io.Writer) {
 				return
 			}
 
-			fmt.Fprintf(output, "  const %s = ", expression.VarNameVariables)
+			fmt.Fprintf(output, "  const %s = ", expression.VarNameScreens)
 
-			variables := expression.FromScreens(screens)
+			variables := expression.SetScreens(screens)
 			je := json.NewEncoder(output)
 			je.SetIndent("  ", "  ")
 			je.Encode(variables)
@@ -267,7 +267,7 @@ func printHelpTool(output io.Writer) {
 		},
 		WorkingDirectory: "/path/to/working/dir",
 	})
-	fmt.Fprintf(output, "  - %s(%s): run a command.\n", tools.FuncNameRun, strings.TrimSpace(js.String()))
+	fmt.Fprintf(output, "  - %s(%s): run a command.\n", expression.FuncNameRun, strings.TrimSpace(js.String()))
 
 	js = bytes.Buffer{}
 	je = json.NewEncoder(&js)
@@ -280,10 +280,10 @@ func printHelpTool(output io.Writer) {
 		},
 		StringBody: `{"msg": "hello world"}`,
 	})
-	fmt.Fprintf(output, "  - %s(%s): do a http call.\n", tools.FuncNameFetch, strings.TrimSpace(js.String()))
+	fmt.Fprintf(output, "  - %s(%s): do a http call.\n", expression.FuncNameFetch, strings.TrimSpace(js.String()))
 
 	fmt.Fprintf(output, "\nVariables:\n")
-	fmt.Fprintf(output, "  const %s = ", expression.VarNameVariables)
+	fmt.Fprintf(output, "  const %s = ", expression.VarNameContext)
 
 	je = json.NewEncoder(output)
 	je.SetIndent("  ", "  ")
@@ -301,7 +301,7 @@ func printHelpTool(output io.Writer) {
 				},
 				"required": []string{"message"},
 			},
-			CommandExpr:   fmt.Sprintf(`"Echo: " + JSON.parse(%s.args).message`, expression.VarNameVariables),
+			CommandExpr:   fmt.Sprintf(`"Echo: " + JSON.parse(%s.args).message`, expression.VarNameContext),
 			NeedsApproval: false,
 		},
 		Arguments: `{"message": "hello world"}`,
@@ -316,13 +316,13 @@ func printHelpTool(output io.Writer) {
    "arguments": ["Echo:", pa.message]
   }
   
-  `+tools.FuncNameRun+`(cmdDescriptor)`)
+  `+expression.FuncNameRun+`(cmdDescriptor)`)
 
 	fmt.Fprintf(output, "\n\n  // catches possible execution error\n")
 	fmt.Fprintf(output, `
   let result = ""
   try {
-     result = `+tools.FuncNameRun+`({ "command": "__doesNotExists__" })
+     result = `+expression.FuncNameRun+`({ "command": "__doesNotExists__" })
   } catch (e) {
      result = "Error: " + e
   }

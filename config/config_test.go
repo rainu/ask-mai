@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/rainu/ask-mai/config/expression"
+	"github.com/rainu/ask-mai/config/common"
 	"github.com/stretchr/testify/assert"
 	"log/slog"
 	"testing"
@@ -221,35 +221,35 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set UI initial width",
 			args: []string{"--ui-window-init-width", "100"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.InitialWidth = expression.NumberContainer{Expression: "100"}
+				c.UI.Window.InitialWidth = common.NumberContainer{Expression: "100"}
 			}),
 		},
 		{
 			name: "Set UI max height",
 			args: []string{"--ui-window-max-height", "200"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.MaxHeight = expression.NumberContainer{Expression: "200"}
+				c.UI.Window.MaxHeight = common.NumberContainer{Expression: "200"}
 			}),
 		},
 		{
 			name: "Set UI initial position X",
 			args: []string{"--ui-window-init-pos-x", "50"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.InitialPositionX = expression.NumberContainer{Expression: "50"}
+				c.UI.Window.InitialPositionX = common.NumberContainer{Expression: "50"}
 			}),
 		},
 		{
 			name: "Set UI initial position Y",
 			args: []string{"--ui-window-init-pos-y", "50"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.InitialPositionY = expression.NumberContainer{Expression: "50"}
+				c.UI.Window.InitialPositionY = common.NumberContainer{Expression: "50"}
 			}),
 		},
 		{
 			name: "Set UI initial zoom",
 			args: []string{"--ui-window-init-zoom", "1.5"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.InitialZoom = expression.NumberContainer{Expression: "1.5"}
+				c.UI.Window.InitialZoom = common.NumberContainer{Expression: "1.5"}
 			}),
 		},
 		{
@@ -550,35 +550,35 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for UI initial width",
 			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_WIDTH=100"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.InitialWidth = expression.NumberContainer{Expression: "100"}
+				c.UI.Window.InitialWidth = common.NumberContainer{Expression: "100"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI max height",
 			env:  []string{EnvironmentPrefix + "UI_WINDOW_MAX_HEIGHT=200"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.MaxHeight = expression.NumberContainer{Expression: "200"}
+				c.UI.Window.MaxHeight = common.NumberContainer{Expression: "200"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial position X",
 			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_POS_X=50"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.InitialPositionX = expression.NumberContainer{Expression: "50"}
+				c.UI.Window.InitialPositionX = common.NumberContainer{Expression: "50"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial position Y",
 			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_POS_Y=50"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.InitialPositionY = expression.NumberContainer{Expression: "50"}
+				c.UI.Window.InitialPositionY = common.NumberContainer{Expression: "50"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial zoom",
 			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_ZOOM=1.5"},
 			expected: modifiedConfig(func(c *Config) {
-				c.UI.Window.InitialZoom = expression.NumberContainer{Expression: "1.5"}
+				c.UI.Window.InitialZoom = common.NumberContainer{Expression: "1.5"}
 			}),
 		},
 		{

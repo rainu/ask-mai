@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms/tools/command"
 	"testing"
 )
@@ -13,7 +14,7 @@ func TestCalcApprovalExpr(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			"v.Name == 'test'",
+			expression.VarNameContext + ".name == 'test'",
 			command.CommandExecutionArguments{
 				Name: "test",
 			},
@@ -21,7 +22,7 @@ func TestCalcApprovalExpr(t *testing.T) {
 			nil,
 		},
 		{
-			`v.Name.endsWith('find') && v.Arguments.findIndex(a => a === "-exec") === -1`,
+			expression.VarNameContext + `.name.endsWith('find') && ` + expression.VarNameContext + `.arguments.findIndex(a => a === "-exec") === -1`,
 			command.CommandExecutionArguments{
 				Name:      "find",
 				Arguments: []string{"/"},
@@ -30,7 +31,7 @@ func TestCalcApprovalExpr(t *testing.T) {
 			nil,
 		},
 		{
-			`v.Name.endsWith('find') && v.Arguments.findIndex(a => a === "-exec") === -1`,
+			expression.VarNameContext + `.name.endsWith('find') && ` + expression.VarNameContext + `.arguments.findIndex(a => a === "-exec") === -1`,
 			command.CommandExecutionArguments{
 				Name:      "find",
 				Arguments: []string{"/", "-exec", "rm", "{}", ";"},

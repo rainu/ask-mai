@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/rainu/ask-mai/config"
-	"github.com/rainu/ask-mai/config/expression"
+	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/io"
 	"github.com/rainu/ask-mai/llms"
 	"github.com/rainu/ask-mai/sync"
@@ -47,7 +47,9 @@ func (c *Controller) startup(ctx context.Context) {
 		panic(fmt.Errorf("could not get screens: %w", err))
 	}
 
-	err = c.appConfig.UI.Window.ResolveExpressions(expression.FromScreens(screens))
+	sv := expression.SetScreens(screens)
+
+	err = c.appConfig.UI.Window.ResolveExpressions(sv)
 	if err != nil {
 		panic(fmt.Errorf("could not resolve expressions: %w", err))
 	}

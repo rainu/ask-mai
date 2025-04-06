@@ -21,6 +21,39 @@ export namespace command {
 
 }
 
+export namespace common {
+	
+	export class NumberContainer {
+	    Expression: string;
+	    Value: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new NumberContainer(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Expression = source["Expression"];
+	        this.Value = source["Value"];
+	    }
+	}
+	export class StringContainer {
+	    Expression: string;
+	    Value: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new StringContainer(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Expression = source["Expression"];
+	        this.Value = source["Value"];
+	    }
+	}
+
+}
+
 export namespace config {
 	
 	export class WebKitInspectorConfig {
@@ -227,11 +260,11 @@ export namespace config {
 	}
 	export class WindowConfig {
 	    Title: string;
-	    InitialWidth: expression.NumberContainer;
-	    MaxHeight: expression.NumberContainer;
-	    InitialPositionX: expression.NumberContainer;
-	    InitialPositionY: expression.NumberContainer;
-	    InitialZoom: expression.NumberContainer;
+	    InitialWidth: common.NumberContainer;
+	    MaxHeight: common.NumberContainer;
+	    InitialPositionX: common.NumberContainer;
+	    InitialPositionY: common.NumberContainer;
+	    InitialZoom: common.NumberContainer;
 	    BackgroundColor: WindowBackgroundColor;
 	    StartState: number;
 	    AlwaysOnTop: boolean;
@@ -247,11 +280,11 @@ export namespace config {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Title = source["Title"];
-	        this.InitialWidth = this.convertValues(source["InitialWidth"], expression.NumberContainer);
-	        this.MaxHeight = this.convertValues(source["MaxHeight"], expression.NumberContainer);
-	        this.InitialPositionX = this.convertValues(source["InitialPositionX"], expression.NumberContainer);
-	        this.InitialPositionY = this.convertValues(source["InitialPositionY"], expression.NumberContainer);
-	        this.InitialZoom = this.convertValues(source["InitialZoom"], expression.NumberContainer);
+	        this.InitialWidth = this.convertValues(source["InitialWidth"], common.NumberContainer);
+	        this.MaxHeight = this.convertValues(source["MaxHeight"], common.NumberContainer);
+	        this.InitialPositionX = this.convertValues(source["InitialPositionX"], common.NumberContainer);
+	        this.InitialPositionY = this.convertValues(source["InitialPositionY"], common.NumberContainer);
+	        this.InitialZoom = this.convertValues(source["InitialZoom"], common.NumberContainer);
 	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], WindowBackgroundColor);
 	        this.StartState = source["StartState"];
 	        this.AlwaysOnTop = source["AlwaysOnTop"];
@@ -564,39 +597,6 @@ export namespace controller {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Title = source["Title"];
-	    }
-	}
-
-}
-
-export namespace expression {
-	
-	export class NumberContainer {
-	    Expression: string;
-	    Value: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new NumberContainer(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Expression = source["Expression"];
-	        this.Value = source["Value"];
-	    }
-	}
-	export class StringContainer {
-	    Expression: string;
-	    Value: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new StringContainer(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Expression = source["Expression"];
-	        this.Value = source["Value"];
 	    }
 	}
 
@@ -1211,7 +1211,7 @@ export namespace llm {
 	    }
 	}
 	export class AnythingLLMThreadConfig {
-	    Name: expression.StringContainer;
+	    Name: common.StringContainer;
 	    Delete: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -1220,7 +1220,7 @@ export namespace llm {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Name = this.convertValues(source["Name"], expression.StringContainer);
+	        this.Name = this.convertValues(source["Name"], common.StringContainer);
 	        this.Delete = source["Delete"];
 	    }
 	

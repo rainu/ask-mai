@@ -2,7 +2,8 @@ package llm
 
 import (
 	"fmt"
-	"github.com/rainu/ask-mai/config/expression"
+	"github.com/rainu/ask-mai/config/common"
+	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms"
 )
 
@@ -14,8 +15,8 @@ type AnythingLLMConfig struct {
 }
 
 type AnythingLLMThreadConfig struct {
-	Name   expression.StringContainer `yaml:"name" usage:"Expression: Name of the newly generated thread"`
-	Delete bool                       `yaml:"delete" usage:"Delete the thread after the session is closed"`
+	Name   common.StringContainer `yaml:"name" usage:"Expression: Name of the newly generated thread"`
+	Delete bool                   `yaml:"delete" usage:"Delete the thread after the session is closed"`
 }
 
 func (c *AnythingLLMConfig) Validate() error {
@@ -29,7 +30,7 @@ func (c *AnythingLLMConfig) Validate() error {
 		return fmt.Errorf("AnythingLLM Workspace is missing")
 	}
 
-	if err := expression.StringExpression(c.Thread.Name.Expression).Validate(); err != nil {
+	if err := expression.Validate(c.Thread.Name.Expression); err != nil {
 		return fmt.Errorf("Invalid AnythingLLM thread name expression: %w", err)
 	}
 
@@ -37,7 +38,7 @@ func (c *AnythingLLMConfig) Validate() error {
 }
 
 func (c *AnythingLLMConfig) BuildLLM() (llms.Model, error) {
-	tn, err := expression.StringExpression(c.Thread.Name.Expression).Calculate()
+	tn, err := expression.Run(nil, c.Thread.Name.Expression, nil).AsString()
 	if err != nil {
 		return nil, fmt.Errorf("error calculating thread name: %w", err)
 	}

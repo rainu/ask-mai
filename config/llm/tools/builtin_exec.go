@@ -3,9 +3,7 @@ package tools
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"github.com/dop251/goja"
-	"github.com/rainu/ask-mai/config/expression"
+	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms/tools/command"
 	"log/slog"
 	"strings"
@@ -15,7 +13,7 @@ type CommandExecution struct {
 	Disable                bool     `config:"disable" yaml:"disable" usage:"Disable tool"`
 	NoApproval             bool     `config:"no-approval" yaml:"no-approval" usage:"Needs no user approval to be executed"`
 	NoApprovalCommands     []string `config:"allow" yaml:"allow" usage:"Needs no user approval for the specific command to be executed"`
-	NoApprovalCommandsExpr []string `config:"allow-expr" yaml:"allow-expr" usage:"Needs no user approval for the specific command-line to be executed\nJavaScript expression - Return true if the command should be allowed:\n\tv.Name : string - contains the commands name\n\tv.Arguments : []string - contains the arguments\n\tv.WorkingDirectory: string - contains the working directory\n\tv.Environment : map[string]string - contains the environment variables\nExamples:\n\tv.Name == 'ls' && v.Arguments.length == 0\n\tv.Name == 'find' && v.Arguments.findIndex(a => a === \"-exec\") == -1"`
+	NoApprovalCommandsExpr []string `config:"allow-expr" yaml:"allow-expr" usage:"Needs no user approval for the specific command-line to be executed\nJavaScript expression - Return true if the command should be allowed:\n\tctx.name : string - contains the commands name\n\tctx.arguments : []string - contains the arguments\n\tctx.working_directory: string - contains the working directory\n\tctx.environment : map[string]string - contains the environment variables\nExamples:\n\tctx.name == 'ls' && ctx.arguments.length == 0\n\tctx.name == 'find' && ctx.arguments.findIndex(a => a === \"-exec\") == -1"`
 
 	//only for wails to generate TypeScript types
 	Z command.CommandExecutionArguments `config:"-" yaml:"-"`
@@ -84,19 +82,5 @@ func (c CommandExecution) CheckApproval(ctx context.Context, jsonArguments strin
 }
 
 func CalcApprovalExpr(e string, v command.CommandExecutionArguments) (bool, error) {
-	vm := goja.New()
-	err := vm.Set(expression.VarNameVariables, v)
-	if err != nil {
-		return false, fmt.Errorf("error setting variables: %w", err)
-	}
-	err = expression.SetupLog(vm)
-	if err != nil {
-		return false, fmt.Errorf("error setting functions: %w", err)
-	}
-	result, err := vm.RunString(e)
-	if err != nil {
-		return false, fmt.Errorf("error running expression: %w", err)
-	}
-
-	return result.ToBoolean(), nil
+	return expression.Run(nil, e, v).AsBoolean()
 }

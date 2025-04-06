@@ -2,7 +2,9 @@ package expression
 
 import "github.com/wailsapp/wails/v2/pkg/runtime"
 
-type Variables struct {
+const VarNameScreens = "screens"
+
+type Screen struct {
 	PrimaryScreen    VariableScreen   `json:"PrimaryScreen"`
 	CurrentScreen    VariableScreen   `json:"CurrentScreen"`
 	Screens          []VariableScreen `json:"Screens"`
@@ -18,24 +20,26 @@ type VariableScreenDimension struct {
 	Height int `json:"Height"`
 }
 
-func FromScreens(screens []runtime.Screen) Variables {
-	var variables Variables
+func SetScreens(screens []runtime.Screen) Screen {
+	var s Screen
 	for _, screen := range screens {
-		variables.Screens = append(variables.Screens, VariableScreen{
+		s.Screens = append(s.Screens, VariableScreen{
 			Dimension: VariableScreenDimension{
 				Width:  screen.PhysicalSize.Width,
 				Height: screen.PhysicalSize.Height,
 			},
 		})
 		if screen.IsPrimary {
-			variables.PrimaryScreen = variables.Screens[len(variables.Screens)-1]
+			s.PrimaryScreen = s.Screens[len(s.Screens)-1]
 		} else {
-			variables.SecondaryScreens = append(variables.SecondaryScreens, variables.Screens[len(variables.Screens)-1])
+			s.SecondaryScreens = append(s.SecondaryScreens, s.Screens[len(s.Screens)-1])
 		}
 		if screen.IsCurrent {
-			variables.CurrentScreen = variables.Screens[len(variables.Screens)-1]
+			s.CurrentScreen = s.Screens[len(s.Screens)-1]
 		}
 	}
 
-	return variables
+	globalVariables[VarNameScreens] = s
+
+	return s
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/rainu/ask-mai/config/expression"
+	"github.com/rainu/ask-mai/expression"
 	http2 "github.com/rainu/ask-mai/llms/tools/http"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,7 +18,7 @@ import (
 )
 
 func TestCommandExpression_CommandFn(t *testing.T) {
-	toTest := CommandExpression(`JSON.stringify(v)`)
+	toTest := CommandExpression(`JSON.stringify(` + expression.VarNameContext + `)`)
 	require.NoError(t, toTest.Validate())
 
 	testVars := CommandVariables{
@@ -90,7 +90,7 @@ func TestCommandExpression_CommandFn_Functionality(t *testing.T) {
 			expected:   "test",
 		},
 		{
-			expression: `"Echo: " + JSON.parse(v.args).message`,
+			expression: `"Echo: " + JSON.parse(` + expression.VarNameContext + `.args).message`,
 			args:       `{"message": "Hello World"}`,
 			expected:   `Echo: Hello World`,
 		},
@@ -152,13 +152,13 @@ r.trim()`,
 
 func TestCommandExpression_CommandFn_RunCommand(t *testing.T) {
 	toTest := CommandExpression(`
-const pa = JSON.parse(v.args)
+const pa = JSON.parse(` + expression.VarNameContext + `.args)
 const cmdDescriptor = {
  "command": "echo",
  "arguments": ["Echo:", pa.message]
 }
 
-` + FuncNameRun + `(cmdDescriptor)
+` + expression.FuncNameRun + `(cmdDescriptor)
 `)
 	require.NoError(t, toTest.Validate())
 
@@ -172,14 +172,14 @@ const cmdDescriptor = {
 
 func TestCommandExpression_CommandFn_RunCommand_WithEnv(t *testing.T) {
 	toTest := CommandExpression(`
-const pa = JSON.parse(v.args)
+const pa = JSON.parse(` + expression.VarNameContext + `.args)
 const cmdDescriptor = {
  "command": "env",
  "env": {"TEST_ENV": "test"},
  "additionalEnv": {"ADDITIONAL_ENV_VAR": "value"},
 }
 
-` + FuncNameRun + `(cmdDescriptor)
+` + expression.FuncNameRun + `(cmdDescriptor)
 `)
 	require.NoError(t, toTest.Validate())
 
@@ -194,7 +194,7 @@ const cmdDescriptor = {
 
 func TestCommandExpression_CommandFn_RunCommand_WithError(t *testing.T) {
 	toTest := CommandExpression(`
-` + FuncNameRun + `({
+` + expression.FuncNameRun + `({
  "command": "__DoesNotExistOnAnySystem__"
 })
 `)
@@ -212,7 +212,7 @@ func TestCommandExpression_CommandFn_RunCommand_CatchError(t *testing.T) {
 	toTest := CommandExpression(`
 let result = ""
 try {
-	result = ` + FuncNameRun + `({
+	result = ` + expression.FuncNameRun + `({
 		"command": "__DoesNotExistOnAnySystem__"
 	})
 } catch (e) {
@@ -249,7 +249,7 @@ func TestCommandExpression_CommandFn_RunFetch(t *testing.T) {
 	defer server.Close()
 
 	toTest := CommandExpression(`
-const pa = JSON.parse(v.args)
+const pa = JSON.parse(` + expression.VarNameContext + `.args)
 const callDescriptor = {
  "method": "GET",
  "url": pa.url,
@@ -259,7 +259,7 @@ const callDescriptor = {
  "body": JSON.stringify({"test":"data"})
 }
 
-const result = ` + FuncNameFetch + `(callDescriptor)
+const result = ` + expression.FuncNameFetch + `(callDescriptor)
 
 JSON.stringify(result)
 `)
