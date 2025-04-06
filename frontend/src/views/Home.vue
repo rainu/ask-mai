@@ -45,8 +45,15 @@
 
 			<!-- message section -->
 			<div v-show="!minimized">
-				<template v-for="(entry, index) in chatHistory" :key="index">
-					<ChatMessage :message="entry.Message.ContentParts" :role="entry.Message.Role" :date="entry.Message.Created" />
+				<template v-for="(e, index) in chatHistoryEntries" :key="index">
+					<template v-if="e.Date">
+						<v-sheet class="text-center">
+							{{ e.Date }}
+						</v-sheet>
+					</template>
+					<template v-if="e.Entry">
+						<ChatMessage :message="e.Entry.Message.ContentParts" :role="e.Entry.Message.Role" :date="e.Entry.Message.Created" />
+					</template>
 				</template>
 				<template v-if="outputStream[0].Content">
 					<ChatMessage :message="outputStream" :role="outputStreamRole" />
@@ -103,6 +110,11 @@ type State = {
 	chatHistory: HistoryEntry[]
 }
 
+type HistoryEntryOrDate = {
+	Date?: string
+	Entry?: HistoryEntry
+}
+
 export default {
 	name: 'Home',
 	components: { UserScrollDetector, ZoomDetector, ChatInput, ChatMessage },
@@ -132,6 +144,33 @@ export default {
 		purgedChatHistory(): controller.LLMMessage[] {
 			return this.chatHistory.filter((entry) => !entry.Interrupted).map((entry) => entry.Message)
 		},
+		chatHistoryEntries(): HistoryEntryOrDate[] {
+			let result = [] as HistoryEntryOrDate[]
+			const today = new Date().toLocaleDateString()
+			const alreadyAddedDates = new Set<string>()
+
+			for (let historyEntry of this.chatHistory) {
+				if(historyEntry.Message.Created) {
+					const date = new Date(historyEntry.Message.Created * 1000).toLocaleDateString()
+
+					if (!alreadyAddedDates.has(date)) {
+						if(!(date === today && result.length === 0)) {
+							// do not add date if it is today and the first entry
+							result.push({
+								Date: date,
+							})
+						}
+					}
+					alreadyAddedDates.add(date)
+				}
+
+				result.push({
+					Entry: historyEntry,
+				})
+			}
+
+			return result
+		}
 	},
 	methods: {
 		onZoom(factor: number) {

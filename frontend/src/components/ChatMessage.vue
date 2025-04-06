@@ -179,13 +179,7 @@ export default defineComponent({
 			if(!this.date) return null
 
 			const d = new Date(this.date * 1000)
-			let result = d.toLocaleTimeString()
-
-			if(new Date().toLocaleDateString() !== d.toLocaleDateString()) {
-				result += " - " + d.toLocaleDateString()
-			}
-
-			return result
+			return d.toLocaleTimeString()
 		}
 	},
 	methods: {
