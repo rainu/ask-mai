@@ -10,9 +10,11 @@
 					<ChatInput
 						v-model="input"
 						:progress="progress"
+						:show-clear="chatHistory.length > 0 && !progress"
 						:minimized="minimized"
 						@submit="onSubmit"
 						@interrupt="onInterrupt"
+						@clear="onClear"
 						@min-max="onMinMax"
 					/>
 				</div>
@@ -31,9 +33,11 @@
 						<ChatInput
 							v-model="input"
 							:progress="progress"
+							:show-clear="chatHistory.length > 0 && !progress"
 							:minimized="minimized"
 							@submit="onSubmit"
 							@interrupt="onInterrupt"
+							@clear="onClear"
 							@min-max="onMinMax"
 						/>
 					</div>
@@ -69,9 +73,11 @@
 						<ChatInput
 							v-model="input"
 							:progress="progress"
+							:show-clear="chatHistory.length > 0 && !progress"
 							:minimized="minimized"
 							@submit="onSubmit"
 							@interrupt="onInterrupt"
+							@clear="onClear"
 							@min-max="onMinMax"
 						/>
 					</div>
@@ -210,7 +216,12 @@ export default {
 		},
 		async onMinMax() {
 			this.minimized = !this.minimized
-			this.adjustHeight()
+			await this.adjustHeight()
+		},
+		async onClear() {
+			this.chatHistory = []
+			this.error = null
+			await this.adjustHeight()
 		},
 		convertChatInputToLLMMessage(input: ChatInputType): LLMMessage {
 			return LLMMessage.createFrom({
