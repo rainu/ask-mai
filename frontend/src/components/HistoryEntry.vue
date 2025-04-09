@@ -12,8 +12,8 @@
 			<v-row dense>
 				<v-col cols="6" md="4" >
 					<v-btn block @click="showConversation = !showConversation">
-						<v-icon size="x-large" v-if="showConversation">mdi-chevron-down-box</v-icon>
-						<v-icon size="x-large" v-else>mdi-chevron-up-box</v-icon>
+						<v-icon size="x-large" v-if="showConversation">mdi-chevron-down</v-icon>
+						<v-icon size="x-large" v-else>mdi-chevron-right</v-icon>
 					</v-btn>
 				</v-col>
 				<v-col cols="0" md="4" />

@@ -1,14 +1,5 @@
 <template>
 	<InputRow :minimized="minimized">
-		<template v-slot:prepend>
-			<v-btn icon density="compact" to="/history">
-				<v-icon>mdi-history</v-icon>
-			</v-btn>
-			<v-btn icon density="compact" @click="onAddFile">
-				<v-icon>mdi-paperclip</v-icon>
-			</v-btn>
-		</template>
-
 		<v-textarea
 			v-model="value.prompt"
 			:rows="rows"
@@ -18,6 +9,12 @@
 			autofocus
 			:placeholder="$t('prompt.placeholder')"
 		>
+			<template v-slot:prepend-inner>
+				<v-btn icon density="compact" @click="onAddFile">
+					<v-icon>mdi-paperclip</v-icon>
+				</v-btn>
+			</template>
+
 			<template v-slot:details>
 				<v-container class="pa-0 ma-0" style="overflow-y: auto;">
 					<v-chip
@@ -34,25 +31,26 @@
 					</v-chip>
 				</v-container>
 			</template>
+
+			<template v-slot:append-inner>
+				<v-btn v-show="!progress && isSubmitable" @click="onSubmit">
+					<v-icon size="x-large">mdi-send</v-icon>
+				</v-btn>
+				<v-btn color="error" v-show="progress" @click="onStop">
+					<v-icon size="x-large">mdi-stop-circle-outline</v-icon>
+				</v-btn>
+			</template>
 		</v-textarea>
 
-		<template v-slot:options>
-			<v-btn-toggle class="h-100">
-				<v-btn active-color="primary" @click="toggleVisibilityMode" :active="visibilityMode">
-					<v-icon size="x-large">mdi-eye-settings-outline</v-icon>
-				</v-btn>
-				<v-btn @click="onClear">
-					<v-icon size="x-large">mdi-chat-remove-outline</v-icon>
-				</v-btn>
-			</v-btn-toggle>
-		</template>
-
-		<template v-slot:append >
-			<v-btn block variant="flat" class="h-100" v-show="!progress && isSubmitable" @click="onSubmit">
-				<v-icon size="x-large">mdi-send</v-icon>
+		<template v-slot:option-buttons>
+			<v-btn active-color="primary" @click="toggleVisibilityMode" v-show="showVisibilityMode" :active="visibilityMode">
+				<v-icon size="x-large">mdi-eye-settings-outline</v-icon>
 			</v-btn>
-			<v-btn block variant="flat" class="h-100" color="error" v-show="progress" @click="onStop">
-				<v-icon size="x-large">mdi-stop-circle</v-icon>
+			<v-btn @click="onClear" v-show="showClear">
+				<v-icon size="x-large">mdi-chat-remove-outline</v-icon>
+			</v-btn>
+			<v-btn to="/history">
+				<v-icon size="x-large">mdi-history</v-icon>
 			</v-btn>
 		</template>
 	</InputRow>
@@ -84,6 +82,11 @@ export default defineComponent({
 			default: () => ({ prompt: '', attachments: [] }),
 		},
 		showClear: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
+		showVisibilityMode: {
 			type: Boolean,
 			required: false,
 			default: false,

@@ -1,10 +1,5 @@
 <template>
-	<InputRow>
-		<template v-slot:prepend>
-			<v-btn icon density="compact" @click="onNavigateBack">
-				<v-icon>mdi-chat-processing-outline</v-icon>
-			</v-btn>
-		</template>
+	<InputRow :minimizable="false">
 		<v-text-field
 			v-model="query"
 			@change="onQueryChanged"
@@ -13,6 +8,12 @@
 			:placeholder="$t('history.placeholder')"
 		>
 		</v-text-field>
+
+		<template v-slot:option-buttons>
+			<v-btn @click="onNavigateBack">
+				<v-icon size="x-large">mdi-chat-processing-outline</v-icon>
+			</v-btn>
+		</template>
 	</InputRow>
 </template>
 
