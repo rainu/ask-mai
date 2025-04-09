@@ -1,5 +1,5 @@
 <template>
-	<InputRow :minimizable="false">
+	<GeneralBar :minimizable="false">
 		<v-text-field
 			v-model="query"
 			@change="onQueryChanged"
@@ -14,16 +14,16 @@
 				<v-icon size="x-large">mdi-chat-processing-outline</v-icon>
 			</v-btn>
 		</template>
-	</InputRow>
+	</GeneralBar>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import InputRow from './InputRow.vue'
+import GeneralBar from './GeneralBar.vue'
 
 export default defineComponent({
-	name: 'HistoryInput',
-	components: { InputRow },
+	name: 'HistoryBar',
+	components: { GeneralBar },
 	emits: ['queryChanged'],
 	data(){
 		return {

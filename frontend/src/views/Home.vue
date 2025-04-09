@@ -7,7 +7,7 @@
 		<template v-if="!(chatHistory.length > 0 || outputStream[0].Content || error)">
 			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
-					<ChatInput
+					<ChatBar
 						v-model="input"
 						:progress="progress"
 						:show-clear="chatHistory.length > 0 && !progress"
@@ -32,7 +32,7 @@
 			<template v-if="$appConfig.UI.Prompt.PinTop">
 				<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
-						<ChatInput
+						<ChatBar
 							v-model="input"
 							:progress="progress"
 							:show-clear="chatHistory.length > 0 && !progress"
@@ -83,7 +83,7 @@
 			<template v-if="!$appConfig.UI.Prompt.PinTop">
 				<v-footer app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
-						<ChatInput
+						<ChatBar
 							v-model="input"
 							:progress="progress"
 							:show-clear="chatHistory.length > 0 && !progress"
@@ -113,7 +113,7 @@ import {
 } from '../../wailsjs/go/controller/Controller'
 import { EventsOn, WindowGetSize, WindowSetPosition, WindowSetSize } from '../../wailsjs/runtime'
 import ChatMessage, { ContentType, Role } from '../components/ChatMessage.vue'
-import ChatInput, { ChatInputType } from '../components/ChatInput.vue'
+import ChatBar, { ChatInputType } from '../components/bar/ChatBar.vue'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import UserScrollDetector from '../components/UserScrollDetector.vue'
 import { controller } from '../../wailsjs/go/models.ts'
@@ -141,7 +141,7 @@ type HistoryEntryOrDate = {
 
 export default {
 	name: 'Home',
-	components: { UserScrollDetector, ZoomDetector, ChatInput, ChatMessage },
+	components: { UserScrollDetector, ZoomDetector, ChatBar, ChatMessage },
 	data() {
 		return {
 			appbarHeight: 0,

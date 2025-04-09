@@ -32,10 +32,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapActions, mapState } from 'pinia'
-import { useGlobalStore } from '../store/global.ts'
+import { useGlobalStore } from '../../store/global.ts'
 
 export default defineComponent({
-	name: 'InputRow',
+	name: 'GeneralBar',
 	emits: ['minMax'],
 	props: {
 		minimized: {

@@ -6,7 +6,7 @@
 		<template v-if="$appConfig.UI.Prompt.PinTop">
 			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
-					<HistoryInput @queryChanged="onQueryChanged" />
+					<HistoryBar @queryChanged="onQueryChanged" />
 				</div>
 			</v-app-bar>
 
@@ -38,7 +38,7 @@
 		<template v-if="!$appConfig.UI.Prompt.PinTop">
 			<v-footer app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
-					<HistoryInput @queryChanged="onQueryChanged" />
+					<HistoryBar @queryChanged="onQueryChanged" />
 				</div>
 			</v-footer>
 		</template>
@@ -52,14 +52,13 @@ import { HistoryGetCount, HistoryGetLast, HistorySearch } from '../../wailsjs/go
 import { WindowSetSize } from '../../wailsjs/runtime'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import HistoryEntry from '../components/HistoryEntry.vue'
-import InputRow from '../components/InputRow.vue'
-import HistoryInput from '../components/HistoryInput.vue'
+import HistoryBar from '../components/bar/HistoryBar.vue'
 import { mapActions } from 'pinia'
 import { useHistoryStore } from '../store/history.ts'
 
 export default defineComponent({
 	name: 'History',
-	components: { HistoryInput, InputRow, HistoryEntry, ZoomDetector },
+	components: { HistoryBar, HistoryEntry, ZoomDetector },
 	data() {
 		return {
 			appbarHeight: 0,

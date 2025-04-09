@@ -1,5 +1,5 @@
 <template>
-	<InputRow :minimized="minimized">
+	<GeneralBar :minimized="minimized">
 		<v-textarea
 			v-model="value.prompt"
 			:rows="rows"
@@ -53,22 +53,22 @@
 				<v-icon size="x-large">mdi-history</v-icon>
 			</v-btn>
 		</template>
-	</InputRow>
+	</GeneralBar>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { OpenFileDialog } from '../../wailsjs/go/controller/Controller'
-import { controller } from '../../wailsjs/go/models.ts'
-import { PathSeparator } from '../common/platform.ts'
+import { OpenFileDialog } from '../../../wailsjs/go/controller/Controller'
+import { controller } from '../../../wailsjs/go/models.ts'
+import { PathSeparator } from '../../common/platform.ts'
 import OpenFileDialogArgs = controller.OpenFileDialogArgs
-import InputRow from './InputRow.vue'
+import GeneralBar from './GeneralBar.vue'
 
 export type ChatInputType = { prompt: string; attachments: string[] }
 
 export default defineComponent({
-	name: 'ChatInput',
-	components: { InputRow },
+	name: 'ChatBar',
+	components: { GeneralBar },
 	emits: ['update:modelValue', 'submit', 'interrupt', 'clear', 'changeVisibilityMode'],
 	props: {
 		progress: {
