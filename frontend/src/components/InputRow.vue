@@ -13,7 +13,20 @@
 				<slot></slot>
 
 				<template v-slot:append>
-					<slot name="append"></slot>
+					<v-row dense class="h-100">
+						<v-col class="ma-0 pa-0">
+							<slot name="append"></slot>
+						</v-col>
+						<v-col class="ma-0 pa-0" v-if="showOptions">
+							<slot name="options"></slot>
+						</v-col>
+						<v-col class="ma-0 pa-0">
+							<v-btn block variant="flat" class="h-100" @click="showOptions = !showOptions">
+								<v-icon size="x-large" v-if="showOptions">mdi-chevron-right</v-icon>
+								<v-icon size="x-large" v-else>mdi-chevron-left</v-icon>
+							</v-btn>
+						</v-col>
+					</v-row>
 				</template>
 			</v-input>
 		</v-col>
@@ -33,6 +46,11 @@ export default defineComponent({
 			required: false,
 			default: false,
 		},
+	},
+	data(){
+		return {
+			showOptions: false
+		}
 	},
 	methods: {
 		onMinMaximize() {

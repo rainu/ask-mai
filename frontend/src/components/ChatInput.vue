@@ -36,24 +36,24 @@
 			</template>
 		</v-textarea>
 
+		<template v-slot:options>
+			<v-btn-toggle class="h-100">
+				<v-btn active-color="primary" @click="toggleVisibilityMode" :active="visibilityMode">
+					<v-icon size="x-large">mdi-eye-settings-outline</v-icon>
+				</v-btn>
+				<v-btn @click="onClear">
+					<v-icon size="x-large">mdi-chat-remove-outline</v-icon>
+				</v-btn>
+			</v-btn-toggle>
+		</template>
+
 		<template v-slot:append >
-			<v-row dense class="h-100">
-				<v-col class="ma-0 pr-0 py-0" v-show="showClear">
-					<v-btn block variant="flat" class="h-100" @click="onClear">
-						<v-icon size="x-large">mdi-chat-remove-outline</v-icon>
-					</v-btn>
-				</v-col>
-				<v-col class="ma-0 pa-0" v-show="!progress && isSubmitable">
-					<v-btn block variant="flat" class="h-100" @click="onSubmit">
-						<v-icon size="x-large">mdi-send</v-icon>
-					</v-btn>
-				</v-col>
-				<v-col class="ma-0 pl-0 py-0" v-show="progress">
-					<v-btn block variant="flat" class="h-100" color="error" @click="onStop">
-						<v-icon size="x-large">mdi-stop-circle</v-icon>
-					</v-btn>
-				</v-col>
-			</v-row>
+			<v-btn block variant="flat" class="h-100" v-show="!progress && isSubmitable" @click="onSubmit">
+				<v-icon size="x-large">mdi-send</v-icon>
+			</v-btn>
+			<v-btn block variant="flat" class="h-100" color="error" v-show="progress" @click="onStop">
+				<v-icon size="x-large">mdi-stop-circle</v-icon>
+			</v-btn>
 		</template>
 	</InputRow>
 </template>
@@ -71,7 +71,7 @@ export type ChatInputType = { prompt: string; attachments: string[] }
 export default defineComponent({
 	name: 'ChatInput',
 	components: { InputRow },
-	emits: ['update:modelValue', 'submit', 'interrupt', 'clear'],
+	emits: ['update:modelValue', 'submit', 'interrupt', 'clear', 'changeVisibilityMode'],
 	props: {
 		progress: {
 			type: Boolean,
@@ -93,6 +93,11 @@ export default defineComponent({
 			required: false,
 			default: false,
 		},
+	},
+	data(){
+		return {
+			visibilityMode: false,
+		}
 	},
 	computed: {
 		value: {
@@ -137,6 +142,10 @@ export default defineComponent({
 		},
 		onClear() {
 			this.$emit('clear')
+		},
+		toggleVisibilityMode(){
+			this.visibilityMode = !this.visibilityMode
+			this.$emit('changeVisibilityMode', this.visibilityMode)
 		},
 		onAddFile() {
 			OpenFileDialog(

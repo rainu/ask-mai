@@ -16,6 +16,7 @@
 						@interrupt="onInterrupt"
 						@clear="onClear"
 						@min-max="onMinMax"
+						@changeVisibilityMode="onVisibilityModeChanged"
 					/>
 				</div>
 			</v-app-bar>
@@ -39,6 +40,7 @@
 							@interrupt="onInterrupt"
 							@clear="onClear"
 							@min-max="onMinMax"
+							@changeVisibilityMode="onVisibilityModeChanged"
 						/>
 					</div>
 				</v-app-bar>
@@ -55,9 +57,18 @@
 							{{ e.Date }}
 						</v-sheet>
 					</template>
-					<template v-if="e.Entry">
-						<ChatMessage :message="e.Entry.Message.ContentParts" :role="e.Entry.Message.Role" :date="e.Entry.Message.Created" />
-					</template>
+
+					<v-row v-if="e.Entry" no-gutters dense>
+						<v-col cols="1" class="pa-2 mt-1" v-show="visibilitySelectionMode">
+							<v-btn flat @click="onToggle(e.Entry)" :value="e">
+								<v-icon v-if="e.Entry.Hidden">mdi-eye-closed</v-icon>
+								<v-icon v-else>mdi-eye-outline</v-icon>
+							</v-btn>
+						</v-col>
+						<v-col :cols="visibilitySelectionMode ? 11 : 12" :class="e.Entry.Hidden ? 'opacity-30' : '' ">
+							<ChatMessage :message="e.Entry.Message.ContentParts" :role="e.Entry.Message.Role" :date="e.Entry.Message.Created" />
+						</v-col>
+					</v-row>
 				</template>
 				<template v-if="outputStream[0].Content">
 					<ChatMessage :message="outputStream" :role="outputStreamRole" />
@@ -79,6 +90,7 @@
 							@interrupt="onInterrupt"
 							@clear="onClear"
 							@min-max="onMinMax"
+							@changeVisibilityMode="onVisibilityModeChanged"
 						/>
 					</div>
 				</v-footer>
@@ -108,6 +120,7 @@ import LLMMessage = controller.LLMMessage
 
 type HistoryEntry = {
 	Interrupted: boolean
+	Hidden: boolean
 	Message: controller.LLMMessage
 }
 
@@ -143,12 +156,16 @@ export default {
 			chatHistory: [] as HistoryEntry[],
 			userScroll: false,
 			minimized: false,
+			visibilitySelectionMode: false,
 			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
 		}
 	},
 	computed: {
 		purgedChatHistory(): controller.LLMMessage[] {
-			return this.chatHistory.filter((entry) => !entry.Interrupted).map((entry) => entry.Message)
+			return this.chatHistory
+				.filter((entry) => !entry.Interrupted)
+				.filter((entry) => !entry.Hidden)
+				.map((entry) => entry.Message)
 		},
 		chatHistoryEntries(): HistoryEntryOrDate[] {
 			let result = [] as HistoryEntryOrDate[]
@@ -162,17 +179,13 @@ export default {
 					if (!alreadyAddedDates.has(date)) {
 						if(!(date === today && result.length === 0)) {
 							// do not add date if it is today and the first entry
-							result.push({
-								Date: date,
-							})
+							result.push({ Date: date })
 						}
 					}
 					alreadyAddedDates.add(date)
 				}
 
-				result.push({
-					Entry: historyEntry,
-				})
+				result.push({ Entry: historyEntry })
 			}
 
 			return result
@@ -247,6 +260,7 @@ export default {
 				const setInput = () => {
 					this.chatHistory.push({
 						Interrupted: false,
+						Hidden: false,
 						Message: this.convertChatInputToLLMMessage(input),
 					})
 
@@ -265,6 +279,7 @@ export default {
 
 				this.chatHistory.push({
 					Interrupted: false,
+					Hidden: false,
 					Message: LLMMessage.createFrom({
 						Role: Role.Bot,
 						ContentParts: [LLMMessageContentPart.createFrom({ Type: ContentType.Text, Content: output })],
@@ -284,6 +299,7 @@ export default {
 
 					this.chatHistory.push({
 						Interrupted: true,
+						Hidden: false,
 						Message: LLMMessage.createFrom({
 							Role: Role.Bot,
 							ContentParts: this.outputStream,
@@ -310,6 +326,12 @@ export default {
 		async onInterrupt() {
 			await LLMInterrupt()
 		},
+		onVisibilityModeChanged(visibilityMode: boolean) {
+			this.visibilitySelectionMode = visibilityMode
+		},
+		onToggle(entry: HistoryEntry) {
+			entry.Hidden = !entry.Hidden
+		}
 	},
 	activated() {
 		if(!window.transitiveState.lastConversation) return
@@ -326,6 +348,7 @@ export default {
 			this.outputStream[0].Content = ''
 			this.chatHistory.push({
 				Interrupted: false,
+				Hidden: false,
 				Message: message
 			})
 		})
