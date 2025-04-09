@@ -18,7 +18,7 @@
 						<slot name="option-buttons"></slot>
 					</v-btn-toggle>
 					<v-btn-toggle class="h-100">
-						<v-btn @click="showOptions = !showOptions">
+						<v-btn @click="toggleOptions">
 							<v-icon size="x-large" v-if="showOptions">mdi-chevron-down</v-icon>
 							<v-icon size="x-large" v-else>mdi-dots-vertical</v-icon>
 						</v-btn>
@@ -27,11 +27,12 @@
 			</v-input>
 		</v-col>
 	</v-row>
-
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { mapActions, mapState } from 'pinia'
+import { useGlobalStore } from '../store/global.ts'
 
 export default defineComponent({
 	name: 'InputRow',
@@ -48,12 +49,11 @@ export default defineComponent({
 			default: true,
 		}
 	},
-	data(){
-		return {
-			showOptions: false
-		}
+	computed: {
+		...mapState(useGlobalStore, ['showOptions'])
 	},
 	methods: {
+		...mapActions(useGlobalStore, ['toggleOptions']),
 		onMinMaximize() {
 			this.$emit('minMax')
 		},

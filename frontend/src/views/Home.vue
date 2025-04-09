@@ -120,8 +120,10 @@ import { controller } from '../../wailsjs/go/models.ts'
 import LLMAskArgs = controller.LLMAskArgs
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessage = controller.LLMMessage
+import { mapActions } from 'pinia'
+import { useHistoryStore } from '../store/history.ts'
 
-type HistoryEntry = {
+export type HistoryEntry = {
 	Interrupted: boolean
 	Hidden: boolean
 	Message: controller.LLMMessage
@@ -195,6 +197,7 @@ export default {
 		}
 	},
 	methods: {
+		...mapActions(useHistoryStore, ['popConversation']),
 		onZoom(factor: number) {
 			this.zoom = factor
 			this.adjustHeight()
@@ -337,11 +340,11 @@ export default {
 		}
 	},
 	activated() {
-		if(!window.transitiveState.lastConversation) return
+		const conversation = this.popConversation()
+		if(!conversation) return
 
 		// we are coming from the history importer
-		this.chatHistory = window.transitiveState.lastConversation
-		window.transitiveState.lastConversation = null
+		this.chatHistory = conversation
 	},
 	mounted() {
 		EventsOn('llm:stream:chunk', (chunk: string) => {

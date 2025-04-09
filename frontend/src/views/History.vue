@@ -47,18 +47,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, history } from '../../wailsjs/go/models.ts'
+import { history } from '../../wailsjs/go/models.ts'
 import { HistoryGetCount, HistoryGetLast, HistorySearch } from '../../wailsjs/go/controller/Controller'
 import { WindowSetSize } from '../../wailsjs/runtime'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import HistoryEntry from '../components/HistoryEntry.vue'
 import InputRow from '../components/InputRow.vue'
 import HistoryInput from '../components/HistoryInput.vue'
-import LLMMessage = controller.LLMMessage
-import LLMMessageContentPart = controller.LLMMessageContentPart
-import LLMMessageCall = controller.LLMMessageCall
-import LLMMessageCallResult = controller.LLMMessageCallResult
-import MessageContentPart = history.MessageContentPart
+import { mapActions } from 'pinia'
+import { useHistoryStore } from '../store/history.ts'
 
 export default defineComponent({
 	name: 'History',
@@ -74,6 +71,7 @@ export default defineComponent({
 		}
 	},
 	methods: {
+		...mapActions(useHistoryStore, ['loadConversation']),
 		onZoom(factor: number) {
 			this.zoom = factor
 			this.adjustHeight()
@@ -110,43 +108,7 @@ export default defineComponent({
 			}
 		},
 		onImport(entry: history.Entry) {
-			//transform history entry to LLMMessage array
-			window.transitiveState.lastConversation = entry.c.m.map(msg => {
-				let entry: HistoryEntry = {
-					Message: LLMMessage.createFrom({
-						Id: msg.i,
-						Role: msg.r,
-						Created: msg.t,
-					})
-				}
-				entry.Message.ContentParts = msg.p.map((msgPart: MessageContentPart) => {
-					let entryPart = LLMMessageContentPart.createFrom({
-						Type: msgPart.t,
-						Content: msgPart.c,
-					})
-
-					if(msgPart.ca) {
-						entryPart.Call = LLMMessageCall.createFrom({
-							Id: msgPart.ca.i,
-							Function: msgPart.ca.f,
-							Arguments: msgPart.ca.a,
-							BuiltIn: msgPart.ca.f?.startsWith("__")
-						})
-						if(msgPart.ca.r) {
-							entryPart.Call.Result = LLMMessageCallResult.createFrom({
-								Content: msgPart.ca.r.c,
-								Error: msgPart.ca.r.e,
-								DurationMs: msgPart.ca.r.d,
-							})
-						}
-					}
-
-					return entryPart
-				})
-
-				return entry
-			})
-
+			this.loadConversation(entry)
 			this.$router.push({ name: 'Home' })
 		}
 	},
