@@ -10,6 +10,44 @@ The conversations will also be printed out in the terminal, so you can use it in
 
 https://github.com/user-attachments/assets/a6d16332-55a1-4866-9f3e-31490a488935
 
+## Quickstart
+
+### LocalAI
+
+```shell
+ask-mai -b localai --localai-base-url=http://localhost:8080/v1 --localai-model=gpt-4
+```
+
+### OpenAI
+
+```shell
+ask-mai -b openai --openai-api-key=YOUR_OPENAI_API_KEY
+```
+
+### Ollama
+
+```shell
+ask-mai -b ollama --ollama-server-url=http://localhost:11434 --ollama-model=llama3.2
+```
+
+### Anthropic
+
+```shell
+ask-mai -b anthropic --anthropic-api-key=YOUR_ANTHROPIC_API_KEY
+```
+
+### Mistral
+
+```shell
+ask-mai -b mistral --mistral-api-key=YOUR_MISTRAL_API_KEY --mistral-model=mistral-small-latest
+```
+
+### DeepSeekConfig
+
+```shell
+ask-mai -b deepseek --deepseek-api-key=YOUR_DEEPSEEK_API_KEY
+```
+
 ## Features
 
 * Support different LLM provider
