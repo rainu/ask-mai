@@ -9,14 +9,14 @@
 		<v-card-subtitle>{{ date }}</v-card-subtitle>
 
 		<v-card-actions>
-			<v-row dense>
+			<v-row dense no-gutters>
 				<v-col cols="6" md="4" >
 					<v-btn block @click="showConversation = !showConversation">
 						<v-icon size="x-large" v-if="showConversation">mdi-chevron-down</v-icon>
 						<v-icon size="x-large" v-else>mdi-chevron-right</v-icon>
 					</v-btn>
 				</v-col>
-				<v-col cols="0" md="4" />
+				<v-col />
 				<v-col cols="6" md="4" >
 					<v-btn block color="primary" @click="onImport">
 						<v-icon size="x-large">mdi-import</v-icon>
