@@ -5,8 +5,8 @@
 				<template v-slot:prepend>
 					<v-btn-toggle class="h-100">
 						<v-btn @click="onMinMaximize" v-show="minimizable">
-							<v-icon size="x-large" v-if="minimized">mdi-chevron-up</v-icon>
-							<v-icon size="x-large" v-else>mdi-chevron-right</v-icon>
+							<v-icon size="x-large" v-if="minimized">mdi-chevron-right</v-icon>
+							<v-icon size="x-large" v-else>mdi-chevron-down</v-icon>
 						</v-btn>
 					</v-btn-toggle>
 				</template>
