@@ -1,6 +1,8 @@
 package expression
 
-import "github.com/wailsapp/wails/v2/pkg/runtime"
+import (
+	"github.com/wailsapp/wails/v2/pkg/runtime"
+)
 
 const VarNameScreens = "screens"
 
@@ -12,7 +14,8 @@ type Screen struct {
 }
 
 type VariableScreen struct {
-	Dimension VariableScreenDimension `json:"Dimension"`
+	Dimension         VariableScreenDimension `json:"Dimension"`
+	PhysicalDimension VariableScreenDimension `json:"PhysicalDimension"`
 }
 
 type VariableScreenDimension struct {
@@ -25,6 +28,10 @@ func SetScreens(screens []runtime.Screen) Screen {
 	for _, screen := range screens {
 		s.Screens = append(s.Screens, VariableScreen{
 			Dimension: VariableScreenDimension{
+				Width:  screen.Size.Width,
+				Height: screen.Size.Height,
+			},
+			PhysicalDimension: VariableScreenDimension{
 				Width:  screen.PhysicalSize.Width,
 				Height: screen.PhysicalSize.Height,
 			},
