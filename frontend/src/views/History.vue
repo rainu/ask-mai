@@ -79,7 +79,8 @@ export default defineComponent({
 			this.appbarHeight = this.$refs.appbar ? (this.$refs.appbar as HTMLElement).clientHeight : 0
 
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
-			const combinedHeight = Math.ceil(pageHeight * this.zoom)
+			const titleBarHeight = this.$appConfig.UI.Window.ShowTitleBar ? this.$appConfig.UI.Window.TitleBarHeight : 0
+			const combinedHeight = Math.ceil(pageHeight * this.zoom) + titleBarHeight
 			const width = this.$appConfig.UI.Window.InitialWidth.Value
 
 			await WindowSetSize(width, combinedHeight)

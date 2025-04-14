@@ -268,6 +268,8 @@ export namespace config {
 	    BackgroundColor: WindowBackgroundColor;
 	    StartState: number;
 	    AlwaysOnTop: boolean;
+	    ShowTitleBar: boolean;
+	    TitleBarHeight: number;
 	    GrowTop: boolean;
 	    Frameless: boolean;
 	    Resizeable: boolean;
@@ -288,6 +290,8 @@ export namespace config {
 	        this.BackgroundColor = this.convertValues(source["BackgroundColor"], WindowBackgroundColor);
 	        this.StartState = source["StartState"];
 	        this.AlwaysOnTop = source["AlwaysOnTop"];
+	        this.ShowTitleBar = source["ShowTitleBar"];
+	        this.TitleBarHeight = source["TitleBarHeight"];
 	        this.GrowTop = source["GrowTop"];
 	        this.Frameless = source["Frameless"];
 	        this.Resizeable = source["Resizeable"];

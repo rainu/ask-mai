@@ -24,6 +24,8 @@ type WindowConfig struct {
 	BackgroundColor  WindowBackgroundColor  `yaml:"bg-color"`
 	StartState       int                    `yaml:"start-state"`
 	AlwaysOnTop      bool                   `yaml:"always-on-top" usage:"Should the window be always on top"`
+	ShowTitleBar     bool                   `yaml:"show-title-bar" usage:"Should the window show the title-bar"`
+	TitleBarHeight   int                    `yaml:"title-bar-height" usage:"The height of the title bar"`
 	GrowTop          bool                   `yaml:"grow-top" usage:"Should the window grow from bottom to the top"`
 	Frameless        bool                   `yaml:"frameless" usage:"Should the window be frameless"`
 	Resizeable       bool                   `yaml:"resizeable" usage:"Should the window be resizeable"`

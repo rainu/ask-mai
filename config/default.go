@@ -13,6 +13,7 @@ import (
 	"log/slog"
 	"os"
 	"path"
+	"runtime"
 )
 
 func defaultConfig() (result *Config) {
@@ -111,6 +112,13 @@ func defaultConfig() (result *Config) {
 			TargetsRaw: []string{PrinterTargetOut},
 		},
 	}
+
+	if runtime.GOOS == "windows" {
+		result.UI.Window.TitleBarHeight = 32
+	} else if runtime.GOOS == "darwin" {
+		result.UI.Window.TitleBarHeight = 28
+	}
+
 	if llms.IsCopilotInstalled() {
 		result.LLM.Backend = "copilot"
 	}

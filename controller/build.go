@@ -129,8 +129,8 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		Windows: &windows.Options{
 			WebviewIsTransparent:              true,
 			WindowIsTranslucent:               translucent,
-			DisableWindowIcon:                 false,
-			DisableFramelessWindowDecorations: false,
+			DisableWindowIcon:                 !ac.UI.Window.ShowTitleBar,
+			DisableFramelessWindowDecorations: !ac.UI.Window.ShowTitleBar,
 			WebviewUserDataPath:               "",
 			WebviewBrowserPath:                "",
 			Theme: func() windows.Theme {
@@ -147,9 +147,9 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		// Mac platform specific options
 		Mac: &mac.Options{
 			TitleBar: &mac.TitleBar{
-				TitlebarAppearsTransparent: true,
-				HideTitle:                  true,
-				HideTitleBar:               false,
+				TitlebarAppearsTransparent: false,
+				HideTitle:                  !ac.UI.Window.ShowTitleBar,
+				HideTitleBar:               !ac.UI.Window.ShowTitleBar,
 				FullSizeContent:            true,
 				UseToolbar:                 false,
 				HideToolbarSeparator:       false,
