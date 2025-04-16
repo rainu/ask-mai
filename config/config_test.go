@@ -673,6 +673,22 @@ func TestConfig_Parse(t *testing.T) {
 				c.LLM.Tools.RawTools = []string{"JSON_CONTENT"}
 			}),
 		},
+		{
+			name: "Set Secret - Command",
+			args: []string{"--openai-api-key-command-name", "echo", "--openai-api-key-command-args", "secret", "--openai-api-key-command-no-trim"},
+			expected: modifiedConfig(func(c *Config) {
+				c.LLM.OpenAI.APIKey.Command.Name = "echo"
+				c.LLM.OpenAI.APIKey.Command.Args = []string{"secret"}
+				c.LLM.OpenAI.APIKey.Command.NoTrim = true
+			}),
+		},
+		{
+			name: "Set Secret - Plain",
+			args: []string{"--openai-api-key", "secret"},
+			expected: modifiedConfig(func(c *Config) {
+				c.LLM.OpenAI.APIKey.Plain = "secret"
+			}),
+		},
 	}
 
 	for _, tt := range tests {

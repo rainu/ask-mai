@@ -2,19 +2,20 @@ package llm
 
 import (
 	"fmt"
+	"github.com/rainu/ask-mai/config/common"
 	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
 type LocalAIConfig struct {
-	APIKey  string `yaml:"api-key" usage:"API Key"`
-	Model   string `yaml:"model" usage:"Model"`
-	BaseUrl string `yaml:"base-url" usage:"BaseUrl"`
+	APIKey  common.Secret `yaml:"api-key" usage:"API Key"`
+	Model   string        `yaml:"model" usage:"Model"`
+	BaseUrl string        `yaml:"base-url" usage:"BaseUrl"`
 }
 
 func (c *LocalAIConfig) AsOptions() (opts []openai.Option) {
-	if c.APIKey != "" {
-		opts = append(opts, openai.WithToken(c.APIKey))
+	if v := c.APIKey.GetOrPanicWithDefaultTimeout(); v != nil {
+		opts = append(opts, openai.WithToken(string(v)))
 	} else {
 		// the underlying openai implementation wants to have an API key
 		// so we'll just use a placeholder here

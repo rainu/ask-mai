@@ -9,7 +9,7 @@ import (
 
 type AnythingLLMConfig struct {
 	BaseURL   string                  `yaml:"base-url" usage:"Base URL"`
-	Token     string                  `yaml:"token" usage:"Token"`
+	Token     common.Secret           `yaml:"token" usage:"Token"`
 	Workspace string                  `yaml:"workspace" usage:"Workspace"`
 	Thread    AnythingLLMThreadConfig `yaml:"thread" usage:"Thread: "`
 }
@@ -23,8 +23,8 @@ func (c *AnythingLLMConfig) Validate() error {
 	if c.BaseURL == "" {
 		return fmt.Errorf("AnythingLLM Base URL is missing")
 	}
-	if c.Token == "" {
-		return fmt.Errorf("AnythingLLM Token is missing")
+	if ce := c.Token.Validate(); ce != nil {
+		return fmt.Errorf("AnythingLLM Token is missing: %w", ce)
 	}
 	if c.Workspace == "" {
 		return fmt.Errorf("AnythingLLM Workspace is missing")
@@ -45,7 +45,7 @@ func (c *AnythingLLMConfig) BuildLLM() (llms.Model, error) {
 
 	return llms.NewAnythingLLM(
 		c.BaseURL,
-		c.Token,
+		string(c.Token.GetOrPanicWithDefaultTimeout()),
 		c.Workspace,
 		tn,
 		c.Thread.Delete,

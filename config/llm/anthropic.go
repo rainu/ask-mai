@@ -2,19 +2,20 @@ package llm
 
 import (
 	"fmt"
+	"github.com/rainu/ask-mai/config/common"
 	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/anthropic"
 )
 
 type AnthropicConfig struct {
-	Token   string `yaml:"api-key" usage:"API Key"`
-	BaseUrl string `yaml:"base-url" usage:"BaseUrl"`
-	Model   string `yaml:"model" usage:"Model"`
+	Token   common.Secret `yaml:"api-key" usage:"API Key"`
+	BaseUrl string        `yaml:"base-url" usage:"BaseUrl"`
+	Model   string        `yaml:"model" usage:"Model"`
 }
 
 func (c *AnthropicConfig) AsOptions() (opts []anthropic.Option) {
-	if c.Token != "" {
-		opts = append(opts, anthropic.WithToken(c.Token))
+	if v := c.Token.GetOrPanicWithDefaultTimeout(); v != nil {
+		opts = append(opts, anthropic.WithToken(string(v)))
 	}
 	if c.BaseUrl != "" {
 		opts = append(opts, anthropic.WithBaseURL(c.BaseUrl))
@@ -27,8 +28,8 @@ func (c *AnthropicConfig) AsOptions() (opts []anthropic.Option) {
 }
 
 func (c *AnthropicConfig) Validate() error {
-	if c.Token == "" {
-		return fmt.Errorf("Anthropic API Key is missing")
+	if ce := c.Token.Validate(); ce != nil {
+		return fmt.Errorf("Anthropic API Key is missing: %w", ce)
 	}
 	if c.Model == "" {
 		return fmt.Errorf("Anthropic Model is missing")

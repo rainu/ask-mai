@@ -2,19 +2,20 @@ package llm
 
 import (
 	"fmt"
+	"github.com/rainu/ask-mai/config/common"
 	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
 type DeepSeekConfig struct {
-	APIKey  string `yaml:"api-key" usage:"API Key"`
-	Model   string `yaml:"model" usage:"Model"`
-	BaseUrl string `yaml:"base-url" usage:"BaseUrl"`
+	APIKey  common.Secret `yaml:"api-key" usage:"API Key"`
+	Model   string        `yaml:"model" usage:"Model"`
+	BaseUrl string        `yaml:"base-url" usage:"BaseUrl"`
 }
 
 func (c *DeepSeekConfig) AsOptions() (opts []openai.Option) {
-	if c.APIKey != "" {
-		opts = append(opts, openai.WithToken(c.APIKey))
+	if v := c.APIKey.GetOrPanicWithDefaultTimeout(); v != nil {
+		opts = append(opts, openai.WithToken(string(v)))
 	}
 	if c.Model != "" {
 		opts = append(opts, openai.WithModel(c.Model))
@@ -29,8 +30,8 @@ func (c *DeepSeekConfig) AsOptions() (opts []openai.Option) {
 }
 
 func (c *DeepSeekConfig) Validate() error {
-	if c.APIKey == "" {
-		return fmt.Errorf("DeepSeek API Key is missing")
+	if ce := c.APIKey.Validate(); ce != nil {
+		return fmt.Errorf("DeepSeek API Key is missing: %w", ce)
 	}
 	if c.Model == "" {
 		return fmt.Errorf("DeepSeek Model is missing")

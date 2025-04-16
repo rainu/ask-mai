@@ -37,6 +37,55 @@ export namespace common {
 	        this.Value = source["Value"];
 	    }
 	}
+	export class SecretCommand {
+	    Name: string;
+	    Args: string[];
+	    NoTrim: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new SecretCommand(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Name = source["Name"];
+	        this.Args = source["Args"];
+	        this.NoTrim = source["NoTrim"];
+	    }
+	}
+	export class Secret {
+	    Plain: string;
+	    Command: SecretCommand;
+	
+	    static createFrom(source: any = {}) {
+	        return new Secret(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Plain = source["Plain"];
+	        this.Command = this.convertValues(source["Command"], SecretCommand);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
 	export class StringContainer {
 	    Expression: string;
 	    Value: string;
@@ -1199,7 +1248,7 @@ export namespace http {
 export namespace llm {
 	
 	export class AnthropicConfig {
-	    Token: string;
+	    Token: common.Secret;
 	    BaseUrl: string;
 	    Model: string;
 	
@@ -1209,10 +1258,28 @@ export namespace llm {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Token = source["Token"];
+	        this.Token = this.convertValues(source["Token"], common.Secret);
 	        this.BaseUrl = source["BaseUrl"];
 	        this.Model = source["Model"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class AnythingLLMThreadConfig {
 	    Name: common.StringContainer;
@@ -1248,7 +1315,7 @@ export namespace llm {
 	}
 	export class AnythingLLMConfig {
 	    BaseURL: string;
-	    Token: string;
+	    Token: common.Secret;
 	    Workspace: string;
 	    Thread: AnythingLLMThreadConfig;
 	
@@ -1259,7 +1326,7 @@ export namespace llm {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.BaseURL = source["BaseURL"];
-	        this.Token = source["Token"];
+	        this.Token = this.convertValues(source["Token"], common.Secret);
 	        this.Workspace = source["Workspace"];
 	        this.Thread = this.convertValues(source["Thread"], AnythingLLMThreadConfig);
 	    }
@@ -1308,7 +1375,7 @@ export namespace llm {
 	    }
 	}
 	export class DeepSeekConfig {
-	    APIKey: string;
+	    APIKey: common.Secret;
 	    Model: string;
 	    BaseUrl: string;
 	
@@ -1318,13 +1385,31 @@ export namespace llm {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.APIKey = source["APIKey"];
+	        this.APIKey = this.convertValues(source["APIKey"], common.Secret);
 	        this.Model = source["Model"];
 	        this.BaseUrl = source["BaseUrl"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class MistralConfig {
-	    ApiKey: string;
+	    ApiKey: common.Secret;
 	    Endpoint: string;
 	    Model: string;
 	
@@ -1334,10 +1419,28 @@ export namespace llm {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.ApiKey = source["ApiKey"];
+	        this.ApiKey = this.convertValues(source["ApiKey"], common.Secret);
 	        this.Endpoint = source["Endpoint"];
 	        this.Model = source["Model"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class OllamaConfig {
 	    ServerURL: string;
@@ -1354,7 +1457,7 @@ export namespace llm {
 	    }
 	}
 	export class OpenAIConfig {
-	    APIKey: string;
+	    APIKey: common.Secret;
 	    APIType: string;
 	    APIVersion: string;
 	    Model: string;
@@ -1367,16 +1470,34 @@ export namespace llm {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.APIKey = source["APIKey"];
+	        this.APIKey = this.convertValues(source["APIKey"], common.Secret);
 	        this.APIType = source["APIType"];
 	        this.APIVersion = source["APIVersion"];
 	        this.Model = source["Model"];
 	        this.BaseUrl = source["BaseUrl"];
 	        this.Organization = source["Organization"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class LocalAIConfig {
-	    APIKey: string;
+	    APIKey: common.Secret;
 	    Model: string;
 	    BaseUrl: string;
 	
@@ -1386,10 +1507,28 @@ export namespace llm {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.APIKey = source["APIKey"];
+	        this.APIKey = this.convertValues(source["APIKey"], common.Secret);
 	        this.Model = source["Model"];
 	        this.BaseUrl = source["BaseUrl"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class CopilotConfig {
 	

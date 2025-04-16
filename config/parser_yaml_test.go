@@ -72,11 +72,16 @@ ui:
 llm:
   backend: anthropic
   localai:
-    api-key: APIKey
+    api-key: 
+      plain: APIKey
     model: model
     base-url: baseurl
   openai:
-    api-key: APIKey
+    api-key:
+      command: 
+        name: echo
+        args:
+          - APIKey
     api-type: APIType
     api-version: APIVersion
     model: Model
@@ -84,17 +89,29 @@ llm:
     organization: Organization
   anythingllm:
     base-url: BaseURL
-    token: Token
+    token:
+      command: 
+        name: echo
+        args:
+          - '-n'
+          - Token
+        no-trim: true
     workspace: Workspace
   ollama:
     server-url: ServerURL
     model: Model
   mistral:
-    api-key: ApiKey
+    api-key:
+      command: 
+        name: echo
+        args:
+          - '-n'
+          - ApiKey
     endpoint: Endpoint
     model: Model
   anthropic:
-    api-key: Token
+    api-key: 
+      plain: Token
     base-url: BaseUrl
     model: Model
   call:
@@ -186,12 +203,19 @@ debug:
 		LLM: llm.LLMConfig{
 			Backend: "anthropic",
 			LocalAI: llm.LocalAIConfig{
-				APIKey:  "APIKey",
+				APIKey: common.Secret{
+					Plain: "APIKey",
+				},
 				Model:   "model",
 				BaseUrl: "baseurl",
 			},
 			OpenAI: llm.OpenAIConfig{
-				APIKey:       "APIKey",
+				APIKey: common.Secret{
+					Command: common.SecretCommand{
+						Name: "echo",
+						Args: []string{"APIKey"},
+					},
+				},
 				APIType:      "APIType",
 				APIVersion:   "APIVersion",
 				Model:        "Model",
@@ -199,8 +223,14 @@ debug:
 				Organization: "Organization",
 			},
 			AnythingLLM: llm.AnythingLLMConfig{
-				BaseURL:   "BaseURL",
-				Token:     "Token",
+				BaseURL: "BaseURL",
+				Token: common.Secret{
+					Command: common.SecretCommand{
+						Name:   "echo",
+						Args:   []string{"-n", "Token"},
+						NoTrim: true,
+					},
+				},
 				Workspace: "Workspace",
 			},
 			Ollama: llm.OllamaConfig{
@@ -208,12 +238,19 @@ debug:
 				Model:     "Model",
 			},
 			Mistral: llm.MistralConfig{
-				ApiKey:   "ApiKey",
+				ApiKey: common.Secret{
+					Command: common.SecretCommand{
+						Name: "echo",
+						Args: []string{"-n", "ApiKey"},
+					},
+				},
 				Endpoint: "Endpoint",
 				Model:    "Model",
 			},
 			Anthropic: llm.AnthropicConfig{
-				Token:   "Token",
+				Token: common.Secret{
+					Plain: "Token",
+				},
 				BaseUrl: "BaseUrl",
 				Model:   "Model",
 			},

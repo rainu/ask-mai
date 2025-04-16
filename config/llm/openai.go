@@ -2,14 +2,15 @@ package llm
 
 import (
 	"fmt"
+	"github.com/rainu/ask-mai/config/common"
 	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
 type OpenAIConfig struct {
-	APIKey     string `yaml:"api-key" usage:"API Key"`
-	APIType    string `yaml:"api-type"`
-	APIVersion string `yaml:"api-version" usage:"API Version"`
+	APIKey     common.Secret `yaml:"api-key" usage:"API Key"`
+	APIType    string        `yaml:"api-type"`
+	APIVersion string        `yaml:"api-version" usage:"API Version"`
 
 	Model        string `yaml:"model" usage:"Model"`
 	BaseUrl      string `yaml:"base-url" usage:"BaseUrl"`
@@ -25,8 +26,8 @@ func (c *OpenAIConfig) GetUsage(field string) string {
 }
 
 func (c *OpenAIConfig) AsOptions() (opts []openai.Option) {
-	if c.APIKey != "" {
-		opts = append(opts, openai.WithToken(c.APIKey))
+	if v := c.APIKey.GetOrPanicWithDefaultTimeout(); v != nil {
+		opts = append(opts, openai.WithToken(string(v)))
 	}
 	if c.APIType != "" {
 		opts = append(opts, openai.WithAPIType(openai.APIType(c.APIType)))
@@ -48,8 +49,8 @@ func (c *OpenAIConfig) AsOptions() (opts []openai.Option) {
 }
 
 func (c *OpenAIConfig) Validate() error {
-	if c.APIKey == "" {
-		return fmt.Errorf("OpenAI API Key is missing")
+	if ce := c.APIKey.Validate(); ce != nil {
+		return fmt.Errorf("OpenAI API Key is missing: %w", ce)
 	}
 	if c.APIType != "" && c.APIType != string(openai.APITypeOpenAI) && c.APIType != string(openai.APITypeAzure) && c.APIType != string(openai.APITypeAzureAD) {
 		return fmt.Errorf("OpenAI API Type is invalid")

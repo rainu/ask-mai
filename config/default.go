@@ -51,9 +51,11 @@ func defaultConfig() (result *Config) {
 				},
 			},
 			Anthropic: llm.AnthropicConfig{
+				Token: common.Secret{Command: common.SecretCommand{Args: []string{}}},
 				Model: "claude-3-5-haiku-latest",
 			},
 			AnythingLLM: llm.AnythingLLMConfig{
+				Token: common.Secret{Command: common.SecretCommand{Args: []string{}}},
 				Thread: llm.AnythingLLMThreadConfig{
 					Delete: false,
 					Name: common.StringContainer{
@@ -62,9 +64,17 @@ func defaultConfig() (result *Config) {
 				},
 			},
 			DeepSeek: llm.DeepSeekConfig{
-				Model: "deepseek-chat",
+				APIKey: common.Secret{Command: common.SecretCommand{Args: []string{}}},
+				Model:  "deepseek-chat",
+			},
+			Mistral: llm.MistralConfig{
+				ApiKey: common.Secret{Command: common.SecretCommand{Args: []string{}}},
+			},
+			LocalAI: llm.LocalAIConfig{
+				APIKey: common.Secret{Command: common.SecretCommand{Args: []string{}}},
 			},
 			OpenAI: llm.OpenAIConfig{
+				APIKey:  common.Secret{Command: common.SecretCommand{Args: []string{}}},
 				APIType: string(openai.APITypeOpenAI),
 				Model:   "gpt-4o-mini",
 			},
