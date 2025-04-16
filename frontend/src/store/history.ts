@@ -1,19 +1,59 @@
 import { defineStore } from 'pinia'
-import { HistoryEntry } from '../views/Home.vue'
 import { controller, history } from '../../wailsjs/go/models.ts'
 import LLMMessage = controller.LLMMessage
 import MessageContentPart = history.MessageContentPart
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessageCall = controller.LLMMessageCall
 import LLMMessageCallResult = controller.LLMMessageCallResult
+import { ContentType, Role } from '../components/ChatMessage.vue'
+
+export type HistoryEntry = {
+	Interrupted: boolean
+	Hidden: boolean
+	Message: controller.LLMMessage
+}
+
+const buildSystemMessage = (): HistoryEntry => ({
+	Interrupted: false,
+	Hidden: false,
+	Message: LLMMessage.createFrom({
+		Role: Role.System,
+		ContentParts: [{
+			Type: ContentType.Text,
+			Content: window.$appConfig.LLM.CallOptions.SystemPrompt,
+		}],
+		Created: Math.floor(new Date().getTime() / 1000),
+	}),
+})
 
 export const useHistoryStore = defineStore('history', {
 	state: () => ({
-		conversationToImport: null as HistoryEntry[] | null,
+		chatHistory: [
+			buildSystemMessage(),
+		] as HistoryEntry[],
 	}),
 	actions: {
+		setHistory(history: HistoryEntry[]) {
+			this.chatHistory = history
+		},
+		pushHistory(entry: HistoryEntry) {
+			this.chatHistory.push(entry)
+		},
+		updateHistoryMessage(message: LLMMessage) {
+			const i = this.chatHistory.findIndex((entry) => entry.Message.Id === message.Id)
+			if (i >= 0) {
+				this.chatHistory[i].Message = message
+			} else {
+				console.error('llm:message:update: message not found', message)
+			}
+		},
+		clearHistory() {
+			this.chatHistory = [
+				buildSystemMessage(), // preserve system message
+			]
+		},
 		loadConversation(conversation: history.Entry) {
-			this.conversationToImport = conversation.c.m.map(msg => {
+			this.chatHistory = conversation.c.m.map(msg => {
 				let entry: HistoryEntry = {
 					Interrupted: false,
 					Hidden: false,
@@ -51,11 +91,6 @@ export const useHistoryStore = defineStore('history', {
 
 				return entry
 			})
-		},
-		popConversation(): (HistoryEntry[] | null) {
-			const conversation = this.conversationToImport
-			this.conversationToImport = null
-			return conversation
 		}
 	}
 })

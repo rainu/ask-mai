@@ -28,11 +28,18 @@ declare module '@vue/runtime-core' {
 	}
 }
 
+declare global {
+  interface Window {
+    $appConfig: config.Config
+  }
+}
+
 const pinia = createPinia()
 const app = createApp(App)
 
 GetApplicationConfig().then((cfg: config.Config) => {
 	app.config.globalProperties.$appConfig = cfg
+	window.$appConfig = cfg
 	const langPrefix = cfg.UI.Language.split('_')[0]
 	app
 		.use(pinia)

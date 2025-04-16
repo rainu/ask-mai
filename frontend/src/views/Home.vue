@@ -116,14 +116,8 @@ import { controller } from '../../wailsjs/go/models.ts'
 import LLMAskArgs = controller.LLMAskArgs
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessage = controller.LLMMessage
-import { mapActions } from 'pinia'
-import { useHistoryStore } from '../store/history.ts'
-
-export type HistoryEntry = {
-	Interrupted: boolean
-	Hidden: boolean
-	Message: controller.LLMMessage
-}
+import { mapActions, mapState } from 'pinia'
+import { HistoryEntry, useHistoryStore } from '../store/history.ts'
 
 type State = {
 	input: ChatInputType
@@ -154,15 +148,13 @@ export default {
 			] as LLMMessageContentPart[],
 			outputStreamRole: Role.Bot,
 			error: null as { title: string; message: string } | null,
-			chatHistory: [
-				this.buildSystemMessage(),
-			] as HistoryEntry[],
 			userScroll: false,
 			minimized: false,
 			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
 		}
 	},
 	computed: {
+		...mapState(useHistoryStore, ['chatHistory']),
 		purgedChatHistory(): controller.LLMMessage[] {
 			return this.chatHistory
 				.filter((entry) => !entry.Interrupted)
@@ -194,7 +186,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapActions(useHistoryStore, ['popConversation']),
+		...mapActions(useHistoryStore, ['setHistory', 'pushHistory', 'updateHistoryMessage', 'clearHistory']),
 		onZoom(factor: number) {
 			this.zoom = factor
 			this.adjustHeight()
@@ -235,24 +227,8 @@ export default {
 			this.minimized = !this.minimized
 			await this.adjustHeight()
 		},
-		buildSystemMessage(): HistoryEntry {
-			return {
-				Interrupted: false,
-				Hidden: false,
-				Message: LLMMessage.createFrom({
-					Role: Role.System,
-					ContentParts: [{
-						Type: ContentType.Text,
-						Content: this.$appConfig.LLM.CallOptions.SystemPrompt,
-					}],
-					Created: Math.floor(new Date().getTime() / 1000),
-				}),
-			}
-		},
 		async onClear() {
-			this.chatHistory = [
-				this.buildSystemMessage(), // preserve system message
-			]
+			this.clearHistory()
 			this.error = null
 			await this.adjustHeight()
 		},
@@ -278,7 +254,7 @@ export default {
 				this.userScroll = false
 
 				const setInput = () => {
-					this.chatHistory.push({
+					this.pushHistory({
 						Interrupted: false,
 						Hidden: false,
 						Message: this.convertChatInputToLLMMessage(input),
@@ -297,7 +273,7 @@ export default {
 					setInput()
 				}
 
-				this.chatHistory.push({
+				this.pushHistory({
 					Interrupted: false,
 					Hidden: false,
 					Message: LLMMessage.createFrom({
@@ -317,7 +293,7 @@ export default {
 					// mark last input as "interrupted"
 					this.chatHistory[this.chatHistory.length - 1].Interrupted = true
 
-					this.chatHistory.push({
+					this.pushHistory({
 						Interrupted: true,
 						Hidden: false,
 						Message: LLMMessage.createFrom({
@@ -350,32 +326,20 @@ export default {
 			entry.Hidden = !entry.Hidden
 		}
 	},
-	activated() {
-		const conversation = this.popConversation()
-		if(!conversation) return
-
-		// we are coming from the history importer
-		this.chatHistory = conversation
-	},
 	mounted() {
 		EventsOn('llm:stream:chunk', (chunk: string) => {
 			this.outputStream[0].Content += chunk
 		})
 		EventsOn('llm:message:add', (message: LLMMessage) => {
 			this.outputStream[0].Content = ''
-			this.chatHistory.push({
+			this.pushHistory({
 				Interrupted: false,
 				Hidden: false,
 				Message: message
 			})
 		})
 		EventsOn('llm:message:update', (message: LLMMessage) => {
-			const i = this.chatHistory.findIndex((entry) => entry.Message.Id === message.Id)
-			if (i >= 0) {
-				this.chatHistory[i].Message = message
-			} else {
-				console.error('llm:message:update: message not found', message)
-			}
+			this.updateHistoryMessage(message)
 		})
 		EventsOn('system:restart', () => {
 			// backend requested a restart
@@ -400,7 +364,7 @@ export default {
 			if (stateAsString) {
 				const state = JSON.parse(stateAsString) as State
 				this.input = state.input
-				this.chatHistory = state.chatHistory
+				this.setHistory(state.chatHistory)
 			}
 
 			AppMounted()
