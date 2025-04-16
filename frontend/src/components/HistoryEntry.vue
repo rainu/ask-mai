@@ -100,14 +100,17 @@ export default defineComponent({
 
 				let icon = ""
 				switch (m.r) {
-					case Role.User:
-						icon = "mdi-account"
+					case Role.System:
+						icon = "mdi-cog"
 						break
 					case Role.Bot:
 						icon = "mdi-robot"
 						break
 					case Role.Tool:
 						icon = "mdi-tools"
+						break
+					case Role.User:
+						icon = "mdi-account"
 						break
 				}
 

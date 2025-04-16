@@ -158,7 +158,9 @@ export default {
 			] as LLMMessageContentPart[],
 			outputStreamRole: Role.Bot,
 			error: null as { title: string; message: string } | null,
-			chatHistory: [] as HistoryEntry[],
+			chatHistory: [
+				this.buildSystemMessage(),
+			] as HistoryEntry[],
 			userScroll: false,
 			minimized: false,
 			visibilitySelectionMode: false,
@@ -238,8 +240,24 @@ export default {
 			this.minimized = !this.minimized
 			await this.adjustHeight()
 		},
+		buildSystemMessage(): HistoryEntry {
+			return {
+				Interrupted: false,
+				Hidden: false,
+				Message: LLMMessage.createFrom({
+					Role: Role.System,
+					ContentParts: [{
+						Type: ContentType.Text,
+						Content: this.$appConfig.LLM.CallOptions.SystemPrompt,
+					}],
+					Created: Math.floor(new Date().getTime() / 1000),
+				}),
+			}
+		},
 		async onClear() {
-			this.chatHistory = []
+			this.chatHistory = [
+				this.buildSystemMessage(), // preserve system message
+			]
 			this.error = null
 			await this.adjustHeight()
 		},

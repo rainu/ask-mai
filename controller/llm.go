@@ -53,7 +53,7 @@ const (
 
 type LLMMessages []LLMMessage
 
-func (m LLMMessages) ToMessageContent(systemPrompt string) ([]llms.MessageContent, error) {
+func (m LLMMessages) ToMessageContent() ([]llms.MessageContent, error) {
 	var result []llms.MessageContent
 
 	for _, msg := range m {
@@ -111,16 +111,15 @@ func (m LLMMessages) ToMessageContent(systemPrompt string) ([]llms.MessageConten
 			case LLMMessageContentPartTypeText:
 				fallthrough
 			default:
-				msgResult.Parts = append(msgResult.Parts, llms.TextPart(part.Content))
+				if part.Content != "" {
+					msgResult.Parts = append(msgResult.Parts, llms.TextPart(part.Content))
+				}
 			}
 		}
 
-		result = append(result, msgResult)
-	}
-
-	if systemPrompt != "" {
-		msg := llms.TextParts(llms.ChatMessageTypeSystem, systemPrompt)
-		result = append([]llms.MessageContent{msg}, result...)
+		if len(msgResult.Parts) > 0 {
+			result = append(result, msgResult)
+		}
 	}
 
 	return result, nil
@@ -178,7 +177,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 
 	var resp *llms.ContentResponse
 	for {
-		content, err := args.History.ToMessageContent(c.appConfig.LLM.CallOptions.SystemPrompt)
+		content, err := args.History.ToMessageContent()
 		if err != nil {
 			return "", fmt.Errorf("error converting history to message content: %w", err)
 		}

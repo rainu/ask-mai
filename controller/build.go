@@ -47,6 +47,7 @@ func BuildFromConfig(cfg *config.Config, lastState string, buildMode bool) (ctrl
 	}
 
 	if cfg.UI.Prompt.InitValue != "" && lastState == "" {
+		now := time.Now().Unix()
 		// ask the model the first question in background
 		message := LLMMessage{
 			ContentParts: []LLMMessageContentPart{{
@@ -54,7 +55,7 @@ func BuildFromConfig(cfg *config.Config, lastState string, buildMode bool) (ctrl
 				Content: cfg.UI.Prompt.InitValue,
 			}},
 			Role:    string(langChainLLM.ChatMessageTypeHuman),
-			Created: time.Now().Unix(),
+			Created: now,
 		}
 		for _, attachment := range cfg.UI.Prompt.InitAttachments {
 			message.ContentParts = append(message.ContentParts, LLMMessageContentPart{
@@ -63,9 +64,24 @@ func BuildFromConfig(cfg *config.Config, lastState string, buildMode bool) (ctrl
 			})
 		}
 
-		go ctrl.LLMAsk(LLMAskArgs{
+		args := LLMAskArgs{
 			History: LLMMessages{message},
-		})
+		}
+
+		if cfg.LLM.CallOptions.SystemPrompt != "" {
+			// add the system prompt to the history
+			sysPrompt := LLMMessage{
+				ContentParts: []LLMMessageContentPart{{
+					Type:    LLMMessageContentPartTypeText,
+					Content: cfg.LLM.CallOptions.SystemPrompt,
+				}},
+				Role:    string(langChainLLM.ChatMessageTypeSystem),
+				Created: now,
+			}
+			args.History = []LLMMessage{sysPrompt, message}
+		}
+
+		go ctrl.LLMAsk(args)
 	}
 
 	return

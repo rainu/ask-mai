@@ -49,6 +49,15 @@
 			<GeneralToolCall :tc="tc" v-else />
 		</v-row>
 	</template>
+	<template v-else-if="isSystemMessage">
+		<v-row class="pa-2 mb-0 mt-1 mx-1" v-if="textMessage">
+			<v-col>
+				<v-sheet class="pa-2" rounded>
+					<vue-markdown :source="textMessage" :options="options" />
+				</v-sheet>
+			</v-col>
+		</v-row>
+	</template>
 	<template v-else>
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15">
 			<v-sheet color="grey-lighten-2" class="pa-2" rounded>
@@ -91,9 +100,10 @@ import BuiltinToolCallChangeTimes from './toolcall/BuiltinToolCallChangeTimes.vu
 import BuiltinToolCallHttpCall from './toolcall/BuiltinToolCallHttpCall.vue'
 
 export enum Role {
-	User = 'human',
+	System = 'system',
 	Bot = 'ai',
 	Tool = 'tool',
+	User = 'human',
 }
 
 export enum ContentType {
@@ -159,6 +169,9 @@ export default defineComponent({
 		},
 		isToolMessage() {
 			return this.role === Role.Tool
+		},
+		isSystemMessage() {
+			return this.role === Role.System
 		},
 		textMessage() {
 			return this.message
