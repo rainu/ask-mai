@@ -32,7 +32,7 @@ export default defineComponent({
 	},
 	methods: {
 		onNavigateBack() {
-			this.$router.push({ name: 'Home' })
+			this.$router.push({ name: 'Chat' })
 		},
 		onQueryChanged() {
 			this.$emit('queryChanged', this.query)

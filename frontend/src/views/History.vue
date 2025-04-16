@@ -109,7 +109,7 @@ export default defineComponent({
 		},
 		onImport(entry: history.Entry) {
 			this.loadConversation(entry)
-			this.$router.push({ name: 'Home' })
+			this.$router.push({ name: 'Chat' })
 		}
 	},
 	mounted() {

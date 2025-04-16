@@ -130,7 +130,7 @@ type HistoryEntryOrDate = {
 }
 
 export default {
-	name: 'Home',
+	name: 'Chat',
 	components: { UserScrollDetector, ZoomDetector, ChatBar, ChatMessage },
 	data() {
 		return {
