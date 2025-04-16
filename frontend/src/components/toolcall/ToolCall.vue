@@ -1,5 +1,5 @@
 <template>
-	<v-card color="grey-lighten-2">
+	<v-card color="grey-lighten-2" elevation="0">
 		<template v-slot:prepend>
 			<v-btn variant="flat"
 						 size="x-small"

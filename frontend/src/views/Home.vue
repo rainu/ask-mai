@@ -17,7 +17,6 @@
 						@interrupt="onInterrupt"
 						@clear="onClear"
 						@min-max="onMinMax"
-						@changeVisibilityMode="onVisibilityModeChanged"
 					/>
 				</div>
 			</v-app-bar>
@@ -42,7 +41,6 @@
 							@interrupt="onInterrupt"
 							@clear="onClear"
 							@min-max="onMinMax"
-							@changeVisibilityMode="onVisibilityModeChanged"
 						/>
 					</div>
 				</v-app-bar>
@@ -61,14 +59,13 @@
 					</template>
 
 					<v-row v-if="e.Entry" no-gutters dense>
-						<v-col cols="1" class="pa-2 mt-1" v-show="visibilitySelectionMode">
-							<v-btn flat @click="onToggle(e.Entry)" :value="e">
-								<v-icon v-if="e.Entry.Hidden">mdi-eye-closed</v-icon>
-								<v-icon v-else>mdi-eye-outline</v-icon>
-							</v-btn>
-						</v-col>
-						<v-col :cols="visibilitySelectionMode ? 11 : 12" :class="e.Entry.Hidden ? 'opacity-30' : '' ">
-							<ChatMessage :message="e.Entry.Message.ContentParts" :role="e.Entry.Message.Role" :date="e.Entry.Message.Created" />
+						<v-col cols="12" :class="e.Entry.Hidden ? 'opacity-30' : '' ">
+							<ChatMessage
+								:message="e.Entry.Message.ContentParts"
+								:role="e.Entry.Message.Role"
+								:date="e.Entry.Message.Created"
+								@toggle-visibility="onToggle(e.Entry)"
+							/>
 						</v-col>
 					</v-row>
 				</template>
@@ -93,7 +90,6 @@
 							@interrupt="onInterrupt"
 							@clear="onClear"
 							@min-max="onMinMax"
-							@changeVisibilityMode="onVisibilityModeChanged"
 						/>
 					</div>
 				</v-footer>
@@ -163,7 +159,6 @@ export default {
 			] as HistoryEntry[],
 			userScroll: false,
 			minimized: false,
-			visibilitySelectionMode: false,
 			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
 		}
 	},
@@ -350,9 +345,6 @@ export default {
 		},
 		async onInterrupt() {
 			await LLMInterrupt()
-		},
-		onVisibilityModeChanged(visibilityMode: boolean) {
-			this.visibilitySelectionMode = visibilityMode
 		},
 		onToggle(entry: HistoryEntry) {
 			entry.Hidden = !entry.Hidden

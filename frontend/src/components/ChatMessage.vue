@@ -18,35 +18,45 @@
 					</template>
 				</template>
 
-				<small class="opacity-50 text-end">{{createdAt}}</small>
+				<small class="d-flex justify-space-between align-center">
+					<span class="opacity-50">{{createdAt}}</span>
+					<ChatMessageActions @toggleVisibility="$emit('toggleVisibility')" />
+				</small>
 			</v-sheet>
 		</v-row>
 	</template>
 	<template v-else-if="isToolMessage">
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
-			<BuiltinToolCallSystemInfo :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('getSystemInformation')" />
-			<BuiltinToolCallEnvironment :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getEnvironment')" />
-			<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getSystemTime')" />
+			<v-sheet color="grey-lighten-2" rounded>
+				<BuiltinToolCallSystemInfo :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('getSystemInformation')" />
+				<BuiltinToolCallEnvironment :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getEnvironment')" />
+				<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getSystemTime')" />
 
-			<BuiltinToolCallChangeMode :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeMode')" />
-			<BuiltinToolCallChangeOwner :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeOwner')" />
-			<BuiltinToolCallChangeTimes :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeTimes')" />
+				<BuiltinToolCallChangeMode :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeMode')" />
+				<BuiltinToolCallChangeOwner :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeOwner')" />
+				<BuiltinToolCallChangeTimes :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeTimes')" />
 
-			<BuiltinToolCallStats :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getStats')" />
+				<BuiltinToolCallStats :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getStats')" />
 
-			<BuiltinToolCallFileCreation :tc="tc" v-else-if="tc.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))" />
-			<BuiltinToolCallFileAppending :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('appendFile')" />
-			<BuiltinToolCallFileReading :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('readTextFile')" />
-			<BuiltinToolCallFileDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteFile')" />
+				<BuiltinToolCallFileCreation :tc="tc" v-else-if="tc.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))" />
+				<BuiltinToolCallFileAppending :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('appendFile')" />
+				<BuiltinToolCallFileReading :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('readTextFile')" />
+				<BuiltinToolCallFileDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteFile')" />
 
-			<BuiltinToolCallDirectoryCreation :tc="tc" v-else-if=" tc.BuiltIn && (tc.Function.endsWith('createDirectory') || tc.Function.endsWith('createTempDirectory'))" />
-			<BuiltinToolCallDirectoryDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteDirectory')" />
+				<BuiltinToolCallDirectoryCreation :tc="tc" v-else-if=" tc.BuiltIn && (tc.Function.endsWith('createDirectory') || tc.Function.endsWith('createTempDirectory'))" />
+				<BuiltinToolCallDirectoryDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteDirectory')" />
 
-			<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
+				<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
 
-			<BuiltinToolCallHttpCall :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('callHttp')" />
+				<BuiltinToolCallHttpCall :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('callHttp')" />
 
-			<GeneralToolCall :tc="tc" v-else />
+				<GeneralToolCall :tc="tc" v-else />
+
+				<small class="d-flex justify-space-between px-2 pb-2 align-center">
+					<ChatMessageActions @toggleVisibility="$emit('toggleVisibility')" />
+					<span class="opacity-50 pl-2">{{createdAt}}</span>
+				</small>
+			</v-sheet>
 		</v-row>
 	</template>
 	<template v-else-if="isSystemMessage">
@@ -54,6 +64,7 @@
 			<v-col>
 				<v-sheet class="pa-2" rounded>
 					<vue-markdown :source="textMessage" :options="options" />
+					<ChatMessageActions @toggleVisibility="$emit('toggleVisibility')" />
 				</v-sheet>
 			</v-col>
 		</v-row>
@@ -62,7 +73,10 @@
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15">
 			<v-sheet color="grey-lighten-2" class="pa-2" rounded>
 				<vue-markdown :source="textMessage" :options="options" />
-				<small class="opacity-50">{{createdAt}}</small>
+				<small class="d-flex justify-space-between align-center">
+					<ChatMessageActions @toggleVisibility="$emit('toggleVisibility')" />
+					<span class="opacity-50">{{createdAt}}</span>
+				</small>
 			</v-sheet>
 		</v-row>
 	</template>
@@ -98,6 +112,7 @@ import BuiltinToolCallChangeMode from './toolcall/BuiltinToolCallChangeMode.vue'
 import BuiltinToolCallChangeOwner from './toolcall/BuiltinToolCallChangeOwner.vue'
 import BuiltinToolCallChangeTimes from './toolcall/BuiltinToolCallChangeTimes.vue'
 import BuiltinToolCallHttpCall from './toolcall/BuiltinToolCallHttpCall.vue'
+import ChatMessageActions from './ChatMessageActions.vue'
 
 export enum Role {
 	System = 'system',
@@ -115,6 +130,7 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		ChatMessageActions,
 		BuiltinToolCallHttpCall,
 		BuiltinToolCallChangeTimes,
 		BuiltinToolCallChangeOwner,
@@ -133,6 +149,7 @@ export default defineComponent({
 		BuiltinToolCallFileCreation,
 		VueMarkdown,
 	},
+	emits: ['toggleVisibility'],
 	props: {
 		message: {
 			type: Array as PropType<LLMMessageContentPart[]>,
@@ -235,6 +252,9 @@ export default defineComponent({
 		isImage(asset: AssetMeta) {
 			return asset.MimeType.startsWith('image/')
 		},
+		onToggleVisibility(){
+			this.$emit('toggleVisibility')
+		}
 	},
 	watch: {
 		textMessage() {

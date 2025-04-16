@@ -43,9 +43,6 @@
 		</v-textarea>
 
 		<template v-slot:option-buttons>
-			<v-btn active-color="primary" @click="toggleVisibilityMode" v-show="showVisibilityMode" :active="visibilityMode">
-				<v-icon size="x-large">mdi-eye-settings-outline</v-icon>
-			</v-btn>
 			<v-btn @click="onClear" v-show="showClear">
 				<v-icon size="x-large">mdi-chat-remove-outline</v-icon>
 			</v-btn>
@@ -69,7 +66,7 @@ export type ChatInputType = { prompt: string; attachments: string[] }
 export default defineComponent({
 	name: 'ChatBar',
 	components: { GeneralBar },
-	emits: ['update:modelValue', 'submit', 'interrupt', 'clear', 'changeVisibilityMode'],
+	emits: ['update:modelValue', 'submit', 'interrupt', 'clear'],
 	props: {
 		progress: {
 			type: Boolean,
@@ -96,11 +93,6 @@ export default defineComponent({
 			required: false,
 			default: false,
 		},
-	},
-	data(){
-		return {
-			visibilityMode: false,
-		}
 	},
 	computed: {
 		value: {
@@ -145,10 +137,6 @@ export default defineComponent({
 		},
 		onClear() {
 			this.$emit('clear')
-		},
-		toggleVisibilityMode(){
-			this.visibilityMode = !this.visibilityMode
-			this.$emit('changeVisibilityMode', this.visibilityMode)
 		},
 		onAddFile() {
 			OpenFileDialog(
