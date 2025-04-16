@@ -39,6 +39,9 @@ export const useHistoryStore = defineStore('history', {
 		pushHistory(entry: HistoryEntry) {
 			this.chatHistory.push(entry)
 		},
+		replaceHistory(index: number, entry: HistoryEntry) {
+			this.chatHistory[index] = entry
+		},
 		updateHistoryMessage(message: LLMMessage) {
 			const i = this.chatHistory.findIndex((entry) => entry.Message.Id === message.Id)
 			if (i >= 0) {

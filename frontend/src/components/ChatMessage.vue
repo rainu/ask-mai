@@ -19,8 +19,10 @@
 				</template>
 
 				<small class="d-flex justify-space-between align-center">
-					<span class="opacity-50">{{createdAt}}</span>
-					<ChatMessageActions @toggleVisibility="$emit('toggleVisibility')" />
+					<span class="opacity-50 pr-2">{{createdAt}}</span>
+					<ChatMessageActions reverse
+															@toggleVisibility="onToggleVisibility"
+															:hide-edit="hideEdit" @on-edit="onEdit" />
 				</small>
 			</v-sheet>
 		</v-row>
@@ -53,7 +55,9 @@
 				<GeneralToolCall :tc="tc" v-else />
 
 				<small class="d-flex justify-space-between px-2 pb-2 align-center">
-					<ChatMessageActions @toggleVisibility="$emit('toggleVisibility')" />
+					<ChatMessageActions
+						@toggleVisibility="onToggleVisibility"
+						hide-edit />
 					<span class="opacity-50 pl-2">{{createdAt}}</span>
 				</small>
 			</v-sheet>
@@ -64,7 +68,9 @@
 			<v-col>
 				<v-sheet class="pa-2" rounded>
 					<vue-markdown :source="textMessage" :options="options" />
-					<ChatMessageActions @toggleVisibility="$emit('toggleVisibility')" />
+					<ChatMessageActions
+						@toggleVisibility="onToggleVisibility"
+						:hide-edit="hideEdit" @onEdit="onEdit" />
 				</v-sheet>
 			</v-col>
 		</v-row>
@@ -74,7 +80,9 @@
 			<v-sheet color="grey-lighten-2" class="pa-2" rounded>
 				<vue-markdown :source="textMessage" :options="options" />
 				<small class="d-flex justify-space-between align-center">
-					<ChatMessageActions @toggleVisibility="$emit('toggleVisibility')" />
+					<ChatMessageActions
+						@toggleVisibility="onToggleVisibility"
+						:hide-edit="hideEdit" @on-edit="onEdit" />
 					<span class="opacity-50">{{createdAt}}</span>
 				</small>
 			</v-sheet>
@@ -149,7 +157,7 @@ export default defineComponent({
 		BuiltinToolCallFileCreation,
 		VueMarkdown,
 	},
-	emits: ['toggleVisibility'],
+	emits: ['toggleVisibility', 'onEdit'],
 	props: {
 		message: {
 			type: Array as PropType<LLMMessageContentPart[]>,
@@ -162,6 +170,11 @@ export default defineComponent({
 		date: {
 			type: Number,
 			required: false,
+		},
+		hideEdit: {
+			type: Boolean,
+			required: false,
+			default: false,
 		}
 	},
 	data() {
@@ -251,6 +264,9 @@ export default defineComponent({
 		},
 		isImage(asset: AssetMeta) {
 			return asset.MimeType.startsWith('image/')
+		},
+		onEdit() {
+			this.$emit('onEdit')
 		},
 		onToggleVisibility(){
 			this.$emit('toggleVisibility')

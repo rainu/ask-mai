@@ -21,5 +21,9 @@
   },
   "history": {
     "placeholder": "Search in history..."
+  },
+  "edit": {
+    "apply": "Save",
+    "cancel": "Cancel"
   }
 }

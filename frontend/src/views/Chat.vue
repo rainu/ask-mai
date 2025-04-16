@@ -65,12 +65,13 @@
 								:role="e.Entry.Message.Role"
 								:date="e.Entry.Message.Created"
 								@toggle-visibility="onToggle(e.Entry)"
+								@on-edit="onEdit(e.EntryIdx)"
 							/>
 						</v-col>
 					</v-row>
 				</template>
 				<template v-if="outputStream[0].Content">
-					<ChatMessage :message="outputStream" :role="outputStreamRole" />
+					<ChatMessage :message="outputStream" :role="outputStreamRole" hide-edit />
 				</template>
 
 				<v-alert v-if="error" type="error" :title="error.title" :text="error.message" />
@@ -127,6 +128,7 @@ type State = {
 type HistoryEntryOrDate = {
 	Date?: string
 	Entry?: HistoryEntry
+	EntryIdx?: number
 }
 
 export default {
@@ -166,7 +168,9 @@ export default {
 			const today = new Date().toLocaleDateString()
 			const alreadyAddedDates = new Set<string>()
 
-			for (let historyEntry of this.chatHistory) {
+			for (let index = 0; index < this.chatHistory.length; index++) {
+				const historyEntry = this.chatHistory[index]
+
 				if(historyEntry.Message.Created) {
 					const date = new Date(historyEntry.Message.Created * 1000).toLocaleDateString()
 
@@ -179,7 +183,7 @@ export default {
 					alreadyAddedDates.add(date)
 				}
 
-				result.push({ Entry: historyEntry })
+				result.push({ Entry: historyEntry, EntryIdx: index })
 			}
 
 			return result
@@ -324,6 +328,11 @@ export default {
 		},
 		onToggle(entry: HistoryEntry) {
 			entry.Hidden = !entry.Hidden
+		},
+		onEdit(idx: number | undefined) {
+			if(idx === undefined) return
+
+			this.$router.push({ name: 'Edit', params: { idx } })
 		}
 	},
 	mounted() {
