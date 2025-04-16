@@ -36,11 +36,14 @@
 				<v-btn v-show="!progress && isSubmitable" @click="onSubmit">
 					<v-icon size="x-large">mdi-send</v-icon>
 				</v-btn>
-				<v-btn color="error" v-show="progress" @click="onStop">
-					<v-icon size="x-large">mdi-stop-circle-outline</v-icon>
-				</v-btn>
 			</template>
 		</v-textarea>
+
+		<template v-slot:append>
+			<v-btn color="error" class="h-100" v-show="progress" @click="onStop">
+				<v-icon size="x-large">mdi-stop-circle-outline</v-icon>
+			</v-btn>
+		</template>
 
 		<template v-slot:option-buttons>
 			<v-btn @click="onClear" v-show="showClear">

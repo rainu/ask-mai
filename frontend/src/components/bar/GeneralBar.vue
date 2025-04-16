@@ -14,6 +14,8 @@
 				<slot></slot>
 
 				<template v-slot:append>
+					<slot name="append"></slot>
+
 					<v-btn-toggle class="h-100" v-show="showOptions">
 						<slot name="option-buttons"></slot>
 					</v-btn-toggle>
