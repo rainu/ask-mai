@@ -14,9 +14,10 @@ type Secret struct {
 }
 
 type SecretCommand struct {
-	Name   string   `yaml:"name" usage:"name"`
-	Args   []string `yaml:"args" usage:"arguments"`
-	NoTrim bool     `yaml:"no-trim" usage:"dont trim spaces from the output"`
+	Name   string            `yaml:"name" usage:"name"`
+	Args   []string          `yaml:"args" usage:"arguments"`
+	Env    map[string]string `yaml:"env" usage:"additional environment variables"`
+	NoTrim bool              `yaml:"no-trim" usage:"dont trim spaces from the output"`
 }
 
 func (s Secret) Validate() error {
@@ -37,7 +38,7 @@ func (s Secret) GetOrPanicWithTimeout(to time.Duration) []byte {
 
 	result, err := s.Get(ctx)
 	if err != nil {
-		panic(fmt.Errorf("failed to get secret: %w", err))
+		panic(fmt.Errorf("failed to get secret: %w\n%s", err, result))
 	}
 	return result
 }
@@ -45,7 +46,7 @@ func (s Secret) GetOrPanicWithTimeout(to time.Duration) []byte {
 func (s Secret) GetOrPanic(ctx context.Context) []byte {
 	result, err := s.Get(ctx)
 	if err != nil {
-		panic(fmt.Errorf("failed to get secret: %w", err))
+		panic(fmt.Errorf("failed to get secret: %w\n%s", err, result))
 	}
 	return result
 }
@@ -60,12 +61,31 @@ func (s Secret) Get(ctx context.Context) ([]byte, error) {
 
 func (s SecretCommand) Get(ctx context.Context) ([]byte, error) {
 	result := bytes.NewBuffer([]byte{})
+	resultErr := bytes.NewBuffer([]byte{})
 
-	err := cmdchain.Builder().JoinWithContext(ctx, s.Name, s.Args...).Finalize().WithOutput(result).Run()
+	c := cmdchain.Builder().JoinWithContext(ctx, s.Name, s.Args...)
+
+	if len(s.Env) > 0 {
+		c = c.WithAdditionalEnvironmentMap(toAnyMap(s.Env))
+	}
+
+	err := c.Finalize().WithOutput(result).WithError(resultErr).Run()
+
+	if err != nil {
+		return []byte(fmt.Sprintf("[OUT] %s\n[ERR} %s", result.String(), resultErr.String())), err
+	}
 
 	if !s.NoTrim {
 		return bytes.TrimSpace(result.Bytes()), err
 	}
 
 	return result.Bytes(), err
+}
+
+func toAnyMap(m map[string]string) map[any]any {
+	result := map[any]any{}
+	for k, v := range m {
+		result[k] = v
+	}
+	return result
 }

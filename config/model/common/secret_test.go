@@ -36,6 +36,19 @@ func TestSecret_Get(t *testing.T) {
 			},
 			expected: []byte("secret"),
 		},
+		{
+			conf: Secret{
+				Command: SecretCommand{
+					Name: "sh",
+					Args: []string{"-c", "echo -n ${SECRET}"},
+					Env: map[string]string{
+						"SECRET": "secret",
+					},
+					NoTrim: true,
+				},
+			},
+			expected: []byte("secret"),
+		},
 	}
 
 	for i, tt := range tests {

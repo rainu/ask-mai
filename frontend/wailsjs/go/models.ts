@@ -40,6 +40,7 @@ export namespace common {
 	export class SecretCommand {
 	    Name: string;
 	    Args: string[];
+	    Env: Record<string, string>;
 	    NoTrim: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -50,6 +51,7 @@ export namespace common {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Name = source["Name"];
 	        this.Args = source["Args"];
+	        this.Env = source["Env"];
 	        this.NoTrim = source["NoTrim"];
 	    }
 	}
