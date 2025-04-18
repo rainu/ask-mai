@@ -88,7 +88,7 @@ func BuildFromConfig(cfg *model.Config, lastState string, buildMode bool) (ctrl 
 }
 
 func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
-	ac := c.appConfig
+	ac := c.getConfig()
 	translucent := true
 	if ac.UI.Window.Translucent == model.TranslucentNever {
 		translucent = false

@@ -52,7 +52,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 	}()
 
 	//validate tool calls
-	availableTools := c.appConfig.LLM.Tools.GetTools()
+	availableTools := c.getConfig().LLM.Tools.GetTools()
 	for _, call := range resp.Choices[0].ToolCalls {
 		fnDefinition, exists := availableTools[call.FunctionCall.Name]
 		if !exists {

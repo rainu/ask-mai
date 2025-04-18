@@ -38,6 +38,8 @@ export function OpenFileDialog(arg1:controller.OpenFileDialogArgs):Promise<Array
 
 export function Restart(arg1:string):Promise<void>;
 
+export function SetActiveProfile(arg1:string):Promise<model.Config>;
+
 export function Shutdown():Promise<void>;
 
 export function TriggerRestart():Promise<void>;

@@ -6,6 +6,7 @@ import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessageCall = controller.LLMMessageCall
 import LLMMessageCallResult = controller.LLMMessageCallResult
 import { ContentType, Role } from '../components/ChatMessage.vue'
+import { useConfigStore } from './config.ts'
 
 export type HistoryEntry = {
 	Interrupted: boolean
@@ -20,7 +21,7 @@ const buildSystemMessage = (): HistoryEntry => ({
 		Role: Role.System,
 		ContentParts: [{
 			Type: ContentType.Text,
-			Content: window.$appConfig.LLM.CallOptions.SystemPrompt,
+			Content: useConfigStore().config.LLM.CallOptions.SystemPrompt,
 		}],
 		Created: Math.floor(new Date().getTime() / 1000),
 	}),

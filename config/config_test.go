@@ -714,10 +714,11 @@ func TestConfig_GetProfile(t *testing.T) {
 
 	require.NoError(t, toTest.Validate())
 
-	c := toTest.GetProfile("")
+	c := toTest.GetActiveProfile()
 	assert.Equal(t, *toTest, *c)
 
-	c = toTest.GetProfile("light")
+	c.ActiveProfile = "light"
+	c = toTest.GetActiveProfile()
 
 	assert.Nil(t, c.Profiles)
 	assert.Equal(t, "light", c.UI.Theme)

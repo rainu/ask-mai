@@ -19,7 +19,8 @@ type Config struct {
 
 	Config string `config:"config" short:"c" yaml:"-" usage:"Path to the configuration yaml file"`
 
-	Profiles map[string]*Config `config:"" yaml:"profiles" usage:"Other configuration profiles. Each profile has the same structure as the main configuration."`
+	ActiveProfile string             `config:"profile" short:"P" usage:"Active profile name"`
+	Profiles      map[string]*Config `config:"" yaml:"profiles" usage:"Other configuration profiles. Each profile has the same structure as the main configuration."`
 }
 
 func (c *Config) Validate() error {
@@ -47,7 +48,7 @@ func (c *Config) Validate() error {
 	cWithoutProfiles.Profiles = nil
 	for profileName, profile := range c.Profiles {
 		// merge "default"-config into profile
-		err := mergo.Merge(profile, cWithoutProfiles)
+		err := mergo.Merge(profile, cWithoutProfiles, mergo.WithOverrideEmptySlice)
 		if err != nil {
 			return fmt.Errorf("Error merging profile '%s': %w", profileName, err)
 		}
@@ -60,8 +61,8 @@ func (c *Config) Validate() error {
 	return nil
 }
 
-func (c *Config) GetProfile(name string) *Config {
-	profile, ok := c.Profiles[name]
+func (c *Config) GetActiveProfile() *Config {
+	profile, ok := c.Profiles[c.ActiveProfile]
 	if !ok {
 		return c
 	}

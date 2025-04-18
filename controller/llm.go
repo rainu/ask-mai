@@ -168,9 +168,9 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		})
 	}()
 
-	opts := c.appConfig.LLM.CallOptions.AsOptions()
-	opts = append(opts, c.appConfig.LLM.Tools.AsOptions()...)
-	if c.appConfig.UI.Stream {
+	opts := c.getConfig().LLM.CallOptions.AsOptions()
+	opts = append(opts, c.getConfig().LLM.Tools.AsOptions()...)
+	if c.getConfig().UI.Stream {
 		// streaming is enabled
 		opts = append(opts, llms.WithStreamingFunc(c.streamingFunc))
 	}

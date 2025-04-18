@@ -53,6 +53,12 @@ func (c *Controller) startup(ctx context.Context) {
 	if err != nil {
 		panic(fmt.Errorf("could not resolve expressions: %w", err))
 	}
+	for profile, config := range c.appConfig.Profiles {
+		err = config.UI.Window.ResolveExpressions(sv)
+		if err != nil {
+			panic(fmt.Errorf("could not resolve expressions from profile '%s': %w", profile, err))
+		}
+	}
 }
 
 func (c *Controller) domReady(ctx context.Context) {
@@ -64,7 +70,12 @@ func (c *Controller) beforeClose(ctx context.Context) (prevent bool) {
 
 func (c *Controller) Shutdown() {
 	c.shutdown(c.ctx)
+
 	c.appConfig.Printer.Close()
+	for _, config := range c.appConfig.Profiles {
+		config.Printer.Close()
+	}
+
 	c.saveHistory()
 	os.Exit(0)
 }

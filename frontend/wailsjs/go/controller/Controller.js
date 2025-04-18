@@ -70,6 +70,10 @@ export function Restart(arg1) {
   return window['go']['controller']['Controller']['Restart'](arg1);
 }
 
+export function SetActiveProfile(arg1) {
+  return window['go']['controller']['Controller']['SetActiveProfile'](arg1);
+}
+
 export function Shutdown() {
   return window['go']['controller']['Controller']['Shutdown']();
 }

@@ -63,6 +63,8 @@ import { controller } from '../../../wailsjs/go/models.ts'
 import { PathSeparator } from '../../common/platform.ts'
 import OpenFileDialogArgs = controller.OpenFileDialogArgs
 import GeneralBar from './GeneralBar.vue'
+import { mapState } from 'pinia'
+import { useConfigStore } from '../../store/config.ts'
 
 export type ChatInputType = { prompt: string; attachments: string[] }
 
@@ -98,6 +100,7 @@ export default defineComponent({
 		},
 	},
 	computed: {
+		...mapState(useConfigStore, ['config']),
 		value: {
 			get() {
 				return this.modelValue
@@ -111,19 +114,19 @@ export default defineComponent({
 		},
 		rows() {
 			return Math.max(
-				Math.min(this.modelValue.prompt.split('\n').length, this.$appConfig.UI.Prompt.MaxRows),
-				this.$appConfig.UI.Prompt.MinRows,
+				Math.min(this.modelValue.prompt.split('\n').length, this.config.UI.Prompt.MaxRows),
+				this.config.UI.Prompt.MinRows,
 			)
 		},
 	},
 	methods: {
 		onKeyup(event: KeyboardEvent) {
-			for (let i = 0; i < this.$appConfig.UI.Prompt.SubmitShortcut.Code.length; i++) {
-				const code = event.code.toLowerCase() === this.$appConfig.UI.Prompt.SubmitShortcut.Code[i].toLowerCase()
-				const ctrl = event.ctrlKey === this.$appConfig.UI.Prompt.SubmitShortcut.Ctrl[i]
-				const shift = event.shiftKey === this.$appConfig.UI.Prompt.SubmitShortcut.Shift[i]
-				const alt = event.altKey === this.$appConfig.UI.Prompt.SubmitShortcut.Alt[i]
-				const meta = event.metaKey === this.$appConfig.UI.Prompt.SubmitShortcut.Meta[i]
+			for (let i = 0; i < this.config.UI.Prompt.SubmitShortcut.Code.length; i++) {
+				const code = event.code.toLowerCase() === this.config.UI.Prompt.SubmitShortcut.Code[i].toLowerCase()
+				const ctrl = event.ctrlKey === this.config.UI.Prompt.SubmitShortcut.Ctrl[i]
+				const shift = event.shiftKey === this.config.UI.Prompt.SubmitShortcut.Shift[i]
+				const alt = event.altKey === this.config.UI.Prompt.SubmitShortcut.Alt[i]
+				const meta = event.metaKey === this.config.UI.Prompt.SubmitShortcut.Meta[i]
 
 				if (code && ctrl && shift && alt && meta) {
 					this.onSubmit()

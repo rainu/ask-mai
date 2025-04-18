@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Controller) saveHistory() {
-	if c.appConfig.History.Path == "" {
+	if c.getConfig().History.Path == "" {
 		return
 	}
 	if len(c.currentConversation) == 0 {
@@ -16,7 +16,7 @@ func (c *Controller) saveHistory() {
 		return
 	}
 
-	hw := history.NewWriter(c.appConfig.History.Path)
+	hw := history.NewWriter(c.getConfig().History.Path)
 	we := hw.Write(historyMessagesToEntry(c.currentConversation))
 	if we != nil {
 		slog.Warn("Error writing history file!", "error", we.Error())
@@ -102,26 +102,26 @@ func (c *Controller) GetCurrentConversation() LLMMessages {
 }
 
 func (c *Controller) HistoryGetCount() (int, error) {
-	if c.appConfig.History.Path == "" {
+	if c.getConfig().History.Path == "" {
 		return 0, nil
 	}
-	hr := history.NewReader(c.appConfig.History.Path)
+	hr := history.NewReader(c.getConfig().History.Path)
 
 	return hr.GetCount()
 }
 
 func (c *Controller) HistoryGetLast(skip, limit int) ([]history.Entry, error) {
-	if c.appConfig.History.Path == "" {
+	if c.getConfig().History.Path == "" {
 		return nil, nil
 	}
 
-	hr := history.NewReader(c.appConfig.History.Path)
+	hr := history.NewReader(c.getConfig().History.Path)
 
 	return hr.GetLast(skip, limit)
 }
 
 func (c *Controller) HistorySearch(query string) ([]history.Entry, error) {
-	if c.appConfig.History.Path == "" {
+	if c.getConfig().History.Path == "" {
 		return nil, nil
 	}
 
@@ -130,7 +130,7 @@ func (c *Controller) HistorySearch(query string) ([]history.Entry, error) {
 		return nil, err
 	}
 
-	hr := history.NewReader(c.appConfig.History.Path)
+	hr := history.NewReader(c.getConfig().History.Path)
 
 	return hr.Search(func(entry history.Entry) (bool, bool) {
 		content := strings.Builder{}

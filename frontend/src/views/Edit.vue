@@ -3,7 +3,7 @@
 		<ZoomDetector @onZoom="onZoom" />
 
 		<!-- header -->
-		<template v-if="$appConfig.UI.Prompt.PinTop">
+		<template v-if="config.UI.Prompt.PinTop">
 			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
 					<EditBar @on-save="onSave" />
@@ -42,7 +42,7 @@
 		</v-container>
 
 		<!-- footer -->
-		<template v-if="!$appConfig.UI.Prompt.PinTop">
+		<template v-if="!config.UI.Prompt.PinTop">
 			<v-footer app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
 					<EditBar @on-save="onSave" />
@@ -61,6 +61,7 @@ import { mapActions, mapState } from 'pinia'
 import EditBar from '../components/bar/EditBar.vue'
 import ChatMessageActions from '../components/ChatMessageActions.vue'
 import { Role } from '../components/ChatMessage.vue'
+import { useConfigStore } from '../store/config.ts'
 
 export default defineComponent({
 	name: 'Edit',
@@ -74,6 +75,7 @@ export default defineComponent({
 		}
 	},
 	computed: {
+		...mapState(useConfigStore, ['config']),
 		...mapState(useHistoryStore, ['chatHistory']),
 		entryIdx(): number {
 			return this.$route.params.idx
@@ -105,9 +107,11 @@ export default defineComponent({
 			this.appbarHeight = this.$refs.appbar ? (this.$refs.appbar as HTMLElement).clientHeight : 0
 
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
+
+			//the titlebar can not be manipulated while application lifecycle - so here we use the "initial" config
 			const titleBarHeight = this.$appConfig.UI.Window.ShowTitleBar ? this.$appConfig.UI.Window.TitleBarHeight : 0
 			const combinedHeight = Math.ceil(pageHeight * this.zoom) + titleBarHeight
-			const width = this.$appConfig.UI.Window.InitialWidth.Value
+			const width = this.config.UI.Window.InitialWidth.Value
 
 			await WindowSetSize(width, combinedHeight)
 		},

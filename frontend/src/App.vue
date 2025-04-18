@@ -19,45 +19,46 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { TriggerRestart, Shutdown } from '../wailsjs/go/controller/Controller'
+import { mapState } from 'pinia'
+import { useConfigStore } from './store/config.ts'
 
 export default defineComponent({
-	data() {
-		let theme = ''
-
-		if (this.$appConfig.UI.Theme === 'system') {
-			theme = 'light'
-			if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-				theme = 'dark'
+	computed: {
+		...mapState(useConfigStore, ['config']),
+		theme(): string {
+			if (this.config.UI.Theme === 'system') {
+				if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+					return 'dark'
+				}
+				return 'light'
 			}
-		} else {
-			theme = this.$appConfig.UI.Theme
-		}
 
-		return {
-			theme,
-			opacity: this.$appConfig.UI.Window.BackgroundColor.A / 255,
+			return this.config.UI.Theme
+		},
+		opacity(): number {
+			return this.config.UI.Window.BackgroundColor.A / 255
 		}
 	},
 	methods: {
 		handleGlobalKeydown(event: KeyboardEvent) {
-			for (let i = 0; i < this.$appConfig.UI.QuitShortcut.Code.length; i++) {
-				let code = event.code.toLowerCase() === this.$appConfig.UI.QuitShortcut.Code[i].toLowerCase()
-				let ctrl = event.ctrlKey === this.$appConfig.UI.QuitShortcut.Ctrl[i]
-				let shift = event.shiftKey === this.$appConfig.UI.QuitShortcut.Shift[i]
-				let alt = event.altKey === this.$appConfig.UI.QuitShortcut.Alt[i]
-				let meta = event.metaKey === this.$appConfig.UI.QuitShortcut.Meta[i]
+			for (let i = 0; i < this.config.UI.QuitShortcut.Code.length; i++) {
+				let code = event.code.toLowerCase() === this.config.UI.QuitShortcut.Code[i].toLowerCase()
+				let ctrl = event.ctrlKey === this.config.UI.QuitShortcut.Ctrl[i]
+				let shift = event.shiftKey === this.config.UI.QuitShortcut.Shift[i]
+				let alt = event.altKey === this.config.UI.QuitShortcut.Alt[i]
+				let meta = event.metaKey === this.config.UI.QuitShortcut.Meta[i]
 
 				if (code && ctrl && shift && alt && meta) {
 					Shutdown()
 				}
 			}
 
-			for (let i = 0; i < this.$appConfig.Debug.RestartShortcut.Code.length; i++) {
-				let code = event.code.toLowerCase() === this.$appConfig.Debug.RestartShortcut.Code[i].toLowerCase()
-				let ctrl = event.ctrlKey === this.$appConfig.Debug.RestartShortcut.Ctrl[i]
-				let shift = event.shiftKey === this.$appConfig.Debug.RestartShortcut.Shift[i]
-				let alt = event.altKey === this.$appConfig.Debug.RestartShortcut.Alt[i]
-				let meta = event.metaKey === this.$appConfig.Debug.RestartShortcut.Meta[i]
+			for (let i = 0; i < this.config.Debug.RestartShortcut.Code.length; i++) {
+				let code = event.code.toLowerCase() === this.config.Debug.RestartShortcut.Code[i].toLowerCase()
+				let ctrl = event.ctrlKey === this.config.Debug.RestartShortcut.Ctrl[i]
+				let shift = event.shiftKey === this.config.Debug.RestartShortcut.Shift[i]
+				let alt = event.altKey === this.config.Debug.RestartShortcut.Alt[i]
+				let meta = event.metaKey === this.config.Debug.RestartShortcut.Meta[i]
 
 				if (code && ctrl && shift && alt && meta) {
 					TriggerRestart()
@@ -65,7 +66,7 @@ export default defineComponent({
 			}
 		},
 		opacityValue(isHovering: boolean | null): number {
-			switch (this.$appConfig.UI.Window.Translucent) {
+			switch (this.config.UI.Window.Translucent) {
 				case 'ever':
 					return this.opacity
 				case 'hover':

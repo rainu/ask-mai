@@ -3,7 +3,7 @@
 		<ZoomDetector @onZoom="onZoom" />
 
 		<!-- header -->
-		<template v-if="$appConfig.UI.Prompt.PinTop">
+		<template v-if="config.UI.Prompt.PinTop">
 			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
 					<HistoryBar @queryChanged="onQueryChanged" />
@@ -35,7 +35,7 @@
 		</v-container>
 
 		<!-- footer -->
-		<template v-if="!$appConfig.UI.Prompt.PinTop">
+		<template v-if="!config.UI.Prompt.PinTop">
 			<v-footer app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
 					<HistoryBar @queryChanged="onQueryChanged" />
@@ -53,8 +53,9 @@ import { WindowSetSize } from '../../wailsjs/runtime'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import HistoryEntry from '../components/HistoryEntry.vue'
 import HistoryBar from '../components/bar/HistoryBar.vue'
-import { mapActions } from 'pinia'
+import { mapActions, mapState } from 'pinia'
 import { useHistoryStore } from '../store/history.ts'
+import { useConfigStore } from '../store/config.ts'
 
 export default defineComponent({
 	name: 'History',
@@ -69,6 +70,9 @@ export default defineComponent({
 			history: [] as history.Entry[],
 		}
 	},
+	computed: {
+		...mapState(useConfigStore, ['config'])
+	},
 	methods: {
 		...mapActions(useHistoryStore, ['loadConversation']),
 		onZoom(factor: number) {
@@ -79,9 +83,11 @@ export default defineComponent({
 			this.appbarHeight = this.$refs.appbar ? (this.$refs.appbar as HTMLElement).clientHeight : 0
 
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
+
+			//the titlebar can not be manipulated while application lifecycle - so here we use the "initial" config
 			const titleBarHeight = this.$appConfig.UI.Window.ShowTitleBar ? this.$appConfig.UI.Window.TitleBarHeight : 0
 			const combinedHeight = Math.ceil(pageHeight * this.zoom) + titleBarHeight
-			const width = this.$appConfig.UI.Window.InitialWidth.Value
+			const width = this.config.UI.Window.InitialWidth.Value
 
 			await WindowSetSize(width, combinedHeight)
 		},
