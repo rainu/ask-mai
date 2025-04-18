@@ -3,7 +3,7 @@ package controller
 import (
 	"embed"
 	"fmt"
-	"github.com/rainu/ask-mai/config"
+	"github.com/rainu/ask-mai/config/model"
 	"github.com/rainu/ask-mai/io"
 	langChainLLM "github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-func BuildFromConfig(cfg *config.Config, lastState string, buildMode bool) (ctrl *Controller, err error) {
+func BuildFromConfig(cfg *model.Config, lastState string, buildMode bool) (ctrl *Controller, err error) {
 	ctrl = &Controller{
 		appConfig: cfg,
 		lastState: lastState,
@@ -29,11 +29,11 @@ func BuildFromConfig(cfg *config.Config, lastState string, buildMode bool) (ctrl
 	}
 
 	printer := io.MultiResponsePrinter{}
-	if cfg.Printer.Format == config.PrinterFormatPlain {
+	if cfg.Printer.Format == model.PrinterFormatPlain {
 		for _, target := range cfg.Printer.Targets {
 			printer.Printers = append(printer.Printers, &io.PlainResponsePrinter{Target: target})
 		}
-	} else if cfg.Printer.Format == config.PrinterFormatJSON {
+	} else if cfg.Printer.Format == model.PrinterFormatJSON {
 		for _, target := range cfg.Printer.Targets {
 			printer.Printers = append(printer.Printers, &io.JsonResponsePrinter{Target: target})
 		}
@@ -90,7 +90,7 @@ func BuildFromConfig(cfg *config.Config, lastState string, buildMode bool) (ctrl
 func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 	ac := c.appConfig
 	translucent := true
-	if ac.UI.Window.Translucent == config.TranslucentNever {
+	if ac.UI.Window.Translucent == model.TranslucentNever {
 		translucent = false
 	}
 
@@ -151,9 +151,9 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 			WebviewBrowserPath:                "",
 			Theme: func() windows.Theme {
 				switch ac.UI.Theme {
-				case config.ThemeDark:
+				case model.ThemeDark:
 					return windows.Dark
-				case config.ThemeLight:
+				case model.ThemeLight:
 					return windows.Light
 				default:
 					return windows.SystemDefault

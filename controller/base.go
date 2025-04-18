@@ -3,7 +3,7 @@ package controller
 import (
 	"context"
 	"fmt"
-	"github.com/rainu/ask-mai/config"
+	"github.com/rainu/ask-mai/config/model"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/io"
 	"github.com/rainu/ask-mai/llms"
@@ -24,7 +24,7 @@ type Controller struct {
 	toolApprovalChannel map[string]chan bool
 	toolApprovalMutex   sync.Mutex
 
-	appConfig *config.Config
+	appConfig *model.Config
 	printer   io.ResponsePrinter
 
 	currentConversation LLMMessages

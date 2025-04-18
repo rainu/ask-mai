@@ -2,7 +2,7 @@ package llm
 
 import (
 	"fmt"
-	"github.com/rainu/ask-mai/config/llm/tools"
+	"github.com/rainu/ask-mai/config/model/llm/tools"
 	"github.com/rainu/ask-mai/llms"
 	"reflect"
 	"slices"

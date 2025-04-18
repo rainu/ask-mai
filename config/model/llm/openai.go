@@ -2,7 +2,7 @@ package llm
 
 import (
 	"fmt"
-	"github.com/rainu/ask-mai/config/common"
+	"github.com/rainu/ask-mai/config/model/common"
 	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 )

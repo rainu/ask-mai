@@ -1,9 +1,10 @@
-package config
+package yml
 
 import (
-	"github.com/rainu/ask-mai/config/common"
-	"github.com/rainu/ask-mai/config/llm"
-	"github.com/rainu/ask-mai/config/llm/tools"
+	"github.com/rainu/ask-mai/config/model"
+	"github.com/rainu/ask-mai/config/model/common"
+	"github.com/rainu/ask-mai/config/model/llm"
+	"github.com/rainu/ask-mai/config/model/llm/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"strings"
@@ -11,7 +12,7 @@ import (
 )
 
 func Test_processYaml(t *testing.T) {
-	c := &Config{}
+	c := &model.Config{}
 
 	sr := strings.NewReader(`
 ui:
@@ -157,33 +158,33 @@ debug:
     http-server: "127.0.0.1:5000"
 `)
 
-	require.NoError(t, processYaml(sr, c))
-	assert.Equal(t, &Config{
-		UI: UIConfig{
-			Window: WindowConfig{
+	require.NoError(t, ProcessYaml(sr, c))
+	assert.Equal(t, &model.Config{
+		UI: model.UIConfig{
+			Window: model.WindowConfig{
 				Title:            "Test Window",
 				InitialWidth:     common.NumberContainer{Expression: "800"},
 				MaxHeight:        common.NumberContainer{Expression: "600"},
 				InitialPositionX: common.NumberContainer{Expression: "100"},
 				InitialPositionY: common.NumberContainer{Expression: "100"},
 				InitialZoom:      common.NumberContainer{Expression: "1.0"},
-				BackgroundColor:  WindowBackgroundColor{R: 255, G: 255, B: 255, A: 255},
+				BackgroundColor:  model.WindowBackgroundColor{R: 255, G: 255, B: 255, A: 255},
 				StartState:       1,
 				AlwaysOnTop:      true,
 				Frameless:        true,
 				Resizeable:       true,
 				Translucent:      "never",
 			},
-			Prompt: PromptConfig{
+			Prompt: model.PromptConfig{
 				InitValue:       "Initial Prompt",
 				InitAttachments: []string{"attachment1", "attachment2"},
 				MinRows:         1,
 				MaxRows:         10,
-				SubmitShortcut: Shortcut{
+				SubmitShortcut: model.Shortcut{
 					Binding: []string{"alt+ctrl+meta+shift+enter"},
 				},
 			},
-			FileDialog: FileDialogConfig{
+			FileDialog: model.FileDialogConfig{
 				DefaultDirectory:           "/root",
 				ShowHiddenFiles:            true,
 				CanCreateDirectories:       true,
@@ -193,7 +194,7 @@ debug:
 				FilterPattern:              []string{"*.png"},
 			},
 			Stream: true,
-			QuitShortcut: Shortcut{
+			QuitShortcut: model.Shortcut{
 				Binding: []string{"alt+ctrl+meta+shift+escape"},
 			},
 			Theme:     "dark",
@@ -292,18 +293,18 @@ debug:
 				},
 			},
 		},
-		Printer: PrinterConfig{
+		Printer: model.PrinterConfig{
 			Format:     "json",
 			TargetsRaw: []string{"stdout"},
 		},
-		Debug: DebugConfig{
+		Debug: model.DebugConfig{
 			LogLevel:     1,
 			PprofAddress: ":1312",
-			VueDevTools: VueDevToolsConfig{
+			VueDevTools: model.VueDevToolsConfig{
 				Host: "localhost",
 				Port: 1312,
 			},
-			WebKit: WebKitInspectorConfig{
+			WebKit: model.WebKitInspectorConfig{
 				OpenInspectorOnStartup: true,
 				HttpServerAddress:      "127.0.0.1:5000",
 			},

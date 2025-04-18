@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"github.com/rainu/ask-mai/config"
+	"github.com/rainu/ask-mai/config/model"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"math"
 )
 
-func (c *Controller) GetApplicationConfig() config.Config {
+func (c *Controller) GetApplicationConfig() model.Config {
 	return *c.appConfig
 }
 

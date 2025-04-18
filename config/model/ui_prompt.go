@@ -1,4 +1,4 @@
-package config
+package model
 
 type PromptConfig struct {
 	InitValue       string   `yaml:"value" short:"p" usage:"The (initial) prompt to use"`

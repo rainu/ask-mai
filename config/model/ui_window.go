@@ -1,9 +1,9 @@
-package config
+package model
 
 import (
 	"errors"
 	"fmt"
-	"github.com/rainu/ask-mai/config/common"
+	"github.com/rainu/ask-mai/config/model/common"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/wailsapp/wails/v2/pkg/options"
 )

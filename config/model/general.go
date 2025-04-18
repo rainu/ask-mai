@@ -1,7 +1,7 @@
-package config
+package model
 
 import (
-	"github.com/rainu/ask-mai/config/llm"
+	"github.com/rainu/ask-mai/config/model/llm"
 )
 
 type Config struct {

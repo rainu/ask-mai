@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"github.com/rainu/ask-mai/config"
+	"github.com/rainu/ask-mai/config/model"
 	"github.com/rainu/ask-mai/controller"
 	"github.com/rainu/ask-mai/health"
 	cmdchain "github.com/rainu/go-command-chain"
@@ -39,7 +40,7 @@ func init() {
 }
 
 // this function will be set by debug.go:init() - if "debug" flag is available
-var onStartUp func(c *config.Config)
+var onStartUp func(c *model.Config)
 
 func main() {
 	buildMode := slices.ContainsFunc(os.Environ(), func(s string) bool {

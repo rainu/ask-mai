@@ -6,7 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
-	"github.com/rainu/ask-mai/config/llm/tools"
+	"github.com/rainu/ask-mai/config/model/llm/tools"
+	cYaml "github.com/rainu/ask-mai/config/yml"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms/tools/command"
 	http2 "github.com/rainu/ask-mai/llms/tools/http"
@@ -95,7 +96,7 @@ func printHelpConfig(output io.Writer, fields resolvedFieldInfos) {
 	table.Render()
 
 	fmt.Fprintf(output, "\nYaml lookup file locations:\n")
-	for _, location := range yamlLookupLocations() {
+	for _, location := range cYaml.LookupLocations() {
 		fmt.Fprintf(output, "  - %s\n", location)
 	}
 }

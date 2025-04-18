@@ -1,4 +1,4 @@
-package config
+package model
 
 type History struct {
 	Path string `yaml:"path" usage:"The path to the history file. If empty, no history will be used"`

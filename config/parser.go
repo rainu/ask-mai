@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"github.com/rainu/ask-mai/config/model"
+	"github.com/rainu/ask-mai/config/yml"
 	"os"
 	"reflect"
 	"slices"
@@ -10,7 +12,7 @@ import (
 
 const EnvironmentPrefix = "ASK_MAI_"
 
-func Parse(arguments []string, env []string) *Config {
+func Parse(arguments []string, env []string) *model.Config {
 	c := defaultConfig()
 
 	fields := scanConfigTags(nil, c)
@@ -19,7 +21,7 @@ func Parse(arguments []string, env []string) *Config {
 	processArguments(arguments, fields)
 	processEnvironment(env, fields)
 
-	processYamlFiles(c)
+	yml.ProcessYamlFiles(c)
 
 	// again because otherwise the config content will override the command line arguments and environment variables
 	processEnvironment(env, fields)
@@ -29,9 +31,9 @@ func Parse(arguments []string, env []string) *Config {
 	for _, target := range c.Printer.TargetsRaw {
 		target = strings.TrimSpace(target)
 
-		if target == PrinterTargetOut {
+		if target == model.PrinterTargetOut {
 			c.Printer.Targets = append(c.Printer.Targets, os.Stdout)
-		} else if target == PrinterTargetErr {
+		} else if target == model.PrinterTargetErr {
 			c.Printer.Targets = append(c.Printer.Targets, os.Stderr)
 		} else {
 			file, err := os.OpenFile(target, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)

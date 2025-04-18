@@ -2,9 +2,10 @@ package config
 
 import (
 	"github.com/kirsle/configdir"
-	"github.com/rainu/ask-mai/config/common"
-	"github.com/rainu/ask-mai/config/llm"
-	"github.com/rainu/ask-mai/config/llm/tools"
+	"github.com/rainu/ask-mai/config/model"
+	"github.com/rainu/ask-mai/config/model/common"
+	"github.com/rainu/ask-mai/config/model/llm"
+	"github.com/rainu/ask-mai/config/model/llm/tools"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms"
 	"github.com/tmc/langchaingo/llms/openai"
@@ -16,23 +17,23 @@ import (
 	"runtime"
 )
 
-func defaultConfig() (result *Config) {
+func defaultConfig() (result *model.Config) {
 	confPath := configdir.LocalConfig("ask-mai")
 	confPath = path.Join(confPath, "history")
 
-	result = &Config{
-		Debug: DebugConfig{
+	result = &model.Config{
+		Debug: model.DebugConfig{
 			LogLevel:     int(slog.LevelError),
 			PprofAddress: ":6060",
-			VueDevTools: VueDevToolsConfig{
+			VueDevTools: model.VueDevToolsConfig{
 				Host: "",
 				Port: 8098,
 			},
-			WebKit: WebKitInspectorConfig{
+			WebKit: model.WebKitInspectorConfig{
 				OpenInspectorOnStartup: false,
 				HttpServerAddress:      "",
 			},
-			RestartShortcut: Shortcut{Binding: []string{"Alt+KeyR"}},
+			RestartShortcut: model.Shortcut{Binding: []string{"Alt+KeyR"}},
 			PrintVersion:    false,
 		},
 		LLM: llm.LLMConfig{
@@ -79,47 +80,47 @@ func defaultConfig() (result *Config) {
 				Model:   "gpt-4o-mini",
 			},
 		},
-		UI: UIConfig{
-			Prompt: PromptConfig{
+		UI: model.UIConfig{
+			Prompt: model.PromptConfig{
 				MinRows:         1,
 				MaxRows:         4,
-				SubmitShortcut:  Shortcut{Binding: []string{"Alt+Enter", "Alt+NumpadEnter"}},
+				SubmitShortcut:  model.Shortcut{Binding: []string{"Alt+Enter", "Alt+NumpadEnter"}},
 				PinTop:          true,
 				InitAttachments: []string{},
 			},
-			FileDialog: FileDialogConfig{
+			FileDialog: model.FileDialogConfig{
 				ShowHiddenFiles:            true,
 				ResolveAliases:             true,
 				TreatPackagesAsDirectories: true,
 				FilterDisplay:              []string{},
 				FilterPattern:              []string{},
 			},
-			Window: WindowConfig{
+			Window: model.WindowConfig{
 				Title:            "Prompt - Ask mAI",
 				InitialWidth:     common.NumberContainer{Expression: expression.VarNameScreens + ".CurrentScreen.Dimension.Width/2"},
 				MaxHeight:        common.NumberContainer{Expression: expression.VarNameScreens + ".CurrentScreen.Dimension.Height/3"},
 				InitialPositionX: common.NumberContainer{Expression: expression.VarNameScreens + ".CurrentScreen.Dimension.Width/4"},
 				InitialPositionY: common.NumberContainer{Expression: "0"},
 				InitialZoom:      common.NumberContainer{Expression: "1.0"},
-				BackgroundColor:  WindowBackgroundColor{R: 255, G: 255, B: 255, A: 192},
+				BackgroundColor:  model.WindowBackgroundColor{R: 255, G: 255, B: 255, A: 192},
 				StartState:       int(options.Normal),
-				Translucent:      TranslucentHover,
+				Translucent:      model.TranslucentHover,
 				Frameless:        true,
 				AlwaysOnTop:      true,
 				Resizeable:       true,
 			},
-			QuitShortcut: Shortcut{Binding: []string{"Escape"}},
-			Theme:        ThemeSystem,
+			QuitShortcut: model.Shortcut{Binding: []string{"Escape"}},
+			Theme:        model.ThemeSystem,
 			CodeStyle:    "github",
 			Language:     os.Getenv("LANG"),
 		},
-		History: History{
+		History: model.History{
 			Path: confPath,
 		},
-		Printer: PrinterConfig{
-			Format:     PrinterFormatJSON,
+		Printer: model.PrinterConfig{
+			Format:     model.PrinterFormatJSON,
 			Targets:    []io.WriteCloser{os.Stdout},
-			TargetsRaw: []string{PrinterTargetOut},
+			TargetsRaw: []string{model.PrinterTargetOut},
 		},
 	}
 

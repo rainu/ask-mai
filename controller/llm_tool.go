@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/rainu/ask-mai/config/llm/tools"
+	"github.com/rainu/ask-mai/config/model/llm/tools"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"log/slog"
