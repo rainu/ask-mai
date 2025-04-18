@@ -19,8 +19,8 @@ type Config struct {
 
 	Config string `config:"config" short:"c" yaml:"-" usage:"Path to the configuration yaml file"`
 
-	ActiveProfile string             `config:"profile" short:"P" usage:"Active profile name"`
-	Profiles      map[string]*Config `config:"" yaml:"profiles" usage:"Other configuration profiles. Each profile has the same structure as the main configuration."`
+	Profile  Profile            `config:"" yaml:"profile" usage:"Profile configuration: "`
+	Profiles map[string]*Config `config:"" yaml:"profiles" usage:"Other configuration profiles. Each profile has the same structure as the main configuration."`
 }
 
 func (c *Config) Validate() error {
@@ -62,9 +62,20 @@ func (c *Config) Validate() error {
 }
 
 func (c *Config) GetActiveProfile() *Config {
-	profile, ok := c.Profiles[c.ActiveProfile]
+	profile, ok := c.Profiles[c.Profile.Active]
 	if !ok {
 		return c
 	}
 	return profile
+}
+
+func (c *Config) GetProfiles() map[string]Profile {
+	result := map[string]Profile{}
+	result[""] = c.Profile
+
+	for name, config := range c.Profiles {
+		result[name] = config.Profile
+	}
+
+	return result
 }

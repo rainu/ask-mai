@@ -25,5 +25,9 @@
   "edit": {
     "apply": "Speichern",
     "cancel": "Abbrechen"
+  },
+  "profile": {
+    "title": "Wähle Profil",
+    "default": "Standard"
   }
 }

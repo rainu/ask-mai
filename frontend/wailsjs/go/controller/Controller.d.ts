@@ -10,6 +10,8 @@ export function GetApplicationConfig():Promise<model.Config>;
 
 export function GetAssetMeta(arg1:string):Promise<controller.AssetMeta>;
 
+export function GetAvailableProfiles():Promise<Record<string, model.Profile>>;
+
 export function GetCurrentConversation():Promise<controller.LLMMessages>;
 
 export function GetLastState():Promise<string>;

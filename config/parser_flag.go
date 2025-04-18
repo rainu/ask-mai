@@ -57,6 +57,10 @@ func processArguments(arguments []string, fields resolvedFieldInfos) {
 }
 
 func (f *resolvedFieldInfo) setupFlag() {
+	if f.Flag == "" {
+		return
+	}
+
 	switch f.Value.Type().String() {
 	case "*string":
 		sp := f.Value.Interface().(*string)

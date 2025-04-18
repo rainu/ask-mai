@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Chat from '../views/Chat.vue'
 import History from '../views/History.vue'
 import Edit from '../views/Edit.vue'
+import Profile from '../views/Profile.vue'
 
 const router = createRouter({
 	history: createWebHashHistory(),
@@ -21,6 +22,11 @@ const router = createRouter({
 			path: '/history',
 			name: 'History',
 			component: History,
+		},
+		{
+			path: '/profile',
+			name: 'Profile',
+			component: Profile,
 		},
 	],
 })

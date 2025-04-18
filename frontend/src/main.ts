@@ -3,7 +3,7 @@ import './debug.ts'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { Router } from 'vue-router'
+import { RouteMeta, Router } from 'vue-router'
 
 // Vuetify
 import '@mdi/font/css/materialdesignicons.css'
@@ -21,6 +21,7 @@ import { GetApplicationConfig } from '../wailsjs/go/controller/Controller'
 
 declare module '@vue/runtime-core' {
 	interface ComponentCustomProperties {
+		$route: RouteMeta
 		$router: Router
 		$i18n: I18nOptions
 		$t: (key: string, ...args: any[]) => string

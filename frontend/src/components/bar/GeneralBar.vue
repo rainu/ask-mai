@@ -18,6 +18,9 @@
 
 					<v-btn-toggle class="h-100" v-show="showOptions">
 						<slot name="option-buttons"></slot>
+						<v-btn @click="onNavigateProfile" v-if="availableProfilesCount > 1">
+							<v-icon size="x-large">mdi-application-cog-outline</v-icon>
+						</v-btn>
 					</v-btn-toggle>
 					<v-btn-toggle class="h-100">
 						<v-btn @click="toggleOptions">
@@ -35,6 +38,7 @@
 import { defineComponent } from 'vue'
 import { mapActions, mapState } from 'pinia'
 import { useGlobalStore } from '../../store/global.ts'
+import { GetAvailableProfiles } from '../../../wailsjs/go/controller/Controller'
 
 export default defineComponent({
 	name: 'GeneralBar',
@@ -51,14 +55,31 @@ export default defineComponent({
 			default: true,
 		}
 	},
+	data(){
+		return {
+			availableProfilesCount: 0
+		}
+	},
 	computed: {
 		...mapState(useGlobalStore, ['showOptions'])
 	},
 	methods: {
 		...mapActions(useGlobalStore, ['toggleOptions']),
+		onNavigateProfile(){
+			if(this.$route.name === 'Profile'){
+				this.$router.back()
+			} else {
+				this.$router.push({ name: 'Profile' })
+			}
+		},
 		onMinMaximize() {
 			this.$emit('minMax')
 		},
+	},
+	created() {
+		GetAvailableProfiles().then(profiles => {
+			this.availableProfilesCount = Object.entries(profiles).length
+		})
 	}
 })
 </script>

@@ -25,5 +25,9 @@
   "edit": {
     "apply": "Save",
     "cancel": "Cancel"
+  },
+  "profile": {
+    "title": "Pick profile",
+    "default": "Default"
   }
 }

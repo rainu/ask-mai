@@ -1242,6 +1242,22 @@ export namespace llm {
 
 export namespace model {
 	
+	export class Profile {
+	    Active: string;
+	    Icon: string;
+	    Description: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Profile(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Active = source["Active"];
+	        this.Icon = source["Icon"];
+	        this.Description = source["Description"];
+	    }
+	}
 	export class WebKitInspectorConfig {
 	    OpenInspectorOnStartup: boolean;
 	    HttpServerAddress: string;
@@ -1553,7 +1569,7 @@ export namespace model {
 	    History: History;
 	    Debug: DebugConfig;
 	    Config: string;
-	    ActiveProfile: string;
+	    Profile: Profile;
 	    Profiles: Record<string, Config>;
 	
 	    static createFrom(source: any = {}) {
@@ -1568,7 +1584,7 @@ export namespace model {
 	        this.History = this.convertValues(source["History"], History);
 	        this.Debug = this.convertValues(source["Debug"], DebugConfig);
 	        this.Config = source["Config"];
-	        this.ActiveProfile = source["ActiveProfile"];
+	        this.Profile = this.convertValues(source["Profile"], Profile);
 	        this.Profiles = this.convertValues(source["Profiles"], Config, true);
 	    }
 	
@@ -1590,6 +1606,7 @@ export namespace model {
 		    return a;
 		}
 	}
+	
 	
 	
 	
