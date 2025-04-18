@@ -1,4 +1,4 @@
-package yml
+package config
 
 import (
 	"github.com/rainu/ask-mai/config/model"
@@ -14,7 +14,7 @@ import (
 func Test_processYaml(t *testing.T) {
 	c := &model.Config{}
 
-	sr := strings.NewReader(`
+	yamlContent := `
 ui:
   window:
     title: Test Window
@@ -156,10 +156,15 @@ debug:
   webkit:
     open-inspector: true
     http-server: "127.0.0.1:5000"
-`)
+`
+	// add profile "test" with the same values as default
+	yamlContent += "\nprofiles:\n  test:\n" + strings.ReplaceAll(yamlContent, "\n", "\n    ")
 
-	require.NoError(t, ProcessYaml(sr, c))
-	assert.Equal(t, &model.Config{
+	sr := strings.NewReader(yamlContent)
+
+	require.NoError(t, processYaml(sr, c))
+
+	expDefConf := model.Config{
 		UI: model.UIConfig{
 			Window: model.WindowConfig{
 				Title:            "Test Window",
@@ -309,5 +314,12 @@ debug:
 				HttpServerAddress:      "127.0.0.1:5000",
 			},
 		},
-	}, c)
+	}
+
+	expConfig := expDefConf
+	expConfig.Profiles = map[string]*model.Config{
+		"test": &expDefConf,
+	}
+
+	assert.Equal(t, &expConfig, c)
 }

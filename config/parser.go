@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"github.com/rainu/ask-mai/config/model"
-	"github.com/rainu/ask-mai/config/yml"
 	"os"
 	"reflect"
 	"slices"
@@ -21,7 +20,7 @@ func Parse(arguments []string, env []string) *model.Config {
 	processArguments(arguments, fields)
 	processEnvironment(env, fields)
 
-	yml.ProcessYamlFiles(c)
+	processYamlFiles(c)
 
 	// again because otherwise the config content will override the command line arguments and environment variables
 	processEnvironment(env, fields)

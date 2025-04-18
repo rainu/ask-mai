@@ -3,6 +3,7 @@ module github.com/rainu/ask-mai
 go 1.24.0
 
 require (
+	dario.cat/mergo v1.0.0
 	github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17
 	github.com/gabriel-vasile/mimetype v1.4.8
 	github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
@@ -61,5 +62,7 @@ require (
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 )
+
+replace dario.cat/mergo => github.com/darccio/mergo v1.0.0
 
 replace github.com/tmc/langchaingo => github.com/rainu/langchaingo v0.0.0-20250326142153-c860a5d21c81

@@ -1,6 +1,8 @@
 package model
 
 import (
+	"dario.cat/mergo"
+	"fmt"
 	"github.com/rainu/ask-mai/config/model/llm"
 )
 
@@ -16,6 +18,8 @@ type Config struct {
 	Debug DebugConfig `config:"" yaml:"debug"`
 
 	Config string `config:"config" short:"c" yaml:"-" usage:"Path to the configuration yaml file"`
+
+	Profiles map[string]*Config `config:"" yaml:"profiles" usage:"Other configuration profiles. Each profile has the same structure as the main configuration."`
 }
 
 func (c *Config) Validate() error {
@@ -35,5 +39,31 @@ func (c *Config) Validate() error {
 		return ve
 	}
 
+	if ve := c.History.Validate(); ve != nil {
+		return ve
+	}
+
+	cWithoutProfiles := *c
+	cWithoutProfiles.Profiles = nil
+	for profileName, profile := range c.Profiles {
+		// merge "default"-config into profile
+		err := mergo.Merge(profile, cWithoutProfiles)
+		if err != nil {
+			return fmt.Errorf("Error merging profile '%s': %w", profileName, err)
+		}
+
+		if ve := profile.Validate(); ve != nil {
+			return fmt.Errorf("Error in profile '%s': %w", profileName, ve)
+		}
+	}
+
 	return nil
+}
+
+func (c *Config) GetProfile(name string) *Config {
+	profile, ok := c.Profiles[name]
+	if !ok {
+		return c
+	}
+	return profile
 }

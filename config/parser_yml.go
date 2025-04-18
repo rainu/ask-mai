@@ -1,4 +1,4 @@
-package yml
+package config
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"path"
 )
 
-func LookupLocations() (result []string) {
+func yamlLookupLocations() (result []string) {
 	result = append(result, "/"+path.Join("etc", ".ask-mai.yml"))
 	result = append(result, "/"+path.Join("etc", ".ask-mai.yaml"))
 	result = append(result, "/"+path.Join("etc", "ask-mai", "config.yml"))
@@ -41,16 +41,16 @@ func LookupLocations() (result []string) {
 	return
 }
 
-func ProcessYamlFiles(c *model.Config) {
-	for _, location := range LookupLocations() {
-		ProcessYamlFile(location, c)
+func processYamlFiles(c *model.Config) {
+	for _, location := range yamlLookupLocations() {
+		processYamlFile(location, c)
 	}
 	if c.Config != "" {
-		ProcessYamlFile(c.Config, c)
+		processYamlFile(c.Config, c)
 	}
 }
 
-func ProcessYamlFile(path string, c *model.Config) {
+func processYamlFile(path string, c *model.Config) {
 	f, err := os.Open(path)
 	if err != nil {
 		return
@@ -58,13 +58,13 @@ func ProcessYamlFile(path string, c *model.Config) {
 	defer f.Close()
 
 	slog.Debug("Processing yaml file", "file", path)
-	err = ProcessYaml(f, c)
+	err = processYaml(f, c)
 	if err != nil {
 		panic(fmt.Errorf("unable to process yaml file %s: %w", path, err))
 	}
 }
 
-func ProcessYaml(source io.Reader, c *model.Config) error {
+func processYaml(source io.Reader, c *model.Config) error {
 	err := yaml.NewDecoder(source).Decode(c)
 	if err != nil {
 		return fmt.Errorf("error while decoding yaml: %w", err)

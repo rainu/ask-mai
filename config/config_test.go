@@ -4,6 +4,7 @@ import (
 	"github.com/rainu/ask-mai/config/model"
 	"github.com/rainu/ask-mai/config/model/common"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"log/slog"
 	"testing"
 )
@@ -698,4 +699,28 @@ func TestConfig_Parse(t *testing.T) {
 			assert.Equal(t, tt.expected, *c)
 		})
 	}
+}
+
+func TestConfig_GetProfile(t *testing.T) {
+	toTest := defaultConfig()
+	toTest.UI.Theme = "dark"
+	toTest.LLM.Backend = "openai"
+	toTest.LLM.OpenAI.APIKey = common.Secret{Plain: "OPENAI_API_KEY"}
+	toTest.Profiles = map[string]*model.Config{
+		"light": {
+			UI: model.UIConfig{Theme: "light"},
+		},
+	}
+
+	require.NoError(t, toTest.Validate())
+
+	c := toTest.GetProfile("")
+	assert.Equal(t, *toTest, *c)
+
+	c = toTest.GetProfile("light")
+
+	assert.Nil(t, c.Profiles)
+	assert.Equal(t, "light", c.UI.Theme)
+	assert.Equal(t, "openai", c.LLM.Backend)
+	assert.Equal(t, "OPENAI_API_KEY", c.LLM.OpenAI.APIKey.Plain)
 }

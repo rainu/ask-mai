@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/olekukonko/tablewriter"
 	"github.com/rainu/ask-mai/config/model/llm/tools"
-	cYaml "github.com/rainu/ask-mai/config/yml"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms/tools/command"
 	http2 "github.com/rainu/ask-mai/llms/tools/http"
@@ -95,8 +94,25 @@ func printHelpConfig(output io.Writer, fields resolvedFieldInfos) {
 	}
 	table.Render()
 
+	fmt.Fprintf(output, "\nYou can define profiles. Each profile inherits the values of the 'root-config'. For example:\n")
+	fmt.Fprintf(output, `
+  llm:
+    backend: openai
+    openai:
+      api-key:
+        plain: "OPENAI_API_KEY"
+    call:
+      system-prompt: "You are a helpful assistant."
+  profiles:
+    evil:
+      llm:
+        call:
+          system-prompt: "You are a evil assistant."
+`)
+	fmt.Fprintf(output, "\nThe profile 'evil' will use the same api-key as the root-config, but it will overwrite the system-prompt.\n")
+
 	fmt.Fprintf(output, "\nYaml lookup file locations:\n")
-	for _, location := range cYaml.LookupLocations() {
+	for _, location := range yamlLookupLocations() {
 		fmt.Fprintf(output, "  - %s\n", location)
 	}
 }

@@ -1553,6 +1553,7 @@ export namespace model {
 	    History: History;
 	    Debug: DebugConfig;
 	    Config: string;
+	    Profiles: Record<string, Config>;
 	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);
@@ -1566,6 +1567,7 @@ export namespace model {
 	        this.History = this.convertValues(source["History"], History);
 	        this.Debug = this.convertValues(source["Debug"], DebugConfig);
 	        this.Config = source["Config"];
+	        this.Profiles = this.convertValues(source["Profiles"], Config, true);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
