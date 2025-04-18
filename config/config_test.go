@@ -717,7 +717,7 @@ func TestConfig_GetProfile(t *testing.T) {
 	c := toTest.GetActiveProfile()
 	assert.Equal(t, *toTest, *c)
 
-	c.ActiveProfile = "light"
+	c.Profile.Active = "light"
 	c = toTest.GetActiveProfile()
 
 	assert.Nil(t, c.Profiles)
