@@ -16,7 +16,7 @@
 
 		<v-container>
 			<v-list lines="three" density="compact" activatable class="pa-0">
-				<v-list-item v-for="p of profiles" :active="p.name === config.Profile.Active" @click="onChooseProfile(p.name)">
+				<v-list-item v-for="p of profiles" :key="p.name" :active="p.name === activeProfileName" @click="onChooseProfile(p.name)">
 					<template v-slot:prepend>
 						<v-avatar>
 							<v-icon v-if="p.icon">{{ p.icon }}</v-icon>
@@ -73,7 +73,7 @@ export default defineComponent({
 		}
 	},
 	computed: {
-		...mapState(useConfigStore, ['config']),
+		...mapState(useConfigStore, ['config', 'activeProfileName']),
 	},
 	methods: {
 		...mapActions(useConfigStore, ['setActiveProfile']),
