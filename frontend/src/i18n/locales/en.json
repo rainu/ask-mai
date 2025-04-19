@@ -29,5 +29,8 @@
   "profile": {
     "title": "Pick profile",
     "default": "Default"
+  },
+  "tool": {
+    "title": "Setup builtin tools"
   }
 }

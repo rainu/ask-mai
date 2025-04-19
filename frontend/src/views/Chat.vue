@@ -113,7 +113,7 @@ import ChatMessage, { ContentType, Role } from '../components/ChatMessage.vue'
 import ChatBar, { ChatInputType } from '../components/bar/ChatBar.vue'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import UserScrollDetector from '../components/UserScrollDetector.vue'
-import { controller } from '../../wailsjs/go/models.ts'
+import { controller, model } from '../../wailsjs/go/models.ts'
 import LLMAskArgs = controller.LLMAskArgs
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessage = controller.LLMMessage
@@ -124,6 +124,7 @@ import { useConfigStore } from '../store/config.ts'
 type State = {
 	input: ChatInputType
 	chatHistory: HistoryEntry[]
+	config: model.Config
 }
 
 type HistoryEntryOrDate = {
@@ -193,6 +194,7 @@ export default {
 	},
 	methods: {
 		...mapActions(useHistoryStore, ['setHistory', 'pushHistory', 'updateHistoryMessage', 'clearHistory']),
+		...mapActions(useConfigStore, ['setConfig']),
 		onZoom(factor: number) {
 			this.zoom = factor
 			this.adjustHeight()
@@ -365,6 +367,7 @@ export default {
 					const state = {
 						input: this.input,
 						chatHistory: this.chatHistory,
+						config: this.config,
 					} as State
 
 					Restart(JSON.stringify(state))
@@ -378,6 +381,7 @@ export default {
 				const state = JSON.parse(stateAsString) as State
 				this.input = state.input
 				this.setHistory(state.chatHistory)
+				this.setConfig(state.config)
 			}
 
 			AppMounted()

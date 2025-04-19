@@ -21,6 +21,9 @@
 						<v-btn @click="onNavigateProfile" v-if="availableProfilesCount > 1">
 							<v-icon size="x-large">mdi-application-cog-outline</v-icon>
 						</v-btn>
+						<v-btn @click="onNavigateTool">
+							<v-icon size="x-large">mdi-tools</v-icon>
+						</v-btn>
 					</v-btn-toggle>
 					<v-btn-toggle class="h-100">
 						<v-btn @click="toggleOptions">
@@ -70,6 +73,13 @@ export default defineComponent({
 				this.$router.back()
 			} else {
 				this.$router.push({ name: 'Profile' })
+			}
+		},
+		onNavigateTool(){
+			if(this.$route.name === 'Tool'){
+				this.$router.back()
+			} else {
+				this.$router.push({ name: 'Tool' })
 			}
 		},
 		onMinMaximize() {

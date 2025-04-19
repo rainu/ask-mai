@@ -3,7 +3,7 @@
 		<v-row no-gutters>
 			<v-col cols="12">
 				<v-btn block disabled class="h-100 text-none">
-					{{ $t('profile.title') }}
+					{{ $t('tool.title') }}
 				</v-btn>
 			</v-col>
 		</v-row>
@@ -20,9 +20,8 @@ import { mapState } from 'pinia'
 import { useConfigStore } from '../../store/config.ts'
 
 export default defineComponent({
-	name: 'ProfileBar',
+	name: 'ToolBar',
 	components: { GeneralBar },
-	emits: ['onSave'],
 	computed: {
 		...mapState(useConfigStore, ['config']),
 	},

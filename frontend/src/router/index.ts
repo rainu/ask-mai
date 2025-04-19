@@ -4,6 +4,7 @@ import Chat from '../views/Chat.vue'
 import History from '../views/History.vue'
 import Edit from '../views/Edit.vue'
 import Profile from '../views/Profile.vue'
+import Tool from '../views/Tool.vue'
 
 const router = createRouter({
 	history: createWebHashHistory(),
@@ -27,6 +28,11 @@ const router = createRouter({
 			path: '/profile',
 			name: 'Profile',
 			component: Profile,
+		},
+		{
+			path: '/tool',
+			name: 'Tool',
+			component: Tool,
 		},
 	],
 })

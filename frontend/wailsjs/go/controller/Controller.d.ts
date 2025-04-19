@@ -3,6 +3,7 @@
 import {model} from '../models';
 import {controller} from '../models';
 import {history} from '../models';
+import {tools} from '../models';
 
 export function AppMounted():Promise<void>;
 
@@ -41,6 +42,8 @@ export function OpenFileDialog(arg1:controller.OpenFileDialogArgs):Promise<Array
 export function Restart(arg1:string):Promise<void>;
 
 export function SetActiveProfile(arg1:string):Promise<model.Config>;
+
+export function SetBuiltinTools(arg1:tools.BuiltIns):Promise<void>;
 
 export function Shutdown():Promise<void>;
 
