@@ -18,6 +18,7 @@ import (
 )
 
 func BuildFromConfig(cfg *model.Config, lastState string, buildMode bool) (ctrl *Controller, err error) {
+	activeCfg := cfg.GetActiveProfile()
 	ctrl = &Controller{
 		appConfig: cfg,
 		lastState: lastState,
@@ -29,35 +30,35 @@ func BuildFromConfig(cfg *model.Config, lastState string, buildMode bool) (ctrl 
 	}
 
 	printer := io.MultiResponsePrinter{}
-	if cfg.Printer.Format == model.PrinterFormatPlain {
-		for _, target := range cfg.Printer.Targets {
+	if activeCfg.Printer.Format == model.PrinterFormatPlain {
+		for _, target := range activeCfg.Printer.Targets {
 			printer.Printers = append(printer.Printers, &io.PlainResponsePrinter{Target: target})
 		}
-	} else if cfg.Printer.Format == model.PrinterFormatJSON {
-		for _, target := range cfg.Printer.Targets {
+	} else if activeCfg.Printer.Format == model.PrinterFormatJSON {
+		for _, target := range activeCfg.Printer.Targets {
 			printer.Printers = append(printer.Printers, &io.JsonResponsePrinter{Target: target})
 		}
 	}
 	ctrl.printer = printer
 
-	ctrl.aiModel, err = cfg.LLM.BuildLLM()
+	ctrl.aiModel, err = activeCfg.LLM.BuildLLM()
 	if err != nil {
 		err = fmt.Errorf("error creating ai model: %w", err)
 		return
 	}
 
-	if cfg.UI.Prompt.InitValue != "" && lastState == "" {
+	if activeCfg.UI.Prompt.InitValue != "" && lastState == "" {
 		now := time.Now().Unix()
 		// ask the model the first question in background
 		message := LLMMessage{
 			ContentParts: []LLMMessageContentPart{{
 				Type:    LLMMessageContentPartTypeText,
-				Content: cfg.UI.Prompt.InitValue,
+				Content: activeCfg.UI.Prompt.InitValue,
 			}},
 			Role:    string(langChainLLM.ChatMessageTypeHuman),
 			Created: now,
 		}
-		for _, attachment := range cfg.UI.Prompt.InitAttachments {
+		for _, attachment := range activeCfg.UI.Prompt.InitAttachments {
 			message.ContentParts = append(message.ContentParts, LLMMessageContentPart{
 				Type:    LLMMessageContentPartTypeAttachment,
 				Content: attachment,
@@ -68,12 +69,12 @@ func BuildFromConfig(cfg *model.Config, lastState string, buildMode bool) (ctrl 
 			History: LLMMessages{message},
 		}
 
-		if cfg.LLM.CallOptions.SystemPrompt != "" {
+		if activeCfg.LLM.CallOptions.SystemPrompt != "" {
 			// add the system prompt to the history
 			sysPrompt := LLMMessage{
 				ContentParts: []LLMMessageContentPart{{
 					Type:    LLMMessageContentPartTypeText,
-					Content: cfg.LLM.CallOptions.SystemPrompt,
+					Content: activeCfg.LLM.CallOptions.SystemPrompt,
 				}},
 				Role:    string(langChainLLM.ChatMessageTypeSystem),
 				Created: now,
