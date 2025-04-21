@@ -5,12 +5,18 @@ import (
 )
 
 type Environment struct {
-	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y tools.EnvironmentResult    `config:"-" yaml:"-"`
 	Z tools.EnvironmentArguments `config:"-" yaml:"-"`
+}
+
+func NewEnvironment() Environment {
+	return Environment{
+		Approval: ApprovalNever,
+	}
 }
 
 func (f Environment) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (f Environment) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "getEnvironment",
-		NeedsApproval: f.NeedsApproval,
-		Description:   tools.EnvironmentDefinition.Description,
-		Parameters:    tools.EnvironmentDefinition.Parameter,
-		CommandFn:     tools.EnvironmentDefinition.Function,
+		Name:        "getEnvironment",
+		Approval:    f.Approval,
+		Description: tools.EnvironmentDefinition.Description,
+		Parameters:  tools.EnvironmentDefinition.Parameter,
+		CommandFn:   tools.EnvironmentDefinition.Function,
 	}
 }

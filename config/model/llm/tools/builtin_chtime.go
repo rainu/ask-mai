@@ -5,12 +5,18 @@ import (
 )
 
 type ChangeTimes struct {
-	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y file.ChangeTimesResult    `config:"-" yaml:"-"`
 	Z file.ChangeTimesArguments `config:"-" yaml:"-"`
+}
+
+func NewChangeTimes() ChangeTimes {
+	return ChangeTimes{
+		Approval: ApprovalNever,
+	}
 }
 
 func (f ChangeTimes) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (f ChangeTimes) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "changeTimes",
-		NeedsApproval: f.NeedsApproval,
-		Description:   file.ChangeTimesDefinition.Description,
-		Parameters:    file.ChangeTimesDefinition.Parameter,
-		CommandFn:     file.ChangeTimesDefinition.Function,
+		Name:        "changeTimes",
+		Approval:    f.Approval,
+		Description: file.ChangeTimesDefinition.Description,
+		Parameters:  file.ChangeTimesDefinition.Parameter,
+		CommandFn:   file.ChangeTimesDefinition.Function,
 	}
 }

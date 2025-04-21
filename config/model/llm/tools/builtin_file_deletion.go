@@ -5,12 +5,18 @@ import (
 )
 
 type FileDeletion struct {
-	Disable    bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NoApproval bool `config:"no-approval" yaml:"no-approval" usage:"Needs no user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y file.FileDeletionResult    `config:"-" yaml:"-"`
 	Z file.FileDeletionArguments `config:"-" yaml:"-"`
+}
+
+func NewFileDeletion() FileDeletion {
+	return FileDeletion{
+		Approval: ApprovalAlways,
+	}
 }
 
 func (f FileDeletion) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (f FileDeletion) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "deleteFile",
-		NeedsApproval: !f.NoApproval,
-		Description:   file.FileDeletionDefinition.Description,
-		Parameters:    file.FileDeletionDefinition.Parameter,
-		CommandFn:     file.FileDeletionDefinition.Function,
+		Name:        "deleteFile",
+		Approval:    f.Approval,
+		Description: file.FileDeletionDefinition.Description,
+		Parameters:  file.FileDeletionDefinition.Parameter,
+		CommandFn:   file.FileDeletionDefinition.Function,
 	}
 }

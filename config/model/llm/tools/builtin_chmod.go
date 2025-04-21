@@ -5,12 +5,18 @@ import (
 )
 
 type ChangeMode struct {
-	Disable    bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NoApproval bool `config:"no-approval" yaml:"no-approval" usage:"Needs no user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y file.ChangeModeResult    `config:"-" yaml:"-"`
 	Z file.ChangeModeArguments `config:"-" yaml:"-"`
+}
+
+func NewChangeMode() ChangeMode {
+	return ChangeMode{
+		Approval: ApprovalAlways,
+	}
 }
 
 func (f ChangeMode) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (f ChangeMode) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "changeMode",
-		NeedsApproval: !f.NoApproval,
-		Description:   file.ChangeModeDefinition.Description,
-		Parameters:    file.ChangeModeDefinition.Parameter,
-		CommandFn:     file.ChangeModeDefinition.Function,
+		Name:        "changeMode",
+		Approval:    f.Approval,
+		Description: file.ChangeModeDefinition.Description,
+		Parameters:  file.ChangeModeDefinition.Parameter,
+		CommandFn:   file.ChangeModeDefinition.Function,
 	}
 }

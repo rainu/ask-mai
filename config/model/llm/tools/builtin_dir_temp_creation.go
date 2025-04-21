@@ -5,12 +5,18 @@ import (
 )
 
 type DirectoryTempCreation struct {
-	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y file.DirectoryTempCreationResult    `config:"-" yaml:"-"`
 	Z file.DirectoryTempCreationArguments `config:"-" yaml:"-"`
+}
+
+func NewDirectoryTempCreation() DirectoryTempCreation {
+	return DirectoryTempCreation{
+		Approval: ApprovalNever,
+	}
 }
 
 func (f DirectoryTempCreation) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (f DirectoryTempCreation) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "createTempDirectory",
-		NeedsApproval: f.NeedsApproval,
-		Description:   file.DirectoryTempCreationDefinition.Description,
-		Parameters:    file.DirectoryTempCreationDefinition.Parameter,
-		CommandFn:     file.DirectoryTempCreationDefinition.Function,
+		Name:        "createTempDirectory",
+		Approval:    f.Approval,
+		Description: file.DirectoryTempCreationDefinition.Description,
+		Parameters:  file.DirectoryTempCreationDefinition.Parameter,
+		CommandFn:   file.DirectoryTempCreationDefinition.Function,
 	}
 }

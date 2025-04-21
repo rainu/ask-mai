@@ -5,12 +5,18 @@ import (
 )
 
 type FileCreation struct {
-	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y file.FileCreationResult    `config:"-" yaml:"-"`
 	Z file.FileCreationArguments `config:"-" yaml:"-"`
+}
+
+func NewFileCreation() FileCreation {
+	return FileCreation{
+		Approval: ApprovalNever,
+	}
 }
 
 func (f FileCreation) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (f FileCreation) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "createFile",
-		NeedsApproval: f.NeedsApproval,
-		Description:   file.FileCreationDefinition.Description,
-		Parameters:    file.FileCreationDefinition.Parameter,
-		CommandFn:     file.FileCreationDefinition.Function,
+		Name:        "createFile",
+		Approval:    f.Approval,
+		Description: file.FileCreationDefinition.Description,
+		Parameters:  file.FileCreationDefinition.Parameter,
+		CommandFn:   file.FileCreationDefinition.Function,
 	}
 }

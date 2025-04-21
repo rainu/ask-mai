@@ -35,7 +35,7 @@ func TestCommandExpression_CommandFn(t *testing.T) {
 				},
 				"required": []string{"path"},
 			},
-			NeedsApproval: false,
+			Approval: "false",
 			Environment: map[string]string{
 				"TEST_ENV": "test",
 			},

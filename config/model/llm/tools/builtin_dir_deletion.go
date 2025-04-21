@@ -5,12 +5,18 @@ import (
 )
 
 type DirectoryDeletion struct {
-	Disable    bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NoApproval bool `config:"no-approval" yaml:"no-approval" usage:"Needs no user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y file.DirectoryDeletionResult    `config:"-" yaml:"-"`
 	Z file.DirectoryDeletionArguments `config:"-" yaml:"-"`
+}
+
+func NewDirectoryDeletion() DirectoryDeletion {
+	return DirectoryDeletion{
+		Approval: ApprovalAlways,
+	}
 }
 
 func (f DirectoryDeletion) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (f DirectoryDeletion) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "deleteDirectory",
-		NeedsApproval: !f.NoApproval,
-		Description:   file.DirectoryDeletionDefinition.Description,
-		Parameters:    file.DirectoryDeletionDefinition.Parameter,
-		CommandFn:     file.DirectoryDeletionDefinition.Function,
+		Name:        "deleteDirectory",
+		Approval:    f.Approval,
+		Description: file.DirectoryDeletionDefinition.Description,
+		Parameters:  file.DirectoryDeletionDefinition.Parameter,
+		CommandFn:   file.DirectoryDeletionDefinition.Function,
 	}
 }

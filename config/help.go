@@ -127,7 +127,36 @@ func printHelpStyles(output io.Writer) {
 func printHelpExpression(output io.Writer) {
 	fmt.Fprintf(output, "The expression language is JavaScript. You can use the following variables and functions:\n")
 	fmt.Fprintf(output, "\nFunctions:\n")
-	fmt.Fprintf(output, "  - %s: writes a message to the console.\n", expression.FuncNameLog)
+	fmt.Fprintf(output, "  - %s(...args): writes a message to the console.\n", expression.FuncNameLog)
+
+	js := bytes.Buffer{}
+	je := json.NewEncoder(&js)
+	je.SetIndent("   ", "  ")
+	je.Encode(command.CommandDescriptor{
+		Command:   "/path/to/command",
+		Arguments: []string{"arg1", "...argN"},
+		Environment: map[string]string{
+			"ENV_VAR": "value",
+		},
+		AdditionalEnvironment: map[string]string{
+			"ADDITIONAL_ENV_VAR": "value",
+		},
+		WorkingDirectory: "/path/to/working/dir",
+	})
+	fmt.Fprintf(output, "  - %s(%s): run a command.\n", expression.FuncNameRun, strings.TrimSpace(js.String()))
+
+	js = bytes.Buffer{}
+	je = json.NewEncoder(&js)
+	je.SetIndent("   ", "  ")
+	je.Encode(http2.CallDescriptor{
+		Method: http.MethodPost,
+		Url:    "https://example.com",
+		Header: map[string]string{
+			"Content-Type": "application/json",
+		},
+		StringBody: `{"msg": "hello world"}`,
+	})
+	fmt.Fprintf(output, "  - %s(%s): do a http call.\n", expression.FuncNameFetch, strings.TrimSpace(js.String()))
 
 	fmt.Fprintf(output, "\nVariables:\n")
 
@@ -201,8 +230,8 @@ func printHelpTool(output io.Writer) {
 				"USER":  "rainu",
 				"SHELL": "/bin/bash",
 			},
-			WorkingDir:    "/tmp",
-			NeedsApproval: true,
+			WorkingDir: "/tmp",
+			Approval:   "true",
 		},
 		{
 			Name:        "echo",
@@ -220,8 +249,8 @@ func printHelpTool(output io.Writer) {
 			AdditionalEnvironment: map[string]string{
 				"ASK_MAI_ARGS": "$@",
 			},
-			Command:       "/usr/bin/echo",
-			NeedsApproval: false,
+			Command:  "/usr/bin/echo",
+			Approval: "false",
 		},
 	}
 
@@ -246,6 +275,25 @@ func printHelpTool(output io.Writer) {
 		},
 	})
 
+	fmt.Fprintf(output, "\nThe approval is always an js-expression. It will be evaluated each time the LLM calls the function.\n")
+	fmt.Fprintf(output, "If the expression returns true, the user must give the approval before the function will be executed.\n")
+	fmt.Fprintf(output, "If the expression returns false, the user will NOT be asked for his approval.\n")
+	fmt.Fprintf(output, "You can use the same variables and functions which are available in all other expressions (see --help-expression):\n")
+	fmt.Fprintf(output, "The expression have access to the raw and parsed arguments from the LLM and the function definition itelf:\n")
+	fmt.Fprintf(output, "  const %s = ", expression.VarNameContext)
+
+	je := json.NewEncoder(output)
+	je.SetIndent("  ", "  ")
+
+	exampleDefs[0].Approval = `!ctx.args.path.startsWith('/tmp/')`
+	je.Encode(tools.ApprovalVariables{
+		FunctionDefinition: exampleDefs[0],
+		RawArguments:       `{"path": "/tmp/file"}`,
+		ParsedArguments: map[string]any{
+			"path": "/tmp/file",
+		},
+	})
+
 	fmt.Fprintf(output, "\nThe LLM will respond the arguments as JSON. You can use the following placeholders in the command:\n")
 	fmt.Fprintf(output, "  - $@: all arguments (1:1 the JSON from the LLM)\n")
 	fmt.Fprintf(output, "  - $<varName>: the value of <varName> in the LLM's JSON\n")
@@ -266,40 +314,8 @@ func printHelpTool(output io.Writer) {
 	fmt.Fprintf(output, "\nYou can also use these placeholder in (additional) environment and working directory variables.\n")
 
 	fmt.Fprintf(output, "\nIt is also possible to define a JavaScript expression (file).\n")
-	fmt.Fprintf(output, "You can use the following variables and functions:\n")
-	fmt.Fprintf(output, "\nFunctions:\n")
-	fmt.Fprintf(output, "  - %s(...args): writes a message to the console.\n", expression.FuncNameLog)
-
-	js := bytes.Buffer{}
-	je := json.NewEncoder(&js)
-	je.SetIndent("   ", "  ")
-	je.Encode(command.CommandDescriptor{
-		Command:   "/path/to/command",
-		Arguments: []string{"arg1", "...argN"},
-		Environment: map[string]string{
-			"ENV_VAR": "value",
-		},
-		AdditionalEnvironment: map[string]string{
-			"ADDITIONAL_ENV_VAR": "value",
-		},
-		WorkingDirectory: "/path/to/working/dir",
-	})
-	fmt.Fprintf(output, "  - %s(%s): run a command.\n", expression.FuncNameRun, strings.TrimSpace(js.String()))
-
-	js = bytes.Buffer{}
-	je = json.NewEncoder(&js)
-	je.SetIndent("   ", "  ")
-	je.Encode(http2.CallDescriptor{
-		Method: http.MethodPost,
-		Url:    "https://example.com",
-		Header: map[string]string{
-			"Content-Type": "application/json",
-		},
-		StringBody: `{"msg": "hello world"}`,
-	})
-	fmt.Fprintf(output, "  - %s(%s): do a http call.\n", expression.FuncNameFetch, strings.TrimSpace(js.String()))
-
-	fmt.Fprintf(output, "\nVariables:\n")
+	fmt.Fprintf(output, "You can use the same variables and functions which are available in all other expressions (see --help-expression):\n")
+	fmt.Fprintf(output, "Additional variables:\n")
 	fmt.Fprintf(output, "  const %s = ", expression.VarNameContext)
 
 	je = json.NewEncoder(output)
@@ -318,8 +334,7 @@ func printHelpTool(output io.Writer) {
 				},
 				"required": []string{"message"},
 			},
-			CommandExpr:   fmt.Sprintf(`"Echo: " + JSON.parse(%s.args).message`, expression.VarNameContext),
-			NeedsApproval: false,
+			CommandExpr: fmt.Sprintf(`"Echo: " + JSON.parse(%s.args).message`, expression.VarNameContext),
 		},
 		Arguments: `{"message": "hello world"}`,
 	})

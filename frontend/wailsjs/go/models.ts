@@ -1626,7 +1626,7 @@ export namespace tools {
 	
 	export class Http {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    Y: http.CallResult;
 	    Z: http.CallArguments;
 	
@@ -1637,7 +1637,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], http.CallResult);
 	        this.Z = this.convertValues(source["Z"], http.CallArguments);
 	    }
@@ -1662,9 +1662,7 @@ export namespace tools {
 	}
 	export class CommandExecution {
 	    Disable: boolean;
-	    NoApproval: boolean;
-	    NoApprovalCommands: string[];
-	    NoApprovalCommandsExpr: string[];
+	    Approval: string;
 	    Z: command.CommandExecutionArguments;
 	
 	    static createFrom(source: any = {}) {
@@ -1674,9 +1672,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NoApproval = source["NoApproval"];
-	        this.NoApprovalCommands = source["NoApprovalCommands"];
-	        this.NoApprovalCommandsExpr = source["NoApprovalCommandsExpr"];
+	        this.Approval = source["Approval"];
 	        this.Z = this.convertValues(source["Z"], command.CommandExecutionArguments);
 	    }
 	
@@ -1700,7 +1696,7 @@ export namespace tools {
 	}
 	export class DirectoryDeletion {
 	    Disable: boolean;
-	    NoApproval: boolean;
+	    Approval: string;
 	    Y: file.DirectoryDeletionResult;
 	    Z: file.DirectoryDeletionArguments;
 	
@@ -1711,7 +1707,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NoApproval = source["NoApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], file.DirectoryDeletionResult);
 	        this.Z = this.convertValues(source["Z"], file.DirectoryDeletionArguments);
 	    }
@@ -1736,7 +1732,7 @@ export namespace tools {
 	}
 	export class DirectoryTempCreation {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    Y: file.DirectoryTempCreationResult;
 	    // Go type: file
 	    Z: any;
@@ -1748,7 +1744,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], file.DirectoryTempCreationResult);
 	        this.Z = this.convertValues(source["Z"], null);
 	    }
@@ -1773,7 +1769,7 @@ export namespace tools {
 	}
 	export class DirectoryCreation {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    Y: file.DirectoryCreationResult;
 	    Z: file.DirectoryCreationArguments;
 	
@@ -1784,7 +1780,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], file.DirectoryCreationResult);
 	        this.Z = this.convertValues(source["Z"], file.DirectoryCreationArguments);
 	    }
@@ -1809,7 +1805,7 @@ export namespace tools {
 	}
 	export class FileDeletion {
 	    Disable: boolean;
-	    NoApproval: boolean;
+	    Approval: string;
 	    Y: file.FileDeletionResult;
 	    Z: file.FileDeletionArguments;
 	
@@ -1820,7 +1816,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NoApproval = source["NoApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], file.FileDeletionResult);
 	        this.Z = this.convertValues(source["Z"], file.FileDeletionArguments);
 	    }
@@ -1845,7 +1841,7 @@ export namespace tools {
 	}
 	export class FileReading {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    Y: file.FileReadingResult;
 	    Z: file.FileReadingArguments;
 	
@@ -1856,7 +1852,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], file.FileReadingResult);
 	        this.Z = this.convertValues(source["Z"], file.FileReadingArguments);
 	    }
@@ -1881,7 +1877,7 @@ export namespace tools {
 	}
 	export class FileAppending {
 	    Disable: boolean;
-	    NoApproval: boolean;
+	    Approval: string;
 	    Y: file.FileAppendingResult;
 	    Z: file.FileAppendingArguments;
 	
@@ -1892,7 +1888,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NoApproval = source["NoApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], file.FileAppendingResult);
 	        this.Z = this.convertValues(source["Z"], file.FileAppendingArguments);
 	    }
@@ -1917,7 +1913,7 @@ export namespace tools {
 	}
 	export class FileTempCreation {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    Y: file.FileTempCreationResult;
 	    Z: file.FileTempCreationArguments;
 	
@@ -1928,7 +1924,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], file.FileTempCreationResult);
 	        this.Z = this.convertValues(source["Z"], file.FileTempCreationArguments);
 	    }
@@ -1953,7 +1949,7 @@ export namespace tools {
 	}
 	export class FileCreation {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    Y: file.FileCreationResult;
 	    Z: file.FileCreationArguments;
 	
@@ -1964,7 +1960,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], file.FileCreationResult);
 	        this.Z = this.convertValues(source["Z"], file.FileCreationArguments);
 	    }
@@ -1989,7 +1985,7 @@ export namespace tools {
 	}
 	export class ChangeTimes {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    // Go type: file
 	    Y: any;
 	    Z: file.ChangeTimesArguments;
@@ -2001,7 +1997,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], null);
 	        this.Z = this.convertValues(source["Z"], file.ChangeTimesArguments);
 	    }
@@ -2026,7 +2022,7 @@ export namespace tools {
 	}
 	export class ChangeOwner {
 	    Disable: boolean;
-	    NoApproval: boolean;
+	    Approval: string;
 	    // Go type: file
 	    Y: any;
 	    Z: file.ChangeOwnerArguments;
@@ -2038,7 +2034,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NoApproval = source["NoApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], null);
 	        this.Z = this.convertValues(source["Z"], file.ChangeOwnerArguments);
 	    }
@@ -2063,7 +2059,7 @@ export namespace tools {
 	}
 	export class ChangeMode {
 	    Disable: boolean;
-	    NoApproval: boolean;
+	    Approval: string;
 	    // Go type: file
 	    Y: any;
 	    Z: file.ChangeModeArguments;
@@ -2075,7 +2071,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NoApproval = source["NoApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], null);
 	        this.Z = this.convertValues(source["Z"], file.ChangeModeArguments);
 	    }
@@ -2100,7 +2096,7 @@ export namespace tools {
 	}
 	export class Stats {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    Y: file.StatsResult;
 	    Z: file.StatsArguments;
 	
@@ -2111,7 +2107,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], file.StatsResult);
 	        this.Z = this.convertValues(source["Z"], file.StatsArguments);
 	    }
@@ -2136,7 +2132,7 @@ export namespace tools {
 	}
 	export class SystemTime {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new SystemTime(source);
@@ -2145,7 +2141,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	    }
 	}
 	export class EnvironmentArguments {
@@ -2174,7 +2170,7 @@ export namespace tools {
 	}
 	export class Environment {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    Y: EnvironmentResult;
 	    // Go type: EnvironmentArguments
 	    Z: any;
@@ -2186,7 +2182,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], EnvironmentResult);
 	        this.Z = this.convertValues(source["Z"], null);
 	    }
@@ -2251,7 +2247,7 @@ export namespace tools {
 	}
 	export class SystemInfo {
 	    Disable: boolean;
-	    NeedsApproval: boolean;
+	    Approval: string;
 	    Y: SystemInfoResult;
 	    // Go type: SystemInfoArguments
 	    Z: any;
@@ -2263,7 +2259,7 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Disable = source["Disable"];
-	        this.NeedsApproval = source["NeedsApproval"];
+	        this.Approval = source["Approval"];
 	        this.Y = this.convertValues(source["Y"], SystemInfoResult);
 	        this.Z = this.convertValues(source["Z"], null);
 	    }
@@ -2358,7 +2354,7 @@ export namespace tools {
 	    name: string;
 	    description: string;
 	    parameters: any;
-	    approval: boolean;
+	    approval: string;
 	    command?: string;
 	    commandExpr?: string;
 	    env?: Record<string, string>;

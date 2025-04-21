@@ -32,6 +32,29 @@ type BuiltIns struct {
 	Disable bool `config:"disable" yaml:"disable" usage:"Disable all builtin tools."`
 }
 
+func NewBuiltIns() *BuiltIns {
+	return &BuiltIns{
+		SystemInfo:            NewSystemInfo(),
+		Environment:           NewEnvironment(),
+		SystemTime:            NewSystemTime(),
+		Stats:                 NewStats(),
+		ChangeMode:            NewChangeMode(),
+		ChangeOwner:           NewChangeOwner(),
+		ChangeTimes:           NewChangeTimes(),
+		FileCreation:          NewFileCreation(),
+		FileTempCreation:      NewFileTempCreation(),
+		FileAppending:         NewFileAppending(),
+		FileReading:           NewFileReading(),
+		FileDeletion:          NewFileDeletion(),
+		DirectoryCreation:     NewDirectoryCreation(),
+		DirectoryTempCreation: NewDirectoryTempCreation(),
+		DirectoryDeletion:     NewDirectoryDeletion(),
+		CommandExec:           NewCommandExecution(),
+		Http:                  NewHttp(),
+		Disable:               false,
+	}
+}
+
 func (b BuiltIns) AsFunctionDefinitions() []FunctionDefinition {
 	if b.Disable {
 		return []FunctionDefinition{}

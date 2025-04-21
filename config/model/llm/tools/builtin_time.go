@@ -5,8 +5,14 @@ import (
 )
 
 type SystemTime struct {
-	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
+}
+
+func NewSystemTime() SystemTime {
+	return SystemTime{
+		Approval: ApprovalNever,
+	}
 }
 
 func (s SystemTime) AsFunctionDefinition() *FunctionDefinition {
@@ -15,10 +21,10 @@ func (s SystemTime) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "getSystemTime",
-		NeedsApproval: s.NeedsApproval,
-		Description:   tools.SystemTimeDefinition.Description,
-		Parameters:    tools.SystemTimeDefinition.Parameter,
-		CommandFn:     tools.SystemTimeDefinition.Function,
+		Name:        "getSystemTime",
+		Approval:    s.Approval,
+		Description: tools.SystemTimeDefinition.Description,
+		Parameters:  tools.SystemTimeDefinition.Parameter,
+		CommandFn:   tools.SystemTimeDefinition.Function,
 	}
 }

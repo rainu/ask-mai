@@ -5,12 +5,18 @@ import (
 )
 
 type SystemInfo struct {
-	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y tools.SystemInfoResult    `config:"-" yaml:"-"`
 	Z tools.SystemInfoArguments `config:"-" yaml:"-"`
+}
+
+func NewSystemInfo() SystemInfo {
+	return SystemInfo{
+		Approval: ApprovalNever,
+	}
 }
 
 func (s SystemInfo) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (s SystemInfo) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "getSystemInformation",
-		NeedsApproval: s.NeedsApproval,
-		Description:   tools.SystemInfoDefinition.Description,
-		Parameters:    tools.SystemInfoDefinition.Parameter,
-		CommandFn:     tools.SystemInfoDefinition.Function,
+		Name:        "getSystemInformation",
+		Approval:    s.Approval,
+		Description: tools.SystemInfoDefinition.Description,
+		Parameters:  tools.SystemInfoDefinition.Parameter,
+		CommandFn:   tools.SystemInfoDefinition.Function,
 	}
 }

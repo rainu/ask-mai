@@ -21,10 +21,10 @@ type CommandFn func(ctx context.Context, jsonArguments string) ([]byte, error)
 type ApprovalFn func(ctx context.Context, jsonArguments string) bool
 
 type FunctionDefinition struct {
-	Name          string `config:"name" yaml:"-" json:"name" usage:"The name of the function"`
-	Description   string `yaml:"description" json:"description" usage:"The description of the function"`
-	Parameters    any    `yaml:"parameters" json:"parameters" usage:"The parameter definition of the function"`
-	NeedsApproval bool   `yaml:"approval" json:"approval" usage:"Needs user approval to be executed"`
+	Name        string `config:"name" yaml:"-" json:"name" usage:"The name of the function"`
+	Description string `yaml:"description" json:"description" usage:"The description of the function"`
+	Parameters  any    `yaml:"parameters" json:"parameters" usage:"The parameter definition of the function"`
+	Approval    string `yaml:"approval" json:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	Command               string            `yaml:"command,omitempty" json:"command,omitempty" usage:"The command to execute. This is a format string with placeholders for the parameters. Example: /usr/bin/touch $path"`
 	CommandExpr           string            `yaml:"commandExpr,omitempty" json:"commandExpr,omitempty" usage:"JavaScript expression (or path to JS-file) to execute. See Tool-Help (--help-tool) for more information."`
@@ -126,9 +126,9 @@ func (p parsedArgs) Get(varName string) (string, error) {
 	return sVal, nil
 }
 
-func (f *FunctionDefinition) CheckApproval(ctx context.Context, jsonArgs string) bool {
+func (f *FunctionDefinition) NeedApproval(ctx context.Context, jsonArgs string) bool {
 	if f.ApprovalFn == nil {
-		return f.NeedsApproval
+		return Approval(f.Approval).NeedsApproval(ctx, jsonArgs, f)
 	}
 	return f.ApprovalFn(ctx, jsonArgs)
 }

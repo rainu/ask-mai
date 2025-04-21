@@ -5,12 +5,18 @@ import (
 )
 
 type Stats struct {
-	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y file.StatsResult    `config:"-" yaml:"-"`
 	Z file.StatsArguments `config:"-" yaml:"-"`
+}
+
+func NewStats() Stats {
+	return Stats{
+		Approval: ApprovalNever,
+	}
 }
 
 func (f Stats) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (f Stats) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "getStats",
-		NeedsApproval: f.NeedsApproval,
-		Description:   file.StatsDefinition.Description,
-		Parameters:    file.StatsDefinition.Parameter,
-		CommandFn:     file.StatsDefinition.Function,
+		Name:        "getStats",
+		Approval:    f.Approval,
+		Description: file.StatsDefinition.Description,
+		Parameters:  file.StatsDefinition.Parameter,
+		CommandFn:   file.StatsDefinition.Function,
 	}
 }

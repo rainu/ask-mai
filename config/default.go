@@ -43,13 +43,8 @@ func defaultConfig() (result *model.Config) {
 				TopP:        -1,
 			},
 			Tools: tools.Config{
-				RawTools: []string{},
-				BuiltInTools: tools.BuiltIns{
-					CommandExec: tools.CommandExecution{
-						NoApprovalCommands:     []string{},
-						NoApprovalCommandsExpr: []string{},
-					},
-				},
+				RawTools:     []string{},
+				BuiltInTools: *tools.NewBuiltIns(),
 			},
 			Anthropic: llm.AnthropicConfig{
 				Token: common.Secret{Command: common.SecretCommand{Args: []string{}}},

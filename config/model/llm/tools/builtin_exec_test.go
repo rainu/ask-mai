@@ -1,65 +1,63 @@
 package tools
 
 import (
+	"context"
+	"encoding/json"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms/tools/command"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
-func TestCalcApprovalExpr(t *testing.T) {
+func TestBuiltin_CommandExecution(t *testing.T) {
+	toTest := NewCommandExecution()
+
+	assert.True(t, toTest.AsFunctionDefinition().NeedApproval(context.Background(), ``))
+}
+
+func TestBuiltin_CommandExecution_Approval(t *testing.T) {
 	tests := []struct {
-		expression  string
-		args        command.CommandExecutionArguments
-		expected    bool
-		expectedErr error
+		expression string
+		args       command.CommandExecutionArguments
+		expected   bool
 	}{
 		{
-			expression.VarNameContext + ".name == 'test'",
+			expression.VarNameContext + ".args.name == 'test'",
 			command.CommandExecutionArguments{
 				Name: "test",
 			},
 			true,
-			nil,
 		},
 		{
-			expression.VarNameContext + `.name.endsWith('find') && ` + expression.VarNameContext + `.arguments.findIndex(a => a === "-exec") === -1`,
+			expression.VarNameContext + `.args.name.endsWith('find') && ` + expression.VarNameContext + `.args.arguments.findIndex(a => a === "-exec") === -1`,
 			command.CommandExecutionArguments{
 				Name:      "find",
 				Arguments: []string{"/"},
 			},
 			true,
-			nil,
 		},
 		{
-			expression.VarNameContext + `.name.endsWith('find') && ` + expression.VarNameContext + `.arguments.findIndex(a => a === "-exec") === -1`,
+			expression.VarNameContext + `.args.name.endsWith('find') && ` + expression.VarNameContext + `.args.arguments.findIndex(a => a === "-exec") === -1`,
 			command.CommandExecutionArguments{
 				Name:      "find",
 				Arguments: []string{"/", "-exec", "rm", "{}", ";"},
 			},
 			false,
-			nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.expression, func(t *testing.T) {
-			result, err := CalcApprovalExpr(tt.expression, tt.args)
+			toTest := NewCommandExecution()
+			toTest.Approval = tt.expression
 
-			if tt.expectedErr != nil {
-				if err == nil {
-					t.Errorf("Expected error, got nil")
-				}
-				if err.Error() != tt.expectedErr.Error() {
-					t.Errorf("Expected error %v, got %v", tt.expectedErr, err)
-				}
-			} else {
-				if err != nil {
-					t.Errorf("Expected no error, got %v", err)
-				}
-				if result != tt.expected {
-					t.Errorf("Expected %v, got %v", tt.expected, result)
-				}
-			}
+			j, err := json.Marshal(tt.args)
+			require.NoError(t, err)
+
+			result := toTest.AsFunctionDefinition().NeedApproval(context.Background(), string(j))
+
+			assert.Equal(t, tt.expected, result)
 		})
 	}
 }

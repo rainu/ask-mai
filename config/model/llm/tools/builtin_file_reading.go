@@ -5,12 +5,18 @@ import (
 )
 
 type FileReading struct {
-	Disable       bool `config:"disable" yaml:"disable" usage:"Disable tool"`
-	NeedsApproval bool `config:"approval" yaml:"approval" usage:"Needs user approval to be executed"`
+	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
+	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
 	Y file.FileReadingResult    `config:"-" yaml:"-"`
 	Z file.FileReadingArguments `config:"-" yaml:"-"`
+}
+
+func NewFileReading() FileReading {
+	return FileReading{
+		Approval: ApprovalNever,
+	}
 }
 
 func (f FileReading) AsFunctionDefinition() *FunctionDefinition {
@@ -19,10 +25,10 @@ func (f FileReading) AsFunctionDefinition() *FunctionDefinition {
 	}
 
 	return &FunctionDefinition{
-		Name:          "readTextFile",
-		NeedsApproval: f.NeedsApproval,
-		Description:   file.FileReadingDefinition.Description,
-		Parameters:    file.FileReadingDefinition.Parameter,
-		CommandFn:     file.FileReadingDefinition.Function,
+		Name:        "readTextFile",
+		Approval:    f.Approval,
+		Description: file.FileReadingDefinition.Description,
+		Parameters:  file.FileReadingDefinition.Parameter,
+		CommandFn:   file.FileReadingDefinition.Function,
 	}
 }
