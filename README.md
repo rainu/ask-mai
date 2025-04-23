@@ -89,6 +89,14 @@ ask-mai -b deepseek --deepseek-api-key=YOUR_DEEPSEEK_API_KEY
   * Choose between different languages (english, german)
   * Choose between different code themes (see help for all available themes)
 
+## Install this application
+
+### AUR (Arch Linux)
+
+```bash
+yay -S ask-mai
+```
+
 ## Download this application
 
 You can download the latest version of this application from the [releases page](https://github.com/rainu/ask-mai/releases).
