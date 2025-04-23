@@ -197,11 +197,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Publish AUR package
-        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
+      - name: Generate PKGBUILD
         env:
           VERSION: ${{ github.ref_name }}
           REV: ${{ github.run_number }}
+        run: |
+          ./build/generatePKGBUILD.sh > ./build/PKGBUILD
+          cat ./build/PKGBUILD
+
+      - name: Publish AUR package
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
         with:
           pkgname: ask-mai
           pkgbuild: ./build/PKGBUILD
