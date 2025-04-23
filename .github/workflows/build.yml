@@ -122,7 +122,7 @@ jobs:
         shell: bash
         run: |
           APP_DIR_NAME="$(cat wails.json | jq -r '.name' ).app"
-          
+
           wails build -platform ${{ matrix.build.platform }} -ldflags "${{ steps.ldflags.outputs.ldflags }}" -o ${{ matrix.build.name }}
           ditto -c -k ./build/bin/${APP_DIR_NAME} ./build/bin/${{ matrix.build.name }}.app.zip
           productbuild --component ./build/bin/${APP_DIR_NAME} ./build/bin/${{ matrix.build.name }}.pkg
@@ -177,7 +177,7 @@ jobs:
           echo "START BUILDING FLATPAK"
           sudo flatpak-builder .flatpak-build de.rainu.ask-mai.yml --repo=.flatpak-repo --install-deps-from=flathub --force-clean --default-branch=master --arch=x86_64 --ccache
           echo "END BUILDING FLATPAK"
-          
+
           echo "START BUNDLE FLATPAK"
           sudo flatpak build-bundle .flatpak-repo ask-mai-linux-amd64-debug.flatpak --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo --arch=x86_64 de.rainu.ask-mai master
           echo "END BUNDLE FLATPAK"
@@ -188,3 +188,25 @@ jobs:
         with:
           files: |
             ask-mai-linux-amd64-debug.flatpak
+
+  publish-aur:
+    name: "Publish to AUR"
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Publish AUR package
+        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
+        env:
+          VERSION: ${{ github.ref_name }}
+          REV: ${{ github.run_number }}
+        with:
+          pkgname: ask-mai
+          pkgbuild: ./build/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Update AUR package - https://github.com/rainu/ask-mai/commit/${{ github.sha }}
+          ssh_keyscan_types: rsa,ecdsa,ed25519
