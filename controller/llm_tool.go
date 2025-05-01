@@ -17,15 +17,11 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 		return nil, nil
 	}
 
-	tcMessage := &LLMMessage{
-		Id:      fmt.Sprintf("%d", time.Now().UnixNano()),
-		Role:    string(llms.ChatMessageTypeTool),
-		Created: time.Now().Unix(),
-	}
+	idBase := fmt.Sprintf("%d", time.Now().UnixNano())
 
 	if resp.Choices[0].Content != "" {
 		txtMessage := LLMMessage{
-			Id:   tcMessage.Id + "-0",
+			Id:   idBase + "-t",
 			Role: string(llms.ChatMessageTypeAI),
 			ContentParts: []LLMMessageContentPart{{
 				Type:    LLMMessageContentPartTypeText,
@@ -53,7 +49,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 
 	//validate tool calls
 	availableTools := c.getConfig().LLM.Tools.GetTools()
-	for _, call := range resp.Choices[0].ToolCalls {
+	for callIdx, call := range resp.Choices[0].ToolCalls {
 		fnDefinition, exists := availableTools[call.FunctionCall.Name]
 		if !exists {
 			return nil, fmt.Errorf("unknown tool: %s", call.FunctionCall.Name)
@@ -67,18 +63,24 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			})
 		}
 
-		tcMessage.ContentParts = append(tcMessage.ContentParts, LLMMessageContentPart{
-			Type: LLMMessageContentPartTypeToolCall,
-			Call: LLMMessageCall{
-				Id:            call.ID,
-				NeedsApproval: needsApproval,
-				BuiltIn:       fnDefinition.IsBuiltIn(),
-				Function:      call.FunctionCall.Name,
-				Arguments:     call.FunctionCall.Arguments,
-			},
-		})
+		tcMessage := LLMMessage{
+			Id:      fmt.Sprintf("%s-%d", idBase, callIdx),
+			Role:    string(llms.ChatMessageTypeTool),
+			Created: time.Now().Unix(),
+			ContentParts: []LLMMessageContentPart{{
+				Type: LLMMessageContentPartTypeToolCall,
+				Call: LLMMessageCall{
+					Id:            call.ID,
+					NeedsApproval: needsApproval,
+					BuiltIn:       fnDefinition.IsBuiltIn(),
+					Function:      call.FunctionCall.Name,
+					Arguments:     call.FunctionCall.Arguments,
+				},
+			}},
+		}
+		result = append(result, tcMessage)
+		runtime.EventsEmit(c.ctx, "llm:message:add", tcMessage)
 	}
-	runtime.EventsEmit(c.ctx, "llm:message:add", tcMessage)
 
 	wg := sync.WaitGroup{}
 
@@ -94,20 +96,21 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 					err = errors.Join(err, e)
 				}
 
-				for p := range tcMessage.ContentParts {
-					if tcMessage.ContentParts[p].Call.Id == call.ID {
-						tcMessage.ContentParts[p].Call.Result = &r
-						break
+				for _, tcMessage := range result {
+					for p := range tcMessage.ContentParts {
+						if tcMessage.ContentParts[p].Call.Id == call.ID {
+							tcMessage.ContentParts[p].Call.Result = &r
+							runtime.EventsEmit(c.ctx, "llm:message:update", tcMessage)
+							return
+						}
 					}
 				}
-				runtime.EventsEmit(c.ctx, "llm:message:update", tcMessage)
 			})
 		}(i)
 	}
 
 	wg.Wait()
 
-	result = append(result, *tcMessage)
 	return
 }
 
