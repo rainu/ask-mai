@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tmc/langchaingo/llms"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -78,4 +79,32 @@ func TestReadWrite(t *testing.T) {
 	assert.Len(t, entries, 2)
 	assert.Equal(t, entries[0].Meta.Timestamp, int64(7))
 	assert.Equal(t, entries[1].Meta.Timestamp, int64(3))
+}
+
+func TestNewReader_LargeLines(t *testing.T) {
+	testHistFile, err := os.CreateTemp(t.TempDir(), "history")
+	require.NoError(t, err)
+
+	testWriter := NewWriter(testHistFile.Name())
+	testReader := NewReader(testHistFile.Name())
+
+	e := Entry{
+		Meta: EntryMeta{},
+		Content: EntryContent{
+			Messages: []Message{
+				{
+					Id:           "Id",
+					Role:         "Role",
+					ContentParts: []MessageContentPart{{Type: "text", Content: strings.Repeat("lorem ipsum", 10000)}},
+					CreatedAt:    13,
+				},
+			},
+		},
+	}
+	require.NoError(t, testWriter.Write(e))
+
+	entries, err := testReader.GetLast(0, 1)
+	assert.NoError(t, err)
+	assert.Len(t, entries, 1)
+	assert.Equal(t, e, entries[0])
 }

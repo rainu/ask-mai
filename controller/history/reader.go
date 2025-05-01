@@ -81,13 +81,21 @@ func (r *Reader) readLines(skip, limit int, processor func(line string) error) e
 
 	rr := reversereader.NewReader(file)
 
-	scanner := bufio.NewScanner(rr)
+	reader := bufio.NewReader(rr)
 	lineCount := 0
 	processed := 0
 	skipped := 0
+	done := false
 
-	for scanner.Scan() {
-		line := scanner.Bytes()
+	for !done {
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			if err == io.EOF {
+				done = true
+			} else {
+				return fmt.Errorf("error reading history file: %s", err)
+			}
+		}
 
 		// because we are reading the file in reverse, we need to reverse the line
 		slices.Reverse(line)
@@ -115,10 +123,6 @@ func (r *Reader) readLines(skip, limit int, processor func(line string) error) e
 		}
 
 		lineCount++
-	}
-
-	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("error reading history file: %s", err)
 	}
 
 	return nil
