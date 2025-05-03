@@ -16,8 +16,10 @@ provides=('ask-mai')
 conflicts=('ask-mai')
 depends=('webkit2gtk')
 options=('!strip')
-source=("\$pkgname-binary-\$pkgver::https://github.com/rainu/ask-mai/releases/download/v\$pkgver/ask-mai-linux-amd64")
-sha256sums=('SKIP')
+source=("\$pkgname-\$pkgver.tar.gz::https://github.com/rainu/ask-mai/archive/v\$pkgver.tar.gz"
+        "\$pkgname-binary-\$pkgver::https://github.com/rainu/ask-mai/releases/download/v\$pkgver/ask-mai-linux-amd64")
+sha256sums=('SKIP'
+            'SKIP')
 
 package() {
   cd "ask-mai-\$pkgver"
