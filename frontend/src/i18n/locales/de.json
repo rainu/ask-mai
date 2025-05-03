@@ -17,6 +17,9 @@
         "access": "Zugriffszeit",
         "mod": "Änderungszeit"
       }
+    },
+    "mcp": {
+      "description": "Tool-Beschreibung"
     }
   },
   "history": {

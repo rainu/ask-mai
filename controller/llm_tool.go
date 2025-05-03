@@ -2,8 +2,11 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	mcp "github.com/metoro-io/mcp-golang"
+	internalMcp "github.com/rainu/ask-mai/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/config/model/llm/tools"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -49,18 +52,34 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 
 	//validate tool calls
 	availableTools := c.getConfig().LLM.Tools.GetTools()
+	availableMcpTools, err := c.getConfig().LLM.McpServer.ListTools(c.aiModelCtx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
+	}
+
 	for callIdx, call := range resp.Choices[0].ToolCalls {
-		fnDefinition, exists := availableTools[call.FunctionCall.Name]
-		if !exists {
+		fnDefinition, isTool := availableTools[call.FunctionCall.Name]
+		mcpToolInfo, isMcpTool := availableMcpTools[call.FunctionCall.Name]
+		if !isTool && !isMcpTool {
 			return nil, fmt.Errorf("unknown tool: %s", call.FunctionCall.Name)
 		}
 
+		isBuiltIn := false
+		needsApproval := false
+		mcpToolDescription := ""
+		if mcpToolInfo.Description != nil {
+			mcpToolDescription = *mcpToolInfo.Description
+		}
+
 		//create approval channel for tool calls that need approval
-		needsApproval := fnDefinition.NeedApproval(c.aiModelCtx, call.FunctionCall.Arguments)
-		if needsApproval {
-			c.toolApprovalMutex.Write(func() {
-				c.toolApprovalChannel[call.ID] = make(chan bool)
-			})
+		if isTool {
+			isBuiltIn = fnDefinition.IsBuiltIn()
+			needsApproval = fnDefinition.NeedApproval(c.aiModelCtx, call.FunctionCall.Arguments)
+			if needsApproval {
+				c.toolApprovalMutex.Write(func() {
+					c.toolApprovalChannel[call.ID] = make(chan bool)
+				})
+			}
 		}
 
 		tcMessage := LLMMessage{
@@ -70,11 +89,14 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			ContentParts: []LLMMessageContentPart{{
 				Type: LLMMessageContentPartTypeToolCall,
 				Call: LLMMessageCall{
-					Id:            call.ID,
-					NeedsApproval: needsApproval,
-					BuiltIn:       fnDefinition.IsBuiltIn(),
-					Function:      call.FunctionCall.Name,
-					Arguments:     call.FunctionCall.Arguments,
+					Id:                 call.ID,
+					NeedsApproval:      needsApproval,
+					BuiltIn:            isBuiltIn,
+					McpTool:            isMcpTool,
+					McpToolName:        mcpToolInfo.Name,
+					McpToolDescription: mcpToolDescription,
+					Function:           call.FunctionCall.Name,
+					Arguments:          call.FunctionCall.Arguments,
 				},
 			}},
 		}
@@ -90,7 +112,18 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			defer wg.Done()
 
 			call := resp.Choices[0].ToolCalls[i]
-			r, e := c.callTool(c.aiModelCtx, call, availableTools[call.FunctionCall.Name])
+
+			var r LLMMessageCallResult
+			var e error
+
+			if tool, ok := availableTools[call.FunctionCall.Name]; ok {
+				r, e = c.callTool(c.aiModelCtx, call, tool)
+			} else if tool, ok := availableMcpTools[call.FunctionCall.Name]; ok {
+				r, e = c.callMcpTool(c.aiModelCtx, call, tool)
+			} else {
+				e = fmt.Errorf("unknown tool: %s", call.FunctionCall.Name)
+			}
+
 			c.aiModelMutex.Write(func() {
 				if e != nil {
 					err = errors.Join(err, e)
@@ -152,6 +185,11 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefin
 	result.DurationMs = time.Since(t).Milliseconds()
 	result.Content = string(out)
 
+	if execErr != nil {
+		result.Error = fmt.Sprintf("Execution error: %s", execErr.Error())
+		err = nil // do not treat execution errors as error - the LLM will receive the error message
+	}
+
 	slog.Debug("Command stopped.",
 		"name", toolDefinition.Name,
 		"command", toolDefinition.Command,
@@ -160,14 +198,45 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefin
 		"error", result.Error,
 	)
 
+	return
+}
+
+func (c *Controller) callMcpTool(ctx context.Context, call llms.ToolCall, toolDefinition internalMcp.Tool) (result LLMMessageCallResult, err error) {
+	slog.Debug("Start calling mcp tool.", "name", toolDefinition.Name)
+
+	transport := toolDefinition.Transport.GetTransport()
+	defer transport.Close()
+
+	mcpClient := mcp.NewClient(transport)
+	_, err = mcpClient.Initialize(ctx)
 	if err != nil {
-		return
+		return result, fmt.Errorf("failed to initialize mcp client: %w", err)
 	}
 
-	if execErr != nil {
-		result.Error = fmt.Sprintf("Execution error: %s", execErr.Error())
+	var args any
+	err = json.Unmarshal([]byte(call.FunctionCall.Arguments), &args)
+	if err != nil {
+		return result, fmt.Errorf("failed to unmarshal tool call arguments: %w", err)
+	}
+
+	t := time.Now()
+	resp, callErr := mcpClient.CallTool(ctx, toolDefinition.Name, &args)
+
+	result.DurationMs = time.Since(t).Milliseconds()
+	content, _ := json.Marshal(resp)
+	result.Content = string(content)
+
+	if callErr != nil {
+		result.Error = fmt.Sprintf("Execution error: %s", callErr.Error())
 		err = nil // do not treat execution errors as error - the LLM will receive the error message
 	}
+
+	slog.Debug("MCP tool stopped.",
+		"name", toolDefinition.Name,
+		"argument", call.FunctionCall.Arguments,
+		"duration", result.DurationMs,
+		"error", result.Error,
+	)
 
 	return
 }

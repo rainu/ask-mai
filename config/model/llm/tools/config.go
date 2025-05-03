@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/tmc/langchaingo/llms"
 )
 
 const FunctionArgumentNameAll = "@"
@@ -67,26 +66,6 @@ func (t *Config) Validate() error {
 	}
 
 	return nil
-}
-
-func (t *Config) AsOptions() (opts []llms.CallOption) {
-	var tools []llms.Tool
-
-	for name, definition := range t.GetTools() {
-		tools = append(tools, llms.Tool{
-			Type: "function",
-			Function: &llms.FunctionDefinition{
-				Name:        name,
-				Description: definition.Description,
-				Parameters:  definition.Parameters,
-			},
-		})
-	}
-
-	if len(tools) > 0 {
-		opts = append(opts, llms.WithTools(tools))
-	}
-	return
 }
 
 func (t *Config) GetTools() map[string]FunctionDefinition {

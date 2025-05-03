@@ -1,9 +1,12 @@
 package llm
 
 import (
+	"context"
 	"fmt"
+	"github.com/rainu/ask-mai/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/config/model/llm/tools"
 	"github.com/rainu/ask-mai/llms"
+	langLLMS "github.com/tmc/langchaingo/llms"
 	"reflect"
 	"slices"
 	"strings"
@@ -28,6 +31,7 @@ type LLMConfig struct {
 
 	CallOptions CallOptionsConfig `yaml:"call" usage:"LLM-CALL: "`
 	Tools       tools.Config      `yaml:"tool" usage:"LLM-TOOLS: "`
+	McpServer   mcp.Config        `yaml:"mcp" usage:"MCP-SERVER: "`
 }
 
 func (c *LLMConfig) getBackend() llmConfig {
@@ -76,6 +80,9 @@ func (c *LLMConfig) Validate() error {
 	if ve := c.Tools.Validate(); ve != nil {
 		return ve
 	}
+	if ve := c.McpServer.Validate(); ve != nil {
+		return ve
+	}
 
 	return nil
 }
@@ -86,4 +93,46 @@ func (c *LLMConfig) BuildLLM() (llms.Model, error) {
 		return nil, fmt.Errorf("unknown backend: %s", c.Backend)
 	}
 	return b.BuildLLM()
+}
+
+func (c *LLMConfig) AsOptions(ctx context.Context) ([]langLLMS.CallOption, error) {
+	var tools []langLLMS.Tool
+
+	for name, definition := range c.Tools.GetTools() {
+		tools = append(tools, langLLMS.Tool{
+			Type: "function",
+			Function: &langLLMS.FunctionDefinition{
+				Name:        name,
+				Description: definition.Description,
+				Parameters:  definition.Parameters,
+			},
+		})
+	}
+
+	mcpTools, err := c.McpServer.ListTools(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
+	}
+
+	for key, toolDef := range mcpTools {
+		desc := ""
+		if toolDef.Description != nil {
+			desc = *toolDef.Description
+		}
+
+		tools = append(tools, langLLMS.Tool{
+			Type: "function",
+			Function: &langLLMS.FunctionDefinition{
+				Name:        key,
+				Description: desc,
+				Parameters:  toolDef.InputSchema,
+			},
+		})
+	}
+
+	opts := c.CallOptions.AsOptions()
+	if len(tools) > 0 {
+		opts = append(opts, langLLMS.WithTools(tools))
+	}
+	return opts, nil
 }

@@ -29,12 +29,15 @@ type LLMMessageContentPart struct {
 }
 
 type LLMMessageCall struct {
-	Id            string
-	Function      string
-	Arguments     string
-	NeedsApproval bool
-	BuiltIn       bool
-	Result        *LLMMessageCallResult
+	Id                 string
+	Function           string
+	Arguments          string
+	NeedsApproval      bool
+	BuiltIn            bool
+	McpTool            bool
+	McpToolName        string
+	McpToolDescription string
+	Result             *LLMMessageCallResult
 }
 
 type LLMMessageCallResult struct {
@@ -168,8 +171,11 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		})
 	}()
 
-	opts := c.getConfig().LLM.CallOptions.AsOptions()
-	opts = append(opts, c.getConfig().LLM.Tools.AsOptions()...)
+	opts, err := c.getConfig().LLM.AsOptions(c.aiModelCtx)
+	if err != nil {
+		return "", fmt.Errorf("error creating options: %w", err)
+	}
+
 	if c.getConfig().UI.Stream {
 		// streaming is enabled
 		opts = append(opts, llms.WithStreamingFunc(c.streamingFunc))

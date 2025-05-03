@@ -52,6 +52,8 @@
 
 				<BuiltinToolCallHttpCall :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('callHttp')" />
 
+				<McpToolCall :tc="tc" v-else-if="tc.McpTool" />
+
 				<GeneralToolCall :tc="tc" v-else />
 
 				<small class="d-flex justify-space-between px-2 pb-2 align-center">
@@ -123,6 +125,7 @@ import BuiltinToolCallHttpCall from './toolcall/BuiltinToolCallHttpCall.vue'
 import ChatMessageActions from './ChatMessageActions.vue'
 import { mapState } from 'pinia'
 import { useConfigStore } from '../store/config.ts'
+import McpToolCall from './toolcall/McpToolCall.vue'
 
 export enum Role {
 	System = 'system',
@@ -140,6 +143,7 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		McpToolCall,
 		ChatMessageActions,
 		BuiltinToolCallHttpCall,
 		BuiltinToolCallChangeTimes,

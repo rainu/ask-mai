@@ -145,6 +145,9 @@ export namespace controller {
 	    Arguments: string;
 	    NeedsApproval: boolean;
 	    BuiltIn: boolean;
+	    McpTool: boolean;
+	    McpToolName: string;
+	    McpToolDescription: string;
 	    Result?: LLMMessageCallResult;
 	
 	    static createFrom(source: any = {}) {
@@ -158,6 +161,9 @@ export namespace controller {
 	        this.Arguments = source["Arguments"];
 	        this.NeedsApproval = source["NeedsApproval"];
 	        this.BuiltIn = source["BuiltIn"];
+	        this.McpTool = source["McpTool"];
+	        this.McpToolName = source["McpToolName"];
+	        this.McpToolDescription = source["McpToolDescription"];
 	        this.Result = this.convertValues(source["Result"], LLMMessageCallResult);
 	    }
 	
@@ -1198,6 +1204,7 @@ export namespace llm {
 	    DeepSeek: DeepSeekConfig;
 	    CallOptions: CallOptionsConfig;
 	    Tools: tools.Config;
+	    McpServer: mcp.Config;
 	
 	    static createFrom(source: any = {}) {
 	        return new LLMConfig(source);
@@ -1216,6 +1223,7 @@ export namespace llm {
 	        this.DeepSeek = this.convertValues(source["DeepSeek"], DeepSeekConfig);
 	        this.CallOptions = this.convertValues(source["CallOptions"], CallOptionsConfig);
 	        this.Tools = this.convertValues(source["Tools"], tools.Config);
+	        this.McpServer = this.convertValues(source["McpServer"], mcp.Config);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1239,6 +1247,79 @@ export namespace llm {
 	
 	
 	
+
+}
+
+export namespace mcp {
+	
+	export class Command {
+	    Name: string;
+	    Arguments: string[];
+	    Environment: Record<string, string>;
+	    AdditionalEnvironment: Record<string, string>;
+	    WorkingDirectory: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Command(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Name = source["Name"];
+	        this.Arguments = source["Arguments"];
+	        this.Environment = source["Environment"];
+	        this.AdditionalEnvironment = source["AdditionalEnvironment"];
+	        this.WorkingDirectory = source["WorkingDirectory"];
+	    }
+	}
+	export class Http {
+	    BaseUrl: string;
+	    Endpoint: string;
+	    Headers: Record<string, string>;
+	
+	    static createFrom(source: any = {}) {
+	        return new Http(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.BaseUrl = source["BaseUrl"];
+	        this.Endpoint = source["Endpoint"];
+	        this.Headers = source["Headers"];
+	    }
+	}
+	export class Config {
+	    CommandServer: Command[];
+	    HttpServer: Http[];
+	
+	    static createFrom(source: any = {}) {
+	        return new Config(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.CommandServer = this.convertValues(source["CommandServer"], Command);
+	        this.HttpServer = this.convertValues(source["HttpServer"], Http);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 
 }
 

@@ -2,7 +2,7 @@ package tools
 
 import "reflect"
 
-const BuiltInPrefix = "__"
+const BuiltInPrefix = "_"
 
 type BuiltIns struct {
 	SystemInfo  SystemInfo  `config:"system-info" yaml:"system-info" usage:"System information tool: "`

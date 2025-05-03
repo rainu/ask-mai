@@ -4,6 +4,7 @@ import (
 	"github.com/rainu/ask-mai/config/model"
 	"github.com/rainu/ask-mai/config/model/common"
 	"github.com/rainu/ask-mai/config/model/llm"
+	"github.com/rainu/ask-mai/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/config/model/llm/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -143,6 +144,27 @@ llm:
             - arg1
         command: doTest.sh
         "approval": true
+  mcp:
+    command:
+      - name: docker
+        args:
+          - run
+          - --rm
+          - -i
+          - -e
+          - GITHUB_PERSONAL_ACCESS_TOKEN=github_
+          - ghcr.io/github/github-mcp-server
+        env:
+          TEST: test
+        additionalEnv:
+          ADDITIONAL_TEST: additional_test
+        workingDir: /home/user
+      - name: echo
+    http:
+      - baseUrl: http://localhost:8080
+        endpoint: /api/v1
+        headers:
+          Authorization: Bearer TOKEN
 print:
   format: json
   targets:
@@ -294,6 +316,33 @@ debug:
 						},
 						Command:  "doTest.sh",
 						Approval: "true",
+					},
+				},
+			},
+			McpServer: mcp.Config{
+				CommandServer: []mcp.Command{
+					{
+						Name:      "docker",
+						Arguments: []string{"run", "--rm", "-i", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=github_", "ghcr.io/github/github-mcp-server"},
+						Environment: map[string]string{
+							"TEST": "test",
+						},
+						AdditionalEnvironment: map[string]string{
+							"ADDITIONAL_TEST": "additional_test",
+						},
+						WorkingDirectory: "/home/user",
+					},
+					{
+						Name: "echo",
+					},
+				},
+				HttpServer: []mcp.Http{
+					{
+						BaseUrl:  "http://localhost:8080",
+						Endpoint: "/api/v1",
+						Headers: map[string]string{
+							"Authorization": "Bearer TOKEN",
+						},
 					},
 				},
 			},

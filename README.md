@@ -61,23 +61,25 @@ ask-mai -b deepseek --deepseek-api-key=YOUR_DEEPSEEK_API_KEY
 * Tool Support
   * You can define your own tools which can be called from the LLM
   * There are some built-in tools:
-    * "__getSystemInformation" - Get some information about the system
-    * "__getEnvironment" - Read environment variables from the system
-    * "__getSystemTime" - Get the current system time
-    * "__getStats" - Get stats of a file or directory
-    * "__changeMode" - Changes the mode of file or directory
-    * "__changeOwner" - Changes the owner of file or directory
-    * "__changeTimes" - Changes the access and/or modification time of file or directory
-    * "__createFile" - Create a file on the system
-    * "__createTempFile" - Create a temporary file on the system
-    * "__appendFile" - Append content to an existing file
-    * "__readTextFile" - Read a text file from the system
-    * "__deleteFile" - Delete a file from the system
-    * "__createDirectory" - Creates a new directory on the system
-    * "__createTempDirectory" - Creates a new temporary directory on the system
-    * "__deleteDirectory" - Delete a directory from the system
-    * "__executeCommand" - Execute a command on the system
-    * "__callHttp" - Do a http call
+    * "_getSystemInformation" - Get some information about the system
+    * "_getEnvironment" - Read environment variables from the system
+    * "_getSystemTime" - Get the current system time
+    * "_getStats" - Get stats of a file or directory
+    * "_changeMode" - Changes the mode of file or directory
+    * "_changeOwner" - Changes the owner of file or directory
+    * "_changeTimes" - Changes the access and/or modification time of file or directory
+    * "_createFile" - Create a file on the system
+    * "_createTempFile" - Create a temporary file on the system
+    * "_appendFile" - Append content to an existing file
+    * "_readTextFile" - Read a text file from the system
+    * "_deleteFile" - Delete a file from the system
+    * "_createDirectory" - Creates a new directory on the system
+    * "_createTempDirectory" - Creates a new temporary directory on the system
+    * "_deleteDirectory" - Delete a directory from the system
+    * "_executeCommand" - Execute a command on the system
+    * "_callHttp" - Do a http call
+* [MCP](https://www.anthropic.com/news/model-context-protocol)-Server support
+  * You can define multiple MCP-Servers which can be used by the LLM (currently only tools)
 * Scriptable
   * All settings can be set via:
     * yaml configuration file 
