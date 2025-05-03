@@ -1,7 +1,8 @@
-package tools
+package mcp
 
 import (
 	"context"
+	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func TestApproval_NeedsApproval_InvalidJson(t *testing.T) {
 }
 
 func TestApproval_NeedsApproval_match(t *testing.T) {
-	assert.True(t, Approval(expression.VarNameContext+`.definition.name === 'docker'`).NeedsApproval(context.Background(), `{}`, &FunctionDefinition{Name: "docker"}))
+	assert.True(t, Approval(expression.VarNameContext+`.definition.name === 'docker'`).NeedsApproval(context.Background(), `{}`, &mcp.ToolRetType{Name: "docker"}))
 }
 
 func TestApproval_NeedsApproval_Logging(t *testing.T) {

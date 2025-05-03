@@ -12,6 +12,7 @@ type Http struct {
 	BaseUrl  string            `config:"baseUrl" yaml:"baseUrl" usage:"Base URL for the command"`
 	Endpoint string            `config:"endpoint" yaml:"endpoint" usage:"Endpoint of the HTTP server"`
 	Headers  map[string]string `config:"headers" yaml:"headers" usage:"Headers to pass to the HTTP server"`
+	Approval string            `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute a tool"`
 }
 
 func (h *Http) Validate() error {

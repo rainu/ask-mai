@@ -17,6 +17,7 @@ type Command struct {
 	Environment           map[string]string `config:"env" yaml:"env" usage:"Environment variables to pass to the command"`
 	AdditionalEnvironment map[string]string `config:"additionalEnv" yaml:"additionalEnv" usage:"Additional environment variables to pass to the command"`
 	WorkingDirectory      string            `config:"workingDir" yaml:"workingDir" usage:"Working directory for the command"`
+	Approval              string            `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute a tool"`
 }
 
 func (c *Command) Validate() error {

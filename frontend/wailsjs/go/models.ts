@@ -1258,6 +1258,7 @@ export namespace mcp {
 	    Environment: Record<string, string>;
 	    AdditionalEnvironment: Record<string, string>;
 	    WorkingDirectory: string;
+	    Approval: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Command(source);
@@ -1270,12 +1271,14 @@ export namespace mcp {
 	        this.Environment = source["Environment"];
 	        this.AdditionalEnvironment = source["AdditionalEnvironment"];
 	        this.WorkingDirectory = source["WorkingDirectory"];
+	        this.Approval = source["Approval"];
 	    }
 	}
 	export class Http {
 	    BaseUrl: string;
 	    Endpoint: string;
 	    Headers: Record<string, string>;
+	    Approval: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Http(source);
@@ -1286,6 +1289,7 @@ export namespace mcp {
 	        this.BaseUrl = source["BaseUrl"];
 	        this.Endpoint = source["Endpoint"];
 	        this.Headers = source["Headers"];
+	        this.Approval = source["Approval"];
 	    }
 	}
 	export class Config {

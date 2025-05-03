@@ -1,8 +1,9 @@
-package tools
+package mcp
 
 import (
 	"context"
 	"encoding/json"
+	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/rainu/ask-mai/expression"
 	"log/slog"
 	"strings"
@@ -16,12 +17,12 @@ const (
 )
 
 type ApprovalVariables struct {
-	FunctionDefinition FunctionDefinition `json:"definition"`
-	RawArguments       string             `json:"raw_args"`
-	ParsedArguments    any                `json:"args"`
+	ToolDefinition  mcp.ToolRetType `json:"definition"`
+	RawArguments    string          `json:"raw_args"`
+	ParsedArguments any             `json:"args"`
 }
 
-func (a Approval) NeedsApproval(ctx context.Context, jsonArgs string, fd *FunctionDefinition) bool {
+func (a Approval) NeedsApproval(ctx context.Context, jsonArgs string, td *mcp.ToolRetType) bool {
 	if a == "" {
 		// No approval expression is set, so we assume no approval is needed
 		return false
@@ -36,8 +37,8 @@ func (a Approval) NeedsApproval(ctx context.Context, jsonArgs string, fd *Functi
 	exVars := ApprovalVariables{
 		RawArguments: jsonArgs,
 	}
-	if fd != nil {
-		exVars.FunctionDefinition = *fd
+	if td != nil {
+		exVars.ToolDefinition = *td
 	}
 
 	err := json.Unmarshal([]byte(jsonArgs), &exVars.ParsedArguments)

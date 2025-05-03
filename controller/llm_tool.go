@@ -71,15 +71,18 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			mcpToolDescription = *mcpToolInfo.Description
 		}
 
-		//create approval channel for tool calls that need approval
 		if isTool {
 			isBuiltIn = fnDefinition.IsBuiltIn()
 			needsApproval = fnDefinition.NeedApproval(c.aiModelCtx, call.FunctionCall.Arguments)
-			if needsApproval {
-				c.toolApprovalMutex.Write(func() {
-					c.toolApprovalChannel[call.ID] = make(chan bool)
-				})
-			}
+		} else {
+			needsApproval = mcpToolInfo.NeedApproval(c.aiModelCtx, call.FunctionCall.Arguments)
+		}
+
+		//create approval channel for tool calls that need approval
+		if needsApproval {
+			c.toolApprovalMutex.Write(func() {
+				c.toolApprovalChannel[call.ID] = make(chan bool)
+			})
 		}
 
 		tcMessage := LLMMessage{
@@ -116,12 +119,17 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			var r LLMMessageCallResult
 			var e error
 
-			if tool, ok := availableTools[call.FunctionCall.Name]; ok {
-				r, e = c.callTool(c.aiModelCtx, call, tool)
-			} else if tool, ok := availableMcpTools[call.FunctionCall.Name]; ok {
-				r, e = c.callMcpTool(c.aiModelCtx, call, tool)
+			aErr := c.waitForApproval(c.aiModelCtx, call)
+			if aErr != nil {
+				r.Error = aErr.Error()
 			} else {
-				e = fmt.Errorf("unknown tool: %s", call.FunctionCall.Name)
+				if tool, ok := availableTools[call.FunctionCall.Name]; ok {
+					r, e = c.callTool(c.aiModelCtx, call, tool)
+				} else if tool, ok := availableMcpTools[call.FunctionCall.Name]; ok {
+					r, e = c.callMcpTool(c.aiModelCtx, call, tool)
+				} else {
+					e = fmt.Errorf("unknown tool: %s", call.FunctionCall.Name)
+				}
 			}
 
 			c.aiModelMutex.Write(func() {
@@ -147,17 +155,19 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 	return
 }
 
-func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.FunctionDefinition) (result LLMMessageCallResult, err error) {
-	if toolDefinition.NeedApproval(ctx, call.FunctionCall.Arguments) {
-		// wait for user's approval (see llmApplyToolCallApproval())
-		var approvalChan chan bool
-		c.toolApprovalMutex.Read(func() {
-			approvalChan = c.toolApprovalChannel[call.ID]
-		})
+func (c *Controller) waitForApproval(ctx context.Context, call llms.ToolCall) error {
+	// wait for user's approval (see llmApplyToolCallApproval())
+	var approvalChan chan bool
+	c.toolApprovalMutex.Read(func() {
+		approvalChan = c.toolApprovalChannel[call.ID]
+	})
 
-		if approvalChan == nil {
-			return result, fmt.Errorf("approval channel for tool '%s' not found", call.FunctionCall.Name)
-		}
+	if approvalChan != nil {
+		defer func() {
+			c.toolApprovalMutex.Write(func() {
+				delete(c.toolApprovalChannel, call.ID)
+			})
+		}()
 
 		// wait for approval
 		select {
@@ -165,14 +175,18 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefin
 			slog.Debug("Approval received for tool.", "tool", call.FunctionCall.Name, "approved", approved)
 
 			if !approved {
-				result.Error = "The user rejected the tool call!"
-				return result, nil
+				return fmt.Errorf("The user rejected the tool call!")
 			}
 		case <-ctx.Done():
-			return result, fmt.Errorf("approval for tool '%s' timed out", call.FunctionCall.Name)
+			return fmt.Errorf("Approval for tool '%s' timed out!", call.FunctionCall.Name)
 		}
 	}
 
+	// no approval needed
+	return nil
+}
+
+func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.FunctionDefinition) (result LLMMessageCallResult, err error) {
 	slog.Debug("Start running command.",
 		"name", toolDefinition.Name,
 		"command", toolDefinition.Command,
@@ -253,6 +267,7 @@ func (c *Controller) llmApplyToolCallApproval(callId string, approve bool) {
 	c.toolApprovalMutex.Read(func() {
 		if c.toolApprovalChannel[callId] != nil {
 			c.toolApprovalChannel[callId] <- approve
+			close(c.toolApprovalChannel[callId])
 		}
 	})
 }
