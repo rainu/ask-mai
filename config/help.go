@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
+	"github.com/rainu/ask-mai/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/config/model/llm/tools"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms/tools/command"
@@ -275,6 +276,75 @@ func printHelpTool(output io.Writer) {
 		},
 	})
 
+	fmt.Fprintf(output, "\nIt is also possible to use tools from a MCP-Server. You can connect many MCP-Servers in different way.")
+	fmt.Fprintf(output, "\nAs a command (stdio):\n")
+
+	table = tablewriter.NewWriter(output)
+	table.SetBorder(false)
+	table.SetHeader([]string{"Name", "Type", "Usage"})
+	table.SetAutoWrapText(false)
+
+	fields = scanConfigTags(nil, &mcp.Command{})
+	for _, field := range fields {
+		t := strings.TrimPrefix(field.Value.Type().String(), "*")
+		if strings.HasPrefix(t, "interface") {
+			t = "any"
+		}
+		table.Append([]string{strings.Replace(field.Flag, ",omitempty", "", -1), t, field.Usage})
+	}
+	table.Render()
+
+	fmt.Fprintf(output, "\nAs a rest-server (http):")
+
+	table = tablewriter.NewWriter(output)
+	table.SetBorder(false)
+	table.SetHeader([]string{"Name", "Type", "Usage"})
+	table.SetAutoWrapText(false)
+
+	fields = scanConfigTags(nil, &mcp.Http{})
+	for _, field := range fields {
+		t := strings.TrimPrefix(field.Value.Type().String(), "*")
+		if strings.HasPrefix(t, "interface") {
+			t = "any"
+		}
+		table.Append([]string{strings.Replace(field.Flag, ",omitempty", "", -1), t, field.Usage})
+	}
+	table.Render()
+
+	fmt.Fprintf(output, "\nYAML-Example:\n\n")
+	ye.Encode(map[string]any{
+		"llm": map[string]any{
+			"mcp": map[string]any{
+				"command": []mcp.Command{
+					{
+						Name:      "docker",
+						Arguments: []string{"run", "--rm", "-i", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=github_...", "ghcr.io/github/github-mcp-server"},
+						Approval:  mcp.ApprovalAlways,
+					},
+					{
+						Name:      "npx",
+						Arguments: []string{"-y", "@modelcontextprotocol/server-gitlab"},
+						AdditionalEnvironment: map[string]string{
+							"GITLAB_PERSONAL_ACCESS_TOKEN": "<YOUR_TOKEN>",
+							"GITLAB_API_URL":               "https://gitlab.com/api/v4",
+						},
+						Approval: expression.VarNameContext + `.definition.name === 'push_files'`,
+					},
+				},
+				"http": []mcp.Http{
+					{
+						BaseUrl:  "http://localhost:8080",
+						Endpoint: "/api/v1",
+						Headers: map[string]string{
+							"Authorization": "Bearer TOKEN",
+						},
+						Approval: mcp.ApprovalNever,
+					},
+				},
+			},
+		},
+	})
+
 	fmt.Fprintf(output, "\nThe approval is always an js-expression. It will be evaluated each time the LLM calls the function.\n")
 	fmt.Fprintf(output, "If the expression returns true, the user must give the approval before the function will be executed.\n")
 	fmt.Fprintf(output, "If the expression returns false, the user will NOT be asked for his approval.\n")
@@ -285,7 +355,7 @@ func printHelpTool(output io.Writer) {
 	je := json.NewEncoder(output)
 	je.SetIndent("  ", "  ")
 
-	exampleDefs[0].Approval = `!ctx.args.path.startsWith('/tmp/')`
+	exampleDefs[0].Approval = `!` + expression.VarNameContext + `.args.path.startsWith('/tmp/')`
 	je.Encode(tools.ApprovalVariables{
 		FunctionDefinition: exampleDefs[0],
 		RawArguments:       `{"path": "/tmp/file"}`,
