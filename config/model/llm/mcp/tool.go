@@ -59,7 +59,8 @@ func listTools(ctx context.Context, transport transport.Transport) ([]mcp.ToolRe
 		return nil, fmt.Errorf("failed to initialize mcp client: %w", err)
 	}
 
-	resp, err := mcpClient.ListTools(ctx, nil)
+	c := ""
+	resp, err := mcpClient.ListTools(ctx, &c)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list tools: %w", err)
 	}
