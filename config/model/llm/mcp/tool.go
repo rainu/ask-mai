@@ -52,7 +52,7 @@ func (c *Config) ListTools(ctx context.Context) (map[string]Tool, error) {
 	return allTools, nil
 }
 
-func listTools(ctx context.Context, transport transport.Transport) ([]mcp.ToolRetType, error) {
+func listAllTools(ctx context.Context, transport transport.Transport) ([]mcp.ToolRetType, error) {
 	mcpClient := mcp.NewClient(transport)
 	_, err := mcpClient.Initialize(ctx)
 	if err != nil {
@@ -65,6 +65,24 @@ func listTools(ctx context.Context, transport transport.Transport) ([]mcp.ToolRe
 		return nil, fmt.Errorf("failed to list tools: %w", err)
 	}
 	return resp.Tools, nil
+}
+
+func listTools(ctx context.Context, transport transport.Transport, exclusion []string) ([]mcp.ToolRetType, error) {
+	result, err := listAllTools(ctx, transport)
+	if err != nil {
+		return nil, err
+	}
+
+	// filter out excluded tools
+	for _, exclude := range exclusion {
+		for i, tool := range result {
+			if tool.Name == exclude {
+				result = append(result[:i], result[i+1:]...)
+				break
+			}
+		}
+	}
+	return result, nil
 }
 
 func (t *Tool) NeedApproval(ctx context.Context, jsonArgs string) bool {

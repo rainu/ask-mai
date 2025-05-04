@@ -13,6 +13,7 @@ type Http struct {
 	Endpoint string            `config:"endpoint" yaml:"endpoint" usage:"Endpoint of the HTTP server"`
 	Headers  map[string]string `config:"headers" yaml:"headers" usage:"Headers to pass to the HTTP server"`
 	Approval string            `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute a tool"`
+	Exclude  []string          `config:"exclude" yaml:"exclude" usage:"List of tools that should be excluded"`
 }
 
 func (h *Http) Validate() error {
@@ -40,5 +41,12 @@ func (h *Http) ListTools(ctx context.Context) ([]mcp.ToolRetType, error) {
 	t := h.GetTransport()
 	defer t.Close()
 
-	return listTools(ctx, t)
+	return listTools(ctx, t, h.Exclude)
+}
+
+func (h *Http) ListAllTools(ctx context.Context) ([]mcp.ToolRetType, error) {
+	t := h.GetTransport()
+	defer t.Close()
+
+	return listAllTools(ctx, t)
 }

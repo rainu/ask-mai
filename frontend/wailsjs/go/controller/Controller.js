@@ -62,6 +62,14 @@ export function LLMWait() {
   return window['go']['controller']['Controller']['LLMWait']();
 }
 
+export function ListMcpCommandTools() {
+  return window['go']['controller']['Controller']['ListMcpCommandTools']();
+}
+
+export function ListMcpHttpTools() {
+  return window['go']['controller']['Controller']['ListMcpHttpTools']();
+}
+
 export function Log(arg1, arg2) {
   return window['go']['controller']['Controller']['Log'](arg1, arg2);
 }
@@ -80,6 +88,10 @@ export function SetActiveProfile(arg1) {
 
 export function SetBuiltinTools(arg1) {
   return window['go']['controller']['Controller']['SetBuiltinTools'](arg1);
+}
+
+export function SetMcpTools(arg1) {
+  return window['go']['controller']['Controller']['SetMcpTools'](arg1);
 }
 
 export function Shutdown() {

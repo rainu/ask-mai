@@ -16,6 +16,14 @@ func modifiedConfig(mod func(*model.Config)) model.Config {
 }
 
 func TestConfig_Parse(t *testing.T) {
+	origFn := yamlLookupLocations
+	defer func() {
+		yamlLookupLocations = origFn
+	}()
+	yamlLookupLocations = func() (result []string) {
+		return []string{}
+	}
+
 	tests := []struct {
 		name     string
 		args     []string

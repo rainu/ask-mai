@@ -34,6 +34,12 @@
     "default": "Standard"
   },
   "tool": {
-    "title": "Wähle Tools"
+    "title": "Wähle Tools",
+    "builtin": {
+      "title": "Integrierte Tools"
+    },
+    "mcp": {
+      "title": "MCP Tools"
+    }
   }
 }

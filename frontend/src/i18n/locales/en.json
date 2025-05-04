@@ -34,6 +34,12 @@
     "default": "Default"
   },
   "tool": {
-    "title": "Setup builtin tools"
+    "title": "Setup builtin tools",
+    "builtin": {
+      "title": "BuiltIn Tools"
+    },
+    "mcp": {
+      "title": "MCP Tools"
+    }
   }
 }

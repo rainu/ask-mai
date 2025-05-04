@@ -18,6 +18,7 @@ type Command struct {
 	AdditionalEnvironment map[string]string `config:"additionalEnv" yaml:"additionalEnv" usage:"Additional environment variables to pass to the command"`
 	WorkingDirectory      string            `config:"workingDir" yaml:"workingDir" usage:"Working directory for the command"`
 	Approval              string            `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute a tool"`
+	Exclude               []string          `config:"exclude" yaml:"exclude" usage:"List of tools that should be excluded"`
 }
 
 func (c *Command) Validate() error {
@@ -65,7 +66,14 @@ func (c *Command) ListTools(ctx context.Context) ([]mcp.ToolRetType, error) {
 	t := c.GetTransport()
 	defer t.Close()
 
-	return listTools(ctx, t)
+	return listTools(ctx, t, c.Exclude)
+}
+
+func (c *Command) ListAllTools(ctx context.Context) ([]mcp.ToolRetType, error) {
+	t := c.GetTransport()
+	defer t.Close()
+
+	return listAllTools(ctx, t)
 }
 
 func toAnyMap(m map[string]string) map[any]any {

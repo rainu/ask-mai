@@ -10,7 +10,7 @@ import (
 	"path"
 )
 
-func yamlLookupLocations() (result []string) {
+var yamlLookupLocations = func() (result []string) {
 	result = append(result, "/"+path.Join("etc", ".ask-mai.yml"))
 	result = append(result, "/"+path.Join("etc", ".ask-mai.yaml"))
 	result = append(result, "/"+path.Join("etc", "ask-mai", "config.yml"))
