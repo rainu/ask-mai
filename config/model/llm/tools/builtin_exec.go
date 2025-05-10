@@ -5,11 +5,11 @@ import (
 )
 
 type CommandExecution struct {
-	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
-	Approval string `config:"approval" yaml:"approval" usage:"Needs no user approval to be executed"`
+	Disable  bool   `yaml:"disable,omitempty" usage:"Disable tool"`
+	Approval string `yaml:"approval,omitempty" usage:"Needs no user approval to be executed"`
 
 	//only for wails to generate TypeScript types
-	Z command.CommandExecutionArguments `config:"-" yaml:"-"`
+	Z command.CommandExecutionArguments `yaml:"-"`
 }
 
 func NewCommandExecution() CommandExecution {

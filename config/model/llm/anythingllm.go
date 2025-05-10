@@ -8,15 +8,21 @@ import (
 )
 
 type AnythingLLMConfig struct {
-	BaseURL   string                  `yaml:"base-url" usage:"Base URL"`
-	Token     common.Secret           `yaml:"token" usage:"Token"`
-	Workspace string                  `yaml:"workspace" usage:"Workspace"`
-	Thread    AnythingLLMThreadConfig `yaml:"thread" usage:"Thread: "`
+	BaseURL   string                  `yaml:"base-url,omitempty" usage:"Base URL"`
+	Token     common.Secret           `yaml:"token,omitempty" usage:"Token"`
+	Workspace string                  `yaml:"workspace,omitempty" usage:"Workspace"`
+	Thread    AnythingLLMThreadConfig `yaml:"thread,omitempty" usage:"Thread: "`
 }
 
 type AnythingLLMThreadConfig struct {
-	Name   common.StringContainer `yaml:"name" usage:"Expression: Name of the newly generated thread"`
-	Delete bool                   `yaml:"delete" usage:"Delete the thread after the session is closed"`
+	Name   common.StringContainer `yaml:"name,omitempty" usage:"Expression: Name of the newly generated thread"`
+	Delete bool                   `yaml:"delete,omitempty" usage:"Delete the thread after the session is closed"`
+}
+
+func (a *AnythingLLMThreadConfig) SetDefaults() {
+	a.Name = common.StringContainer{
+		Expression: `'ask-mai - ' + new Date().toISOString()`,
+	}
 }
 
 func (c *AnythingLLMConfig) Validate() error {

@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"os"
 )
 
 const (
@@ -11,14 +12,21 @@ const (
 )
 
 type UIConfig struct {
-	Window       WindowConfig     `yaml:"window"`
-	Prompt       PromptConfig     `yaml:"prompt"`
-	FileDialog   FileDialogConfig `yaml:"file-dialog"`
-	Stream       bool             `yaml:"stream" short:"s" usage:"Should the output be streamed"`
-	QuitShortcut Shortcut         `yaml:"quit" usage:"The shortcut for quitting the application: "`
-	Theme        string           `yaml:"theme"`
-	CodeStyle    string           `yaml:"code-style" usage:"The code style to use"`
-	Language     string           `yaml:"lang" usage:"The language to use"`
+	Window       WindowConfig     `yaml:"window,omitempty"`
+	Prompt       PromptConfig     `yaml:"prompt,omitempty"`
+	FileDialog   FileDialogConfig `yaml:"file-dialog,omitempty"`
+	Stream       bool             `yaml:"stream,omitempty" short:"s" usage:"Should the output be streamed"`
+	QuitShortcut Shortcut         `yaml:"quit,omitempty" usage:"The shortcut for quitting the application: "`
+	Theme        string           `yaml:"theme,omitempty"`
+	CodeStyle    string           `yaml:"code-style,omitempty" usage:"The code style to use"`
+	Language     string           `yaml:"lang,omitempty" usage:"The language to use"`
+}
+
+func (u *UIConfig) SetDefaults() {
+	u.QuitShortcut = Shortcut{Binding: []string{"Escape"}}
+	u.Theme = ThemeSystem
+	u.CodeStyle = "github"
+	u.Language = os.Getenv("LANG")
 }
 
 func (u *UIConfig) GetUsage(field string) string {

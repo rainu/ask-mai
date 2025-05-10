@@ -49,7 +49,7 @@ func (c *Controller) startup(ctx context.Context) {
 
 	sv := expression.SetScreens(screens)
 
-	err = c.appConfig.UI.Window.ResolveExpressions(sv)
+	err = c.appConfig.MainProfile.UI.Window.ResolveExpressions(sv)
 	if err != nil {
 		panic(fmt.Errorf("could not resolve expressions: %w", err))
 	}
@@ -71,7 +71,7 @@ func (c *Controller) beforeClose(ctx context.Context) (prevent bool) {
 func (c *Controller) Shutdown() {
 	c.shutdown(c.ctx)
 
-	c.appConfig.Printer.Close()
+	c.appConfig.MainProfile.Printer.Close()
 	for _, config := range c.appConfig.Profiles {
 		config.Printer.Close()
 	}

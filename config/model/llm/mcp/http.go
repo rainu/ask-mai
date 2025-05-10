@@ -9,11 +9,11 @@ import (
 )
 
 type Http struct {
-	BaseUrl  string            `config:"baseUrl" yaml:"baseUrl" usage:"Base URL for the command"`
-	Endpoint string            `config:"endpoint" yaml:"endpoint" usage:"Endpoint of the HTTP server"`
-	Headers  map[string]string `config:"headers" yaml:"headers" usage:"Headers to pass to the HTTP server"`
-	Approval string            `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute a tool"`
-	Exclude  []string          `config:"exclude" yaml:"exclude" usage:"List of tools that should be excluded"`
+	BaseUrl  string            `yaml:"baseUrl,omitempty" usage:"Base URL for the command"`
+	Endpoint string            `yaml:"endpoint,omitempty" usage:"Endpoint of the HTTP server"`
+	Headers  map[string]string `yaml:"headers,omitempty" usage:"Headers to pass to the HTTP server"`
+	Approval string            `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute a tool"`
+	Exclude  []string          `yaml:"exclude,omitempty" usage:"List of tools that should be excluded"`
 }
 
 func (h *Http) Validate() error {

@@ -8,9 +8,9 @@ import (
 )
 
 type AnthropicConfig struct {
-	Token   common.Secret `yaml:"api-key" usage:"API Key"`
-	BaseUrl string        `yaml:"base-url" usage:"BaseUrl"`
-	Model   string        `yaml:"model" usage:"Model"`
+	Token   common.Secret `yaml:"api-key,omitempty" usage:"API Key"`
+	BaseUrl string        `yaml:"base-url,omitempty" usage:"BaseUrl"`
+	Model   string        `yaml:"model,omitempty" usage:"Model"`
 }
 
 func (c *AnthropicConfig) AsOptions() (opts []anthropic.Option) {
@@ -25,6 +25,10 @@ func (c *AnthropicConfig) AsOptions() (opts []anthropic.Option) {
 	}
 
 	return
+}
+
+func (c *AnthropicConfig) SetDefaults() {
+	c.Model = "claude-3-5-haiku-latest"
 }
 
 func (c *AnthropicConfig) Validate() error {

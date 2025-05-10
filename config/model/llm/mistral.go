@@ -8,9 +8,9 @@ import (
 )
 
 type MistralConfig struct {
-	ApiKey   common.Secret `yaml:"api-key" usage:"API Key"`
-	Endpoint string        `yaml:"endpoint" usage:"Endpoint"`
-	Model    string        `yaml:"model" usage:"Model"`
+	ApiKey   common.Secret `yaml:"api-key,omitempty" usage:"API Key"`
+	Endpoint string        `yaml:"endpoint,omitempty" usage:"Endpoint"`
+	Model    string        `yaml:"model,omitempty" usage:"Model"`
 }
 
 func (c *MistralConfig) AsOptions() (opts []mistral.Option) {

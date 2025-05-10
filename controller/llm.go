@@ -171,12 +171,12 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		})
 	}()
 
-	opts, err := c.getConfig().LLM.AsOptions(c.aiModelCtx)
+	opts, err := c.getProfile().LLM.AsOptions(c.aiModelCtx)
 	if err != nil {
 		return "", fmt.Errorf("error creating options: %w", err)
 	}
 
-	if c.getConfig().UI.Stream {
+	if c.getProfile().UI.Stream {
 		// streaming is enabled
 		opts = append(opts, llms.WithStreamingFunc(c.streamingFunc))
 	}

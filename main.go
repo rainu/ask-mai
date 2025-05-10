@@ -48,7 +48,7 @@ func main() {
 	})
 
 	cfg := config.Parse(os.Args[1:], os.Environ())
-	if cfg.Debug.PrintVersion {
+	if cfg.Version {
 		fmt.Fprintln(os.Stderr, versionLine())
 		os.Exit(0)
 		return
@@ -60,12 +60,12 @@ func main() {
 			return
 		}
 
-		slog.SetLogLoggerLevel(slog.Level(cfg.Debug.LogLevel))
+		slog.SetLogLoggerLevel(slog.Level(cfg.DebugConfig.LogLevel))
 		if onStartUp != nil {
 			onStartUp(cfg)
 		}
 	}
-	defer cfg.Printer.Close()
+	defer cfg.MainProfile.Printer.Close()
 
 	ctrl, err := controller.BuildFromConfig(cfg, os.Getenv(lastStateEnv), buildMode)
 	if err != nil {
@@ -75,12 +75,12 @@ func main() {
 	}
 
 	// Create application with options
-	if cfg.Debug.WebKit.HttpServerAddress != "" {
+	if cfg.DebugConfig.WebKit.HttpServerAddress != "" {
 		// the underlying webview library will use this environment variable to start the inspector server
-		os.Setenv("WEBKIT_INSPECTOR_HTTP_SERVER", cfg.Debug.WebKit.HttpServerAddress)
+		os.Setenv("WEBKIT_INSPECTOR_HTTP_SERVER", cfg.DebugConfig.WebKit.HttpServerAddress)
 	}
 
-	if !cfg.Debug.DisableCrashDetection {
+	if !cfg.DebugConfig.DisableCrashDetection {
 		oCtx, oCancel := context.WithCancel(context.Background())
 		health.ObserveProcess(oCtx, 98.0, func() {
 			if ctrl.IsAppMounted() {

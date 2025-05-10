@@ -5,12 +5,12 @@ import (
 )
 
 type Environment struct {
-	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
-	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
+	Disable  bool   `yaml:"disable,omitempty" usage:"Disable tool"`
+	Approval string `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
-	Y tools.EnvironmentResult    `config:"-" yaml:"-"`
-	Z tools.EnvironmentArguments `config:"-" yaml:"-"`
+	Y tools.EnvironmentResult    `yaml:"-"`
+	Z tools.EnvironmentArguments `yaml:"-"`
 }
 
 func NewEnvironment() Environment {

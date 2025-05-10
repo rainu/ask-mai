@@ -18,20 +18,20 @@ type llmConfig interface {
 }
 
 type LLMConfig struct {
-	Backend string `yaml:"backend" short:"b"`
+	Backend string `yaml:"backend,omitempty" short:"b"`
 
-	Copilot     CopilotConfig     `yaml:"copilot" usage:"Copilot: " llm:""`
-	LocalAI     LocalAIConfig     `yaml:"localai" usage:"LocalAI: " llm:""`
-	OpenAI      OpenAIConfig      `yaml:"openai" usage:"OpenAI: " llm:""`
-	AnythingLLM AnythingLLMConfig `yaml:"anythingllm" usage:"AnythingLLM: " llm:""`
-	Ollama      OllamaConfig      `yaml:"ollama" usage:"Ollama: " llm:""`
-	Mistral     MistralConfig     `yaml:"mistral" usage:"Mistral: " llm:""`
-	Anthropic   AnthropicConfig   `yaml:"anthropic" usage:"Anthropic: " llm:""`
-	DeepSeek    DeepSeekConfig    `yaml:"deepseek" usage:"DeepSeek: " llm:""`
+	Copilot     CopilotConfig     `yaml:"copilot,omitempty" usage:"Copilot: " llm:""`
+	LocalAI     LocalAIConfig     `yaml:"localai,omitempty" usage:"LocalAI: " llm:""`
+	OpenAI      OpenAIConfig      `yaml:"openai,omitempty" usage:"OpenAI: " llm:""`
+	AnythingLLM AnythingLLMConfig `yaml:"anythingllm,omitempty" usage:"AnythingLLM: " llm:""`
+	Ollama      OllamaConfig      `yaml:"ollama,omitempty" usage:"Ollama: " llm:""`
+	Mistral     MistralConfig     `yaml:"mistral,omitempty" usage:"Mistral: " llm:""`
+	Anthropic   AnthropicConfig   `yaml:"anthropic,omitempty" usage:"Anthropic: " llm:""`
+	DeepSeek    DeepSeekConfig    `yaml:"deepseek,omitempty" usage:"DeepSeek: " llm:""`
 
-	CallOptions CallOptionsConfig `yaml:"call" usage:"LLM-CALL: "`
-	Tools       tools.Config      `yaml:"tool" usage:"LLM-TOOLS: "`
-	McpServer   mcp.Config        `yaml:"mcp" usage:"MCP-SERVER: "`
+	CallOptions CallOptionsConfig `yaml:"call,omitempty" usage:"LLM-CALL: "`
+	Tools       tools.Config      `yaml:"tool,omitempty" usage:"LLM-TOOLS: "`
+	McpServer   mcp.Config        `yaml:"mcp,omitempty" usage:"MCP-SERVER: "`
 }
 
 func (c *LLMConfig) getBackend() llmConfig {
@@ -56,6 +56,12 @@ func (c *LLMConfig) listBackends() (result []string) {
 	}
 	slices.Sort(result)
 	return
+}
+
+func (c *LLMConfig) SetDefaults() {
+	if llms.IsCopilotInstalled() {
+		c.Backend = "copilot"
+	}
 }
 
 func (c *LLMConfig) GetUsage(field string) string {

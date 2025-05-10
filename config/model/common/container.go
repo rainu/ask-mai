@@ -1,11 +1,11 @@
 package common
 
 type NumberContainer struct {
-	Expression string  `config:"" yaml:"expression"`
-	Value      float64 `config:"-" yaml:"value"`
+	Expression string  `yaml:"expression,omitempty"`
+	Value      float64 `yaml:"value,omitempty"`
 }
 
 type StringContainer struct {
-	Expression string `config:"" yaml:"expression"`
-	Value      string `config:"-" yaml:"value"`
+	Expression string `yaml:"expression,omitempty"`
+	Value      string ` yaml:"value,omitempty"`
 }

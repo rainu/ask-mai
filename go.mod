@@ -1,22 +1,24 @@
 module github.com/rainu/ask-mai
 
-go 1.24.0
+go 1.24.2
+
+toolchain go1.24.3
 
 require (
 	dario.cat/mergo v1.0.0
 	github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17
 	github.com/gabriel-vasile/mimetype v1.4.8
+	github.com/goccy/go-yaml v1.17.1
 	github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
 	github.com/kteru/reversereader v0.0.0-20190328040929-bd5e29d6c056
 	github.com/metoro-io/mcp-golang v0.11.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rainu/go-command-chain v0.4.0
+	github.com/rainu/go-yacl v0.1.0
 	github.com/shirou/gopsutil/v4 v4.25.2
-	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
 	github.com/tmc/langchaingo v0.1.13
 	github.com/wailsapp/wails/v2 v2.10.1
-	gopkg.in/yaml.v3 v3.0.1
 	mvdan.cc/sh/v3 v3.7.0
 )
 
@@ -91,6 +93,7 @@ require (
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 replace dario.cat/mergo => github.com/darccio/mergo v1.0.0
@@ -98,3 +101,5 @@ replace dario.cat/mergo => github.com/darccio/mergo v1.0.0
 replace github.com/tmc/langchaingo => github.com/rainu/langchaingo v0.0.0-20250326142153-c860a5d21c81
 
 replace github.com/metoro-io/mcp-golang => github.com/alexmt/mcp-golang v0.0.0-20250427220150-3e7e91b22499
+
+//replace github.com/rainu/go-yacl => ../go-yacl

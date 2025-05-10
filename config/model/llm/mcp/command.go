@@ -12,13 +12,13 @@ import (
 )
 
 type Command struct {
-	Name                  string            `config:"name" yaml:"name" usage:"Name of the command to execute"`
-	Arguments             []string          `config:"args" yaml:"args" usage:"Arguments to pass to the command"`
-	Environment           map[string]string `config:"env" yaml:"env" usage:"Environment variables to pass to the command"`
-	AdditionalEnvironment map[string]string `config:"additionalEnv" yaml:"additionalEnv" usage:"Additional environment variables to pass to the command"`
-	WorkingDirectory      string            `config:"workingDir" yaml:"workingDir" usage:"Working directory for the command"`
-	Approval              string            `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute a tool"`
-	Exclude               []string          `config:"exclude" yaml:"exclude" usage:"List of tools that should be excluded"`
+	Name                  string            `yaml:"name,omitempty" usage:"Name of the command to execute"`
+	Arguments             []string          `yaml:"args,omitempty" usage:"Arguments to pass to the command"`
+	Environment           map[string]string `yaml:"env,omitempty" usage:"Environment variables to pass to the command"`
+	AdditionalEnvironment map[string]string `yaml:"additionalEnv,omitempty" usage:"Additional environment variables to pass to the command"`
+	WorkingDirectory      string            `yaml:"workingDir,omitempty" usage:"Working directory for the command"`
+	Approval              string            `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute a tool"`
+	Exclude               []string          `yaml:"exclude,omitempty" usage:"List of tools that should be excluded"`
 }
 
 func (c *Command) Validate() error {

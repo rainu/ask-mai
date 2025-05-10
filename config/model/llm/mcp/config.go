@@ -7,8 +7,8 @@ import (
 const McpPrefix = it.BuiltInPrefix + "_"
 
 type Config struct {
-	CommandServer []Command `config:"command" yaml:"command" usage:"CommandServer"`
-	HttpServer    []Http    `config:"http" yaml:"http" usage:"HTTPServer"`
+	CommandServer []Command `yaml:"command,omitempty" usage:"Command: "`
+	HttpServer    []Http    `yaml:"http,omitempty" usage:"HTTP: "`
 }
 
 func (c *Config) Validate() error {

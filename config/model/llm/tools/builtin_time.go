@@ -5,8 +5,8 @@ import (
 )
 
 type SystemTime struct {
-	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
-	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
+	Disable  bool   `yaml:"disable,omitempty" usage:"Disable tool"`
+	Approval string `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute this tool"`
 }
 
 func NewSystemTime() SystemTime {

@@ -7,8 +7,8 @@ import (
 )
 
 type OllamaConfig struct {
-	ServerURL string `yaml:"server-url" usage:"Server URL"`
-	Model     string `yaml:"model" usage:"Model"`
+	ServerURL string `yaml:"server-url,omitempty" usage:"Server URL"`
+	Model     string `yaml:"model,omitempty" usage:"Model"`
 }
 
 func (c *OllamaConfig) AsOptions() (opts []ollama.Option) {

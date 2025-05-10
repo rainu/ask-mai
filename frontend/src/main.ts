@@ -16,7 +16,7 @@ import App from './App.vue'
 import router from './router'
 import i18n from './i18n'
 import { I18nOptions } from 'vue-i18n'
-import { model } from '../wailsjs/go/models.ts'
+import { controller, model } from '../wailsjs/go/models.ts'
 import { GetApplicationConfig } from '../wailsjs/go/controller/Controller'
 
 declare module '@vue/runtime-core' {
@@ -26,22 +26,26 @@ declare module '@vue/runtime-core' {
 		$i18n: I18nOptions
 		$t: (key: string, ...args: any[]) => string
 		$appConfig: model.Config
+		$appProfile: model.Profile
 	}
 }
 
 declare global {
   interface Window {
     $appConfig: model.Config
+    $appProfile: model.Profile
   }
 }
 
 const pinia = createPinia()
 const app = createApp(App)
 
-GetApplicationConfig().then((cfg: model.Config) => {
-	app.config.globalProperties.$appConfig = cfg
-	window.$appConfig = cfg
-	const langPrefix = cfg.UI.Language.split('_')[0]
+GetApplicationConfig().then((ac: controller.ApplicationConfig) => {
+	app.config.globalProperties.$appConfig = ac.Config
+	app.config.globalProperties.$appProfile = ac.ActiveProfile
+	window.$appConfig = ac.Config
+	window.$appProfile = ac.ActiveProfile
+	const langPrefix = ac.ActiveProfile.UI.Language.split('_')[0]
 	app
 		.use(pinia)
 		.use(router)

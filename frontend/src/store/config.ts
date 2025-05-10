@@ -6,22 +6,22 @@ import {
 
 export const useConfigStore = defineStore('config', {
 	state: () => ({
-		config: window.$appConfig as model.Config,
-		activeProfileName: window.$appConfig.Profile.Active,
+		profile: window.$appProfile as model.Profile,
+		activeProfileName: window.$appConfig.ActiveProfile,
 	}),
 	actions: {
-		async setConfig(config: model.Config) {
-			this.config = config
-			window.$appConfig = config
+		async setConfig(profile: model.Profile) {
+			this.profile = profile
+			window.$appProfile = profile
 			await this.applyToolsConfig()
 		},
 		async setActiveProfile(profileName: string) {
-			this.config = await SetActiveProfile(profileName)
+			this.profile = await SetActiveProfile(profileName)
 			this.activeProfileName = profileName
 		},
 		async applyToolsConfig() {
-			await SetBuiltinTools(this.config.LLM.Tools.BuiltInTools)
-			await SetMcpTools(this.config.LLM.McpServer)
+			await SetBuiltinTools(this.profile.LLM.Tools.BuiltInTools)
+			await SetMcpTools(this.profile.LLM.McpServer)
 		}
 	}
 })

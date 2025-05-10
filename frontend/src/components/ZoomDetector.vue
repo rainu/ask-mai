@@ -8,7 +8,7 @@ export default defineComponent({
 	emits: ['onZoom'],
 	data() {
 		return {
-			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
+			zoom: this.$appProfile.UI.Window.InitialZoom.Value,
 			ctrl: false,
 		}
 	},

@@ -5,31 +5,31 @@ import "reflect"
 const BuiltInPrefix = "_"
 
 type BuiltIns struct {
-	SystemInfo  SystemInfo  `config:"system-info" yaml:"system-info" usage:"System information tool: "`
-	Environment Environment `config:"environment" yaml:"environment" usage:"Environment tool: "`
-	SystemTime  SystemTime  `config:"system-time" yaml:"system-time" usage:"System time tool: "`
+	SystemInfo  SystemInfo  `yaml:"system-info,omitempty" usage:"System information tool: "`
+	Environment Environment `yaml:"environment,omitempty" usage:"Environment tool: "`
+	SystemTime  SystemTime  `yaml:"system-time,omitempty" usage:"System time tool: "`
 
-	Stats Stats `config:"stats" yaml:"stats" usage:"Stats tool: "`
+	Stats Stats `yaml:"stats,omitempty" usage:"Stats tool: "`
 
-	ChangeMode  ChangeMode  `config:"change-mode" yaml:"change-mode" usage:"Change mode tool: "`
-	ChangeOwner ChangeOwner `config:"change-owner" yaml:"change-owner" usage:"Change owner tool: "`
-	ChangeTimes ChangeTimes `config:"change-times" yaml:"change-times" usage:"Change times tool: "`
+	ChangeMode  ChangeMode  `yaml:"change-mode,omitempty" usage:"Change mode tool: "`
+	ChangeOwner ChangeOwner `yaml:"change-owner,omitempty" usage:"Change owner tool: "`
+	ChangeTimes ChangeTimes `yaml:"change-times,omitempty" usage:"Change times tool: "`
 
-	FileCreation     FileCreation     `config:"file-creation" yaml:"file-creation" usage:"File creation tool: "`
-	FileTempCreation FileTempCreation `config:"temp-file-creation" yaml:"temp-file-creation" usage:"Temporary file creation tool: "`
-	FileAppending    FileAppending    `config:"file-appending" yaml:"file-appending" usage:"File appending tool: "`
-	FileReading      FileReading      `config:"file-reading" yaml:"file-reading" usage:"File reading tool: "`
-	FileDeletion     FileDeletion     `config:"file-deletion" yaml:"file-deletion" usage:"File deletion tool: "`
+	FileCreation     FileCreation     `yaml:"file-creation,omitempty" usage:"File creation tool: "`
+	FileTempCreation FileTempCreation `yaml:"temp-file-creation,omitempty" usage:"Temporary file creation tool: "`
+	FileAppending    FileAppending    `yaml:"file-appending,omitempty" usage:"File appending tool: "`
+	FileReading      FileReading      `yaml:"file-reading,omitempty" usage:"File reading tool: "`
+	FileDeletion     FileDeletion     `yaml:"file-deletion,omitempty,omitempty" usage:"File deletion tool: "`
 
-	DirectoryCreation     DirectoryCreation     `config:"dir-creation" yaml:"dir-creation" usage:"Directory creation tool: "`
-	DirectoryTempCreation DirectoryTempCreation `config:"temp-dir-creation" yaml:"temp-dir-creation" usage:"Temporary directory creation tool: "`
-	DirectoryDeletion     DirectoryDeletion     `config:"dir-deletion" yaml:"dir-deletion" usage:"Directory deletion tool: "`
+	DirectoryCreation     DirectoryCreation     `yaml:"dir-creation,omitempty" usage:"Directory creation tool: "`
+	DirectoryTempCreation DirectoryTempCreation `yaml:"temp-dir-creation,omitempty" usage:"Temporary directory creation tool: "`
+	DirectoryDeletion     DirectoryDeletion     `yaml:"dir-deletion,omitempty" usage:"Directory deletion tool: "`
 
-	CommandExec CommandExecution `config:"command-execution" yaml:"command-execution" usage:"Command execution tool: "`
+	CommandExec CommandExecution `yaml:"command-execution,omitempty" usage:"Command execution tool: "`
 
-	Http Http `config:"http" yaml:"http" usage:"HTTP tool: "`
+	Http Http `yaml:"http,omitempty" usage:"HTTP tool: "`
 
-	Disable bool `config:"disable" yaml:"disable" usage:"Disable all builtin tools."`
+	Disable bool `yaml:"disable,omitempty" usage:"Disable all builtin tools."`
 }
 
 func NewBuiltIns() *BuiltIns {

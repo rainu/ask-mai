@@ -89,7 +89,7 @@ func BuildFromConfig(cfg *model.Config, lastState string, buildMode bool) (ctrl 
 }
 
 func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
-	ac := c.getConfig()
+	ac := c.getProfile()
 	translucent := true
 	if ac.UI.Window.Translucent == model.TranslucentNever {
 		translucent = false
@@ -112,11 +112,11 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		},
 		Menu: nil,
 		Debug: options.Debug{
-			OpenInspectorOnStartup: ac.Debug.WebKit.OpenInspectorOnStartup,
+			OpenInspectorOnStartup: c.appConfig.DebugConfig.WebKit.OpenInspectorOnStartup,
 		},
 		Logger: newDefaultLogger(),
 		LogLevel: func() logger.LogLevel {
-			switch ac.Debug.LogLevel {
+			switch c.appConfig.DebugConfig.LogLevel {
 			case int(slog.LevelDebug):
 				return logger.TRACE
 			case int(slog.LevelInfo):

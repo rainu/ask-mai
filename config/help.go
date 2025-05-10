@@ -5,22 +5,24 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/goccy/go-yaml"
 	"github.com/olekukonko/tablewriter"
+	"github.com/rainu/ask-mai/config/model"
+	"github.com/rainu/ask-mai/config/model/common"
+	"github.com/rainu/ask-mai/config/model/llm"
 	"github.com/rainu/ask-mai/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/config/model/llm/tools"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms/tools/command"
 	http2 "github.com/rainu/ask-mai/llms/tools/http"
-	flag "github.com/spf13/pflag"
+	"github.com/rainu/go-yacl"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"gopkg.in/yaml.v3"
 	"io"
 	"net/http"
 	"os"
-	"sort"
 	"strings"
 )
 
@@ -48,68 +50,118 @@ func (n NoopLooger) Error(message string) {
 func (n NoopLooger) Fatal(message string) {
 }
 
-func printHelpArgs(output io.Writer, fields resolvedFieldInfos) {
+func checkHelp(c *model.Config, config *yacl.Config) {
+	if c.Help.Arg {
+		printHelpArgs(os.Stdout, config)
+		os.Exit(0)
+	} else if c.Help.Env {
+		printHelpEnv(os.Stdout)
+		os.Exit(0)
+	} else if c.Help.Yaml {
+		printHelpConfig(os.Stdout)
+		os.Exit(0)
+	} else if c.Help.GenYaml {
+		generateYamlSkeleton(os.Stdout)
+		os.Exit(0)
+	} else if c.Help.DumpYaml {
+		dumpYaml(os.Stdout, c)
+		os.Exit(0)
+	} else if c.Help.Styles {
+		printHelpStyles(os.Stdout)
+		os.Exit(0)
+	} else if c.Help.Expr {
+		printHelpExpression(os.Stdout)
+		os.Exit(0)
+	} else if c.Help.Tool {
+		printHelpTool(os.Stdout)
+		os.Exit(0)
+	}
+}
+
+func printHelpArgs(output io.Writer, config *yacl.Config) {
 	fmt.Fprintf(output, "Usage of %s:\n", os.Args[0])
-	flag.PrintDefaults()
+	fmt.Fprint(output, config.HelpFlags(yacl.WithFilter(func(a yacl.FieldInfo) bool {
+		p := a.Path()
+		if strings.HasPrefix(p, "profile") {
+			return p != "profile.[].description" && p != "profile.[].icon"
+		}
+		return false
+	})))
 }
 
-func printHelpEnv(output io.Writer, fields resolvedFieldInfos) {
-	fmt.Fprintf(output, "Available environment variables:\n")
-
-	table := tablewriter.NewWriter(output)
-	table.SetBorder(false)
-	table.SetHeader([]string{"Name", "Usage"})
-	table.SetAutoWrapText(false)
-
-	sort.Slice(fields, func(i, j int) bool {
-		return fields[i].Env < fields[j].Env
-	})
-	for _, field := range fields {
-		env := field.Env
-		if strings.HasPrefix(field.Value.Type().String(), "*[]") {
-			env += "_N"
-		}
-		table.Append([]string{env, field.Usage})
-	}
-	table.Render()
+func printHelpEnv(output io.Writer) {
+	fmt.Fprintf(output, "All arguments can be within environment variables:\n")
+	fmt.Fprintf(output, "Envronment variables with the prefix ")
+	fmt.Fprintf(output, EnvironmentPrefix)
+	fmt.Fprintf(output, " will be used. For example:\n")
+	fmt.Fprintf(output, EnvironmentPrefix+"_0=--llm.openai.api-key=MY_KEY\n")
+	fmt.Fprintf(output, EnvironmentPrefix+"_1=--llm.backend=openai\n")
 }
 
-func printHelpConfig(output io.Writer, fields resolvedFieldInfos) {
-	sort.Slice(fields, func(i, j int) bool {
-		return strings.Join(fields[i].YamlPath, "") < strings.Join(fields[j].YamlPath, "")
+func generateYamlSkeleton(output io.Writer) {
+	skeleton := &struct {
+		model.Profile     `yaml:",inline"`
+		model.DebugConfig `yaml:",inline"`
+
+		Profiles map[string]*model.Profile `yaml:"profile"`
+	}{}
+	yacl.NewConfig(skeleton).ApplyDefaults()
+
+	yaml.NewEncoder(output).Encode(skeleton)
+}
+
+func dumpYaml(output io.Writer, c *model.Config) {
+	skeleton := &struct {
+		model.Profile     `yaml:",inline"`
+		model.DebugConfig `yaml:",inline"`
+
+		Profiles map[string]*model.Profile `yaml:"profile"`
+	}{}
+	skeleton.Profile = c.MainProfile
+	skeleton.DebugConfig = c.DebugConfig
+	skeleton.Profiles = c.Profiles
+
+	yaml.NewEncoder(output).Encode(skeleton)
+}
+
+func printHelpConfig(output io.Writer) {
+	fmt.Fprintf(output, "Each available argument can be transformed into the corresponding yaml path. For example: '--llm.openai.api-key.plain=MY_KEY'\n")
+	yaml.NewEncoder(output, yaml.Indent(2)).Encode(model.Config{
+		MainProfile: model.Profile{
+			LLM: llm.LLMConfig{
+				OpenAI: llm.OpenAIConfig{
+					APIKey: common.Secret{
+						Plain: "MY_KEY",
+					},
+				},
+			},
+		},
 	})
-
-	fmt.Fprintf(output, "Yaml keys:\n")
-
-	table := tablewriter.NewWriter(output)
-	table.SetBorder(false)
-	table.SetHeader([]string{"Name", "Usage"})
-	table.SetAutoWrapText(false)
-
-	for _, field := range fields {
-		yamlKey := strings.TrimLeft(strings.Join(field.YamlPath, "."), ".")
-		if strings.HasSuffix(yamlKey, "-") {
-			continue
-		}
-		table.Append([]string{yamlKey, field.Usage})
-	}
-	table.Render()
-
 	fmt.Fprintf(output, "\nYou can define profiles. Each profile inherits the values of the 'root-config'. For example:\n")
-	fmt.Fprintf(output, `
-  llm:
-    backend: openai
-    openai:
-      api-key:
-        plain: "OPENAI_API_KEY"
-    call:
-      system-prompt: "You are a helpful assistant."
-  profiles:
-    evil:
-      llm:
-        call:
-          system-prompt: "You are a evil assistant."
-`)
+	yaml.NewEncoder(output, yaml.Indent(2)).Encode(model.Config{
+		MainProfile: model.Profile{
+			LLM: llm.LLMConfig{
+				Backend: "openai",
+				OpenAI: llm.OpenAIConfig{
+					APIKey: common.Secret{
+						Plain: "OPENAI_API_KEY",
+					},
+				},
+				CallOptions: llm.CallOptionsConfig{
+					SystemPrompt: "You are a helpful assistant.",
+				},
+			},
+		},
+		Profiles: map[string]*model.Profile{
+			"evil": {
+				LLM: llm.LLMConfig{
+					CallOptions: llm.CallOptionsConfig{
+						SystemPrompt: "You are a evil assistant.",
+					},
+				},
+			},
+		},
+	})
 	fmt.Fprintf(output, "\nThe profile 'evil' will use the same api-key as the root-config, but it will overwrite the system-prompt.\n")
 
 	fmt.Fprintf(output, "\nYaml lookup file locations:\n")
@@ -194,23 +246,10 @@ func printHelpExpression(output io.Writer) {
 func printHelpTool(output io.Writer) {
 	fmt.Fprintf(output, "Tool-Usage:"+
 		"\nYou can define many functions that can be used by the LLM."+
-		"\nThe functions can be given by argument (JSON), Environment (JSON) or config file (YAML)."+
+		"\nThe functions can be given by argument, Environment or config file."+
 		"\nThe fields are more or less the same for all three methods:\n")
 
-	table := tablewriter.NewWriter(output)
-	table.SetBorder(false)
-	table.SetHeader([]string{"Name", "Type", "Usage"})
-	table.SetAutoWrapText(false)
-
-	fields := scanConfigTags(nil, &tools.FunctionDefinition{})
-	for _, field := range fields {
-		t := strings.TrimPrefix(field.Value.Type().String(), "*")
-		if strings.HasPrefix(t, "interface") {
-			t = "any"
-		}
-		table.Append([]string{strings.Replace(field.Flag, ",omitempty", "", -1), t, field.Usage})
-	}
-	table.Render()
+	fmt.Fprint(output, yacl.NewConfig(&tools.FunctionDefinition{}).HelpFlags())
 
 	exampleDefs := []tools.FunctionDefinition{
 		{
@@ -266,56 +305,21 @@ func printHelpTool(output io.Writer) {
 	}
 
 	fmt.Fprintf(output, "\nYAML:\n\n")
-	ye := yaml.NewEncoder(output)
-	ye.SetIndent(2)
-	ye.Encode(map[string]any{
-		"llm": map[string]any{
-			"tool": map[string]any{
-				"functions": fdm,
-			},
-		},
-	})
+	ye := yaml.NewEncoder(output, yaml.Indent(2))
+	ye.Encode(model.Profile{LLM: llm.LLMConfig{Tools: tools.Config{Tools: fdm}}})
 
 	fmt.Fprintf(output, "\nIt is also possible to use tools from a MCP-Server. You can connect many MCP-Servers in different way.")
 	fmt.Fprintf(output, "\nAs a command (stdio):\n")
+	fmt.Fprint(output, yacl.NewConfig(&mcp.Command{}).HelpFlags())
 
-	table = tablewriter.NewWriter(output)
-	table.SetBorder(false)
-	table.SetHeader([]string{"Name", "Type", "Usage"})
-	table.SetAutoWrapText(false)
-
-	fields = scanConfigTags(nil, &mcp.Command{})
-	for _, field := range fields {
-		t := strings.TrimPrefix(field.Value.Type().String(), "*")
-		if strings.HasPrefix(t, "interface") {
-			t = "any"
-		}
-		table.Append([]string{strings.Replace(field.Flag, ",omitempty", "", -1), t, field.Usage})
-	}
-	table.Render()
-
-	fmt.Fprintf(output, "\nAs a rest-server (http):")
-
-	table = tablewriter.NewWriter(output)
-	table.SetBorder(false)
-	table.SetHeader([]string{"Name", "Type", "Usage"})
-	table.SetAutoWrapText(false)
-
-	fields = scanConfigTags(nil, &mcp.Http{})
-	for _, field := range fields {
-		t := strings.TrimPrefix(field.Value.Type().String(), "*")
-		if strings.HasPrefix(t, "interface") {
-			t = "any"
-		}
-		table.Append([]string{strings.Replace(field.Flag, ",omitempty", "", -1), t, field.Usage})
-	}
-	table.Render()
+	fmt.Fprintf(output, "\nAs a rest-server (http):\n")
+	fmt.Fprint(output, yacl.NewConfig(&mcp.Http{}).HelpFlags())
 
 	fmt.Fprintf(output, "\nYAML-Example:\n\n")
-	ye.Encode(map[string]any{
-		"llm": map[string]any{
-			"mcp": map[string]any{
-				"command": []mcp.Command{
+	ye.Encode(model.Profile{
+		LLM: llm.LLMConfig{
+			McpServer: mcp.Config{
+				CommandServer: []mcp.Command{
 					{
 						Name:      "docker",
 						Arguments: []string{"run", "--rm", "-i", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=github_...", "ghcr.io/github/github-mcp-server"},
@@ -331,7 +335,7 @@ func printHelpTool(output io.Writer) {
 						Approval: expression.VarNameContext + `.definition.name === 'push_files'`,
 					},
 				},
-				"http": []mcp.Http{
+				HttpServer: []mcp.Http{
 					{
 						BaseUrl:  "http://localhost:8080",
 						Endpoint: "/api/v1",
@@ -369,7 +373,7 @@ func printHelpTool(output io.Writer) {
 	fmt.Fprintf(output, "  - $<varName>: the value of <varName> in the LLM's JSON\n")
 	fmt.Fprintf(output, "\nExamples:\n")
 
-	table = tablewriter.NewWriter(output)
+	table := tablewriter.NewWriter(output)
 	table.SetBorder(false)
 	table.SetHeader([]string{"Pattern", "LLM's JSON", "Result"})
 	table.SetAutoWrapText(false)

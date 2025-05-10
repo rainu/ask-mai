@@ -5,7 +5,7 @@
 			:rows="rows"
 			:disabled="progress"
 			@keyup="onKeyup"
-			:hide-details="value.attachments.length === 0"
+			:hide-details="!hasAttachments"
 			autofocus
 			:placeholder="$t('prompt.placeholder')"
 		>
@@ -66,7 +66,7 @@ import GeneralBar from './GeneralBar.vue'
 import { mapState } from 'pinia'
 import { useConfigStore } from '../../store/config.ts'
 
-export type ChatInputType = { prompt: string; attachments: string[] }
+export type ChatInputType = { prompt: string; attachments: string[] | null }
 
 export default defineComponent({
 	name: 'ChatBar',
@@ -81,7 +81,7 @@ export default defineComponent({
 		modelValue: {
 			type: Object as () => ChatInputType,
 			required: false,
-			default: () => ({ prompt: '', attachments: [] }),
+			default: () => ({ prompt: '' }),
 		},
 		showClear: {
 			type: Boolean,
@@ -100,7 +100,7 @@ export default defineComponent({
 		},
 	},
 	computed: {
-		...mapState(useConfigStore, ['config']),
+		...mapState(useConfigStore, ['profile']),
 		value: {
 			get() {
 				return this.modelValue
@@ -114,19 +114,22 @@ export default defineComponent({
 		},
 		rows() {
 			return Math.max(
-				Math.min(this.modelValue.prompt.split('\n').length, this.config.UI.Prompt.MaxRows),
-				this.config.UI.Prompt.MinRows,
+				Math.min(this.modelValue.prompt.split('\n').length, this.profile.UI.Prompt.MaxRows),
+				this.profile.UI.Prompt.MinRows,
 			)
 		},
+		hasAttachments(): boolean {
+			return this.modelValue.attachments !== null && this.modelValue.attachments.length > 0
+		}
 	},
 	methods: {
 		onKeyup(event: KeyboardEvent) {
-			for (let i = 0; i < this.config.UI.Prompt.SubmitShortcut.Code.length; i++) {
-				const code = event.code.toLowerCase() === this.config.UI.Prompt.SubmitShortcut.Code[i].toLowerCase()
-				const ctrl = event.ctrlKey === this.config.UI.Prompt.SubmitShortcut.Ctrl[i]
-				const shift = event.shiftKey === this.config.UI.Prompt.SubmitShortcut.Shift[i]
-				const alt = event.altKey === this.config.UI.Prompt.SubmitShortcut.Alt[i]
-				const meta = event.metaKey === this.config.UI.Prompt.SubmitShortcut.Meta[i]
+			for (let i = 0; i < this.profile.UI.Prompt.SubmitShortcut.Code.length; i++) {
+				const code = event.code.toLowerCase() === this.profile.UI.Prompt.SubmitShortcut.Code[i].toLowerCase()
+				const ctrl = event.ctrlKey === this.profile.UI.Prompt.SubmitShortcut.Ctrl[i]
+				const shift = event.shiftKey === this.profile.UI.Prompt.SubmitShortcut.Shift[i]
+				const alt = event.altKey === this.profile.UI.Prompt.SubmitShortcut.Alt[i]
+				const meta = event.metaKey === this.profile.UI.Prompt.SubmitShortcut.Meta[i]
 
 				if (code && ctrl && shift && alt && meta) {
 					this.onSubmit()
@@ -150,10 +153,16 @@ export default defineComponent({
 					Title: this.$t('dialog.files.title'),
 				}),
 			).then((results) => {
+				if(this.value.attachments === null) {
+					this.value.attachments = []
+				}
 				this.value.attachments.push(...results)
 			})
 		},
 		onRemoveFile(index: number) {
+			if(this.value.attachments === null) {
+				return
+			}
 			this.value.attachments.splice(index, 1)
 		},
 		shortFileName(path: string) {

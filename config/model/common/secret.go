@@ -9,15 +9,15 @@ import (
 )
 
 type Secret struct {
-	Plain   string        `config:"" yaml:"plain" usage:" (plain value)"`
-	Command SecretCommand `usage:" (command): "`
+	Plain   string        `yaml:"plain,omitempty" usage:" (plain value)"`
+	Command SecretCommand `yaml:"command,omitempty" usage:" (command): "`
 }
 
 type SecretCommand struct {
-	Name   string            `yaml:"name" usage:"name"`
-	Args   []string          `yaml:"args" usage:"arguments"`
-	Env    map[string]string `yaml:"env" usage:"additional environment variables"`
-	NoTrim bool              `yaml:"no-trim" usage:"dont trim spaces from the output"`
+	Name   string            `yaml:"name,omitempty" usage:"name"`
+	Args   []string          `yaml:"args,omitempty" usage:"arguments"`
+	Env    map[string]string `yaml:"env,omitempty" usage:"additional environment variables"`
+	NoTrim bool              `yaml:"no-trim,omitempty" usage:"dont trim spaces from the output"`
 }
 
 func (s Secret) Validate() error {

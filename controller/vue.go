@@ -21,20 +21,20 @@ func (c *Controller) IsAppMounted() bool {
 func (c *Controller) applyInitialWindowConfig() {
 	_, height := runtime.WindowGetSize(c.ctx)
 
-	initWidth := int(c.getConfig().UI.Window.InitialWidth.Value)
+	initWidth := int(c.getProfile().UI.Window.InitialWidth.Value)
 	if int(initWidth) > 0 {
 		runtime.WindowSetSize(c.ctx, initWidth, height)
 	}
 
-	maxHeight := int(c.getConfig().UI.Window.MaxHeight.Value)
+	maxHeight := int(c.getProfile().UI.Window.MaxHeight.Value)
 	if maxHeight > 0 {
 		runtime.WindowSetMaxSize(c.ctx, math.MaxInt32, maxHeight)
 	}
 
-	posX := int(c.getConfig().UI.Window.InitialPositionX.Value)
-	posY := int(c.getConfig().UI.Window.InitialPositionY.Value)
+	posX := int(c.getProfile().UI.Window.InitialPositionX.Value)
+	posY := int(c.getProfile().UI.Window.InitialPositionY.Value)
 
-	if c.getConfig().UI.Window.GrowTop {
+	if c.getProfile().UI.Window.GrowTop {
 		posY = posY - height
 	}
 

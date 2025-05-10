@@ -5,12 +5,12 @@ import (
 )
 
 type FileAppending struct {
-	Disable  bool   `config:"disable" yaml:"disable" usage:"Disable tool"`
-	Approval string `config:"approval" yaml:"approval" usage:"Expression to check if user approval is needed before execute this tool"`
+	Disable  bool   `yaml:"disable,omitempty" usage:"Disable tool"`
+	Approval string `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
-	Y file.FileAppendingResult    `config:"-" yaml:"-"`
-	Z file.FileAppendingArguments `config:"-" yaml:"-"`
+	Y file.FileAppendingResult    `yaml:"-"`
+	Z file.FileAppendingArguments `yaml:"-"`
 }
 
 func NewFileAppending() FileAppending {

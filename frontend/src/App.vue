@@ -24,41 +24,41 @@ import { useConfigStore } from './store/config.ts'
 
 export default defineComponent({
 	computed: {
-		...mapState(useConfigStore, ['config']),
+		...mapState(useConfigStore, ['profile']),
 		theme(): string {
-			if (this.config.UI.Theme === 'system') {
+			if (this.profile.UI.Theme === 'system') {
 				if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 					return 'dark'
 				}
 				return 'light'
 			}
 
-			return this.config.UI.Theme
+			return this.profile.UI.Theme
 		},
 		opacity(): number {
-			return this.config.UI.Window.BackgroundColor.A / 255
+			return this.profile.UI.Window.BackgroundColor.A / 255
 		}
 	},
 	methods: {
 		handleGlobalKeydown(event: KeyboardEvent) {
-			for (let i = 0; i < this.config.UI.QuitShortcut.Code.length; i++) {
-				let code = event.code.toLowerCase() === this.config.UI.QuitShortcut.Code[i].toLowerCase()
-				let ctrl = event.ctrlKey === this.config.UI.QuitShortcut.Ctrl[i]
-				let shift = event.shiftKey === this.config.UI.QuitShortcut.Shift[i]
-				let alt = event.altKey === this.config.UI.QuitShortcut.Alt[i]
-				let meta = event.metaKey === this.config.UI.QuitShortcut.Meta[i]
+			for (let i = 0; i < this.profile.UI.QuitShortcut.Code.length; i++) {
+				let code = event.code.toLowerCase() === this.profile.UI.QuitShortcut.Code[i].toLowerCase()
+				let ctrl = event.ctrlKey === this.profile.UI.QuitShortcut.Ctrl[i]
+				let shift = event.shiftKey === this.profile.UI.QuitShortcut.Shift[i]
+				let alt = event.altKey === this.profile.UI.QuitShortcut.Alt[i]
+				let meta = event.metaKey === this.profile.UI.QuitShortcut.Meta[i]
 
 				if (code && ctrl && shift && alt && meta) {
 					Shutdown()
 				}
 			}
 
-			for (let i = 0; i < this.config.Debug.RestartShortcut.Code.length; i++) {
-				let code = event.code.toLowerCase() === this.config.Debug.RestartShortcut.Code[i].toLowerCase()
-				let ctrl = event.ctrlKey === this.config.Debug.RestartShortcut.Ctrl[i]
-				let shift = event.shiftKey === this.config.Debug.RestartShortcut.Shift[i]
-				let alt = event.altKey === this.config.Debug.RestartShortcut.Alt[i]
-				let meta = event.metaKey === this.config.Debug.RestartShortcut.Meta[i]
+			for (let i = 0; i < this.profile.RestartShortcut.Code.length; i++) {
+				let code = event.code.toLowerCase() === this.profile.RestartShortcut.Code[i].toLowerCase()
+				let ctrl = event.ctrlKey === this.profile.RestartShortcut.Ctrl[i]
+				let shift = event.shiftKey === this.profile.RestartShortcut.Shift[i]
+				let alt = event.altKey === this.profile.RestartShortcut.Alt[i]
+				let meta = event.metaKey === this.profile.RestartShortcut.Meta[i]
 
 				if (code && ctrl && shift && alt && meta) {
 					TriggerRestart()
@@ -66,7 +66,7 @@ export default defineComponent({
 			}
 		},
 		opacityValue(isHovering: boolean | null): number {
-			switch (this.config.UI.Window.Translucent) {
+			switch (this.profile.UI.Window.Translucent) {
 				case 'ever':
 					return this.opacity
 				case 'hover':

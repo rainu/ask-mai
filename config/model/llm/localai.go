@@ -8,9 +8,9 @@ import (
 )
 
 type LocalAIConfig struct {
-	APIKey  common.Secret `yaml:"api-key" usage:"API Key"`
-	Model   string        `yaml:"model" usage:"Model"`
-	BaseUrl string        `yaml:"base-url" usage:"BaseUrl"`
+	APIKey  common.Secret `yaml:"api-key,omitempty" usage:"API Key"`
+	Model   string        `yaml:"model,omitempty" usage:"Model"`
+	BaseUrl string        `yaml:"base-url,omitempty" usage:"BaseUrl"`
 }
 
 func (c *LocalAIConfig) AsOptions() (opts []openai.Option) {

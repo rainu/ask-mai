@@ -3,7 +3,7 @@
 		<ZoomDetector @onZoom="onZoom" />
 
 		<!-- header -->
-		<template v-if="config.UI.Prompt.PinTop">
+		<template v-if="profile.UI.Prompt.PinTop">
 			<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
 					<EditBar @on-save="onSave" />
@@ -42,7 +42,7 @@
 		</v-container>
 
 		<!-- footer -->
-		<template v-if="!config.UI.Prompt.PinTop">
+		<template v-if="!profile.UI.Prompt.PinTop">
 			<v-footer app class="pa-0 ma-0" density="compact" height="auto">
 				<div style="width: 100%" ref="appbar">
 					<EditBar @on-save="onSave" />
@@ -69,13 +69,13 @@ export default defineComponent({
 	data() {
 		return {
 			appbarHeight: 0,
-			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
+			zoom: this.$appProfile.UI.Window.InitialZoom.Value,
 
 			entryCopy: null as HistoryEntry | null,
 		}
 	},
 	computed: {
-		...mapState(useConfigStore, ['config']),
+		...mapState(useConfigStore, ['profile']),
 		...mapState(useHistoryStore, ['chatHistory']),
 		entryIdx(): number {
 			return this.$route.params.idx
@@ -109,9 +109,9 @@ export default defineComponent({
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
 
 			//the titlebar can not be manipulated while application lifecycle - so here we use the "initial" config
-			const titleBarHeight = this.$appConfig.UI.Window.ShowTitleBar ? this.$appConfig.UI.Window.TitleBarHeight : 0
+			const titleBarHeight = this.profile.UI.Window.ShowTitleBar ? this.profile.UI.Window.TitleBarHeight : 0
 			const combinedHeight = Math.ceil(pageHeight * this.zoom) + titleBarHeight
-			const width = this.config.UI.Window.InitialWidth.Value
+			const width = this.profile.UI.Window.InitialWidth.Value
 
 			await WindowSetSize(width, combinedHeight)
 		},

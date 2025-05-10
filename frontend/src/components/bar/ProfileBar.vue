@@ -16,16 +16,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import GeneralBar from './GeneralBar.vue'
-import { mapState } from 'pinia'
-import { useConfigStore } from '../../store/config.ts'
 
 export default defineComponent({
 	name: 'ProfileBar',
 	components: { GeneralBar },
 	emits: ['onSave'],
-	computed: {
-		...mapState(useConfigStore, ['config']),
-	},
 })
 </script>
 

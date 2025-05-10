@@ -3,52 +3,37 @@ package model
 import (
 	"dario.cat/mergo"
 	"fmt"
-	"github.com/rainu/ask-mai/config/model/llm"
 )
 
 type Config struct {
-	UI UIConfig `yaml:"ui"`
+	ConfigFile `yaml:",inline"`
 
-	LLM llm.LLMConfig `config:"" yaml:"llm"`
+	MainProfile Profile     `yaml:",inline,omitempty"`
+	DebugConfig DebugConfig `yaml:",inline,omitempty"`
 
-	Printer PrinterConfig `yaml:"print"`
+	ActiveProfile string              `yaml:"active-profile,omitempty" short:"P" usage:"The active profile name"`
+	Profiles      map[string]*Profile `yaml:"profiles,omitempty" usage:"Configuration profiles. Each profile has the same structure as the main configuration: "`
 
-	History History `yaml:"history"`
+	Version bool `yaml:"version,omitempty" short:"v" usage:"Show the version"`
 
-	Debug DebugConfig `config:"" yaml:"debug"`
+	Help Help `yaml:",inline,omitempty"`
+}
 
-	Config string `config:"config" short:"c" yaml:"-" usage:"Path to the configuration yaml file"`
-
-	Profile  Profile            `config:"" yaml:"profile" usage:"Profile configuration: "`
-	Profiles map[string]*Config `config:"" yaml:"profiles" usage:"Other configuration profiles. Each profile has the same structure as the main configuration."`
+type ConfigFile struct {
+	Path string `yaml:"config-file,omitempty" short:"c" usage:"Path to the configuration yaml file"`
 }
 
 func (c *Config) Validate() error {
-	if ve := c.Debug.Validate(); ve != nil {
+	if ve := c.MainProfile.Validate(); ve != nil {
+		return ve
+	}
+	if ve := c.DebugConfig.Validate(); ve != nil {
 		return ve
 	}
 
-	if ve := c.UI.Validate(); ve != nil {
-		return ve
-	}
-
-	if ve := c.LLM.Validate(); ve != nil {
-		return ve
-	}
-
-	if ve := c.Printer.Validate(); ve != nil {
-		return ve
-	}
-
-	if ve := c.History.Validate(); ve != nil {
-		return ve
-	}
-
-	cWithoutProfiles := *c
-	cWithoutProfiles.Profiles = nil
 	for profileName, profile := range c.Profiles {
-		// merge "default"-config into profile
-		err := mergo.Merge(profile, cWithoutProfiles, mergo.WithOverrideEmptySlice)
+		// merge mainProfile into current profile
+		err := mergo.Merge(profile, &c.MainProfile, mergo.WithOverrideEmptySlice)
 		if err != nil {
 			return fmt.Errorf("Error merging profile '%s': %w", profileName, err)
 		}
@@ -61,20 +46,20 @@ func (c *Config) Validate() error {
 	return nil
 }
 
-func (c *Config) GetActiveProfile() *Config {
-	profile, ok := c.Profiles[c.Profile.Active]
+func (c *Config) GetActiveProfile() *Profile {
+	profile, ok := c.Profiles[c.ActiveProfile]
 	if !ok {
-		return c
+		return &c.MainProfile
 	}
 	return profile
 }
 
-func (c *Config) GetProfiles() map[string]Profile {
-	result := map[string]Profile{}
-	result[""] = c.Profile
+func (c *Config) GetProfiles() map[string]ProfileMeta {
+	result := map[string]ProfileMeta{}
+	result[""] = c.MainProfile.Meta
 
 	for name, config := range c.Profiles {
-		result[name] = config.Profile
+		result[name] = config.Meta
 	}
 
 	return result

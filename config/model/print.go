@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"io"
+	"os"
 )
 
 const (
@@ -13,9 +14,15 @@ const (
 )
 
 type PrinterConfig struct {
-	Format     string           `yaml:"format" short:"f"`
 	Targets    []io.WriteCloser `yaml:"-"`
-	TargetsRaw []string         `yaml:"targets"`
+	TargetsRaw []string         `yaml:"targets,omitempty"`
+	Format     string           `yaml:"format,omitempty" short:"f"`
+}
+
+func (p *PrinterConfig) SetDefaults() {
+	p.Format = PrinterFormatJSON
+	p.Targets = []io.WriteCloser{os.Stdout}
+	p.TargetsRaw = []string{PrinterTargetOut}
 }
 
 func (p *PrinterConfig) GetUsage(field string) string {

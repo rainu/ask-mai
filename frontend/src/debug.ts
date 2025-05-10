@@ -1,16 +1,16 @@
 import { devtools } from '@vue/devtools'
-import { GetApplicationConfig } from '../wailsjs/go/controller/Controller'
+import { GetDebugConfig } from '../wailsjs/go/controller/Controller'
 
-const appConfig = await GetApplicationConfig()
+const debugConfig = await GetDebugConfig()
 
-if (appConfig.Debug.VueDevTools.Host !== '') {
-    let host = appConfig.Debug.VueDevTools.Host
+if (debugConfig.VueDevTools.Host !== '') {
+    let host = debugConfig.VueDevTools.Host
     if(!host.startsWith('http')) {
         host = 'http://' + host
     }
-    console.log('Connecting to Vue-Devtools', host, appConfig.Debug.VueDevTools.Port)
+    console.log('Connecting to Vue-Devtools', host, debugConfig.VueDevTools.Port)
 
-    devtools.connect(host, appConfig.Debug.VueDevTools.Port).then(() => {
+    devtools.connect(host, debugConfig.VueDevTools.Port).then(() => {
         console.log('Vue-Devtools connected!')
     })
 } else {

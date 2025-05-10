@@ -22,6 +22,10 @@ export function GetCurrentConversation() {
   return window['go']['controller']['Controller']['GetCurrentConversation']();
 }
 
+export function GetDebugConfig() {
+  return window['go']['controller']['Controller']['GetDebugConfig']();
+}
+
 export function GetLastState() {
   return window['go']['controller']['Controller']['GetLastState']();
 }

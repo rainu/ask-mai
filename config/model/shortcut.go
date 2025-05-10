@@ -6,12 +6,12 @@ import (
 )
 
 type Shortcut struct {
-	Binding []string `yaml:"binding" usage:"The binding for the shortcut"`
-	Code    []string `config:"-"`
-	Alt     []bool   `config:"-"`
-	Ctrl    []bool   `config:"-"`
-	Meta    []bool   `config:"-"`
-	Shift   []bool   `config:"-"`
+	Binding []string `yaml:"binding,omitempty" usage:"The binding for the shortcut"`
+	Code    []string `yaml:"-"`
+	Alt     []bool   `yaml:"-"`
+	Ctrl    []bool   `yaml:"-"`
+	Meta    []bool   `yaml:"-"`
+	Shift   []bool   `yaml:"-"`
 }
 
 func (s *Shortcut) Validate() error {

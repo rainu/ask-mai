@@ -28,7 +28,7 @@
 		<!-- after first prompt -->
 		<template v-else>
 			<!-- header -->
-			<template v-if="config.UI.Prompt.PinTop">
+			<template v-if="profile.UI.Prompt.PinTop">
 				<v-app-bar app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
 						<ChatBar
@@ -78,7 +78,7 @@
 			</div>
 
 			<!-- footer -->
-			<template v-if="!config.UI.Prompt.PinTop">
+			<template v-if="!profile.UI.Prompt.PinTop">
 				<v-footer app class="pa-0 ma-0" density="compact" height="auto">
 					<div style="width: 100%" ref="appbar">
 						<ChatBar
@@ -124,7 +124,7 @@ import { useConfigStore } from '../store/config.ts'
 type State = {
 	input: ChatInputType
 	chatHistory: HistoryEntry[]
-	config: model.Config
+	config: model.Profile
 }
 
 type HistoryEntryOrDate = {
@@ -141,8 +141,8 @@ export default {
 			appbarHeight: 0,
 			progress: false,
 			input: {
-				prompt: this.$appConfig.UI.Prompt.InitValue,
-				attachments: this.$appConfig.UI.Prompt.InitAttachments,
+				prompt: this.$appProfile.UI.Prompt.InitValue,
+				attachments: this.$appProfile.UI.Prompt.InitAttachments,
 			} as ChatInputType,
 			outputStream: [
 				{
@@ -154,11 +154,11 @@ export default {
 			error: null as { title: string; message: string } | null,
 			userScroll: false,
 			minimized: false,
-			zoom: this.$appConfig.UI.Window.InitialZoom.Value,
+			zoom: this.$appProfile.UI.Window.InitialZoom.Value,
 		}
 	},
 	computed: {
-		...mapState(useConfigStore, ['config']),
+		...mapState(useConfigStore, ['profile']),
 		...mapState(useHistoryStore, ['chatHistory']),
 		purgedChatHistory(): controller.LLMMessage[] {
 			return this.chatHistory
@@ -206,19 +206,19 @@ export default {
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
 
 			//the titlebar can not be manipulated while application lifecycle - so here we use the "initial" config
-			const titleBarHeight = this.$appConfig.UI.Window.ShowTitleBar ? this.$appConfig.UI.Window.TitleBarHeight : 0
+			const titleBarHeight = this.profile.UI.Window.ShowTitleBar ? this.profile.UI.Window.TitleBarHeight : 0
 			const combinedHeight = Math.ceil(pageHeight * this.zoom) + titleBarHeight
-			const heightDiff = Math.min(combinedHeight, this.config.UI.Window.MaxHeight.Value) - currentSize.h
-			const width = this.config.UI.Window.InitialWidth.Value
+			const heightDiff = Math.min(combinedHeight, this.profile.UI.Window.MaxHeight.Value) - currentSize.h
+			const width = this.profile.UI.Window.InitialWidth.Value
 
 			await WindowSetSize(width, combinedHeight)
 
-			if (this.config.UI.Window.GrowTop && heightDiff > 0) {
+			if (this.profile.UI.Window.GrowTop && heightDiff > 0) {
 				// move the window
-				const offset = Math.min(combinedHeight, this.config.UI.Window.MaxHeight.Value)
+				const offset = Math.min(combinedHeight, this.profile.UI.Window.MaxHeight.Value)
 				await WindowSetPosition(
-					this.config.UI.Window.InitialPositionX.Value,
-					this.config.UI.Window.InitialPositionY.Value - offset,
+					this.profile.UI.Window.InitialPositionX.Value,
+					this.profile.UI.Window.InitialPositionY.Value - offset,
 				)
 			}
 		},
@@ -243,16 +243,21 @@ export default {
 			await this.adjustHeight()
 		},
 		convertChatInputToLLMMessage(input: ChatInputType): LLMMessage {
+			let attachments : LLMMessageContentPart[] = []
+			if (input.attachments) {
+				attachments = input.attachments.map((a) =>
+					LLMMessageContentPart.createFrom({
+						Type: ContentType.Attachment,
+						Content: a,
+					}),
+				)
+			}
+
 			return LLMMessage.createFrom({
 				Role: Role.User,
 				ContentParts: [
 					LLMMessageContentPart.createFrom({ Type: ContentType.Text, Content: input.prompt }),
-					...input.attachments.map((a) =>
-						LLMMessageContentPart.createFrom({
-							Type: ContentType.Attachment,
-							Content: a,
-						}),
-					),
+					...attachments
 				],
 				Created: Math.floor(new Date().getTime() / 1000),
 			})
@@ -273,13 +278,13 @@ export default {
 					this.input.prompt = ''
 					this.input.attachments = []
 				}
-				if (this.config.UI.Stream) {
+				if (this.profile.UI.Stream) {
 					setInput()
 				}
 
 				const output = await processFn()
 
-				if (!this.config.UI.Stream) {
+				if (!this.profile.UI.Stream) {
 					setInput()
 				}
 
@@ -299,7 +304,7 @@ export default {
 					message: `${err}`,
 				}
 
-				if (this.config.UI.Stream) {
+				if (this.profile.UI.Stream) {
 					// mark last input as "interrupted"
 					this.chatHistory[this.chatHistory.length - 1].Interrupted = true
 
@@ -325,8 +330,8 @@ export default {
 			await this.processLLM(input, () => LLMAsk(args))
 		},
 		async waitForLLM() {
-			this.input.prompt = this.$appConfig.UI.Prompt.InitValue
-			this.input.attachments = this.$appConfig.UI.Prompt.InitAttachments
+			this.input.prompt = this.profile.UI.Prompt.InitValue
+			this.input.attachments = this.profile.UI.Prompt.InitAttachments
 			await this.processLLM(this.input, () => LLMWait())
 		},
 		async onInterrupt() {
@@ -367,7 +372,7 @@ export default {
 					const state = {
 						input: this.input,
 						chatHistory: this.chatHistory,
-						config: this.config,
+						config: this.profile,
 					} as State
 
 					Restart(JSON.stringify(state))
@@ -386,7 +391,7 @@ export default {
 
 			AppMounted()
 				.then(() => {
-					if (this.$appConfig.UI.Prompt.InitValue && !stateAsString) {
+					if (this.$appProfile.UI.Prompt.InitValue && !stateAsString) {
 						this.waitForLLM()
 					}
 				})

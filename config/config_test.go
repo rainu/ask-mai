@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/rainu/ask-mai/config/model"
 	"github.com/rainu/ask-mai/config/model/common"
+	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"log/slog"
@@ -10,7 +11,8 @@ import (
 )
 
 func modifiedConfig(mod func(*model.Config)) model.Config {
-	c := defaultConfig()
+	c := &model.Config{}
+	yacl.NewConfig(c).ApplyDefaults()
 	mod(c)
 	return *c
 }
@@ -37,666 +39,659 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set log level",
-			args: []string{"--log-level", "-4"},
+			args: []string{"--log-level=-4"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.LogLevel = int(slog.LevelDebug)
+				c.DebugConfig.LogLevel = int(slog.LevelDebug)
 			}),
 		},
 		{
 			name: "Set pprof address",
-			args: []string{"--pprof-address", "localhost:6060"},
+			args: []string{"--pprof-address=localhost:6060"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.PprofAddress = "localhost:6060"
+				c.DebugConfig.PprofAddress = "localhost:6060"
 			}),
 		},
 		{
 			name: "Set vue dev tools host",
-			args: []string{"--vue-dev-tools-host", "localhost"},
+			args: []string{"--vue-dev-tools.host=localhost"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.VueDevTools.Host = "localhost"
+				c.DebugConfig.VueDevTools.Host = "localhost"
 			}),
 		},
 		{
 			name: "Set vue dev tools port",
-			args: []string{"--vue-dev-tools-port", "1312"},
+			args: []string{"--vue-dev-tools.port=1312"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.VueDevTools.Port = 1312
+				c.DebugConfig.VueDevTools.Port = 1312
 			}),
 		},
 		{
 			name: "Set open inspector on startup",
-			args: []string{"--webkit-open-inspector", "true"},
+			args: []string{"--webkit.open-inspector"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.WebKit.OpenInspectorOnStartup = true
+				c.DebugConfig.WebKit.OpenInspectorOnStartup = true
 			}),
 		},
 		{
 			name: "Set webkit inspector http server address",
-			args: []string{"--webkit-http-server", "127.0.0.1:5000"},
+			args: []string{"--webkit.http-server=127.0.0.1:5000"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.WebKit.HttpServerAddress = "127.0.0.1:5000"
+				c.DebugConfig.WebKit.HttpServerAddress = "127.0.0.1:5000"
 			}),
 		},
 		{
 			name: "Set UI prompt value",
-			args: []string{"--ui-prompt-value", "test"},
+			args: []string{"--ui.prompt.value=test"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.InitValue = "test"
+				c.MainProfile.UI.Prompt.InitValue = "test"
 			}),
 		},
 		{
 			name: "Set UI prompt value - shorthand",
-			args: []string{"-p", "test"},
+			args: []string{"-p=test"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.InitValue = "test"
+				c.MainProfile.UI.Prompt.InitValue = "test"
 			}),
 		},
 		{
 			name: "Set system prompt value",
-			args: []string{"--call-system-prompt", "test"},
+			args: []string{"--llm.call.system-prompt=test"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.LLM.CallOptions.SystemPrompt = "test"
+				c.MainProfile.LLM.CallOptions.SystemPrompt = "test"
 			}),
 		},
 		{
 			name: "Set UI prompt initial attachments",
-			args: []string{"--ui-prompt-attachments", "file1.txt,file2.txt"},
+			args: []string{"--ui.prompt.attachments.[0]=file1.txt", "--ui.prompt.attachments.[1]=file2.txt"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
+				c.MainProfile.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
 			}),
 		},
 		{
 			name: "Set UI prompt initial attachments - shorthand",
-			args: []string{"-a", "file1.txt,file2.txt"},
+			args: []string{"-a=file1.txt", "-a=file2.txt"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
+				c.MainProfile.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
 			}),
 		},
 		{
 			name: "Set UI prompt min rows",
-			args: []string{"--ui-prompt-min-rows", "2"},
+			args: []string{"--ui.prompt.min-rows=2"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.MinRows = 2
+				c.MainProfile.UI.Prompt.MinRows = 2
 			}),
 		},
 		{
 			name: "Set UI prompt max rows",
-			args: []string{"--ui-prompt-max-rows", "5"},
+			args: []string{"--ui.prompt.max-rows=5"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.MaxRows = 5
+				c.MainProfile.UI.Prompt.MaxRows = 5
 			}),
 		},
 		{
 			name: "Set UI prompt submit key",
 			args: []string{
-				"--ui-prompt-submit-binding", "space",
-				"--ui-prompt-submit-binding", "escape",
+				"--ui.prompt.submit.binding.[0]=space",
+				"--ui.prompt.submit.binding.[1]=escape",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.SubmitShortcut = model.Shortcut{Binding: []string{"space", "escape"}}
+				c.MainProfile.UI.Prompt.SubmitShortcut = model.Shortcut{Binding: []string{"space", "escape"}}
 			}),
 		},
 		{
 			name: "Set UI prompt pin top",
-			args: []string{"--ui-prompt-pin-top=false"},
+			args: []string{"--ui.prompt.pin-top=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.PinTop = false
+				c.MainProfile.UI.Prompt.PinTop = false
 			}),
 		},
 		{
 			name: "Set UI file dialog default directory",
-			args: []string{"--ui-file-dialog-default-dir", "/home/user"},
+			args: []string{"--ui.file-dialog.default-dir=/home/user"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.DefaultDirectory = "/home/user"
+				c.MainProfile.UI.FileDialog.DefaultDirectory = "/home/user"
 			}),
 		},
 		{
 			name: "Set UI file dialog show hidden files",
-			args: []string{"--ui-file-dialog-show-hidden=false"},
+			args: []string{"--ui.file-dialog.show-hidden=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.ShowHiddenFiles = false
+				c.MainProfile.UI.FileDialog.ShowHiddenFiles = false
 			}),
 		},
 		{
 			name: "Set UI file dialog can create directories",
-			args: []string{"--ui-file-dialog-can-create-dirs=true"},
+			args: []string{"--ui.file-dialog.can-create-dirs=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.CanCreateDirectories = true
+				c.MainProfile.UI.FileDialog.CanCreateDirectories = true
 			}),
 		},
 		{
 			name: "Set UI file dialog resolves aliases",
-			args: []string{"--ui-file-dialog-resolve-aliases=true"},
+			args: []string{"--ui.file-dialog.resolve-aliases=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.ResolveAliases = true
+				c.MainProfile.UI.FileDialog.ResolveAliases = true
 			}),
 		},
 		{
 			name: "Set UI file dialog treat packages as directories",
-			args: []string{"--ui-file-dialog-treat-packages-as-dirs=false"},
+			args: []string{"--ui.file-dialog.treat-packages-as-dirs=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.TreatPackagesAsDirectories = false
+				c.MainProfile.UI.FileDialog.TreatPackagesAsDirectories = false
 			}),
 		},
 		{
 			name: "Set UI file dialog filter display",
-			args: []string{"--ui-file-dialog-filter-display=\"Images (*.jpg, *.png)\""},
+			args: []string{"--ui.file-dialog.filter-display.[0]=Images (*.jpg, *.png)"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)"}
+				c.MainProfile.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)"}
 			}),
 		},
 		{
 			name: "Set UI file dialog filter pattern",
-			args: []string{"--ui-file-dialog-filter-pattern", "*.jpg;*.png"},
+			args: []string{"--ui.file-dialog.filter-pattern=\"*.jpg;*.png\""},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png"}
+				c.MainProfile.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png"}
 			}),
 		},
 		{
 			name: "Set UI file dialog filter display",
-			args: []string{"--ui-file-dialog-filter-display=\"Images (*.jpg, *.png)\"", "--ui-file-dialog-filter-display=\"Documents (*.doc, *.docx)\""},
+			args: []string{"--ui.file-dialog.filter-display=\"Images (*.jpg, *.png)\"", "--ui.file-dialog.filter-display=\"Documents (*.doc, *.docx)\""},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)", "Documents (*.doc, *.docx)"}
+				c.MainProfile.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)", "Documents (*.doc, *.docx)"}
 			}),
 		},
 		{
 			name: "Set UI file dialog filter pattern",
-			args: []string{"--ui-file-dialog-filter-pattern", "*.jpg;*.png", "--ui-file-dialog-filter-pattern", "*.doc;*.docx"},
+			args: []string{"--ui.file-dialog.filter-pattern=\"*.jpg;*.png\"", "--ui.file-dialog.filter-pattern=\"*.doc;*.docx\""},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png", "*.doc;*.docx"}
+				c.MainProfile.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png", "*.doc;*.docx"}
 			}),
 		},
 		{
 			name: "Enable UI stream",
-			args: []string{"--ui-stream"},
+			args: []string{"--ui.stream"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Stream = true
+				c.MainProfile.UI.Stream = true
 			}),
 		},
 		{
 			name: "Enable UI stream - shorthand",
 			args: []string{"-s"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Stream = true
+				c.MainProfile.UI.Stream = true
 			}),
 		},
 		{
 			name: "Set UI title",
-			args: []string{"--ui-window-title", "Test Title"},
+			args: []string{"--ui.window.title=Test Title"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.Title = "Test Title"
+				c.MainProfile.UI.Window.Title = "Test Title"
 			}),
 		},
 		{
 			name: "Set UI initial width",
-			args: []string{"--ui-window-init-width", "100"},
+			args: []string{"--ui.window.init-width.expression=100"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.InitialWidth = common.NumberContainer{Expression: "100"}
+				c.MainProfile.UI.Window.InitialWidth = common.NumberContainer{Expression: "100"}
 			}),
 		},
 		{
 			name: "Set UI max height",
-			args: []string{"--ui-window-max-height", "200"},
+			args: []string{"--ui.window.max-height.expression=200"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.MaxHeight = common.NumberContainer{Expression: "200"}
+				c.MainProfile.UI.Window.MaxHeight = common.NumberContainer{Expression: "200"}
 			}),
 		},
 		{
 			name: "Set UI initial position X",
-			args: []string{"--ui-window-init-pos-x", "50"},
+			args: []string{"--ui.window.init-pos-x.expression=50"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.InitialPositionX = common.NumberContainer{Expression: "50"}
+				c.MainProfile.UI.Window.InitialPositionX = common.NumberContainer{Expression: "50"}
 			}),
 		},
 		{
 			name: "Set UI initial position Y",
-			args: []string{"--ui-window-init-pos-y", "50"},
+			args: []string{"--ui.window.init-pos-y.expression=50"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.InitialPositionY = common.NumberContainer{Expression: "50"}
+				c.MainProfile.UI.Window.InitialPositionY = common.NumberContainer{Expression: "50"}
 			}),
 		},
 		{
 			name: "Set UI initial zoom",
-			args: []string{"--ui-window-init-zoom", "1.5"},
+			args: []string{"--ui.window.init-zoom.expression=1.5"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.InitialZoom = common.NumberContainer{Expression: "1.5"}
+				c.MainProfile.UI.Window.InitialZoom = common.NumberContainer{Expression: "1.5"}
 			}),
 		},
 		{
 			name: "Set UI background color",
 			args: []string{
-				"--ui-window-bg-color-r", "100",
-				"--ui-window-bg-color-g", "100",
-				"--ui-window-bg-color-b", "100",
-				"--ui-window-bg-color-a", "100",
+				"--ui.window.bg-color.r=100",
+				"--ui.window.bg-color.g=100",
+				"--ui.window.bg-color.b=100",
+				"--ui.window.bg-color.a=100",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.BackgroundColor = model.WindowBackgroundColor{R: 100, G: 100, B: 100, A: 100}
+				c.MainProfile.UI.Window.BackgroundColor = model.WindowBackgroundColor{R: 100, G: 100, B: 100, A: 100}
 			}),
 		},
 		{
 			name: "Set UI start state",
-			args: []string{"--ui-window-start-state", "1"},
+			args: []string{"--ui.window.start-state=1"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.StartState = 1
+				c.MainProfile.UI.Window.StartState = 1
 			}),
 		},
 		{
 			name: "Disable UI frameless",
-			args: []string{"--ui-window-frameless=false"},
+			args: []string{"--ui.window.frameless=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.Frameless = false
+				c.MainProfile.UI.Window.Frameless = false
 			}),
 		},
 		{
 			name: "Disable UI always on top",
-			args: []string{"--ui-window-always-on-top=false"},
+			args: []string{"--ui.window.always-on-top=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.AlwaysOnTop = false
+				c.MainProfile.UI.Window.AlwaysOnTop = false
 			}),
 		},
 		{
 			name: "Disable UI resizable",
-			args: []string{"--ui-window-resizeable=false"},
+			args: []string{"--ui.window.resizeable=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.Resizeable = false
+				c.MainProfile.UI.Window.Resizeable = false
 			}),
 		},
 		{
 			name: "Set UI translucent",
-			args: []string{"--ui-window-translucent", "never"},
+			args: []string{"--ui.window.translucent=never"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.Translucent = model.TranslucentNever
+				c.MainProfile.UI.Window.Translucent = model.TranslucentNever
 			}),
 		},
 		{
 			name: "Set UI quit shortcut",
 			args: []string{
-				"--ui-quit-binding", "ctrl+q",
+				"--ui.quit.binding=ctrl+q",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.QuitShortcut = model.Shortcut{Binding: []string{"ctrl+q"}}
+				c.MainProfile.UI.QuitShortcut = model.Shortcut{Binding: []string{"ctrl+q"}}
 			}),
 		},
 		{
 			name: "Set UI theme",
-			args: []string{"--ui-theme", "dark"},
+			args: []string{"--ui.theme=dark"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Theme = model.ThemeDark
+				c.MainProfile.UI.Theme = model.ThemeDark
 			}),
 		},
 		{
 			name: "Set UI code style",
-			args: []string{"--ui-code-style", "monokai"},
+			args: []string{"--ui.code-style=monokai"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.CodeStyle = "monokai"
+				c.MainProfile.UI.CodeStyle = "monokai"
 			}),
 		},
 		{
 			name: "Set UI language",
-			args: []string{"--ui-lang", "en_US"},
+			args: []string{"--ui.lang=en_US"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Language = "en_US"
+				c.MainProfile.UI.Language = "en_US"
 			}),
 		},
 		{
 			name: "Set backend",
-			args: []string{"--backend", "openai"},
+			args: []string{"--llm.backend=openai"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.LLM.Backend = "openai"
+				c.MainProfile.LLM.Backend = "openai"
 			}),
 		},
 		{
 			name: "Set backend - shorthand",
-			args: []string{"-b", "openai"},
+			args: []string{"-b=openai"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.LLM.Backend = "openai"
+				c.MainProfile.LLM.Backend = "openai"
 			}),
 		},
 		{
 			name: "Set print format",
-			args: []string{"--print-format", "plain"},
+			args: []string{"--print.format=plain"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Printer.Format = model.PrinterFormatPlain
+				c.MainProfile.Printer.Format = model.PrinterFormatPlain
 			}),
 		},
 		{
 			name: "Set print format - shorthand",
-			args: []string{"-f", "plain"},
+			args: []string{"-f=plain"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Printer.Format = model.PrinterFormatPlain
+				c.MainProfile.Printer.Format = model.PrinterFormatPlain
 			}),
 		},
 		{
 			name: "Enable print version",
 			args: []string{"--version"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.PrintVersion = true
+				c.Version = true
 			}),
 		},
 		{
 			name: "Enable print version - shorthand",
 			args: []string{"-v"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.PrintVersion = true
+				c.Version = true
 			}),
 		},
 		{
 			name: "Set environment variable for init prompt",
-			env:  []string{EnvironmentPrefix + "UI_PROMPT_VALUE=test"},
+			env:  []string{EnvironmentPrefix + "=--ui.prompt.value=test"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.InitValue = "test"
+				c.MainProfile.UI.Prompt.InitValue = "test"
 			}),
 		},
 		{
 			name: "Set environment variable for log level",
-			env:  []string{EnvironmentPrefix + "LOG_LEVEL=-4"},
+			env:  []string{EnvironmentPrefix + "=--log-level=-4"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.LogLevel = int(slog.LevelDebug)
+				c.DebugConfig.LogLevel = int(slog.LevelDebug)
 			}),
 		},
 		{
 			name: "Set environment variable for pprof address",
-			env:  []string{EnvironmentPrefix + "PPROF_ADDRESS=:1312"},
+			env:  []string{EnvironmentPrefix + "=--pprof-address=:1312"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.PprofAddress = ":1312"
+				c.DebugConfig.PprofAddress = ":1312"
 			}),
 		},
 		{
 			name: "Set environment variable for vue dev tools host",
-			env:  []string{EnvironmentPrefix + "VUE_DEV_TOOLS_HOST=localhost"},
+			env:  []string{EnvironmentPrefix + "=--vue-dev-tools.host=localhost"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.VueDevTools.Host = "localhost"
+				c.DebugConfig.VueDevTools.Host = "localhost"
 			}),
 		},
 		{
 			name: "Set environment variable for vue dev tools port",
-			env:  []string{EnvironmentPrefix + "VUE_DEV_TOOLS_PORT=1312"},
+			env:  []string{EnvironmentPrefix + "=--vue-dev-tools.port=1312"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.VueDevTools.Port = 1312
+				c.DebugConfig.VueDevTools.Port = 1312
 			}),
 		},
 		{
 			name: "Set environment variable for open inspector on startup",
-			env:  []string{EnvironmentPrefix + "WEBKIT_OPEN_INSPECTOR=1"},
+			env:  []string{EnvironmentPrefix + "=--webkit.open-inspector"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.WebKit.OpenInspectorOnStartup = true
+				c.DebugConfig.WebKit.OpenInspectorOnStartup = true
 			}),
 		},
 		{
 			name: "Set environment variable for webkit http server address",
-			env:  []string{EnvironmentPrefix + "WEBKIT_HTTP_SERVER=127.0.0.1:5000"},
+			env:  []string{EnvironmentPrefix + "=--webkit.http-server=127.0.0.1:5000"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.WebKit.HttpServerAddress = "127.0.0.1:5000"
+				c.DebugConfig.WebKit.HttpServerAddress = "127.0.0.1:5000"
 			}),
 		},
 		{
 			name: "Set environment variable for UI stream",
-			env:  []string{EnvironmentPrefix + "UI_STREAM=true"},
+			env:  []string{EnvironmentPrefix + "=--ui.stream=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Stream = true
+				c.MainProfile.UI.Stream = true
 			}),
 		},
 		{
 			name: "Set environment variable for UI window title",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_TITLE=Test Title"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.title=Test Title"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.Title = "Test Title"
+				c.MainProfile.UI.Window.Title = "Test Title"
 			}),
 		},
 		{
 			name: "Set environment variable for backend",
-			env:  []string{EnvironmentPrefix + "BACKEND=openai"},
+			env:  []string{EnvironmentPrefix + "=--llm.backend=openai"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.LLM.Backend = "openai"
+				c.MainProfile.LLM.Backend = "openai"
 			}),
 		},
 		{
 			name: "Set environment variable for print format",
-			env:  []string{EnvironmentPrefix + "PRINT_FORMAT=plain"},
+			env:  []string{EnvironmentPrefix + "=--print.format=plain"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Printer.Format = model.PrinterFormatPlain
+				c.MainProfile.Printer.Format = model.PrinterFormatPlain
 			}),
 		},
 		{
 			name: "Set environment variable for UI language",
-			env:  []string{EnvironmentPrefix + "UI_LANG=en_US"},
+			env:  []string{EnvironmentPrefix + "=--ui.lang=en_US"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Language = "en_US"
+				c.MainProfile.UI.Language = "en_US"
 			}),
 		},
 		{
 			name: "Set environment variable for UI prompt initial attachments",
 			env: []string{
-				EnvironmentPrefix + "UI_PROMPT_ATTACHMENTS_1=file2.txt",
-				EnvironmentPrefix + "UI_PROMPT_ATTACHMENTS_0=file1.txt",
+				EnvironmentPrefix + "=--ui.prompt.attachments.[1]=file2.txt",
+				EnvironmentPrefix + "=--ui.prompt.attachments.[0]=file1.txt",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
+				c.MainProfile.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI prompt min rows",
-			env:  []string{EnvironmentPrefix + "UI_PROMPT_MIN_ROWS=2"},
+			env:  []string{EnvironmentPrefix + "=--ui.prompt.min-rows=2"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.MinRows = 2
+				c.MainProfile.UI.Prompt.MinRows = 2
 			}),
 		},
 		{
 			name: "Set environment variable for UI prompt max rows",
-			env:  []string{EnvironmentPrefix + "UI_PROMPT_MAX_ROWS=5"},
+			env:  []string{EnvironmentPrefix + "=--ui.prompt.max-rows=5"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.MaxRows = 5
+				c.MainProfile.UI.Prompt.MaxRows = 5
 			}),
 		},
 		{
 			name: "Set environment variable for UI prompt submit key",
 			env: []string{
-				EnvironmentPrefix + "UI_PROMPT_SUBMIT_BINDING_0=space",
+				EnvironmentPrefix + "=--ui.prompt.submit.binding=space",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.SubmitShortcut = model.Shortcut{Binding: []string{"space"}}
+				c.MainProfile.UI.Prompt.SubmitShortcut = model.Shortcut{Binding: []string{"space"}}
 			}),
 		},
 		{
 			name: "Set environment variable for UI prompt pin top",
 			env: []string{
-				EnvironmentPrefix + "UI_PROMPT_PIN_TOP=false",
+				EnvironmentPrefix + "=--ui.prompt.pin-top=false",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.PinTop = false
+				c.MainProfile.UI.Prompt.PinTop = false
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog default directory",
-			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_DEFAULT_DIR=/home/user"},
+			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.default-dir=/home/user"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.DefaultDirectory = "/home/user"
+				c.MainProfile.UI.FileDialog.DefaultDirectory = "/home/user"
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog show hidden files",
-			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_SHOW_HIDDEN=false"},
+			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.show-hidden=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.ShowHiddenFiles = false
+				c.MainProfile.UI.FileDialog.ShowHiddenFiles = false
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog can create directories",
-			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_CAN_CREATE_DIRS=true"},
+			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.can-create-dirs=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.CanCreateDirectories = true
+				c.MainProfile.UI.FileDialog.CanCreateDirectories = true
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog resolves aliases",
-			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_RESOLVES_ALIASES=true"},
+			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.resolve-aliases=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.ResolveAliases = true
+				c.MainProfile.UI.FileDialog.ResolveAliases = true
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog treat packages as directories",
-			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_TREAT_PACKAGES_AS_DIRS=false"},
+			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.treat-packages-as-dirs=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.TreatPackagesAsDirectories = false
+				c.MainProfile.UI.FileDialog.TreatPackagesAsDirectories = false
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog filter display",
-			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_FILTER_DISPLAY_0=Images (*.jpg, *.png)"},
+			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.filter-display=Images (*.jpg, *.png)"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)"}
+				c.MainProfile.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog filter pattern",
-			env:  []string{EnvironmentPrefix + "UI_FILE_DIALOG_FILTER_PATTERN_0=*.jpg;*.png"},
+			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.filter-pattern=\"*.jpg;*.png\""},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png"}
+				c.MainProfile.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial width",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_WIDTH=100"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.init-width.expression=100"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.InitialWidth = common.NumberContainer{Expression: "100"}
+				c.MainProfile.UI.Window.InitialWidth = common.NumberContainer{Expression: "100"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI max height",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_MAX_HEIGHT=200"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.max-height.expression=200"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.MaxHeight = common.NumberContainer{Expression: "200"}
+				c.MainProfile.UI.Window.MaxHeight = common.NumberContainer{Expression: "200"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial position X",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_POS_X=50"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.init-pos-x.expression=50"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.InitialPositionX = common.NumberContainer{Expression: "50"}
+				c.MainProfile.UI.Window.InitialPositionX = common.NumberContainer{Expression: "50"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial position Y",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_POS_Y=50"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.init-pos-y.expression=50"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.InitialPositionY = common.NumberContainer{Expression: "50"}
+				c.MainProfile.UI.Window.InitialPositionY = common.NumberContainer{Expression: "50"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial zoom",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_INIT_ZOOM=1.5"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.init-zoom.expression=1.5"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.InitialZoom = common.NumberContainer{Expression: "1.5"}
+				c.MainProfile.UI.Window.InitialZoom = common.NumberContainer{Expression: "1.5"}
 			}),
 		},
 		{
 			name: "Set environment variable for UI background color",
 			env: []string{
-				EnvironmentPrefix + "UI_WINDOW_BG_COLOR_R=100",
-				EnvironmentPrefix + "UI_WINDOW_BG_COLOR_G=100",
-				EnvironmentPrefix + "UI_WINDOW_BG_COLOR_B=100",
-				EnvironmentPrefix + "UI_WINDOW_BG_COLOR_A=100",
+				EnvironmentPrefix + "=--ui.window.bg-color.r=100",
+				EnvironmentPrefix + "=--ui.window.bg-color.g=100",
+				EnvironmentPrefix + "=--ui.window.bg-color.b=100",
+				EnvironmentPrefix + "=--ui.window.bg-color.a=100",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.BackgroundColor = model.WindowBackgroundColor{R: 100, G: 100, B: 100, A: 100}
+				c.MainProfile.UI.Window.BackgroundColor = model.WindowBackgroundColor{R: 100, G: 100, B: 100, A: 100}
 			}),
 		},
 		{
 			name: "Set environment variable for UI start state",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_START_STATE=1"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.start-state=1"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.StartState = 1
+				c.MainProfile.UI.Window.StartState = 1
 			}),
 		},
 		{
 			name: "Set environment variable for UI frameless",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_FRAMELESS=false"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.frameless=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.Frameless = false
+				c.MainProfile.UI.Window.Frameless = false
 			}),
 		},
 		{
 			name: "Set environment variable for UI always on top",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_ALWAYS_ON_TOP=false"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.always-on-top=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.AlwaysOnTop = false
+				c.MainProfile.UI.Window.AlwaysOnTop = false
 			}),
 		},
 		{
 			name: "Set environment variable for UI resizable",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_RESIZEABLE=false"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.resizeable=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.Resizeable = false
+				c.MainProfile.UI.Window.Resizeable = false
 			}),
 		},
 		{
 			name: "Set environment variable for UI translucent",
-			env:  []string{EnvironmentPrefix + "UI_WINDOW_TRANSLUCENT=never"},
+			env:  []string{EnvironmentPrefix + "=--ui.window.translucent=never"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Window.Translucent = model.TranslucentNever
+				c.MainProfile.UI.Window.Translucent = model.TranslucentNever
 			}),
 		},
 		{
 			name: "Set environment variable for UI quit shortcut",
 			env: []string{
-				EnvironmentPrefix + "UI_QUIT_BINDING_0=ctrl+q",
+				EnvironmentPrefix + "=--ui.quit.binding=ctrl+q",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.QuitShortcut = model.Shortcut{Binding: []string{"ctrl+q"}}
+				c.MainProfile.UI.QuitShortcut = model.Shortcut{Binding: []string{"ctrl+q"}}
 			}),
 		},
 		{
 			name: "Set environment variable for UI theme",
-			env:  []string{EnvironmentPrefix + "UI_THEME=dark"},
+			env:  []string{EnvironmentPrefix + "=--ui.theme=dark"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Theme = model.ThemeDark
+				c.MainProfile.UI.Theme = model.ThemeDark
 			}),
 		},
 		{
 			name: "Set environment variable for UI code style",
-			env:  []string{EnvironmentPrefix + "UI_CODE_STYLE=monokai"},
+			env:  []string{EnvironmentPrefix + "=--ui.code-style=monokai"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.CodeStyle = "monokai"
+				c.MainProfile.UI.CodeStyle = "monokai"
 			}),
 		},
 		{
 			name: "Set environment variable for print version",
-			env:  []string{EnvironmentPrefix + "VERSION=true"},
+			env:  []string{EnvironmentPrefix + "=--version=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.Debug.PrintVersion = true
+				c.Version = true
 			}),
 		},
 		{
 			name: "Argument will override environment",
-			args: []string{"--ui-prompt-value=arg-prompt"},
-			env:  []string{EnvironmentPrefix + "UI_PROMPT_VALUE=env-prompt"},
+			args: []string{"--ui.prompt.value=arg-prompt"},
+			env:  []string{EnvironmentPrefix + "=--ui.prompt.value=env-prompt"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.UI.Prompt.InitValue = "arg-prompt"
-			}),
-		},
-		{
-			name: "Set tools",
-			args: []string{"--tool-function", "JSON_CONTENT"},
-			expected: modifiedConfig(func(c *model.Config) {
-				c.LLM.Tools.RawTools = []string{"JSON_CONTENT"}
+				c.MainProfile.UI.Prompt.InitValue = "arg-prompt"
 			}),
 		},
 		{
 			name: "Set Secret - Command",
-			args: []string{"--openai-api-key-command-name", "echo", "--openai-api-key-command-args", "secret", "--openai-api-key-command-no-trim"},
+			args: []string{"--llm.openai.api-key.command.name=echo", "--llm.openai.api-key.command.args=secret", "--llm.openai.api-key.command.no-trim"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.LLM.OpenAI.APIKey.Command.Name = "echo"
-				c.LLM.OpenAI.APIKey.Command.Args = []string{"secret"}
-				c.LLM.OpenAI.APIKey.Command.NoTrim = true
+				c.MainProfile.LLM.OpenAI.APIKey.Command.Name = "echo"
+				c.MainProfile.LLM.OpenAI.APIKey.Command.Args = []string{"secret"}
+				c.MainProfile.LLM.OpenAI.APIKey.Command.NoTrim = true
 			}),
 		},
 		{
 			name: "Set Secret - Plain",
-			args: []string{"--openai-api-key", "secret"},
+			args: []string{"--llm.openai.api-key.plain=secret"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.LLM.OpenAI.APIKey.Plain = "secret"
+				c.MainProfile.LLM.OpenAI.APIKey.Plain = "secret"
 			}),
 		},
 	}
@@ -710,25 +705,25 @@ func TestConfig_Parse(t *testing.T) {
 }
 
 func TestConfig_GetProfile(t *testing.T) {
-	toTest := defaultConfig()
-	toTest.UI.Theme = "dark"
-	toTest.LLM.Backend = "openai"
-	toTest.LLM.OpenAI.APIKey = common.Secret{Plain: "OPENAI_API_KEY"}
-	toTest.Profiles = map[string]*model.Config{
+	toTest := &model.Config{}
+	yacl.NewConfig(toTest).ApplyDefaults()
+
+	toTest.MainProfile.UI.Theme = "dark"
+	toTest.MainProfile.LLM.Backend = "openai"
+	toTest.MainProfile.LLM.OpenAI.APIKey = common.Secret{Plain: "OPENAI_API_KEY"}
+	toTest.Profiles = map[string]*model.Profile{
 		"light": {
 			UI: model.UIConfig{Theme: "light"},
 		},
 	}
-
 	require.NoError(t, toTest.Validate())
 
 	c := toTest.GetActiveProfile()
-	assert.Equal(t, *toTest, *c)
+	assert.Equal(t, toTest.MainProfile, *c)
 
-	c.Profile.Active = "light"
+	toTest.ActiveProfile = "light"
 	c = toTest.GetActiveProfile()
 
-	assert.Nil(t, c.Profiles)
 	assert.Equal(t, "light", c.UI.Theme)
 	assert.Equal(t, "openai", c.LLM.Backend)
 	assert.Equal(t, "OPENAI_API_KEY", c.LLM.OpenAI.APIKey.Plain)

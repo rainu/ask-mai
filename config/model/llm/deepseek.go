@@ -8,9 +8,9 @@ import (
 )
 
 type DeepSeekConfig struct {
-	APIKey  common.Secret `yaml:"api-key" usage:"API Key"`
-	Model   string        `yaml:"model" usage:"Model"`
-	BaseUrl string        `yaml:"base-url" usage:"BaseUrl"`
+	APIKey  common.Secret `yaml:"api-key,omitempty" usage:"API Key"`
+	Model   string        `yaml:"model,omitempty" usage:"Model"`
+	BaseUrl string        `yaml:"base-url,omitempty" usage:"BaseUrl"`
 }
 
 func (c *DeepSeekConfig) AsOptions() (opts []openai.Option) {
@@ -27,6 +27,10 @@ func (c *DeepSeekConfig) AsOptions() (opts []openai.Option) {
 	}
 
 	return
+}
+
+func (c *DeepSeekConfig) SetDefaults() {
+	c.Model = "deepseek-chat"
 }
 
 func (c *DeepSeekConfig) Validate() error {

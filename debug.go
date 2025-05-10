@@ -12,8 +12,8 @@ import (
 func init() {
 	onStartUp = func(c *model.Config) {
 		go func() {
-			slog.Info("Start pprof server on " + c.Debug.PprofAddress)
-			err := http.ListenAndServe(c.Debug.PprofAddress, nil)
+			slog.Info("Start pprof server on " + c.DebugConfig.PprofAddress)
+			err := http.ListenAndServe(c.DebugConfig.PprofAddress, nil)
 			slog.Info("Stop pprof server.", "error", err)
 		}()
 	}

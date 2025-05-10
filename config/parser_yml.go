@@ -2,8 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/rainu/ask-mai/config/model"
-	"gopkg.in/yaml.v3"
+	"github.com/rainu/go-yacl"
 	"io"
 	"log/slog"
 	"os"
@@ -41,16 +40,16 @@ var yamlLookupLocations = func() (result []string) {
 	return
 }
 
-func processYamlFiles(c *model.Config) {
+func processYamlFiles(config *yacl.Config, configFilePath string) {
 	for _, location := range yamlLookupLocations() {
-		processYamlFile(location, c)
+		processYamlFile(config, location)
 	}
-	if c.Config != "" {
-		processYamlFile(c.Config, c)
+	if configFilePath != "" {
+		processYamlFile(config, configFilePath)
 	}
 }
 
-func processYamlFile(path string, c *model.Config) {
+func processYamlFile(config *yacl.Config, path string) {
 	f, err := os.Open(path)
 	if err != nil {
 		return
@@ -58,14 +57,14 @@ func processYamlFile(path string, c *model.Config) {
 	defer f.Close()
 
 	slog.Debug("Processing yaml file", "file", path)
-	err = processYaml(f, c)
+	err = processYaml(config, f)
 	if err != nil {
 		panic(fmt.Errorf("unable to process yaml file %s: %w", path, err))
 	}
 }
 
-func processYaml(source io.Reader, c *model.Config) error {
-	err := yaml.NewDecoder(source).Decode(c)
+func processYaml(config *yacl.Config, source io.Reader) error {
+	err := config.ParseYaml(source)
 	if err != nil {
 		return fmt.Errorf("error while decoding yaml: %w", err)
 	}

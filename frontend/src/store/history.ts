@@ -21,7 +21,7 @@ const buildSystemMessage = (): HistoryEntry => ({
 		Role: Role.System,
 		ContentParts: [{
 			Type: ContentType.Text,
-			Content: useConfigStore().config.LLM.CallOptions.SystemPrompt,
+			Content: useConfigStore().profile.LLM.CallOptions.SystemPrompt,
 		}],
 		Created: Math.floor(new Date().getTime() / 1000),
 	}),

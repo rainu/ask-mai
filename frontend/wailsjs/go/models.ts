@@ -107,6 +107,38 @@ export namespace common {
 
 export namespace controller {
 	
+	export class ApplicationConfig {
+	    Config: model.Config;
+	    ActiveProfile: model.Profile;
+	
+	    static createFrom(source: any = {}) {
+	        return new ApplicationConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Config = this.convertValues(source["Config"], model.Config);
+	        this.ActiveProfile = this.convertValues(source["ActiveProfile"], model.Profile);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class AssetMeta {
 	    Path: string;
 	    Url: string;
@@ -1333,20 +1365,30 @@ export namespace mcp {
 
 export namespace model {
 	
-	export class Profile {
-	    Active: string;
-	    Icon: string;
-	    Description: string;
+	export class Help {
+	    Arg: boolean;
+	    Env: boolean;
+	    Yaml: boolean;
+	    Styles: boolean;
+	    Expr: boolean;
+	    Tool: boolean;
+	    GenYaml: boolean;
+	    DumpYaml: boolean;
 	
 	    static createFrom(source: any = {}) {
-	        return new Profile(source);
+	        return new Help(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Active = source["Active"];
-	        this.Icon = source["Icon"];
-	        this.Description = source["Description"];
+	        this.Arg = source["Arg"];
+	        this.Env = source["Env"];
+	        this.Yaml = source["Yaml"];
+	        this.Styles = source["Styles"];
+	        this.Expr = source["Expr"];
+	        this.Tool = source["Tool"];
+	        this.GenYaml = source["GenYaml"];
+	        this.DumpYaml = source["DumpYaml"];
 	    }
 	}
 	export class WebKitInspectorConfig {
@@ -1383,8 +1425,6 @@ export namespace model {
 	    VueDevTools: VueDevToolsConfig;
 	    WebKit: WebKitInspectorConfig;
 	    DisableCrashDetection: boolean;
-	    RestartShortcut: Shortcut;
-	    PrintVersion: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new DebugConfig(source);
@@ -1397,8 +1437,6 @@ export namespace model {
 	        this.VueDevTools = this.convertValues(source["VueDevTools"], VueDevToolsConfig);
 	        this.WebKit = this.convertValues(source["WebKit"], WebKitInspectorConfig);
 	        this.DisableCrashDetection = source["DisableCrashDetection"];
-	        this.RestartShortcut = this.convertValues(source["RestartShortcut"], Shortcut);
-	        this.PrintVersion = source["PrintVersion"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1429,22 +1467,6 @@ export namespace model {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Path = source["Path"];
-	    }
-	}
-	export class PrinterConfig {
-	    Format: string;
-	    Targets: any[];
-	    TargetsRaw: string[];
-	
-	    static createFrom(source: any = {}) {
-	        return new PrinterConfig(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Format = source["Format"];
-	        this.Targets = source["Targets"];
-	        this.TargetsRaw = source["TargetsRaw"];
 	    }
 	}
 	export class FileDialogConfig {
@@ -1653,30 +1675,56 @@ export namespace model {
 		    return a;
 		}
 	}
-	export class Config {
-	    UI: UIConfig;
-	    LLM: llm.LLMConfig;
-	    Printer: PrinterConfig;
-	    History: History;
-	    Debug: DebugConfig;
-	    Config: string;
-	    Profile: Profile;
-	    Profiles: Record<string, Config>;
+	export class PrinterConfig {
+	    Targets: any[];
+	    TargetsRaw: string[];
+	    Format: string;
 	
 	    static createFrom(source: any = {}) {
-	        return new Config(source);
+	        return new PrinterConfig(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.UI = this.convertValues(source["UI"], UIConfig);
-	        this.LLM = this.convertValues(source["LLM"], llm.LLMConfig);
+	        this.Targets = source["Targets"];
+	        this.TargetsRaw = source["TargetsRaw"];
+	        this.Format = source["Format"];
+	    }
+	}
+	export class ProfileMeta {
+	    Icon: string;
+	    Description: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ProfileMeta(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Icon = source["Icon"];
+	        this.Description = source["Description"];
+	    }
+	}
+	export class Profile {
+	    Meta: ProfileMeta;
+	    Printer: PrinterConfig;
+	    LLM: llm.LLMConfig;
+	    UI: UIConfig;
+	    History: History;
+	    RestartShortcut: Shortcut;
+	
+	    static createFrom(source: any = {}) {
+	        return new Profile(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Meta = this.convertValues(source["Meta"], ProfileMeta);
 	        this.Printer = this.convertValues(source["Printer"], PrinterConfig);
+	        this.LLM = this.convertValues(source["LLM"], llm.LLMConfig);
+	        this.UI = this.convertValues(source["UI"], UIConfig);
 	        this.History = this.convertValues(source["History"], History);
-	        this.Debug = this.convertValues(source["Debug"], DebugConfig);
-	        this.Config = source["Config"];
-	        this.Profile = this.convertValues(source["Profile"], Profile);
-	        this.Profiles = this.convertValues(source["Profiles"], Config, true);
+	        this.RestartShortcut = this.convertValues(source["RestartShortcut"], Shortcut);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1697,6 +1745,50 @@ export namespace model {
 		    return a;
 		}
 	}
+	export class Config {
+	    Path: string;
+	    MainProfile: Profile;
+	    DebugConfig: DebugConfig;
+	    ActiveProfile: string;
+	    Profiles: Record<string, Profile>;
+	    Version: boolean;
+	    Help: Help;
+	
+	    static createFrom(source: any = {}) {
+	        return new Config(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Path = source["Path"];
+	        this.MainProfile = this.convertValues(source["MainProfile"], Profile);
+	        this.DebugConfig = this.convertValues(source["DebugConfig"], DebugConfig);
+	        this.ActiveProfile = source["ActiveProfile"];
+	        this.Profiles = this.convertValues(source["Profiles"], Profile, true);
+	        this.Version = source["Version"];
+	        this.Help = this.convertValues(source["Help"], Help);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	
 	
 	
 	
@@ -2468,7 +2560,6 @@ export namespace tools {
 	    }
 	}
 	export class Config {
-	    RawTools: string[];
 	    Tools: Record<string, FunctionDefinition>;
 	    BuiltInTools: BuiltIns;
 	
@@ -2478,7 +2569,6 @@ export namespace tools {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.RawTools = source["RawTools"];
 	        this.Tools = this.convertValues(source["Tools"], FunctionDefinition, true);
 	        this.BuiltInTools = this.convertValues(source["BuiltInTools"], BuiltIns);
 	    }

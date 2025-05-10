@@ -8,13 +8,18 @@ import (
 )
 
 type OpenAIConfig struct {
-	APIKey     common.Secret `yaml:"api-key" usage:"API Key"`
-	APIType    string        `yaml:"api-type"`
-	APIVersion string        `yaml:"api-version" usage:"API Version"`
+	APIKey     common.Secret `yaml:"api-key,omitempty" usage:"API Key"`
+	APIType    string        `yaml:"api-type,omitempty"`
+	APIVersion string        `yaml:"api-version,omitempty" usage:"API Version"`
 
-	Model        string `yaml:"model" usage:"Model"`
-	BaseUrl      string `yaml:"base-url" usage:"BaseUrl"`
-	Organization string `yaml:"organization" usage:"Organization"`
+	Model        string `yaml:"model,omitempty" usage:"Model"`
+	BaseUrl      string `yaml:"base-url,omitempty" usage:"BaseUrl"`
+	Organization string `yaml:"organization,omitempty" usage:"Organization"`
+}
+
+func (c *OpenAIConfig) SetDefaults() {
+	c.APIType = string(openai.APITypeOpenAI)
+	c.Model = "gpt-4o-mini"
 }
 
 func (c *OpenAIConfig) GetUsage(field string) string {

@@ -200,7 +200,7 @@ export default defineComponent({
 		}
 	},
 	computed: {
-		...mapState(useConfigStore, ['config']),
+		...mapState(useConfigStore, ['profile']),
 		isUserMessage() {
 			return this.role === Role.User
 		},
@@ -223,7 +223,7 @@ export default defineComponent({
 			return this.message.filter((part) => part.Type === ContentType.Attachment).map((part) => part.Content)
 		},
 		imageWidth() {
-			return this.config.UI.Window.InitialWidth.Value * 0.9
+			return this.profile.UI.Window.InitialWidth.Value * 0.9
 		},
 		createdAt() {
 			if(!this.date) return null
@@ -296,7 +296,7 @@ export default defineComponent({
 		},
 	},
 	mounted() {
-		UseCodeStyle(this.config.UI.CodeStyle)
+		UseCodeStyle(this.profile.UI.CodeStyle)
 
 		this.$nextTick(() => this.enrichCopyButtons())
 	},
