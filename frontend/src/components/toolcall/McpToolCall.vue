@@ -6,19 +6,26 @@
 
 		<template v-slot:content>
 			<v-row no-gutters>
-				<v-text-field :model-value="tc.McpToolDescription"
-											:label="$t('toolCall.mcp.description')"
-											readonly hide-details density="compact"></v-text-field>
-			</v-row>
-			<v-row no-gutters v-if="content" >
-				<v-col cols="12" v-for="c in content">
-					<template v-if="c.type === 'text'">
-						<vue-markdown :source="textAsMarkdown(c.text)" />
-					</template>
-					<template v-else-if="c.type === 'image'">
-						<img :src="c.image" alt="Image" />
-					</template>
+				<v-col cols="12">
+					<v-text-field :model-value="tc.McpToolDescription"
+												:label="$t('toolCall.mcp.description')"
+												readonly hide-details density="compact"></v-text-field>
 				</v-col>
+				<v-col cols="12">
+					<vue-markdown :source="textAsMarkdown(tc.Arguments)" />
+				</v-col>
+
+				<template v-if="content" >
+					<v-col cols="12" v-for="c in content">
+						<template v-if="c.type === 'text'">
+							<vue-markdown :source="textAsMarkdown(c.text)" />
+						</template>
+						<template v-else-if="c.type === 'image'">
+							<img :src="c.image" alt="Image" />
+						</template>
+					</v-col>
+				</template>
+
 			</v-row>
 		</template>
 	</ToolCall>
