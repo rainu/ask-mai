@@ -119,7 +119,7 @@ func (c *LLMConfig) AsOptions(ctx context.Context) ([]langLLMS.CallOption, error
 		})
 	}
 
-	mcpTools, err := mcp.ListTools(ctx, c.McpServer)
+	mcpTools, err := mcp.MergeTools(ctx, c.McpServer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
 	}

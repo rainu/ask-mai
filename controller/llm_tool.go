@@ -52,7 +52,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 
 	//validate tool calls
 	availableTools := c.getProfile().LLM.Tools.GetTools()
-	availableMcpTools, err := internalMcp.ListTools(c.aiModelCtx, c.getProfile().LLM.McpServer)
+	availableMcpTools, err := internalMcp.MergeTools(c.aiModelCtx, c.getProfile().LLM.McpServer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
 	}

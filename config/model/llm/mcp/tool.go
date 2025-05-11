@@ -6,6 +6,7 @@ import (
 	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport"
 	it "github.com/rainu/ask-mai/config/model/llm/tools"
+	"sync"
 	"time"
 )
 
@@ -20,29 +21,81 @@ type Tool struct {
 	Timeout  time.Duration
 }
 
-func ListTools(ctx context.Context, s map[string]Server) (map[string]Tool, error) {
+type listToolResult struct {
+	server string
+	tools  []mcp.ToolRetType
+	err    error
+}
+
+func MergeTools(ctx context.Context, s map[string]Server) (map[string]Tool, error) {
+	result, err := ListTools(ctx, s)
+	if err != nil {
+		return nil, err
+	}
+
 	allTools := map[string]Tool{}
+	for serverName, tools := range result {
+		for toolName, tool := range tools {
+			server := s[serverName]
 
-	i := 0
-	for name, server := range s {
-		tools, err := server.ListTools(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("failed to list tools for server %s: %w", name, err)
-		}
-
-		for _, tool := range tools {
 			// to prevent naming collisions, we add a prefix to the tool name
-			allTools[fmt.Sprintf("%s%d_%s", McpPrefix, i, tool.Name)] = Tool{
+			allTools[fmt.Sprintf("%s%s_%s", McpPrefix, serverName, toolName)] = Tool{
 				ToolRetType: tool,
 				Transport:   &server,
 				Timeout:     *server.Timeout.Execution,
 				approval:    Approval(server.Approval),
 			}
 		}
-		i++
 	}
 
 	return allTools, nil
+}
+
+func ListTools(ctx context.Context, s map[string]Server) (map[string]map[string]mcp.ToolRetType, error) {
+	allTools := map[string]map[string]mcp.ToolRetType{}
+	resultChan := make(chan listToolResult)
+	wg := sync.WaitGroup{}
+
+	// call ListTools for each server in parallel
+	for name := range s {
+		wg.Add(1)
+		go func(name string) {
+			defer wg.Done()
+
+			server := s[name]
+			result := listToolResult{server: name}
+			result.tools, result.err = server.ListTools(ctx)
+			if result.err != nil {
+				result.err = fmt.Errorf("failed to list tools for server %s: %w", name, result.err)
+			}
+
+			resultChan <- result
+		}(name)
+	}
+
+	go func() {
+		wg.Wait()
+		close(resultChan)
+	}()
+
+	// collect results from all servers
+	errors := make([]error, 0, len(s))
+	for result := range resultChan {
+		if result.err != nil {
+			errors = append(errors, result.err)
+			continue
+		}
+		allTools[result.server] = map[string]mcp.ToolRetType{}
+		for _, tool := range result.tools {
+			allTools[result.server][tool.Name] = tool
+		}
+	}
+	var err error
+	if len(errors) > 0 {
+		err = fmt.Errorf("failed to list tools for some servers: %v", errors)
+	}
+
+	return allTools, err
 }
 
 func listAllTools(ctx context.Context, transport transport.Transport) ([]mcp.ToolRetType, error) {
