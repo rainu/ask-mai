@@ -4,7 +4,7 @@ import (
 	"fmt"
 	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/rainu/ask-mai/config/model"
-	internalMCP "github.com/rainu/ask-mai/config/model/llm/mcp"
+	internalMcp "github.com/rainu/ask-mai/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/config/model/llm/tools"
 )
 
@@ -37,33 +37,19 @@ func (c *Controller) SetBuiltinTools(config tools.BuiltIns) {
 	c.getProfile().LLM.Tools.BuiltInTools = &config
 }
 
-func (c *Controller) SetMcpTools(config internalMCP.Config) {
+func (c *Controller) SetMcpTools(config map[string]internalMcp.Server) {
 	c.getProfile().LLM.McpServer = config
 }
 
-func (c *Controller) ListMcpCommandTools() ([][]mcp.ToolRetType, error) {
-	result := [][]mcp.ToolRetType{}
+func (c *Controller) ListMcpTools() (map[string][]mcp.ToolRetType, error) {
+	result := map[string][]mcp.ToolRetType{}
 
-	for i, cmd := range c.getProfile().LLM.McpServer.CommandServer {
-		r, err := cmd.ListAllTools(c.ctx)
+	for name, server := range c.getProfile().LLM.McpServer {
+		var err error
+		result[name], err = server.ListAllTools(c.ctx)
 		if err != nil {
-			return nil, fmt.Errorf("failed to list tools for command server #%d: %w", i, err)
+			return nil, fmt.Errorf("failed to list tools for command server %s: %w", name, err)
 		}
-		result = append(result, r)
-	}
-
-	return result, nil
-}
-
-func (c *Controller) ListMcpHttpTools() ([][]mcp.ToolRetType, error) {
-	result := [][]mcp.ToolRetType{}
-
-	for i, http := range c.getProfile().LLM.McpServer.HttpServer {
-		r, err := http.ListAllTools(c.ctx)
-		if err != nil {
-			return nil, fmt.Errorf("failed to list tools for http server #%d: %w", i, err)
-		}
-		result = append(result, r)
 	}
 
 	return result, nil

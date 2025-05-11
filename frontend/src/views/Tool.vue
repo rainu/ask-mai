@@ -45,51 +45,25 @@
 				<v-progress-circular indeterminate v-if="mcp.loading" />
 
 				<v-row dense>
-					<v-col cols="12" v-for="(command, i) in mcp.command" :key="i">
+					<v-col cols="12" v-for="(server, name) in mcp.server" :key="name">
 						<v-card>
 							<v-card-title>
 								<span>
-									#{{ i }}
-									<v-tooltip activator="parent" location="right">
-										{{ command.config.Name }} {{ command.config.Arguments.join(' ') }}
+									{{ name }}
+									<v-tooltip activator="parent" location="right" v-if="server.config.Name">
+										{{ server.config.Name }} {{ server.config.Arguments.join(' ') }}
+									</v-tooltip>
+									<v-tooltip activator="parent" location="right" v-else>
+										{{ server.config.BaseUrl }}{{ server.config.Endpoint }}
 									</v-tooltip>
 								</span>
 							</v-card-title>
 							<v-card-text>
 								<v-row no-gutters>
-									<v-col cols="6" sm="4" lg="3" v-for="(tool, ti) in command.tools" :key="ti">
+									<v-col cols="6" sm="4" lg="3" v-for="(tool, ti) in server.tools" :key="ti">
 										<v-checkbox density="compact" hide-details
-																:model-value="!isMcpToolExcluded(tool.name, command.config.Exclude)"
-																@update:model-value="(val) => setMcpToolExclusion(command.config, tool.name, val)">
-											<template v-slot:label>
-												<span>
-													{{ tool.name }}
-													<v-tooltip activator="parent" location="top">{{ tool.description }}</v-tooltip>
-												</span>
-											</template>
-										</v-checkbox>
-									</v-col>
-								</v-row>
-							</v-card-text>
-						</v-card>
-					</v-col>
-
-					<v-col cols="12" v-for="(http, i) in mcp.http" :key="i">
-						<v-card>
-							<v-card-title>
-								<span>
-									#{{ i }}
-									<v-tooltip activator="parent" location="right">
-										{{ http.config.BaseUrl }}{{ http.config.Endpoint }}
-									</v-tooltip>
-								</span>
-							</v-card-title>
-							<v-card-text>
-								<v-row no-gutters>
-									<v-col cols="6" sm="4" lg="3" v-for="(tool, ti) in http.tools" :key="ti">
-										<v-checkbox density="compact" hide-details
-																:model-value="!isMcpToolExcluded(tool.name, http.config.Exclude)"
-																@update:model-value="(val) => setMcpToolExclusion(http.config, tool.name, val)">
+																:model-value="!isMcpToolExcluded(tool.name, server.config.Exclude)"
+																@update:model-value="(val) => setMcpToolExclusion(server.config, tool.name, val)">
 											<template v-slot:label>
 												<span>
 													{{ tool.name }}
@@ -124,7 +98,7 @@ import { WindowSetSize } from '../../wailsjs/runtime'
 import ZoomDetector from '../components/ZoomDetector.vue'
 import { useConfigStore } from '../store/config.ts'
 import ToolBar from '../components/bar/ToolBar.vue'
-import { ListMcpCommandTools, ListMcpHttpTools } from '../../wailsjs/go/controller/Controller'
+import { ListMcpTools } from '../../wailsjs/go/controller/Controller'
 import { mcp, mcp_golang } from '../../wailsjs/go/models.ts'
 
 export default defineComponent({
@@ -138,8 +112,7 @@ export default defineComponent({
 			mcp: {
 				loading: true,
 
-				command: [] as {config: mcp.Command, tools: mcp_golang.ToolRetType[]}[],
-				http: [] as {config: mcp.Http, tools: mcp_golang.ToolRetType[]}[]
+				server: {} as Record<string, {config: mcp.Server, tools: mcp_golang.ToolRetType[]}>,
 			}
 		}
 	},
@@ -251,22 +224,12 @@ export default defineComponent({
 		},
 	},
 	mounted() {
-		Promise.all([
-			ListMcpCommandTools(),
-			ListMcpHttpTools()
-		]).then(([cmdTools, httpTools]) => {
-			for (let i = 0; i < cmdTools.length; i++) {
-				this.mcp.command.push({
-					config: this.profile.LLM.McpServer.CommandServer[i],
-					tools: cmdTools[i]
-				})
-			}
-
-			for (let i = 0; i < httpTools.length; i++) {
-				this.mcp.http.push({
-					config: this.profile.LLM.McpServer.HttpServer[i],
-					tools: httpTools[i]
-				})
+		ListMcpTools().then((tools) => {
+			for (let name in tools) {
+				this.mcp.server[name] = {
+					config: this.profile.LLM.McpServer[name],
+					tools: tools[name]
+				}
 			}
 		})
 		.finally(() => this.mcp.loading = false)

@@ -318,32 +318,34 @@ func printHelpTool(output io.Writer) {
 	fmt.Fprintf(output, "\nYAML-Example:\n\n")
 	ye.Encode(model.Profile{
 		LLM: llm.LLMConfig{
-			McpServer: mcp.Config{
-				CommandServer: []mcp.Command{
-					{
+			McpServer: map[string]mcp.Server{
+				"github": {
+					Command: mcp.Command{
 						Name:      "docker",
 						Arguments: []string{"run", "--rm", "-i", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=github_...", "ghcr.io/github/github-mcp-server"},
-						Approval:  mcp.ApprovalAlways,
 					},
-					{
+					Approval: mcp.ApprovalAlways,
+				},
+				"gitlab": {
+					Command: mcp.Command{
 						Name:      "npx",
 						Arguments: []string{"-y", "@modelcontextprotocol/server-gitlab"},
 						AdditionalEnvironment: map[string]string{
 							"GITLAB_PERSONAL_ACCESS_TOKEN": "<YOUR_TOKEN>",
 							"GITLAB_API_URL":               "https://gitlab.com/api/v4",
 						},
-						Approval: expression.VarNameContext + `.definition.name === 'push_files'`,
 					},
+					Approval: expression.VarNameContext + `.definition.name === 'push_files'`,
 				},
-				HttpServer: []mcp.Http{
-					{
+				"http": {
+					Http: mcp.Http{
 						BaseUrl:  "http://localhost:8080",
 						Endpoint: "/api/v1",
 						Headers: map[string]string{
 							"Authorization": "Bearer TOKEN",
 						},
-						Approval: mcp.ApprovalNever,
 					},
+					Approval: mcp.ApprovalNever,
 				},
 			},
 		},

@@ -5,8 +5,11 @@ import (
 	"fmt"
 	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport"
+	it "github.com/rainu/ask-mai/config/model/llm/tools"
 	"time"
 )
+
+const McpPrefix = it.BuiltInPrefix + "_"
 
 type Tool struct {
 	mcp.ToolRetType
@@ -17,40 +20,26 @@ type Tool struct {
 	Timeout  time.Duration
 }
 
-func (c *Config) ListTools(ctx context.Context) (map[string]Tool, error) {
+func ListTools(ctx context.Context, s map[string]Server) (map[string]Tool, error) {
 	allTools := map[string]Tool{}
-	for i, cmd := range c.CommandServer {
-		tools, err := cmd.ListTools(ctx)
+
+	i := 0
+	for name, server := range s {
+		tools, err := server.ListTools(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("failed to list tools for command server: %w", err)
+			return nil, fmt.Errorf("failed to list tools for server %s: %w", name, err)
 		}
 
 		for _, tool := range tools {
 			// to prevent naming collisions, we add a prefix to the tool name
 			allTools[fmt.Sprintf("%s%d_%s", McpPrefix, i, tool.Name)] = Tool{
 				ToolRetType: tool,
-				Transport:   &cmd,
-				Timeout:     *cmd.Timeout.Execution,
-				approval:    Approval(cmd.Approval),
+				Transport:   &server,
+				Timeout:     *server.Timeout.Execution,
+				approval:    Approval(server.Approval),
 			}
 		}
-	}
-
-	for i, http := range c.HttpServer {
-		tools, err := http.ListTools(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("failed to list tools for http server: %w", err)
-		}
-
-		for _, tool := range tools {
-			// to prevent naming collisions, we add a prefix to the tool name
-			allTools[fmt.Sprintf("%s%d_%s", McpPrefix, i+len(c.CommandServer), tool.Name)] = Tool{
-				ToolRetType: tool,
-				Timeout:     *http.Timeout.Execution,
-				Transport:   &http,
-				approval:    Approval(http.Approval),
-			}
-		}
+		i++
 	}
 
 	return allTools, nil

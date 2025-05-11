@@ -64,7 +64,7 @@ func TestCommand_ListTools(t *testing.T) {
 		},
 	}
 
-	result, err := toTest.ListTools(t.Context())
+	result, err := listAllTools(t.Context(), toTest.GetTransport())
 	require.NoError(t, err)
 	assert.NotEmpty(t, result)
 }

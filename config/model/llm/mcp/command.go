@@ -1,27 +1,20 @@
 package mcp
 
 import (
-	"context"
 	"fmt"
-	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	cmdchain "github.com/rainu/go-command-chain"
-	"github.com/rainu/go-yacl"
 	"io"
 	"log/slog"
 )
 
 type Command struct {
-	Name                  string            `yaml:"name,omitempty" usage:"Name of the command to execute"`
-	Arguments             []string          `yaml:"args,omitempty" usage:"Arguments to pass to the command"`
-	Environment           map[string]string `yaml:"env,omitempty" usage:"Environment variables to pass to the command"`
-	AdditionalEnvironment map[string]string `yaml:"additionalEnv,omitempty" usage:"Additional environment variables to pass to the command"`
-	WorkingDirectory      string            `yaml:"workingDir,omitempty" usage:"Working directory for the command"`
-	Approval              string            `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute a tool"`
-	Exclude               []string          `yaml:"exclude,omitempty" usage:"List of tools that should be excluded"`
-
-	Timeout Timeout `yaml:"timeout,omitempty"`
+	Name                  string            `yaml:"command,omitempty" usage:"[Command] Name of the command"`
+	Arguments             []string          `yaml:"args,omitempty" usage:"[Command] Arguments to pass"`
+	Environment           map[string]string `yaml:"env,omitempty" usage:"[Command] Environment variables to pass"`
+	AdditionalEnvironment map[string]string `yaml:"aenv,omitempty" usage:"[Command] Additional environment variables to pass"`
+	WorkingDirectory      string            `yaml:"dir,omitempty" usage:"[Command] Working directory"`
 }
 
 func (c *Command) Validate() error {
@@ -73,34 +66,6 @@ func (c *Command) GetTransport() transport.Transport {
 	}()
 
 	return t
-}
-
-func (c *Command) ListTools(ctx context.Context) ([]mcp.ToolRetType, error) {
-	t := c.GetTransport()
-	defer t.Close()
-
-	if yacl.D(c.Timeout.List) > 0 {
-		ctxWithTimeout, cancel := context.WithTimeout(ctx, *c.Timeout.List)
-		defer cancel()
-
-		ctx = ctxWithTimeout
-	}
-
-	return listTools(ctx, t, c.Exclude)
-}
-
-func (c *Command) ListAllTools(ctx context.Context) ([]mcp.ToolRetType, error) {
-	t := c.GetTransport()
-	defer t.Close()
-
-	if yacl.D(c.Timeout.List) > 0 {
-		ctxWithTimeout, cancel := context.WithTimeout(ctx, *c.Timeout.List)
-		defer cancel()
-
-		ctx = ctxWithTimeout
-	}
-
-	return listAllTools(ctx, t)
 }
 
 func toAnyMap(m map[string]string) map[any]any {

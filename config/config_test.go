@@ -698,14 +698,16 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set MCP Timeout",
-			args: []string{"--llm.mcp.command[0].timeout.execution=1m"},
+			args: []string{"--llm.mcpServers[test].timeout.execution=1m"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.LLM.McpServer.CommandServer = append(c.MainProfile.LLM.McpServer.CommandServer, mcp.Command{
-					Timeout: mcp.Timeout{
-						List:      yacl.P(5 * time.Second),
-						Execution: yacl.P(1 * time.Minute),
+				c.MainProfile.LLM.McpServer = map[string]mcp.Server{
+					"test": {
+						Timeout: mcp.Timeout{
+							List:      yacl.P(5 * time.Second),
+							Execution: yacl.P(1 * time.Minute),
+						},
 					},
-				})
+				}
 			}),
 		},
 	}

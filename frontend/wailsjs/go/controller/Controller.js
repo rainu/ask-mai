@@ -66,12 +66,8 @@ export function LLMWait() {
   return window['go']['controller']['Controller']['LLMWait']();
 }
 
-export function ListMcpCommandTools() {
-  return window['go']['controller']['Controller']['ListMcpCommandTools']();
-}
-
-export function ListMcpHttpTools() {
-  return window['go']['controller']['Controller']['ListMcpHttpTools']();
+export function ListMcpTools() {
+  return window['go']['controller']['Controller']['ListMcpTools']();
 }
 
 export function Log(arg1, arg2) {

@@ -29,9 +29,9 @@ type LLMConfig struct {
 	Anthropic   AnthropicConfig   `yaml:"anthropic,omitempty" usage:"Anthropic: " llm:""`
 	DeepSeek    DeepSeekConfig    `yaml:"deepseek,omitempty" usage:"DeepSeek: " llm:""`
 
-	CallOptions CallOptionsConfig `yaml:"call,omitempty" usage:"LLM-CALL: "`
-	Tools       tools.Config      `yaml:"tool,omitempty" usage:"LLM-TOOLS: "`
-	McpServer   mcp.Config        `yaml:"mcp,omitempty" usage:"MCP-SERVER: "`
+	CallOptions CallOptionsConfig     `yaml:"call,omitempty" usage:"LLM-CALL: "`
+	Tools       tools.Config          `yaml:"tool,omitempty" usage:"LLM-TOOLS: "`
+	McpServer   map[string]mcp.Server `yaml:"mcpServers,omitempty" usage:"MCP server "`
 }
 
 func (c *LLMConfig) getBackend() llmConfig {
@@ -88,8 +88,10 @@ func (c *LLMConfig) Validate() error {
 	if ve := c.Tools.Validate(); ve != nil {
 		return ve
 	}
-	if ve := c.McpServer.Validate(); ve != nil {
-		return ve
+	for name, server := range c.McpServer {
+		if ve := server.Validate(); ve != nil {
+			return fmt.Errorf("invlalid mcpServer config for %s: %w", name, ve)
+		}
 	}
 
 	return nil
@@ -117,7 +119,7 @@ func (c *LLMConfig) AsOptions(ctx context.Context) ([]langLLMS.CallOption, error
 		})
 	}
 
-	mcpTools, err := c.McpServer.ListTools(ctx)
+	mcpTools, err := mcp.ListTools(ctx, c.McpServer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
 	}

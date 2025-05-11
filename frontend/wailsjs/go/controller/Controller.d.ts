@@ -3,6 +3,7 @@
 import {controller} from '../models';
 import {model} from '../models';
 import {history} from '../models';
+import {mcp_golang} from '../models';
 import {tools} from '../models';
 import {mcp} from '../models';
 
@@ -38,9 +39,7 @@ export function LLMRejectToolCall(arg1:string):Promise<void>;
 
 export function LLMWait():Promise<string>;
 
-export function ListMcpCommandTools():Promise<Array<any>>;
-
-export function ListMcpHttpTools():Promise<Array<any>>;
+export function ListMcpTools():Promise<Record<string, Array<mcp_golang.ToolRetType>>>;
 
 export function Log(arg1:string,arg2:string):Promise<void>;
 
@@ -52,7 +51,7 @@ export function SetActiveProfile(arg1:string):Promise<model.Profile>;
 
 export function SetBuiltinTools(arg1:tools.BuiltIns):Promise<void>;
 
-export function SetMcpTools(arg1:mcp.Config):Promise<void>;
+export function SetMcpTools(arg1:Record<string, mcp.Server>):Promise<void>;
 
 export function Shutdown():Promise<void>;
 

@@ -145,27 +145,28 @@ llm:
             - arg1
         command: doTest.sh
         "approval": true
-  mcp:
-    command:
-      - name: docker
-        args:
-          - run
-          - --rm
-          - -i
-          - -e
-          - GITHUB_PERSONAL_ACCESS_TOKEN=github_
-          - ghcr.io/github/github-mcp-server
-        env:
-          TEST: test
-        additionalEnv:
-          ADDITIONAL_TEST: additional_test
-        workingDir: /home/user
-      - name: echo
+  mcpServers:
+    command1:
+      command: docker
+      args:
+        - run
+        - --rm
+        - -i
+        - -e
+        - GITHUB_PERSONAL_ACCESS_TOKEN=github_
+        - ghcr.io/github/github-mcp-server
+      env:
+        TEST: test
+      aenv:
+        ADDITIONAL_TEST: additional_test
+      dir: /home/user
+    command2:
+      command: echo
     http:
-      - baseUrl: http://localhost:8080
-        endpoint: /api/v1
-        headers:
-          Authorization: Bearer TOKEN
+      baseUrl: http://localhost:8080
+      endpoint: /api/v1
+      headers:
+        Authorization: Bearer TOKEN
 print:
   format: json
   targets:
@@ -321,9 +322,9 @@ webkit:
 						},
 					},
 				},
-				McpServer: mcp.Config{
-					CommandServer: []mcp.Command{
-						{
+				McpServer: map[string]mcp.Server{
+					"command1": {
+						Command: mcp.Command{
 							Name:      "docker",
 							Arguments: []string{"run", "--rm", "-i", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=github_", "ghcr.io/github/github-mcp-server"},
 							Environment: map[string]string{
@@ -334,12 +335,14 @@ webkit:
 							},
 							WorkingDirectory: "/home/user",
 						},
-						{
+					},
+					"command2": {
+						Command: mcp.Command{
 							Name: "echo",
 						},
 					},
-					HttpServer: []mcp.Http{
-						{
+					"http": {
+						Http: mcp.Http{
 							BaseUrl:  "http://localhost:8080",
 							Endpoint: "/api/v1",
 							Headers: map[string]string{
