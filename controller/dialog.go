@@ -21,9 +21,9 @@ func (c *Controller) OpenFileDialog(args OpenFileDialogArgs) ([]string, error) {
 		Title:                      args.Title,
 		Filters:                    filter,
 		DefaultDirectory:           c.getProfile().UI.FileDialog.DefaultDirectory,
-		ShowHiddenFiles:            c.getProfile().UI.FileDialog.ShowHiddenFiles,
-		CanCreateDirectories:       c.getProfile().UI.FileDialog.CanCreateDirectories,
-		ResolvesAliases:            c.getProfile().UI.FileDialog.ResolveAliases,
-		TreatPackagesAsDirectories: c.getProfile().UI.FileDialog.TreatPackagesAsDirectories,
+		ShowHiddenFiles:            *c.getProfile().UI.FileDialog.ShowHiddenFiles,
+		CanCreateDirectories:       *c.getProfile().UI.FileDialog.CanCreateDirectories,
+		ResolvesAliases:            *c.getProfile().UI.FileDialog.ResolveAliases,
+		TreatPackagesAsDirectories: *c.getProfile().UI.FileDialog.TreatPackagesAsDirectories,
 	})
 }

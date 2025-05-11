@@ -36,7 +36,7 @@ export default defineComponent({
 			return this.profile.UI.Theme
 		},
 		opacity(): number {
-			return this.profile.UI.Window.BackgroundColor.A / 255
+			return (this.profile.UI.Window.BackgroundColor.A ?? 0) / 255
 		}
 	},
 	methods: {

@@ -114,8 +114,8 @@ export default defineComponent({
 		},
 		rows() {
 			return Math.max(
-				Math.min(this.modelValue.prompt.split('\n').length, this.profile.UI.Prompt.MaxRows),
-				this.profile.UI.Prompt.MinRows,
+				Math.min(this.modelValue.prompt.split('\n').length, (this.profile.UI.Prompt.MaxRows ?? 4)),
+				(this.profile.UI.Prompt.MinRows ?? 1),
 			)
 		},
 		hasAttachments(): boolean {

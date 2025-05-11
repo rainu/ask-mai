@@ -192,37 +192,37 @@ webkit:
 			UI: model.UIConfig{
 				Window: model.WindowConfig{
 					Title:            "Test Window",
-					InitialWidth:     common.NumberContainer{Expression: "800"},
-					MaxHeight:        common.NumberContainer{Expression: "600"},
-					InitialPositionX: common.NumberContainer{Expression: "100"},
-					InitialPositionY: common.NumberContainer{Expression: "100"},
-					InitialZoom:      common.NumberContainer{Expression: "1.0"},
-					BackgroundColor:  model.WindowBackgroundColor{R: 255, G: 255, B: 255, A: 255},
-					StartState:       1,
-					AlwaysOnTop:      true,
-					Frameless:        true,
-					Resizeable:       true,
+					InitialWidth:     common.NumberContainer{Expression: yacl.P("800"), Value: yacl.P(0.0)},
+					MaxHeight:        common.NumberContainer{Expression: yacl.P("600"), Value: yacl.P(0.0)},
+					InitialPositionX: common.NumberContainer{Expression: yacl.P("100"), Value: yacl.P(0.0)},
+					InitialPositionY: common.NumberContainer{Expression: yacl.P("100"), Value: yacl.P(0.0)},
+					InitialZoom:      common.NumberContainer{Expression: yacl.P("1.0"), Value: yacl.P(0.0)},
+					BackgroundColor:  model.WindowBackgroundColor{R: yacl.P(uint(255)), G: yacl.P(uint(255)), B: yacl.P(uint(255)), A: yacl.P(uint(255))},
+					StartState:       yacl.P(1),
+					AlwaysOnTop:      yacl.P(true),
+					Frameless:        yacl.P(true),
+					Resizeable:       yacl.P(true),
 					Translucent:      "never",
 				},
 				Prompt: model.PromptConfig{
 					InitValue:       "Initial Prompt",
 					InitAttachments: []string{"attachment1", "attachment2"},
-					MinRows:         1,
-					MaxRows:         10,
+					MinRows:         yacl.P(uint(1)),
+					MaxRows:         yacl.P(uint(10)),
 					SubmitShortcut: model.Shortcut{
 						Binding: []string{"alt+ctrl+meta+shift+enter"},
 					},
 				},
 				FileDialog: model.FileDialogConfig{
 					DefaultDirectory:           "/root",
-					ShowHiddenFiles:            true,
-					CanCreateDirectories:       true,
-					ResolveAliases:             true,
-					TreatPackagesAsDirectories: true,
+					ShowHiddenFiles:            yacl.P(true),
+					CanCreateDirectories:       yacl.P(true),
+					ResolveAliases:             yacl.P(true),
+					TreatPackagesAsDirectories: yacl.P(true),
 					FilterDisplay:              []string{"Image"},
 					FilterPattern:              []string{"*.png"},
 				},
-				Stream: true,
+				Stream: yacl.P(true),
 				QuitShortcut: model.Shortcut{
 					Binding: []string{"alt+ctrl+meta+shift+escape"},
 				},
@@ -294,7 +294,7 @@ webkit:
 					MaxLength:    200,
 				},
 				Tools: tools.Config{
-					BuiltInTools: tools.BuiltIns{
+					BuiltInTools: &tools.BuiltIns{
 						CommandExec: tools.CommandExecution{
 							Disable: true,
 						},
@@ -355,7 +355,7 @@ webkit:
 			},
 		},
 		DebugConfig: model.DebugConfig{
-			LogLevel:     1,
+			LogLevel:     yacl.P(1),
 			PprofAddress: ":1312",
 			VueDevTools: model.VueDevToolsConfig{
 				Host: "localhost",

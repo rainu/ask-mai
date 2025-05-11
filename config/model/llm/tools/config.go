@@ -11,7 +11,7 @@ const FunctionArgumentNameAll = "@"
 type Config struct {
 	Tools map[string]FunctionDefinition `yaml:"functions,omitempty" usage:"Function definition: "`
 
-	BuiltInTools BuiltIns `yaml:"builtin,omitempty" usage:"Built-in tools: "`
+	BuiltInTools *BuiltIns `yaml:"builtin,omitempty" usage:"Built-in tools: "`
 }
 
 type CommandFn func(ctx context.Context, jsonArguments string) ([]byte, error)
@@ -36,7 +36,9 @@ type FunctionDefinition struct {
 }
 
 func (t *Config) SetDefaults() {
-	t.BuiltInTools = *NewBuiltIns()
+	if t.BuiltInTools == nil {
+		t.BuiltInTools = NewBuiltIns()
+	}
 }
 
 func (t *Config) Validate() error {
@@ -62,9 +64,11 @@ func (t *Config) Validate() error {
 func (t *Config) GetTools() map[string]FunctionDefinition {
 	allFunctions := map[string]FunctionDefinition{}
 
-	for _, fd := range t.BuiltInTools.AsFunctionDefinitions() {
-		fd.isBuiltIn = true
-		allFunctions[fd.Name] = fd
+	if t.BuiltInTools != nil {
+		for _, fd := range t.BuiltInTools.AsFunctionDefinitions() {
+			fd.isBuiltIn = true
+			allFunctions[fd.Name] = fd
+		}
 	}
 
 	for name, tool := range t.Tools {

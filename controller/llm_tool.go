@@ -221,8 +221,11 @@ func (c *Controller) callMcpTool(ctx context.Context, call llms.ToolCall, toolDe
 	transport := toolDefinition.Transport.GetTransport()
 	defer transport.Close()
 
+	ctxWithTimeout, cancelTimeoutCtx := context.WithTimeout(ctx, toolDefinition.Timeout)
+	defer cancelTimeoutCtx()
+
 	mcpClient := mcp.NewClient(transport)
-	_, err = mcpClient.Initialize(ctx)
+	_, err = mcpClient.Initialize(ctxWithTimeout)
 	if err != nil {
 		return result, fmt.Errorf("failed to initialize mcp client: %w", err)
 	}
@@ -234,7 +237,7 @@ func (c *Controller) callMcpTool(ctx context.Context, call llms.ToolCall, toolDe
 	}
 
 	t := time.Now()
-	resp, callErr := mcpClient.CallTool(ctx, toolDefinition.Name, &args)
+	resp, callErr := mcpClient.CallTool(ctxWithTimeout, toolDefinition.Name, &args)
 
 	result.DurationMs = time.Since(t).Milliseconds()
 	content, _ := json.Marshal(resp)

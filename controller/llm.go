@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gabriel-vasile/mimetype"
+	"github.com/rainu/go-yacl"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"os"
@@ -176,7 +177,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		return "", fmt.Errorf("error creating options: %w", err)
 	}
 
-	if c.getProfile().UI.Stream {
+	if yacl.D(c.getProfile().UI.Stream) {
 		// streaming is enabled
 		opts = append(opts, llms.WithStreamingFunc(c.streamingFunc))
 	}

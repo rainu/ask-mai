@@ -2,11 +2,12 @@ package model
 
 import (
 	"fmt"
+	"github.com/rainu/go-yacl"
 	"log/slog"
 )
 
 type DebugConfig struct {
-	LogLevel              int                   `yaml:"log-level,omitempty"`
+	LogLevel              *int                  `yaml:"log-level,omitempty"`
 	PprofAddress          string                `yaml:"pprof-address,omitempty" usage:"Address for the pprof server (only available for debug binary)"`
 	VueDevTools           VueDevToolsConfig     `yaml:"vue-dev-tools,omitempty"`
 	WebKit                WebKitInspectorConfig `yaml:"webkit,omitempty" usage:"Webkit debug configuration (only available for debug binary): "`
@@ -24,12 +25,18 @@ type WebKitInspectorConfig struct {
 }
 
 func (d *DebugConfig) SetDefaults() {
-	d.LogLevel = int(slog.LevelError)
-	d.PprofAddress = ":6060"
+	if d.LogLevel == nil {
+		d.LogLevel = yacl.P(int(slog.LevelError))
+	}
+	if d.PprofAddress == "" {
+		d.PprofAddress = ":6060"
+	}
 }
 
 func (v *VueDevToolsConfig) SetDefaults() {
-	v.Port = 8098
+	if v.Port == 0 {
+		v.Port = 8098
+	}
 }
 
 func (d *DebugConfig) GetUsage(field string) string {
@@ -41,7 +48,7 @@ func (d *DebugConfig) GetUsage(field string) string {
 }
 
 func (d *DebugConfig) Validate() error {
-	if d.LogLevel < int(slog.LevelDebug) || d.LogLevel > int(slog.LevelError) {
+	if *d.LogLevel < int(slog.LevelDebug) || *d.LogLevel > int(slog.LevelError) {
 		return fmt.Errorf("Invalid log level")
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport"
+	"time"
 )
 
 type Tool struct {
@@ -13,6 +14,7 @@ type Tool struct {
 		GetTransport() transport.Transport
 	}
 	approval Approval
+	Timeout  time.Duration
 }
 
 func (c *Config) ListTools(ctx context.Context) (map[string]Tool, error) {
@@ -28,6 +30,7 @@ func (c *Config) ListTools(ctx context.Context) (map[string]Tool, error) {
 			allTools[fmt.Sprintf("%s%d_%s", McpPrefix, i, tool.Name)] = Tool{
 				ToolRetType: tool,
 				Transport:   &cmd,
+				Timeout:     *cmd.Timeout.Execution,
 				approval:    Approval(cmd.Approval),
 			}
 		}
@@ -43,6 +46,7 @@ func (c *Config) ListTools(ctx context.Context) (map[string]Tool, error) {
 			// to prevent naming collisions, we add a prefix to the tool name
 			allTools[fmt.Sprintf("%s%d_%s", McpPrefix, i+len(c.CommandServer), tool.Name)] = Tool{
 				ToolRetType: tool,
+				Timeout:     *http.Timeout.Execution,
 				Transport:   &http,
 				approval:    Approval(http.Approval),
 			}

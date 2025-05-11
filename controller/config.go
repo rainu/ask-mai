@@ -34,7 +34,7 @@ func (c *Controller) SetActiveProfile(profileName string) model.Profile {
 }
 
 func (c *Controller) SetBuiltinTools(config tools.BuiltIns) {
-	c.getProfile().LLM.Tools.BuiltInTools = config
+	c.getProfile().LLM.Tools.BuiltInTools = &config
 }
 
 func (c *Controller) SetMcpTools(config internalMCP.Config) {

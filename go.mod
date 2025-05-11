@@ -14,7 +14,7 @@ require (
 	github.com/metoro-io/mcp-golang v0.11.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rainu/go-command-chain v0.4.0
-	github.com/rainu/go-yacl v0.1.0
+	github.com/rainu/go-yacl v0.2.0
 	github.com/shirou/gopsutil/v4 v4.25.2
 	github.com/stretchr/testify v1.10.0
 	github.com/tmc/langchaingo v0.1.13
@@ -101,5 +101,3 @@ replace dario.cat/mergo => github.com/darccio/mergo v1.0.0
 replace github.com/tmc/langchaingo => github.com/rainu/langchaingo v0.0.0-20250326142153-c860a5d21c81
 
 replace github.com/metoro-io/mcp-golang => github.com/alexmt/mcp-golang v0.0.0-20250427220150-3e7e91b22499
-
-//replace github.com/rainu/go-yacl => ../go-yacl

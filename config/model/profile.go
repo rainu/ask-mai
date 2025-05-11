@@ -19,7 +19,9 @@ type ProfileMeta struct {
 }
 
 func (c *Profile) SetDefaults() {
-	c.RestartShortcut = Shortcut{Binding: []string{"Alt+KeyR"}}
+	if c.RestartShortcut.Binding == nil {
+		c.RestartShortcut = Shortcut{Binding: []string{"Alt+KeyR"}}
+	}
 }
 
 func (c *Profile) Validate() error {

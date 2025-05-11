@@ -15,7 +15,7 @@ type UIConfig struct {
 	Window       WindowConfig     `yaml:"window,omitempty"`
 	Prompt       PromptConfig     `yaml:"prompt,omitempty"`
 	FileDialog   FileDialogConfig `yaml:"file-dialog,omitempty"`
-	Stream       bool             `yaml:"stream,omitempty" short:"s" usage:"Should the output be streamed"`
+	Stream       *bool            `yaml:"stream,omitempty" short:"s" usage:"Should the output be streamed"`
 	QuitShortcut Shortcut         `yaml:"quit,omitempty" usage:"The shortcut for quitting the application: "`
 	Theme        string           `yaml:"theme,omitempty"`
 	CodeStyle    string           `yaml:"code-style,omitempty" usage:"The code style to use"`
@@ -23,10 +23,18 @@ type UIConfig struct {
 }
 
 func (u *UIConfig) SetDefaults() {
-	u.QuitShortcut = Shortcut{Binding: []string{"Escape"}}
-	u.Theme = ThemeSystem
-	u.CodeStyle = "github"
-	u.Language = os.Getenv("LANG")
+	if u.QuitShortcut.Binding == nil {
+		u.QuitShortcut = Shortcut{Binding: []string{"Escape"}}
+	}
+	if u.Theme == "" {
+		u.Theme = ThemeSystem
+	}
+	if u.CodeStyle == "" {
+		u.CodeStyle = "github"
+	}
+	if u.Language == "" {
+		u.Language = os.Getenv("LANG")
+	}
 }
 
 func (u *UIConfig) GetUsage(field string) string {

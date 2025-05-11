@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 	"io"
-	"os"
 )
 
 const (
@@ -20,9 +19,12 @@ type PrinterConfig struct {
 }
 
 func (p *PrinterConfig) SetDefaults() {
-	p.Format = PrinterFormatJSON
-	p.Targets = []io.WriteCloser{os.Stdout}
-	p.TargetsRaw = []string{PrinterTargetOut}
+	if p.Format == "" {
+		p.Format = PrinterFormatJSON
+	}
+	if p.TargetsRaw == nil {
+		p.TargetsRaw = []string{PrinterTargetOut}
+	}
 }
 
 func (p *PrinterConfig) GetUsage(field string) string {

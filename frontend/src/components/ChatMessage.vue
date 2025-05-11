@@ -223,7 +223,7 @@ export default defineComponent({
 			return this.message.filter((part) => part.Type === ContentType.Attachment).map((part) => part.Content)
 		},
 		imageWidth() {
-			return this.profile.UI.Window.InitialWidth.Value * 0.9
+			return (this.profile.UI.Window.InitialWidth.Value ?? 0) * 0.9
 		},
 		createdAt() {
 			if(!this.date) return null

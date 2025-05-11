@@ -94,8 +94,8 @@ func printHelpEnv(output io.Writer) {
 	fmt.Fprintf(output, "Envronment variables with the prefix ")
 	fmt.Fprintf(output, EnvironmentPrefix)
 	fmt.Fprintf(output, " will be used. For example:\n")
-	fmt.Fprintf(output, EnvironmentPrefix+"_0=--llm.openai.api-key=MY_KEY\n")
-	fmt.Fprintf(output, EnvironmentPrefix+"_1=--llm.backend=openai\n")
+	fmt.Fprintf(output, EnvironmentPrefix+"0=--llm.openai.api-key=MY_KEY\n")
+	fmt.Fprintf(output, EnvironmentPrefix+"1=--llm.backend=openai\n")
 }
 
 func generateYamlSkeleton(output io.Writer) {

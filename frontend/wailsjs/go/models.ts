@@ -24,8 +24,8 @@ export namespace command {
 export namespace common {
 	
 	export class NumberContainer {
-	    Expression: string;
-	    Value: number;
+	    Expression?: string;
+	    Value?: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new NumberContainer(source);
@@ -89,8 +89,8 @@ export namespace common {
 	}
 	
 	export class StringContainer {
-	    Expression: string;
-	    Value: string;
+	    Expression?: string;
+	    Value?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new StringContainer(source);
@@ -1284,6 +1284,20 @@ export namespace llm {
 
 export namespace mcp {
 	
+	export class Timeout {
+	    List?: number;
+	    Execution?: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Timeout(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.List = source["List"];
+	        this.Execution = source["Execution"];
+	    }
+	}
 	export class Command {
 	    Name: string;
 	    Arguments: string[];
@@ -1292,6 +1306,7 @@ export namespace mcp {
 	    WorkingDirectory: string;
 	    Approval: string;
 	    Exclude: string[];
+	    Timeout: Timeout;
 	
 	    static createFrom(source: any = {}) {
 	        return new Command(source);
@@ -1306,7 +1321,26 @@ export namespace mcp {
 	        this.WorkingDirectory = source["WorkingDirectory"];
 	        this.Approval = source["Approval"];
 	        this.Exclude = source["Exclude"];
+	        this.Timeout = this.convertValues(source["Timeout"], Timeout);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class Http {
 	    BaseUrl: string;
@@ -1314,6 +1348,7 @@ export namespace mcp {
 	    Headers: Record<string, string>;
 	    Approval: string;
 	    Exclude: string[];
+	    Timeout: Timeout;
 	
 	    static createFrom(source: any = {}) {
 	        return new Http(source);
@@ -1326,7 +1361,26 @@ export namespace mcp {
 	        this.Headers = source["Headers"];
 	        this.Approval = source["Approval"];
 	        this.Exclude = source["Exclude"];
+	        this.Timeout = this.convertValues(source["Timeout"], Timeout);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class Config {
 	    CommandServer: Command[];
@@ -1360,6 +1414,7 @@ export namespace mcp {
 		    return a;
 		}
 	}
+	
 
 }
 
@@ -1420,7 +1475,7 @@ export namespace model {
 	    }
 	}
 	export class DebugConfig {
-	    LogLevel: number;
+	    LogLevel?: number;
 	    PprofAddress: string;
 	    VueDevTools: VueDevToolsConfig;
 	    WebKit: WebKitInspectorConfig;
@@ -1458,7 +1513,7 @@ export namespace model {
 		}
 	}
 	export class History {
-	    Path: string;
+	    Path?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new History(source);
@@ -1471,10 +1526,10 @@ export namespace model {
 	}
 	export class FileDialogConfig {
 	    DefaultDirectory: string;
-	    ShowHiddenFiles: boolean;
-	    CanCreateDirectories: boolean;
-	    ResolveAliases: boolean;
-	    TreatPackagesAsDirectories: boolean;
+	    ShowHiddenFiles?: boolean;
+	    CanCreateDirectories?: boolean;
+	    ResolveAliases?: boolean;
+	    TreatPackagesAsDirectories?: boolean;
 	    FilterDisplay: string[];
 	    FilterPattern: string[];
 	
@@ -1518,9 +1573,9 @@ export namespace model {
 	export class PromptConfig {
 	    InitValue: string;
 	    InitAttachments: string[];
-	    MinRows: number;
-	    MaxRows: number;
-	    PinTop: boolean;
+	    MinRows?: number;
+	    MaxRows?: number;
+	    PinTop?: boolean;
 	    SubmitShortcut: Shortcut;
 	
 	    static createFrom(source: any = {}) {
@@ -1556,10 +1611,10 @@ export namespace model {
 		}
 	}
 	export class WindowBackgroundColor {
-	    R: number;
-	    G: number;
-	    B: number;
-	    A: number;
+	    R?: number;
+	    G?: number;
+	    B?: number;
+	    A?: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new WindowBackgroundColor(source);
@@ -1581,13 +1636,13 @@ export namespace model {
 	    InitialPositionY: common.NumberContainer;
 	    InitialZoom: common.NumberContainer;
 	    BackgroundColor: WindowBackgroundColor;
-	    StartState: number;
-	    AlwaysOnTop: boolean;
-	    ShowTitleBar: boolean;
-	    TitleBarHeight: number;
-	    GrowTop: boolean;
-	    Frameless: boolean;
-	    Resizeable: boolean;
+	    StartState?: number;
+	    AlwaysOnTop?: boolean;
+	    ShowTitleBar?: boolean;
+	    TitleBarHeight?: number;
+	    GrowTop?: boolean;
+	    Frameless?: boolean;
+	    Resizeable?: boolean;
 	    Translucent: string;
 	
 	    static createFrom(source: any = {}) {
@@ -1635,7 +1690,7 @@ export namespace model {
 	    Window: WindowConfig;
 	    Prompt: PromptConfig;
 	    FileDialog: FileDialogConfig;
-	    Stream: boolean;
+	    Stream?: boolean;
 	    QuitShortcut: Shortcut;
 	    Theme: string;
 	    CodeStyle: string;
@@ -2561,7 +2616,7 @@ export namespace tools {
 	}
 	export class Config {
 	    Tools: Record<string, FunctionDefinition>;
-	    BuiltInTools: BuiltIns;
+	    BuiltInTools?: BuiltIns;
 	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);

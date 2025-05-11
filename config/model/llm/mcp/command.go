@@ -7,6 +7,7 @@ import (
 	"github.com/metoro-io/mcp-golang/transport"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	cmdchain "github.com/rainu/go-command-chain"
+	"github.com/rainu/go-yacl"
 	"io"
 	"log/slog"
 )
@@ -19,6 +20,8 @@ type Command struct {
 	WorkingDirectory      string            `yaml:"workingDir,omitempty" usage:"Working directory for the command"`
 	Approval              string            `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute a tool"`
 	Exclude               []string          `yaml:"exclude,omitempty" usage:"List of tools that should be excluded"`
+
+	Timeout Timeout `yaml:"timeout,omitempty"`
 }
 
 func (c *Command) Validate() error {
@@ -28,15 +31,25 @@ func (c *Command) Validate() error {
 	return nil
 }
 
+type transportProxy struct {
+	transport.Transport
+	closeHandler func()
+}
+
+func (t *transportProxy) Close() error {
+	t.closeHandler()
+	return t.Transport.Close()
+}
+
 func (c *Command) GetTransport() transport.Transport {
 	rIn, wIn := io.Pipe()
 	rOut, wOut := io.Pipe()
 
-	t := stdio.NewStdioServerTransportWithIO(rIn, wOut)
-	t.SetCloseHandler(func() {
+	t := &transportProxy{Transport: stdio.NewStdioServerTransportWithIO(rIn, wOut)}
+	t.closeHandler = func() {
 		wIn.Close()
 		wOut.Close()
-	})
+	}
 
 	go func() {
 		defer t.Close()
@@ -66,12 +79,26 @@ func (c *Command) ListTools(ctx context.Context) ([]mcp.ToolRetType, error) {
 	t := c.GetTransport()
 	defer t.Close()
 
+	if yacl.D(c.Timeout.List) > 0 {
+		ctxWithTimeout, cancel := context.WithTimeout(ctx, *c.Timeout.List)
+		defer cancel()
+
+		ctx = ctxWithTimeout
+	}
+
 	return listTools(ctx, t, c.Exclude)
 }
 
 func (c *Command) ListAllTools(ctx context.Context) ([]mcp.ToolRetType, error) {
 	t := c.GetTransport()
 	defer t.Close()
+
+	if yacl.D(c.Timeout.List) > 0 {
+		ctxWithTimeout, cancel := context.WithTimeout(ctx, *c.Timeout.List)
+		defer cancel()
+
+		ctx = ctxWithTimeout
+	}
 
 	return listAllTools(ctx, t)
 }

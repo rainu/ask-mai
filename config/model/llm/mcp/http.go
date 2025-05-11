@@ -6,6 +6,7 @@ import (
 	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport"
 	"github.com/metoro-io/mcp-golang/transport/http"
+	"github.com/rainu/go-yacl"
 )
 
 type Http struct {
@@ -14,6 +15,8 @@ type Http struct {
 	Headers  map[string]string `yaml:"headers,omitempty" usage:"Headers to pass to the HTTP server"`
 	Approval string            `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute a tool"`
 	Exclude  []string          `yaml:"exclude,omitempty" usage:"List of tools that should be excluded"`
+
+	Timeout Timeout `yaml:"timeout,omitempty"`
 }
 
 func (h *Http) Validate() error {
@@ -41,12 +44,26 @@ func (h *Http) ListTools(ctx context.Context) ([]mcp.ToolRetType, error) {
 	t := h.GetTransport()
 	defer t.Close()
 
+	if yacl.D(h.Timeout.List) > 0 {
+		ctxWithTimeout, cancel := context.WithTimeout(ctx, *h.Timeout.List)
+		defer cancel()
+
+		ctx = ctxWithTimeout
+	}
+
 	return listTools(ctx, t, h.Exclude)
 }
 
 func (h *Http) ListAllTools(ctx context.Context) ([]mcp.ToolRetType, error) {
 	t := h.GetTransport()
 	defer t.Close()
+
+	if yacl.D(h.Timeout.List) > 0 {
+		ctxWithTimeout, cancel := context.WithTimeout(ctx, *h.Timeout.List)
+		defer cancel()
+
+		ctx = ctxWithTimeout
+	}
 
 	return listAllTools(ctx, t)
 }

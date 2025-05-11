@@ -30,6 +30,11 @@ func (r *Result) AsFloat() (float64, error) {
 	return r.result.ToFloat(), nil
 }
 
+func (r *Result) AsFloatP() (*float64, error) {
+	f, e := r.AsFloat()
+	return &f, e
+}
+
 func (r *Result) AsString() (string, error) {
 	if r.err != nil {
 		return "", r.err

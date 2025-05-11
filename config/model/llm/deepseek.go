@@ -30,7 +30,9 @@ func (c *DeepSeekConfig) AsOptions() (opts []openai.Option) {
 }
 
 func (c *DeepSeekConfig) SetDefaults() {
-	c.Model = "deepseek-chat"
+	if c.Model == "" {
+		c.Model = "deepseek-chat"
+	}
 }
 
 func (c *DeepSeekConfig) Validate() error {

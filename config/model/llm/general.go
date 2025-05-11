@@ -59,8 +59,10 @@ func (c *LLMConfig) listBackends() (result []string) {
 }
 
 func (c *LLMConfig) SetDefaults() {
-	if llms.IsCopilotInstalled() {
-		c.Backend = "copilot"
+	if c.Backend == "" {
+		if llms.IsCopilotInstalled() {
+			c.Backend = "copilot"
+		}
 	}
 }
 

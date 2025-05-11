@@ -5,6 +5,7 @@ import (
 	"github.com/rainu/ask-mai/config/model/common"
 	"github.com/rainu/ask-mai/expression"
 	"github.com/rainu/ask-mai/llms"
+	"github.com/rainu/go-yacl"
 )
 
 type AnythingLLMConfig struct {
@@ -20,8 +21,10 @@ type AnythingLLMThreadConfig struct {
 }
 
 func (a *AnythingLLMThreadConfig) SetDefaults() {
-	a.Name = common.StringContainer{
-		Expression: `'ask-mai - ' + new Date().toISOString()`,
+	if a.Name.Expression == nil && a.Name.Value == nil {
+		a.Name = common.StringContainer{
+			Expression: yacl.P(`'ask-mai - ' + new Date().toISOString()`),
+		}
 	}
 }
 
@@ -36,7 +39,7 @@ func (c *AnythingLLMConfig) Validate() error {
 		return fmt.Errorf("AnythingLLM Workspace is missing")
 	}
 
-	if err := expression.Validate(c.Thread.Name.Expression); err != nil {
+	if err := expression.Validate(*c.Thread.Name.Expression); err != nil {
 		return fmt.Errorf("Invalid AnythingLLM thread name expression: %w", err)
 	}
 
@@ -44,7 +47,7 @@ func (c *AnythingLLMConfig) Validate() error {
 }
 
 func (c *AnythingLLMConfig) BuildLLM() (llms.Model, error) {
-	tn, err := expression.Run(nil, c.Thread.Name.Expression, nil).AsString()
+	tn, err := expression.Run(nil, *c.Thread.Name.Expression, nil).AsString()
 	if err != nil {
 		return nil, fmt.Errorf("error calculating thread name: %w", err)
 	}

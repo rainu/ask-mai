@@ -28,7 +28,9 @@ func (c *AnthropicConfig) AsOptions() (opts []anthropic.Option) {
 }
 
 func (c *AnthropicConfig) SetDefaults() {
-	c.Model = "claude-3-5-haiku-latest"
+	if c.Model == "" {
+		c.Model = "claude-3-5-haiku-latest"
+	}
 }
 
 func (c *AnthropicConfig) Validate() error {

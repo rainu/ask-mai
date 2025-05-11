@@ -133,7 +133,7 @@ export default defineComponent({
 	data() {
 		return {
 			appbarHeight: 0,
-			zoom: this.$appProfile.UI.Window.InitialZoom.Value,
+			zoom: this.$appProfile.UI.Window.InitialZoom.Value ?? 1,
 
 			mcp: {
 				loading: true,
@@ -146,72 +146,72 @@ export default defineComponent({
 	computed: {
 		...mapState(useConfigStore, ['profile']),
 		SystemInfo: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.SystemInfo.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.SystemInfo.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.SystemInfo.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.SystemInfo.Disable = !value },
 		},
 		Environment: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.Environment.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.Environment.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.Environment.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.Environment.Disable = !value },
 		},
 		SystemTime: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.SystemTime.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.SystemTime.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.SystemTime.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.SystemTime.Disable = !value },
 		},
 		Stats: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.Stats.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.Stats.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.Stats.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.Stats.Disable = !value },
 		},
 		ChangeMode: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.ChangeMode.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.ChangeMode.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.ChangeMode.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.ChangeMode.Disable = !value },
 		},
 		ChangeOwner: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.ChangeOwner.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.ChangeOwner.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.ChangeOwner.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.ChangeOwner.Disable = !value },
 		},
 		ChangeTimes: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.ChangeTimes.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.ChangeTimes.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.ChangeTimes.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.ChangeTimes.Disable = !value },
 		},
 		FileCreation: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.FileCreation.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.FileCreation.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileCreation.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileCreation.Disable = !value },
 		},
 		FileTempCreation: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.FileTempCreation.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.FileTempCreation.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileTempCreation.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileTempCreation.Disable = !value },
 		},
 		FileAppending: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.FileAppending.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.FileAppending.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileAppending.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileAppending.Disable = !value },
 		},
 		FileReading: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.FileReading.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.FileReading.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileReading.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileReading.Disable = !value },
 		},
 		FileDeletion: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.FileDeletion.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.FileDeletion.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileDeletion.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileDeletion.Disable = !value },
 		},
 		DirectoryCreation: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.DirectoryCreation.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.DirectoryCreation.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.DirectoryCreation.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.DirectoryCreation.Disable = !value },
 		},
 		DirectoryTempCreation: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.DirectoryTempCreation.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.DirectoryTempCreation.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.DirectoryTempCreation.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.DirectoryTempCreation.Disable = !value },
 		},
 		DirectoryDeletion: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.DirectoryDeletion.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.DirectoryDeletion.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.DirectoryDeletion.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.DirectoryDeletion.Disable = !value },
 		},
 		CommandExec: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.CommandExec.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.CommandExec.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.CommandExec.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.CommandExec.Disable = !value },
 		},
 		Http: {
-			get() { return !this.profile.LLM.Tools.BuiltInTools.Http.Disable },
-			set(value: boolean) { this.profile.LLM.Tools.BuiltInTools.Http.Disable = !value },
+			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.Http.Disable : false },
+			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.Http.Disable = !value },
 		},
 	},
 	methods: {
@@ -226,9 +226,9 @@ export default defineComponent({
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
 
 			//the titlebar can not be manipulated while application lifecycle - so here we use the "initial" config
-			const titleBarHeight = this.profile.UI.Window.ShowTitleBar ? this.profile.UI.Window.TitleBarHeight : 0
+			const titleBarHeight = this.profile.UI.Window.ShowTitleBar ? (this.profile.UI.Window.TitleBarHeight ?? 0) : 0
 			const combinedHeight = Math.ceil(pageHeight * this.zoom) + titleBarHeight
-			const width = this.profile.UI.Window.InitialWidth.Value
+			const width = this.profile.UI.Window.InitialWidth.Value ?? 0
 
 			await WindowSetSize(width, combinedHeight)
 		},

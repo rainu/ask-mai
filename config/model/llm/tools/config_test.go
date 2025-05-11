@@ -1,12 +1,14 @@
 package tools
 
 import (
+	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestConfig_GetTools(t *testing.T) {
 	toTest := Config{}
+	yacl.NewConfig(&toTest).ApplyDefaults()
 
 	result := toTest.GetTools()
 

@@ -154,7 +154,7 @@ export default {
 			error: null as { title: string; message: string } | null,
 			userScroll: false,
 			minimized: false,
-			zoom: this.$appProfile.UI.Window.InitialZoom.Value,
+			zoom: this.$appProfile.UI.Window.InitialZoom.Value ?? 1,
 		}
 	},
 	computed: {
@@ -206,19 +206,19 @@ export default {
 			const pageHeight = (this.$refs.page as HTMLElement).clientHeight
 
 			//the titlebar can not be manipulated while application lifecycle - so here we use the "initial" config
-			const titleBarHeight = this.profile.UI.Window.ShowTitleBar ? this.profile.UI.Window.TitleBarHeight : 0
+			const titleBarHeight = this.profile.UI.Window.ShowTitleBar ? (this.profile.UI.Window.TitleBarHeight ?? 0) : 0
 			const combinedHeight = Math.ceil(pageHeight * this.zoom) + titleBarHeight
-			const heightDiff = Math.min(combinedHeight, this.profile.UI.Window.MaxHeight.Value) - currentSize.h
-			const width = this.profile.UI.Window.InitialWidth.Value
+			const heightDiff = Math.min(combinedHeight, this.profile.UI.Window.MaxHeight.Value ?? 0) - currentSize.h
+			const width = this.profile.UI.Window.InitialWidth.Value ?? 0
 
 			await WindowSetSize(width, combinedHeight)
 
 			if (this.profile.UI.Window.GrowTop && heightDiff > 0) {
 				// move the window
-				const offset = Math.min(combinedHeight, this.profile.UI.Window.MaxHeight.Value)
+				const offset = Math.min(combinedHeight, this.profile.UI.Window.MaxHeight.Value ?? 0)
 				await WindowSetPosition(
-					this.profile.UI.Window.InitialPositionX.Value,
-					this.profile.UI.Window.InitialPositionY.Value - offset,
+					this.profile.UI.Window.InitialPositionX.Value ?? 0,
+					(this.profile.UI.Window.InitialPositionY.Value ?? 0) - offset,
 				)
 			}
 		},

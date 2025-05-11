@@ -98,17 +98,17 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 	return &options.App{
 		Title:             ac.UI.Window.Title,
 		Height:            1,
-		DisableResize:     !ac.UI.Window.Resizeable,
+		DisableResize:     !*ac.UI.Window.Resizeable,
 		Fullscreen:        false,
-		Frameless:         ac.UI.Window.Frameless,
+		Frameless:         *ac.UI.Window.Frameless,
 		StartHidden:       true,
 		HideWindowOnClose: false,
-		AlwaysOnTop:       ac.UI.Window.AlwaysOnTop,
+		AlwaysOnTop:       *ac.UI.Window.AlwaysOnTop,
 		BackgroundColour: &options.RGBA{
-			R: uint8(ac.UI.Window.BackgroundColor.R),
-			G: uint8(ac.UI.Window.BackgroundColor.G),
-			B: uint8(ac.UI.Window.BackgroundColor.B),
-			A: uint8(ac.UI.Window.BackgroundColor.A),
+			R: uint8(*ac.UI.Window.BackgroundColor.R),
+			G: uint8(*ac.UI.Window.BackgroundColor.G),
+			B: uint8(*ac.UI.Window.BackgroundColor.B),
+			A: uint8(*ac.UI.Window.BackgroundColor.A),
 		},
 		Menu: nil,
 		Debug: options.Debug{
@@ -116,7 +116,7 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		},
 		Logger: newDefaultLogger(),
 		LogLevel: func() logger.LogLevel {
-			switch c.appConfig.DebugConfig.LogLevel {
+			switch *c.appConfig.DebugConfig.LogLevel {
 			case int(slog.LevelDebug):
 				return logger.TRACE
 			case int(slog.LevelInfo):
@@ -133,7 +133,7 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		OnDomReady:       c.domReady,
 		OnBeforeClose:    c.beforeClose,
 		OnShutdown:       c.shutdown,
-		WindowStartState: options.WindowStartState(ac.UI.Window.StartState),
+		WindowStartState: options.WindowStartState(*ac.UI.Window.StartState),
 		AssetServer: &assetserver.Options{
 			Assets:     assets,
 			Handler:    http.HandlerFunc(c.handleAsset),
@@ -146,8 +146,8 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		Windows: &windows.Options{
 			WebviewIsTransparent:              true,
 			WindowIsTranslucent:               translucent,
-			DisableWindowIcon:                 !ac.UI.Window.ShowTitleBar,
-			DisableFramelessWindowDecorations: !ac.UI.Window.ShowTitleBar,
+			DisableWindowIcon:                 !*ac.UI.Window.ShowTitleBar,
+			DisableFramelessWindowDecorations: !*ac.UI.Window.ShowTitleBar,
 			WebviewUserDataPath:               "",
 			WebviewBrowserPath:                "",
 			Theme: func() windows.Theme {
@@ -165,8 +165,8 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		Mac: &mac.Options{
 			TitleBar: &mac.TitleBar{
 				TitlebarAppearsTransparent: false,
-				HideTitle:                  !ac.UI.Window.ShowTitleBar,
-				HideTitleBar:               !ac.UI.Window.ShowTitleBar,
+				HideTitle:                  !*ac.UI.Window.ShowTitleBar,
+				HideTitleBar:               !*ac.UI.Window.ShowTitleBar,
 				FullSizeContent:            true,
 				UseToolbar:                 false,
 				HideToolbarSeparator:       false,

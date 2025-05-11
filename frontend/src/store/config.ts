@@ -20,7 +20,9 @@ export const useConfigStore = defineStore('config', {
 			this.activeProfileName = profileName
 		},
 		async applyToolsConfig() {
-			await SetBuiltinTools(this.profile.LLM.Tools.BuiltInTools)
+			if (this.profile.LLM.Tools.BuiltInTools) {
+				await SetBuiltinTools(this.profile.LLM.Tools.BuiltInTools)
+			}
 			await SetMcpTools(this.profile.LLM.McpServer)
 		}
 	}

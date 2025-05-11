@@ -18,8 +18,12 @@ type OpenAIConfig struct {
 }
 
 func (c *OpenAIConfig) SetDefaults() {
-	c.APIType = string(openai.APITypeOpenAI)
-	c.Model = "gpt-4o-mini"
+	if c.APIType == "" {
+		c.APIType = string(openai.APITypeOpenAI)
+	}
+	if c.Model == "" {
+		c.Model = "gpt-4o-mini"
+	}
 }
 
 func (c *OpenAIConfig) GetUsage(field string) string {

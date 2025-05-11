@@ -3,11 +3,13 @@ package config
 import (
 	"github.com/rainu/ask-mai/config/model"
 	"github.com/rainu/ask-mai/config/model/common"
+	"github.com/rainu/ask-mai/config/model/llm/mcp"
 	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"log/slog"
 	"testing"
+	"time"
 )
 
 func modifiedConfig(mod func(*model.Config)) model.Config {
@@ -41,7 +43,7 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set log level",
 			args: []string{"--log-level=-4"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.DebugConfig.LogLevel = int(slog.LevelDebug)
+				c.DebugConfig.LogLevel = yacl.P(int(slog.LevelDebug))
 			}),
 		},
 		{
@@ -118,14 +120,14 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set UI prompt min rows",
 			args: []string{"--ui.prompt.min-rows=2"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.MinRows = 2
+				c.MainProfile.UI.Prompt.MinRows = yacl.P(uint(2))
 			}),
 		},
 		{
 			name: "Set UI prompt max rows",
 			args: []string{"--ui.prompt.max-rows=5"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.MaxRows = 5
+				c.MainProfile.UI.Prompt.MaxRows = yacl.P(uint(5))
 			}),
 		},
 		{
@@ -142,7 +144,7 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set UI prompt pin top",
 			args: []string{"--ui.prompt.pin-top=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.PinTop = false
+				c.MainProfile.UI.Prompt.PinTop = yacl.P(false)
 			}),
 		},
 		{
@@ -156,28 +158,28 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set UI file dialog show hidden files",
 			args: []string{"--ui.file-dialog.show-hidden=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.FileDialog.ShowHiddenFiles = false
+				c.MainProfile.UI.FileDialog.ShowHiddenFiles = yacl.P(false)
 			}),
 		},
 		{
 			name: "Set UI file dialog can create directories",
 			args: []string{"--ui.file-dialog.can-create-dirs=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.FileDialog.CanCreateDirectories = true
+				c.MainProfile.UI.FileDialog.CanCreateDirectories = yacl.P(true)
 			}),
 		},
 		{
 			name: "Set UI file dialog resolves aliases",
 			args: []string{"--ui.file-dialog.resolve-aliases=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.FileDialog.ResolveAliases = true
+				c.MainProfile.UI.FileDialog.ResolveAliases = yacl.P(true)
 			}),
 		},
 		{
 			name: "Set UI file dialog treat packages as directories",
 			args: []string{"--ui.file-dialog.treat-packages-as-dirs=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.FileDialog.TreatPackagesAsDirectories = false
+				c.MainProfile.UI.FileDialog.TreatPackagesAsDirectories = yacl.P(false)
 			}),
 		},
 		{
@@ -212,14 +214,14 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Enable UI stream",
 			args: []string{"--ui.stream"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Stream = true
+				c.MainProfile.UI.Stream = yacl.P(true)
 			}),
 		},
 		{
 			name: "Enable UI stream - shorthand",
 			args: []string{"-s"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Stream = true
+				c.MainProfile.UI.Stream = yacl.P(true)
 			}),
 		},
 		{
@@ -233,35 +235,35 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set UI initial width",
 			args: []string{"--ui.window.init-width.expression=100"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.InitialWidth = common.NumberContainer{Expression: "100"}
+				c.MainProfile.UI.Window.InitialWidth.Expression = yacl.P("100")
 			}),
 		},
 		{
 			name: "Set UI max height",
 			args: []string{"--ui.window.max-height.expression=200"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.MaxHeight = common.NumberContainer{Expression: "200"}
+				c.MainProfile.UI.Window.MaxHeight = common.NumberContainer{Expression: yacl.P("200")}
 			}),
 		},
 		{
 			name: "Set UI initial position X",
 			args: []string{"--ui.window.init-pos-x.expression=50"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.InitialPositionX = common.NumberContainer{Expression: "50"}
+				c.MainProfile.UI.Window.InitialPositionX = common.NumberContainer{Expression: yacl.P("50")}
 			}),
 		},
 		{
 			name: "Set UI initial position Y",
 			args: []string{"--ui.window.init-pos-y.expression=50"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.InitialPositionY = common.NumberContainer{Expression: "50"}
+				c.MainProfile.UI.Window.InitialPositionY = common.NumberContainer{Expression: yacl.P("50")}
 			}),
 		},
 		{
 			name: "Set UI initial zoom",
 			args: []string{"--ui.window.init-zoom.expression=1.5"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.InitialZoom = common.NumberContainer{Expression: "1.5"}
+				c.MainProfile.UI.Window.InitialZoom = common.NumberContainer{Expression: yacl.P("1.5")}
 			}),
 		},
 		{
@@ -273,35 +275,35 @@ func TestConfig_Parse(t *testing.T) {
 				"--ui.window.bg-color.a=100",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.BackgroundColor = model.WindowBackgroundColor{R: 100, G: 100, B: 100, A: 100}
+				c.MainProfile.UI.Window.BackgroundColor = model.WindowBackgroundColor{R: yacl.P(uint(100)), G: yacl.P(uint(100)), B: yacl.P(uint(100)), A: yacl.P(uint(100))}
 			}),
 		},
 		{
 			name: "Set UI start state",
 			args: []string{"--ui.window.start-state=1"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.StartState = 1
+				c.MainProfile.UI.Window.StartState = yacl.P(1)
 			}),
 		},
 		{
 			name: "Disable UI frameless",
 			args: []string{"--ui.window.frameless=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.Frameless = false
+				c.MainProfile.UI.Window.Frameless = yacl.P(false)
 			}),
 		},
 		{
 			name: "Disable UI always on top",
 			args: []string{"--ui.window.always-on-top=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.AlwaysOnTop = false
+				c.MainProfile.UI.Window.AlwaysOnTop = yacl.P(false)
 			}),
 		},
 		{
 			name: "Disable UI resizable",
 			args: []string{"--ui.window.resizeable=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.Resizeable = false
+				c.MainProfile.UI.Window.Resizeable = yacl.P(false)
 			}),
 		},
 		{
@@ -394,7 +396,7 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for log level",
 			env:  []string{EnvironmentPrefix + "=--log-level=-4"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.DebugConfig.LogLevel = int(slog.LevelDebug)
+				c.DebugConfig.LogLevel = yacl.P(int(slog.LevelDebug))
 			}),
 		},
 		{
@@ -436,7 +438,7 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for UI stream",
 			env:  []string{EnvironmentPrefix + "=--ui.stream=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Stream = true
+				c.MainProfile.UI.Stream = yacl.P(true)
 			}),
 		},
 		{
@@ -481,14 +483,14 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for UI prompt min rows",
 			env:  []string{EnvironmentPrefix + "=--ui.prompt.min-rows=2"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.MinRows = 2
+				c.MainProfile.UI.Prompt.MinRows = yacl.P(uint(2))
 			}),
 		},
 		{
 			name: "Set environment variable for UI prompt max rows",
 			env:  []string{EnvironmentPrefix + "=--ui.prompt.max-rows=5"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.MaxRows = 5
+				c.MainProfile.UI.Prompt.MaxRows = yacl.P(uint(5))
 			}),
 		},
 		{
@@ -506,7 +508,7 @@ func TestConfig_Parse(t *testing.T) {
 				EnvironmentPrefix + "=--ui.prompt.pin-top=false",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.PinTop = false
+				c.MainProfile.UI.Prompt.PinTop = yacl.P(false)
 			}),
 		},
 		{
@@ -520,28 +522,28 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for UI file dialog show hidden files",
 			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.show-hidden=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.FileDialog.ShowHiddenFiles = false
+				c.MainProfile.UI.FileDialog.ShowHiddenFiles = yacl.P(false)
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog can create directories",
 			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.can-create-dirs=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.FileDialog.CanCreateDirectories = true
+				c.MainProfile.UI.FileDialog.CanCreateDirectories = yacl.P(true)
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog resolves aliases",
 			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.resolve-aliases=true"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.FileDialog.ResolveAliases = true
+				c.MainProfile.UI.FileDialog.ResolveAliases = yacl.P(true)
 			}),
 		},
 		{
 			name: "Set environment variable for UI file dialog treat packages as directories",
 			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.treat-packages-as-dirs=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.FileDialog.TreatPackagesAsDirectories = false
+				c.MainProfile.UI.FileDialog.TreatPackagesAsDirectories = yacl.P(false)
 			}),
 		},
 		{
@@ -562,35 +564,35 @@ func TestConfig_Parse(t *testing.T) {
 			name: "Set environment variable for UI initial width",
 			env:  []string{EnvironmentPrefix + "=--ui.window.init-width.expression=100"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.InitialWidth = common.NumberContainer{Expression: "100"}
+				c.MainProfile.UI.Window.InitialWidth = common.NumberContainer{Expression: yacl.P("100")}
 			}),
 		},
 		{
 			name: "Set environment variable for UI max height",
 			env:  []string{EnvironmentPrefix + "=--ui.window.max-height.expression=200"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.MaxHeight = common.NumberContainer{Expression: "200"}
+				c.MainProfile.UI.Window.MaxHeight = common.NumberContainer{Expression: yacl.P("200")}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial position X",
 			env:  []string{EnvironmentPrefix + "=--ui.window.init-pos-x.expression=50"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.InitialPositionX = common.NumberContainer{Expression: "50"}
+				c.MainProfile.UI.Window.InitialPositionX = common.NumberContainer{Expression: yacl.P("50")}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial position Y",
 			env:  []string{EnvironmentPrefix + "=--ui.window.init-pos-y.expression=50"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.InitialPositionY = common.NumberContainer{Expression: "50"}
+				c.MainProfile.UI.Window.InitialPositionY = common.NumberContainer{Expression: yacl.P("50")}
 			}),
 		},
 		{
 			name: "Set environment variable for UI initial zoom",
 			env:  []string{EnvironmentPrefix + "=--ui.window.init-zoom.expression=1.5"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.InitialZoom = common.NumberContainer{Expression: "1.5"}
+				c.MainProfile.UI.Window.InitialZoom = common.NumberContainer{Expression: yacl.P("1.5")}
 			}),
 		},
 		{
@@ -602,35 +604,35 @@ func TestConfig_Parse(t *testing.T) {
 				EnvironmentPrefix + "=--ui.window.bg-color.a=100",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.BackgroundColor = model.WindowBackgroundColor{R: 100, G: 100, B: 100, A: 100}
+				c.MainProfile.UI.Window.BackgroundColor = model.WindowBackgroundColor{R: yacl.P(uint(100)), G: yacl.P(uint(100)), B: yacl.P(uint(100)), A: yacl.P(uint(100))}
 			}),
 		},
 		{
 			name: "Set environment variable for UI start state",
 			env:  []string{EnvironmentPrefix + "=--ui.window.start-state=1"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.StartState = 1
+				c.MainProfile.UI.Window.StartState = yacl.P(1)
 			}),
 		},
 		{
 			name: "Set environment variable for UI frameless",
 			env:  []string{EnvironmentPrefix + "=--ui.window.frameless=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.Frameless = false
+				c.MainProfile.UI.Window.Frameless = yacl.P(false)
 			}),
 		},
 		{
 			name: "Set environment variable for UI always on top",
 			env:  []string{EnvironmentPrefix + "=--ui.window.always-on-top=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.AlwaysOnTop = false
+				c.MainProfile.UI.Window.AlwaysOnTop = yacl.P(false)
 			}),
 		},
 		{
 			name: "Set environment variable for UI resizable",
 			env:  []string{EnvironmentPrefix + "=--ui.window.resizeable=false"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Window.Resizeable = false
+				c.MainProfile.UI.Window.Resizeable = yacl.P(false)
 			}),
 		},
 		{
@@ -694,11 +696,24 @@ func TestConfig_Parse(t *testing.T) {
 				c.MainProfile.LLM.OpenAI.APIKey.Plain = "secret"
 			}),
 		},
+		{
+			name: "Set MCP Timeout",
+			args: []string{"--llm.mcp.command[0].timeout.execution=1m"},
+			expected: modifiedConfig(func(c *model.Config) {
+				c.MainProfile.LLM.McpServer.CommandServer = append(c.MainProfile.LLM.McpServer.CommandServer, mcp.Command{
+					Timeout: mcp.Timeout{
+						List:      yacl.P(5 * time.Second),
+						Execution: yacl.P(1 * time.Minute),
+					},
+				})
+			}),
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Parse(tt.args, tt.env)
+			c.MainProfile.Printer.Targets = nil
 			assert.Equal(t, tt.expected, *c)
 		})
 	}
@@ -709,11 +724,15 @@ func TestConfig_GetProfile(t *testing.T) {
 	yacl.NewConfig(toTest).ApplyDefaults()
 
 	toTest.MainProfile.UI.Theme = "dark"
+	toTest.MainProfile.UI.Stream = yacl.P(true)
 	toTest.MainProfile.LLM.Backend = "openai"
 	toTest.MainProfile.LLM.OpenAI.APIKey = common.Secret{Plain: "OPENAI_API_KEY"}
 	toTest.Profiles = map[string]*model.Profile{
 		"light": {
-			UI: model.UIConfig{Theme: "light"},
+			UI: model.UIConfig{
+				Theme:  "light",
+				Stream: yacl.P(false),
+			},
 		},
 	}
 	require.NoError(t, toTest.Validate())
@@ -725,6 +744,7 @@ func TestConfig_GetProfile(t *testing.T) {
 	c = toTest.GetActiveProfile()
 
 	assert.Equal(t, "light", c.UI.Theme)
+	assert.False(t, *c.UI.Stream)
 	assert.Equal(t, "openai", c.LLM.Backend)
 	assert.Equal(t, "OPENAI_API_KEY", c.LLM.OpenAI.APIKey.Plain)
 }

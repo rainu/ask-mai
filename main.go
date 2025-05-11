@@ -60,7 +60,7 @@ func main() {
 			return
 		}
 
-		slog.SetLogLoggerLevel(slog.Level(cfg.DebugConfig.LogLevel))
+		slog.SetLogLoggerLevel(slog.Level(*cfg.DebugConfig.LogLevel))
 		if onStartUp != nil {
 			onStartUp(cfg)
 		}
