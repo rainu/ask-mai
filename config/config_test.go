@@ -7,7 +7,6 @@ import (
 	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"log/slog"
 	"testing"
 	"time"
 )
@@ -41,9 +40,9 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set log level",
-			args: []string{"--log-level=-4"},
+			args: []string{"--log-level=debug"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.DebugConfig.LogLevel = yacl.P(int(slog.LevelDebug))
+				c.DebugConfig.LogLevel = model.LogLevelDebug
 			}),
 		},
 		{
@@ -394,9 +393,9 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set environment variable for log level",
-			env:  []string{EnvironmentPrefix + "=--log-level=-4"},
+			env:  []string{EnvironmentPrefix + "=--log-level=debug"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.DebugConfig.LogLevel = yacl.P(int(slog.LevelDebug))
+				c.DebugConfig.LogLevel = model.LogLevelDebug
 			}),
 		},
 		{

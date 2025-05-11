@@ -171,7 +171,7 @@ print:
   format: json
   targets:
     - stdout
-log-level: 1
+log-level: debug
 pprof-address: ":1312"
 vue-dev-tools:
   host: "localhost"
@@ -358,7 +358,7 @@ webkit:
 			},
 		},
 		DebugConfig: model.DebugConfig{
-			LogLevel:     yacl.P(1),
+			LogLevel:     model.LogLevelDebug,
 			PprofAddress: ":1312",
 			VueDevTools: model.VueDevToolsConfig{
 				Host: "localhost",

@@ -4,10 +4,19 @@ import (
 	"fmt"
 	"github.com/rainu/go-yacl"
 	"log/slog"
+	"strings"
+)
+
+const (
+	LogLevelDebug = "debug"
+	LogLevelInfo  = "info"
+	LogLevelWarn  = "warn"
+	LogLevelError = "error"
 )
 
 type DebugConfig struct {
-	LogLevel              *int                  `yaml:"log-level,omitempty"`
+	LogLevel              string                `yaml:"log-level,omitempty"`
+	LogLevelParsed        *slog.Level           `yaml:"-"`
 	PprofAddress          string                `yaml:"pprof-address,omitempty" usage:"Address for the pprof server (only available for debug binary)"`
 	VueDevTools           VueDevToolsConfig     `yaml:"vue-dev-tools,omitempty"`
 	WebKit                WebKitInspectorConfig `yaml:"webkit,omitempty" usage:"Webkit debug configuration (only available for debug binary): "`
@@ -25,8 +34,9 @@ type WebKitInspectorConfig struct {
 }
 
 func (d *DebugConfig) SetDefaults() {
-	if d.LogLevel == nil {
-		d.LogLevel = yacl.P(int(slog.LevelError))
+	if d.LogLevel == "" {
+		d.LogLevel = "error"
+		d.LogLevelParsed = yacl.P(slog.LevelError)
 	}
 	if d.PprofAddress == "" {
 		d.PprofAddress = ":6060"
@@ -42,14 +52,23 @@ func (v *VueDevToolsConfig) SetDefaults() {
 func (d *DebugConfig) GetUsage(field string) string {
 	switch field {
 	case "LogLevel":
-		return fmt.Sprintf("Log level (debug(%d), info(%d), warn(%d), error(%d))", slog.LevelDebug, slog.LevelInfo, slog.LevelWarn, slog.LevelError)
+		return fmt.Sprintf("Log level (%s, %s, %s, %s)", LogLevelDebug, LogLevelInfo, LogLevelWarn, LogLevelError)
 	}
 	return ""
 }
 
 func (d *DebugConfig) Validate() error {
-	if *d.LogLevel < int(slog.LevelDebug) || *d.LogLevel > int(slog.LevelError) {
-		return fmt.Errorf("Invalid log level")
+	switch strings.ToLower(d.LogLevel) {
+	case LogLevelDebug:
+		d.LogLevelParsed = yacl.P(slog.LevelDebug)
+	case LogLevelInfo:
+		d.LogLevelParsed = yacl.P(slog.LevelInfo)
+	case LogLevelWarn:
+		d.LogLevelParsed = yacl.P(slog.LevelWarn)
+	case LogLevelError:
+		d.LogLevelParsed = yacl.P(slog.LevelError)
+	default:
+		return fmt.Errorf("Invalid log level '%s'", d.LogLevel)
 	}
 
 	return nil

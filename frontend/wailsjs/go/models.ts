@@ -1408,7 +1408,8 @@ export namespace model {
 	    }
 	}
 	export class DebugConfig {
-	    LogLevel?: number;
+	    LogLevel: string;
+	    LogLevelParsed?: number;
 	    PprofAddress: string;
 	    VueDevTools: VueDevToolsConfig;
 	    WebKit: WebKitInspectorConfig;
@@ -1421,6 +1422,7 @@ export namespace model {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.LogLevel = source["LogLevel"];
+	        this.LogLevelParsed = source["LogLevelParsed"];
 	        this.PprofAddress = source["PprofAddress"];
 	        this.VueDevTools = this.convertValues(source["VueDevTools"], VueDevToolsConfig);
 	        this.WebKit = this.convertValues(source["WebKit"], WebKitInspectorConfig);

@@ -116,14 +116,14 @@ func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {
 		},
 		Logger: newDefaultLogger(),
 		LogLevel: func() logger.LogLevel {
-			switch *c.appConfig.DebugConfig.LogLevel {
-			case int(slog.LevelDebug):
+			switch *c.appConfig.DebugConfig.LogLevelParsed {
+			case slog.LevelDebug:
 				return logger.TRACE
-			case int(slog.LevelInfo):
+			case slog.LevelInfo:
 				return logger.INFO
-			case int(slog.LevelWarn):
+			case slog.LevelWarn:
 				return logger.WARNING
-			case int(slog.LevelError):
+			case slog.LevelError:
 				return logger.ERROR
 			default:
 				return logger.ERROR
