@@ -15,37 +15,37 @@ https://github.com/user-attachments/assets/a6d16332-55a1-4866-9f3e-31490a488935
 ### LocalAI
 
 ```shell
-ask-mai -b localai --localai-base-url=http://localhost:8080/v1 --localai-model=gpt-4
+ask-mai -b localai --llm.localai.base-url=http://localhost:8080/v1 --llm.localai.model=gpt-4
 ```
 
 ### OpenAI
 
 ```shell
-ask-mai -b openai --openai-api-key=YOUR_OPENAI_API_KEY
+ask-mai -b openai --llm.openai.api-key.plain=YOUR_OPENAI_API_KEY
 ```
 
 ### Ollama
 
 ```shell
-ask-mai -b ollama --ollama-server-url=http://localhost:11434 --ollama-model=llama3.2
+ask-mai -b ollama --llm.ollama.server-url=http://localhost:11434 --llm.ollama.model=llama3.2
 ```
 
 ### Anthropic
 
 ```shell
-ask-mai -b anthropic --anthropic-api-key=YOUR_ANTHROPIC_API_KEY
+ask-mai -b anthropic --llm.anthropic.api-key.plain=YOUR_ANTHROPIC_API_KEY
 ```
 
 ### Mistral
 
 ```shell
-ask-mai -b mistral --mistral-api-key=YOUR_MISTRAL_API_KEY --mistral-model=mistral-small-latest
+ask-mai -b mistral --llm.mistral.api-key.plain=YOUR_MISTRAL_API_KEY --llm.mistral.model=mistral-small-latest
 ```
 
 ### DeepSeekConfig
 
 ```shell
-ask-mai -b deepseek --deepseek-api-key=YOUR_DEEPSEEK_API_KEY
+ask-mai -b deepseek --llm.deepseek.api-key.plain=YOUR_DEEPSEEK_API_KEY
 ```
 
 ## Features
