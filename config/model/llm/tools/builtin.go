@@ -5,29 +5,29 @@ import "reflect"
 const BuiltInPrefix = "_"
 
 type BuiltIns struct {
-	SystemInfo  SystemInfo  `yaml:"system-info,omitempty" usage:"System information tool: "`
-	Environment Environment `yaml:"environment,omitempty" usage:"Environment tool: "`
-	SystemTime  SystemTime  `yaml:"system-time,omitempty" usage:"System time tool: "`
+	SystemInfo  SystemInfo  `yaml:"system-info,omitempty" usage:"[System information] "`
+	Environment Environment `yaml:"environment,omitempty" usage:"[Environment] "`
+	SystemTime  SystemTime  `yaml:"system-time,omitempty" usage:"[System time] "`
 
-	Stats Stats `yaml:"stats,omitempty" usage:"Stats tool: "`
+	Stats Stats `yaml:"stats,omitempty" usage:"[Stats] "`
 
-	ChangeMode  ChangeMode  `yaml:"change-mode,omitempty" usage:"Change mode tool: "`
-	ChangeOwner ChangeOwner `yaml:"change-owner,omitempty" usage:"Change owner tool: "`
-	ChangeTimes ChangeTimes `yaml:"change-times,omitempty" usage:"Change times tool: "`
+	ChangeMode  ChangeMode  `yaml:"change-mode,omitempty" usage:"[Change mode] "`
+	ChangeOwner ChangeOwner `yaml:"change-owner,omitempty" usage:"[Change owner] "`
+	ChangeTimes ChangeTimes `yaml:"change-times,omitempty" usage:"[Change times] "`
 
-	FileCreation     FileCreation     `yaml:"file-creation,omitempty" usage:"File creation tool: "`
-	FileTempCreation FileTempCreation `yaml:"temp-file-creation,omitempty" usage:"Temporary file creation tool: "`
-	FileAppending    FileAppending    `yaml:"file-appending,omitempty" usage:"File appending tool: "`
-	FileReading      FileReading      `yaml:"file-reading,omitempty" usage:"File reading tool: "`
-	FileDeletion     FileDeletion     `yaml:"file-deletion,omitempty,omitempty" usage:"File deletion tool: "`
+	FileCreation     FileCreation     `yaml:"file-creation,omitempty" usage:"[File creation] "`
+	FileTempCreation FileTempCreation `yaml:"temp-file-creation,omitempty" usage:"[Temporary file creation] "`
+	FileAppending    FileAppending    `yaml:"file-appending,omitempty" usage:"[File appending] "`
+	FileReading      FileReading      `yaml:"file-reading,omitempty" usage:"[File reading] "`
+	FileDeletion     FileDeletion     `yaml:"file-deletion,omitempty,omitempty" usage:"[File deletion] "`
 
-	DirectoryCreation     DirectoryCreation     `yaml:"dir-creation,omitempty" usage:"Directory creation tool: "`
-	DirectoryTempCreation DirectoryTempCreation `yaml:"temp-dir-creation,omitempty" usage:"Temporary directory creation tool: "`
-	DirectoryDeletion     DirectoryDeletion     `yaml:"dir-deletion,omitempty" usage:"Directory deletion tool: "`
+	DirectoryCreation     DirectoryCreation     `yaml:"dir-creation,omitempty" usage:"[Directory creation] "`
+	DirectoryTempCreation DirectoryTempCreation `yaml:"temp-dir-creation,omitempty" usage:"[Temporary directory creation] "`
+	DirectoryDeletion     DirectoryDeletion     `yaml:"dir-deletion,omitempty" usage:"[Directory deletion] "`
 
-	CommandExec CommandExecution `yaml:"command-execution,omitempty" usage:"Command execution tool: "`
+	CommandExec CommandExecution `yaml:"command-execution,omitempty" usage:"[Command execution] "`
 
-	Http Http `yaml:"http,omitempty" usage:"HTTP tool: "`
+	Http Http `yaml:"http,omitempty" usage:"[HTTP] "`
 
 	Disable bool `yaml:"disable,omitempty" usage:"Disable all builtin tools."`
 }

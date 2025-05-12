@@ -5,7 +5,7 @@ import (
 )
 
 type CommandExecution struct {
-	Disable  bool   `yaml:"disable,omitempty" usage:"Disable tool"`
+	Disable  bool   `yaml:"disable,omitempty" usage:"disable"`
 	Approval string `yaml:"approval,omitempty" usage:"Needs no user approval to be executed"`
 
 	//only for wails to generate TypeScript types

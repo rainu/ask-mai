@@ -9,9 +9,9 @@ import (
 const FunctionArgumentNameAll = "@"
 
 type Config struct {
-	Tools map[string]FunctionDefinition `yaml:"functions,omitempty" usage:"Function definition: "`
+	Tools map[string]FunctionDefinition `yaml:"functions,omitempty" usage:"Tool function definition "`
 
-	BuiltInTools *BuiltIns `yaml:"builtin,omitempty" usage:"Built-in tools: "`
+	BuiltInTools *BuiltIns `yaml:"builtin,omitempty" usage:"Built-in tool "`
 }
 
 type CommandFn func(ctx context.Context, jsonArguments string) ([]byte, error)

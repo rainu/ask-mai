@@ -5,7 +5,7 @@ import (
 )
 
 type Http struct {
-	Disable  bool   `yaml:"disable,omitempty" usage:"Disable tool"`
+	Disable  bool   `yaml:"disable,omitempty" usage:"disable"`
 	Approval string `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types

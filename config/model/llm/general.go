@@ -20,17 +20,17 @@ type llmConfig interface {
 type LLMConfig struct {
 	Backend string `yaml:"backend,omitempty" short:"b"`
 
-	Copilot     CopilotConfig     `yaml:"copilot,omitempty" usage:"Copilot: " llm:""`
-	LocalAI     LocalAIConfig     `yaml:"localai,omitempty" usage:"LocalAI: " llm:""`
-	OpenAI      OpenAIConfig      `yaml:"openai,omitempty" usage:"OpenAI: " llm:""`
-	AnythingLLM AnythingLLMConfig `yaml:"anythingllm,omitempty" usage:"AnythingLLM: " llm:""`
-	Ollama      OllamaConfig      `yaml:"ollama,omitempty" usage:"Ollama: " llm:""`
-	Mistral     MistralConfig     `yaml:"mistral,omitempty" usage:"Mistral: " llm:""`
-	Anthropic   AnthropicConfig   `yaml:"anthropic,omitempty" usage:"Anthropic: " llm:""`
-	DeepSeek    DeepSeekConfig    `yaml:"deepseek,omitempty" usage:"DeepSeek: " llm:""`
+	Copilot     CopilotConfig     `yaml:"copilot,omitempty" usage:"Copilot " llm:""`
+	LocalAI     LocalAIConfig     `yaml:"localai,omitempty" usage:"LocalAI " llm:""`
+	OpenAI      OpenAIConfig      `yaml:"openai,omitempty" usage:"OpenAI " llm:""`
+	AnythingLLM AnythingLLMConfig `yaml:"anythingllm,omitempty" usage:"AnythingLLM " llm:""`
+	Ollama      OllamaConfig      `yaml:"ollama,omitempty" usage:"Ollama " llm:""`
+	Mistral     MistralConfig     `yaml:"mistral,omitempty" usage:"Mistral " llm:""`
+	Anthropic   AnthropicConfig   `yaml:"anthropic,omitempty" usage:"Anthropic " llm:""`
+	DeepSeek    DeepSeekConfig    `yaml:"deepseek,omitempty" usage:"DeepSeek " llm:""`
 
-	CallOptions CallOptionsConfig     `yaml:"call,omitempty" usage:"LLM-CALL: "`
-	Tools       tools.Config          `yaml:"tool,omitempty" usage:"LLM-TOOLS: "`
+	CallOptions CallOptionsConfig     `yaml:"call,omitempty" usage:"Call option "`
+	Tools       tools.Config          `yaml:"tool,omitempty"`
 	McpServer   map[string]mcp.Server `yaml:"mcpServers,omitempty" usage:"MCP server "`
 }
 

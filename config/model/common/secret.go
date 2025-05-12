@@ -9,8 +9,8 @@ import (
 )
 
 type Secret struct {
-	Plain   string        `yaml:"plain,omitempty" usage:" (plain value)"`
-	Command SecretCommand `yaml:"command,omitempty" usage:" (command): "`
+	Plain   string        `yaml:"plain,omitempty" usage:" plain value"`
+	Command SecretCommand `yaml:"command,omitempty" usage:" [command] "`
 }
 
 type SecretCommand struct {

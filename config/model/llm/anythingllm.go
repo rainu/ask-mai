@@ -12,7 +12,7 @@ type AnythingLLMConfig struct {
 	BaseURL   string                  `yaml:"base-url,omitempty" usage:"Base URL"`
 	Token     common.Secret           `yaml:"token,omitempty" usage:"Token"`
 	Workspace string                  `yaml:"workspace,omitempty" usage:"Workspace"`
-	Thread    AnythingLLMThreadConfig `yaml:"thread,omitempty" usage:"Thread: "`
+	Thread    AnythingLLMThreadConfig `yaml:"thread,omitempty" usage:"Thread "`
 }
 
 type AnythingLLMThreadConfig struct {
