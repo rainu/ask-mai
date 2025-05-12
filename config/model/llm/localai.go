@@ -14,7 +14,7 @@ type LocalAIConfig struct {
 }
 
 func (c *LocalAIConfig) AsOptions() (opts []openai.Option) {
-	if v := c.APIKey.GetOrPanicWithDefaultTimeout(); v != nil {
+	if v := c.APIKey.GetOrPanicWithDefaultTimeout(); v != nil && len(v) > 0 {
 		opts = append(opts, openai.WithToken(string(v)))
 	} else {
 		// the underlying openai implementation wants to have an API key
