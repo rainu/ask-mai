@@ -13,7 +13,7 @@ require (
 	github.com/metoro-io/mcp-golang v0.11.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rainu/go-command-chain v0.4.0
-	github.com/rainu/go-yacl v0.2.0
+	github.com/rainu/go-yacl v0.2.1
 	github.com/shirou/gopsutil/v4 v4.25.2
 	github.com/stretchr/testify v1.10.0
 	github.com/tmc/langchaingo v0.1.13

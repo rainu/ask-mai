@@ -103,7 +103,8 @@ func generateYamlSkeleton(output io.Writer) {
 		model.Profile     `yaml:",inline"`
 		model.DebugConfig `yaml:",inline"`
 
-		Profiles map[string]*model.Profile `yaml:"profile"`
+		ActiveProfile string                    `yaml:"active-profile,omitempty" short:"P" usage:"The active profile name"`
+		Profiles      map[string]*model.Profile `yaml:"profiles"`
 	}{}
 	yacl.NewConfig(skeleton).ApplyDefaults()
 
@@ -115,7 +116,8 @@ func dumpYaml(output io.Writer, c *model.Config) {
 		model.Profile     `yaml:",inline"`
 		model.DebugConfig `yaml:",inline"`
 
-		Profiles map[string]*model.Profile `yaml:"profile"`
+		ActiveProfile string                    `yaml:"active-profile,omitempty" short:"P" usage:"The active profile name"`
+		Profiles      map[string]*model.Profile `yaml:"profiles"`
 	}{}
 	skeleton.Profile = c.MainProfile
 	skeleton.DebugConfig = c.DebugConfig

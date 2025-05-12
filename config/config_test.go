@@ -6,7 +6,6 @@ import (
 	"github.com/rainu/ask-mai/config/model/llm/mcp"
 	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
@@ -190,21 +189,21 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set UI file dialog filter pattern",
-			args: []string{"--ui.file-dialog.filter-pattern=\"*.jpg;*.png\""},
+			args: []string{"--ui.file-dialog.filter-pattern=*.jpg;*.png"},
 			expected: modifiedConfig(func(c *model.Config) {
 				c.MainProfile.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png"}
 			}),
 		},
 		{
 			name: "Set UI file dialog filter display",
-			args: []string{"--ui.file-dialog.filter-display=\"Images (*.jpg, *.png)\"", "--ui.file-dialog.filter-display=\"Documents (*.doc, *.docx)\""},
+			args: []string{"--ui.file-dialog.filter-display=Images (*.jpg, *.png)", "--ui.file-dialog.filter-display=Documents (*.doc, *.docx)"},
 			expected: modifiedConfig(func(c *model.Config) {
 				c.MainProfile.UI.FileDialog.FilterDisplay = []string{"Images (*.jpg, *.png)", "Documents (*.doc, *.docx)"}
 			}),
 		},
 		{
 			name: "Set UI file dialog filter pattern",
-			args: []string{"--ui.file-dialog.filter-pattern=\"*.jpg;*.png\"", "--ui.file-dialog.filter-pattern=\"*.doc;*.docx\""},
+			args: []string{"--ui.file-dialog.filter-pattern=*.jpg;*.png", "--ui.file-dialog.filter-pattern=*.doc;*.docx"},
 			expected: modifiedConfig(func(c *model.Config) {
 				c.MainProfile.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png", "*.doc;*.docx"}
 			}),
@@ -554,7 +553,7 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set environment variable for UI file dialog filter pattern",
-			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.filter-pattern=\"*.jpg;*.png\""},
+			env:  []string{EnvironmentPrefix + "=--ui.file-dialog.filter-pattern=*.jpg;*.png"},
 			expected: modifiedConfig(func(c *model.Config) {
 				c.MainProfile.UI.FileDialog.FilterPattern = []string{"*.jpg;*.png"}
 			}),
