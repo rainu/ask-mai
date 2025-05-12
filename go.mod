@@ -5,7 +5,6 @@ go 1.24.2
 toolchain go1.24.3
 
 require (
-	dario.cat/mergo v1.0.0
 	github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17
 	github.com/gabriel-vasile/mimetype v1.4.8
 	github.com/goccy/go-yaml v1.17.1

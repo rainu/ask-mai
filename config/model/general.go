@@ -1,7 +1,6 @@
 package model
 
 import (
-	"dario.cat/mergo"
 	"fmt"
 )
 
@@ -32,12 +31,6 @@ func (c *Config) Validate() error {
 	}
 
 	for profileName, profile := range c.Profiles {
-		// merge mainProfile into current profile
-		err := mergo.Merge(profile, &c.MainProfile, mergo.WithOverrideEmptySlice, mergo.WithoutDereference)
-		if err != nil {
-			return fmt.Errorf("Error merging profile '%s': %w", profileName, err)
-		}
-
 		if ve := profile.Validate(); ve != nil {
 			return fmt.Errorf("Error in profile '%s': %w", profileName, ve)
 		}

@@ -719,33 +719,3 @@ func TestConfig_Parse(t *testing.T) {
 		})
 	}
 }
-
-func TestConfig_GetProfile(t *testing.T) {
-	toTest := &model.Config{}
-	yacl.NewConfig(toTest).ApplyDefaults()
-
-	toTest.MainProfile.UI.Theme = "dark"
-	toTest.MainProfile.UI.Stream = yacl.P(true)
-	toTest.MainProfile.LLM.Backend = "openai"
-	toTest.MainProfile.LLM.OpenAI.APIKey = common.Secret{Plain: "OPENAI_API_KEY"}
-	toTest.Profiles = map[string]*model.Profile{
-		"light": {
-			UI: model.UIConfig{
-				Theme:  "light",
-				Stream: yacl.P(false),
-			},
-		},
-	}
-	require.NoError(t, toTest.Validate())
-
-	c := toTest.GetActiveProfile()
-	assert.Equal(t, toTest.MainProfile, *c)
-
-	toTest.ActiveProfile = "light"
-	c = toTest.GetActiveProfile()
-
-	assert.Equal(t, "light", c.UI.Theme)
-	assert.False(t, *c.UI.Stream)
-	assert.Equal(t, "openai", c.LLM.Backend)
-	assert.Equal(t, "OPENAI_API_KEY", c.LLM.OpenAI.APIKey.Plain)
-}
