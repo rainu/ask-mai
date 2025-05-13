@@ -26,6 +26,13 @@ func Parse(arguments []string, env []string) *model.Config {
 	handleErr(func() error { return config.ParseArguments(arguments...) })
 	checkHelp(c, config)
 
+	if &c.MainProfile != c.GetActiveProfile() {
+		// apply arguments to the active profile too
+		config = yacl.NewConfig(c.GetActiveProfile(), yacl.WithPrefixEnv(EnvironmentPrefix))
+		handleErr(func() error { return config.ParseEnvironment(env...) })
+		handleErr(func() error { return config.ParseArguments(arguments...) })
+	}
+
 	c.MainProfile.Printer.Targets = nil
 	for _, target := range c.MainProfile.Printer.TargetsRaw {
 		target = strings.TrimSpace(target)

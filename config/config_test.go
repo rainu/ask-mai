@@ -708,6 +708,23 @@ func TestConfig_Parse(t *testing.T) {
 				}
 			}),
 		},
+		{
+			name: "Prompt with another active-profile",
+			args: []string{"--profiles.test.description=test", "-P", "test", "-p", "What is the answer?"},
+			expected: modifiedConfig(func(c *model.Config) {
+				c.ActiveProfile = "test"
+				c.MainProfile.UI.Prompt.InitValue = "What is the answer?"
+
+				testProfile := &model.Profile{}
+				yacl.NewConfig(testProfile).ApplyDefaults()
+				testProfile.Meta.Description = "test"
+				testProfile.UI.Prompt.InitValue = "What is the answer?"
+
+				c.Profiles = map[string]*model.Profile{
+					"test": testProfile,
+				}
+			}),
+		},
 	}
 
 	for _, tt := range tests {
