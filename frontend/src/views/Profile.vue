@@ -14,7 +14,7 @@
 			<div :style="{ height: `${appbarHeight}px` }"></div>
 		</template>
 
-		<v-container>
+		<v-card class="ma-2">
 			<v-list lines="three" density="compact" activatable class="pa-0">
 				<v-list-item v-for="p of profiles" :key="p.name" :active="p.name === activeProfileName" @click="onChooseProfile(p.name)">
 					<template v-slot:prepend>
@@ -33,7 +33,7 @@
 					</template>
 				</v-list-item>
 			</v-list>
-		</v-container>
+		</v-card>
 
 		<!-- footer -->
 		<template v-if="!profile.UI.Prompt.PinTop">

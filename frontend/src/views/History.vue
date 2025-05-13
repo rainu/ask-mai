@@ -14,25 +14,23 @@
 			<div :style="{ height: `${appbarHeight}px` }"></div>
 		</template>
 
-		<v-container>
-			<v-row dense>
-				<v-col cols="12" v-for="entry in history" :key="entry.m.t">
-					<HistoryEntry :model="entry" @onImport="onImport" />
-				</v-col>
+		<v-row dense class="ma-2">
+			<v-col cols="12" v-for="entry in history" :key="entry.m.t">
+				<HistoryEntry :model="entry" @onImport="onImport" />
+			</v-col>
 
-				<v-col cols="12" v-if="!queried && history.length < total">
-					<v-row dense>
-						<v-col cols="3" v-for="l of [25, 50, 75, 100]">
-							<v-btn block @click="onLoadNext(l)">
-								<v-icon icon="mdi-dots-horizontal"></v-icon>
-								&nbsp;
-								{{l}}
-							</v-btn>
-						</v-col>
-					</v-row>
-				</v-col>
-			</v-row>
-		</v-container>
+			<v-col cols="12" v-if="!queried && history.length < total">
+				<v-row dense>
+					<v-col cols="3" v-for="l of [25, 50, 75, 100]">
+						<v-btn block @click="onLoadNext(l)">
+							<v-icon icon="mdi-dots-horizontal"></v-icon>
+							&nbsp;
+							{{l}}
+						</v-btn>
+					</v-col>
+				</v-row>
+			</v-col>
+		</v-row>
 
 		<!-- footer -->
 		<template v-if="!profile.UI.Prompt.PinTop">
