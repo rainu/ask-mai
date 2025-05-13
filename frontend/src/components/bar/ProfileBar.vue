@@ -10,6 +10,12 @@
 
 		<!-- text-field is only here for height -->
 		<v-text-field hide-details disabled></v-text-field>
+
+		<template v-slot:option-buttons>
+			<v-btn @click="onNavigateChat">
+				<v-icon size="x-large">mdi-chat-processing-outline</v-icon>
+			</v-btn>
+		</template>
 	</GeneralBar>
 </template>
 
@@ -21,6 +27,11 @@ export default defineComponent({
 	name: 'ProfileBar',
 	components: { GeneralBar },
 	emits: ['onSave'],
+	methods: {
+		onNavigateChat() {
+			this.$router.push({ name: 'Chat' })
+		},
+	}
 })
 </script>
 
