@@ -3,7 +3,8 @@ package llm
 import (
 	"fmt"
 	"github.com/rainu/ask-mai/config/model/common"
-	"github.com/rainu/ask-mai/llms"
+	llmCommon "github.com/rainu/ask-mai/llms/common"
+	"github.com/rainu/ask-mai/llms/localai"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
@@ -43,6 +44,6 @@ func (c *LocalAIConfig) Validate() error {
 	return nil
 }
 
-func (c *LocalAIConfig) BuildLLM() (llms.Model, error) {
-	return llms.NewLocalAI(c.AsOptions())
+func (c *LocalAIConfig) BuildLLM() (llmCommon.Model, error) {
+	return localai.New(c.AsOptions())
 }

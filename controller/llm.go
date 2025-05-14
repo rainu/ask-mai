@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gabriel-vasile/mimetype"
+	"github.com/rainu/ask-mai/llms/common"
 	"github.com/rainu/go-yacl"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -129,7 +130,17 @@ func (m LLMMessages) ToMessageContent() ([]llms.MessageContent, error) {
 	return result, nil
 }
 
-func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
+type llmAskResponse struct {
+	Result LLMAskResult
+	Error  error
+}
+
+type LLMAskResult struct {
+	Content     string
+	Consumption common.ConsumptionSummary
+}
+
+func (c *Controller) LLMAsk(args LLMAskArgs) (result LLMAskResult, err error) {
 	defer func() {
 		c.currentConversation = args.History
 		if err == nil {
@@ -137,7 +148,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 				Role: string(llms.ChatMessageTypeAI),
 				ContentParts: []LLMMessageContentPart{{
 					Type:    LLMMessageContentPartTypeText,
-					Content: result,
+					Content: result.Content,
 				}},
 				Created: time.Now().Unix(),
 			})
@@ -146,19 +157,19 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 	defer func() {
 		c.aiModelMutex.Write(func() {
 			// save the result for later usage (wait)
-			c.lastAskResult = llmAskResult{
-				Content: result,
-				Error:   err,
+			c.lastAskResponse = llmAskResponse{
+				Result: result,
+				Error:  err,
 			}
 		})
 	}()
 
 	if len(args.History) == 0 {
-		return "", fmt.Errorf("empty history provided")
+		return LLMAskResult{}, fmt.Errorf("empty history provided")
 	}
 	err = c.LLMInterrupt()
 	if err != nil {
-		return "", fmt.Errorf("error interrupting previous LLM: %w", err)
+		return LLMAskResult{}, fmt.Errorf("error interrupting previous LLM: %w", err)
 	}
 
 	c.aiModelMutex.Write(func() {
@@ -174,7 +185,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 
 	opts, err := c.getProfile().LLM.AsOptions(c.aiModelCtx)
 	if err != nil {
-		return "", fmt.Errorf("error creating options: %w", err)
+		return LLMAskResult{}, fmt.Errorf("error creating options: %w", err)
 	}
 
 	if yacl.D(c.getProfile().UI.Stream) {
@@ -182,25 +193,28 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		opts = append(opts, llms.WithStreamingFunc(c.streamingFunc))
 	}
 
+	consumption := c.aiModel.ConsumptionOf(nil)
 	var resp *llms.ContentResponse
 	for {
 		content, err := args.History.ToMessageContent()
 		if err != nil {
-			return "", fmt.Errorf("error converting history to message content: %w", err)
+			return LLMAskResult{}, fmt.Errorf("error converting history to message content: %w", err)
 		}
 
 		resp, err = c.aiModel.GenerateContent(c.aiModelCtx, content, opts...)
 		if err != nil {
-			return "", fmt.Errorf("error creating completion: %w", err)
+			return LLMAskResult{}, fmt.Errorf("error creating completion: %w", err)
 		}
 
 		if len(resp.Choices) == 0 {
-			return "", fmt.Errorf("no completion choices returned")
+			return LLMAskResult{}, fmt.Errorf("no completion choices returned")
 		}
+
+		consumption.Add(c.aiModel.ConsumptionOf(resp))
 
 		tcMessage, err := c.handleToolCall(resp)
 		if err != nil {
-			return "", fmt.Errorf("error handling tool call: %w", err)
+			return LLMAskResult{}, fmt.Errorf("error handling tool call: %w", err)
 		}
 		if len(tcMessage) > 0 {
 			args.History = append(args.History, tcMessage...)
@@ -210,8 +224,9 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 		}
 	}
 
-	result = resp.Choices[0].Content
-	if result != "" {
+	result.Content = resp.Choices[0].Content
+	result.Consumption = consumption.Summary()
+	if result.Content != "" {
 		question := ""
 		for i := len(args.History) - 1; i >= 0; i-- {
 			if args.History[i].Role == string(llms.ChatMessageTypeHuman) {
@@ -220,7 +235,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result string, err error) {
 			}
 		}
 
-		c.printer.Print(question, result)
+		c.printer.Print(question, result.Content)
 	}
 
 	return result, nil
@@ -241,7 +256,7 @@ func (c *Controller) streamingFunc(ctx context.Context, chunk []byte) error {
 	return nil
 }
 
-func (c *Controller) LLMWait() (result string, err error) {
+func (c *Controller) LLMWait() (result LLMAskResult, err error) {
 	var waitChan <-chan struct{}
 
 	c.aiModelMutex.Read(func() {
@@ -256,8 +271,8 @@ func (c *Controller) LLMWait() (result string, err error) {
 	}
 
 	c.aiModelMutex.Read(func() {
-		result = c.lastAskResult.Content
-		err = c.lastAskResult.Error
+		result = c.lastAskResponse.Result
+		err = c.lastAskResponse.Error
 	})
 
 	return

@@ -3,7 +3,8 @@ package llm
 import (
 	"fmt"
 	"github.com/rainu/ask-mai/config/model/common"
-	"github.com/rainu/ask-mai/llms"
+	llmCommon "github.com/rainu/ask-mai/llms/common"
+	"github.com/rainu/ask-mai/llms/deepseek"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
@@ -46,6 +47,6 @@ func (c *DeepSeekConfig) Validate() error {
 	return nil
 }
 
-func (c *DeepSeekConfig) BuildLLM() (llms.Model, error) {
-	return llms.NewDeepSeek(c.AsOptions())
+func (c *DeepSeekConfig) BuildLLM() (llmCommon.Model, error) {
+	return deepseek.New(c.AsOptions())
 }

@@ -317,6 +317,20 @@ export namespace controller {
 		    return a;
 		}
 	}
+	export class LLMAskResult {
+	    Content: string;
+	    Consumption: Record<string, number>;
+	
+	    static createFrom(source: any = {}) {
+	        return new LLMAskResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Content = source["Content"];
+	        this.Consumption = source["Consumption"];
+	    }
+	}
 	
 	
 	

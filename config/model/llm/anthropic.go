@@ -3,7 +3,8 @@ package llm
 import (
 	"fmt"
 	"github.com/rainu/ask-mai/config/model/common"
-	"github.com/rainu/ask-mai/llms"
+	iAnthropic "github.com/rainu/ask-mai/llms/anthropic"
+	llmCommon "github.com/rainu/ask-mai/llms/common"
 	"github.com/tmc/langchaingo/llms/anthropic"
 )
 
@@ -44,6 +45,6 @@ func (c *AnthropicConfig) Validate() error {
 	return nil
 }
 
-func (c *AnthropicConfig) BuildLLM() (llms.Model, error) {
-	return llms.NewAnthropic(c.AsOptions())
+func (c *AnthropicConfig) BuildLLM() (llmCommon.Model, error) {
+	return iAnthropic.New(c.AsOptions())
 }

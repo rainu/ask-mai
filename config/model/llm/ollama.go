@@ -2,7 +2,8 @@ package llm
 
 import (
 	"fmt"
-	"github.com/rainu/ask-mai/llms"
+	"github.com/rainu/ask-mai/llms/common"
+	iOllama "github.com/rainu/ask-mai/llms/ollama"
 	"github.com/tmc/langchaingo/llms/ollama"
 )
 
@@ -33,6 +34,6 @@ func (c *OllamaConfig) Validate() error {
 	return nil
 }
 
-func (c *OllamaConfig) BuildLLM() (llms.Model, error) {
-	return llms.NewOllama(c.AsOptions())
+func (c *OllamaConfig) BuildLLM() (common.Model, error) {
+	return iOllama.New(c.AsOptions())
 }

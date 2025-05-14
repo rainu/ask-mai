@@ -1,4 +1,4 @@
-package llms
+package anythingllm
 
 import (
 	"bufio"
@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rainu/ask-mai/llms/common"
 	"github.com/tmc/langchaingo/llms"
 	"net/http"
 	"strings"
@@ -86,7 +87,7 @@ type threadResponse struct {
 	Message *string `json:"message"`
 }
 
-func NewAnythingLLM(baseURL, token, workspace, threadName string, deleteThread bool) (Model, error) {
+func New(baseURL, token, workspace, threadName string, deleteThread bool) (common.Model, error) {
 	result := &AnythingLLM{
 		client: &http.Client{},
 
@@ -145,9 +146,9 @@ func (a *AnythingLLM) GenerateContent(ctx context.Context, messages []llms.Messa
 			{
 				Content: result.TextResponse,
 				GenerationInfo: map[string]any{
-					"id":      result.ID,
-					"chatId":  result.ChatId,
-					"metrics": result.Metrics,
+					"id":                  result.ID,
+					"chatId":              result.ChatId,
+					generalInfoKeyMetrics: result.Metrics,
 				},
 			},
 		},

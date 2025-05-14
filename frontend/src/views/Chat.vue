@@ -62,6 +62,7 @@
 						<v-col cols="12" :class="e.Entry.Hidden ? 'opacity-30' : '' ">
 							<ChatMessage
 								:message="e.Entry.Message.ContentParts"
+								:consumption="e.Entry.Consumption"
 								:role="e.Entry.Message.Role"
 								:date="e.Entry.Message.Created"
 								@toggle-visibility="onToggle(e.Entry)"
@@ -72,6 +73,13 @@
 				</template>
 				<template v-if="outputStream[0].Content">
 					<ChatMessage :message="outputStream" :role="outputStreamRole" hide-edit />
+				</template>
+
+				<!-- total consumption -->
+				<template v-if="totalChatConsumption">
+					<v-sheet>
+						<Consumption :model="totalChatConsumption" />
+					</v-sheet>
 				</template>
 
 				<v-alert v-if="error" type="error" :title="error.title" :text="error.message" />
@@ -118,8 +126,9 @@ import LLMAskArgs = controller.LLMAskArgs
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessage = controller.LLMMessage
 import { mapActions, mapState } from 'pinia'
-import { HistoryEntry, useHistoryStore } from '../store/history.ts'
+import { HistoryEntry, HistoryEntryConsumption, useHistoryStore } from '../store/history.ts'
 import { useConfigStore } from '../store/config.ts'
+import Consumption from '../components/Consumption.vue'
 
 type State = {
 	input: ChatInputType
@@ -135,7 +144,7 @@ type HistoryEntryOrDate = {
 
 export default {
 	name: 'Chat',
-	components: { UserScrollDetector, ZoomDetector, ChatBar, ChatMessage },
+	components: { Consumption, UserScrollDetector, ZoomDetector, ChatBar, ChatMessage },
 	data() {
 		return {
 			appbarHeight: 0,
@@ -187,6 +196,28 @@ export default {
 				}
 
 				result.push({ Entry: historyEntry, EntryIdx: index })
+			}
+
+			return result
+		},
+		totalChatConsumption(): HistoryEntryConsumption | null {
+			let result = {} as HistoryEntryConsumption
+
+			for (let msg of this.chatHistory) {
+				if(msg.Consumption === undefined){
+					continue
+				}
+
+				for (let key in msg.Consumption) {
+					if (!result[key]) {
+						result[key] = 0
+					}
+					result[key] += msg.Consumption[key]
+				}
+			}
+
+			if (Object.keys(result).length === 0) {
+				return null
 			}
 
 			return result
@@ -262,7 +293,7 @@ export default {
 				Created: Math.floor(new Date().getTime() / 1000),
 			})
 		},
-		async processLLM(input: ChatInputType, processFn: () => Promise<string>) {
+		async processLLM(input: ChatInputType, processFn: () => Promise<controller.LLMAskResult>) {
 			try {
 				this.progress = true
 				this.error = null
@@ -291,9 +322,10 @@ export default {
 				this.pushHistory({
 					Interrupted: false,
 					Hidden: false,
+					Consumption: output.Consumption,
 					Message: LLMMessage.createFrom({
 						Role: Role.Bot,
-						ContentParts: [LLMMessageContentPart.createFrom({ Type: ContentType.Text, Content: output })],
+						ContentParts: [LLMMessageContentPart.createFrom({ Type: ContentType.Text, Content: output.Content })],
 						Created: Math.floor(new Date().getTime() / 1000),
 					}),
 				})

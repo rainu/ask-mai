@@ -3,7 +3,8 @@ package llm
 import (
 	"fmt"
 	"github.com/rainu/ask-mai/config/model/common"
-	"github.com/rainu/ask-mai/llms"
+	llmCommon "github.com/rainu/ask-mai/llms/common"
+	iMistral "github.com/rainu/ask-mai/llms/mistral"
 	"github.com/tmc/langchaingo/llms/mistral"
 )
 
@@ -35,6 +36,6 @@ func (c *MistralConfig) Validate() error {
 	return nil
 }
 
-func (c *MistralConfig) BuildLLM() (llms.Model, error) {
-	return llms.NewMistral(c.AsOptions())
+func (c *MistralConfig) BuildLLM() (llmCommon.Model, error) {
+	return iMistral.New(c.AsOptions())
 }

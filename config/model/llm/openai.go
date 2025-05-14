@@ -3,7 +3,8 @@ package llm
 import (
 	"fmt"
 	"github.com/rainu/ask-mai/config/model/common"
-	"github.com/rainu/ask-mai/llms"
+	llmCommon "github.com/rainu/ask-mai/llms/common"
+	iOpenai "github.com/rainu/ask-mai/llms/openai"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
@@ -68,6 +69,6 @@ func (c *OpenAIConfig) Validate() error {
 	return nil
 }
 
-func (c *OpenAIConfig) BuildLLM() (llms.Model, error) {
-	return llms.NewOpenAI(c.AsOptions())
+func (c *OpenAIConfig) BuildLLM() (llmCommon.Model, error) {
+	return iOpenai.New(c.AsOptions())
 }

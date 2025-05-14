@@ -19,10 +19,8 @@
 				</template>
 
 				<small class="d-flex justify-space-between align-center">
-					<span class="opacity-50 pr-2">{{createdAt}}</span>
-					<ChatMessageActions reverse
-															@toggleVisibility="onToggleVisibility"
-															:hide-edit="hideEdit" @on-edit="onEdit" />
+					<span class="opacity-50 pr-2">{{ createdAt }}</span>
+					<ChatMessageActions reverse @toggleVisibility="onToggleVisibility" :hide-edit="hideEdit" @on-edit="onEdit" />
 				</small>
 			</v-sheet>
 		</v-row>
@@ -40,12 +38,20 @@
 
 				<BuiltinToolCallStats :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getStats')" />
 
-				<BuiltinToolCallFileCreation :tc="tc" v-else-if="tc.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))" />
+				<BuiltinToolCallFileCreation
+					:tc="tc"
+					v-else-if="tc.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))"
+				/>
 				<BuiltinToolCallFileAppending :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('appendFile')" />
 				<BuiltinToolCallFileReading :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('readTextFile')" />
 				<BuiltinToolCallFileDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteFile')" />
 
-				<BuiltinToolCallDirectoryCreation :tc="tc" v-else-if=" tc.BuiltIn && (tc.Function.endsWith('createDirectory') || tc.Function.endsWith('createTempDirectory'))" />
+				<BuiltinToolCallDirectoryCreation
+					:tc="tc"
+					v-else-if="
+						tc.BuiltIn && (tc.Function.endsWith('createDirectory') || tc.Function.endsWith('createTempDirectory'))
+					"
+				/>
 				<BuiltinToolCallDirectoryDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteDirectory')" />
 
 				<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
@@ -57,10 +63,8 @@
 				<GeneralToolCall :tc="tc" v-else />
 
 				<small class="d-flex justify-space-between px-2 pb-2 align-center">
-					<ChatMessageActions
-						@toggleVisibility="onToggleVisibility"
-						hide-edit />
-					<span class="opacity-50 pl-2">{{createdAt}}</span>
+					<ChatMessageActions @toggleVisibility="onToggleVisibility" hide-edit />
+					<span class="opacity-50 pl-2">{{ createdAt }}</span>
 				</small>
 			</v-sheet>
 		</v-row>
@@ -70,9 +74,7 @@
 			<v-col>
 				<v-sheet class="pa-2" rounded>
 					<vue-markdown :source="textMessage" :options="options" />
-					<ChatMessageActions
-						@toggleVisibility="onToggleVisibility"
-						:hide-edit="hideEdit" @onEdit="onEdit" />
+					<ChatMessageActions @toggleVisibility="onToggleVisibility" :hide-edit="hideEdit" @onEdit="onEdit" />
 				</v-sheet>
 			</v-col>
 		</v-row>
@@ -82,11 +84,17 @@
 			<v-sheet color="grey-lighten-2" class="pa-2" rounded>
 				<vue-markdown :source="textMessage" :options="options" />
 				<small class="d-flex justify-space-between align-center">
-					<ChatMessageActions
-						@toggleVisibility="onToggleVisibility"
-						:hide-edit="hideEdit" @on-edit="onEdit" />
-					<span class="opacity-50">{{createdAt}}</span>
+					<ChatMessageActions @toggleVisibility="onToggleVisibility" :hide-edit="hideEdit" @on-edit="onEdit" />
+					<template v-if="consumption">
+						<v-btn size="x-small" variant="tonal" @click="showConsumption = !showConsumption">
+							<v-icon>mdi-chart-pie</v-icon>
+						</v-btn>
+					</template>
+					<span class="opacity-50">{{ createdAt }}</span>
 				</small>
+				<template v-if="consumption">
+					<Consumption :model="consumption" class="mt-2" v-show="showConsumption"/>
+				</template>
 			</v-sheet>
 		</v-row>
 	</template>
@@ -126,6 +134,8 @@ import ChatMessageActions from './ChatMessageActions.vue'
 import { mapState } from 'pinia'
 import { useConfigStore } from '../store/config.ts'
 import McpToolCall from './toolcall/McpToolCall.vue'
+import { HistoryEntryConsumption } from '../store/history.ts'
+import Consumption from './Consumption.vue'
 
 export enum Role {
 	System = 'system',
@@ -143,6 +153,7 @@ export enum ContentType {
 export default defineComponent({
 	name: 'ChatMessage',
 	components: {
+		Consumption,
 		McpToolCall,
 		ChatMessageActions,
 		BuiltinToolCallHttpCall,
@@ -169,6 +180,10 @@ export default defineComponent({
 			type: Array as PropType<LLMMessageContentPart[]>,
 			required: true,
 		},
+		consumption: {
+			type: Object as () => HistoryEntryConsumption,
+			required: false,
+		},
 		role: {
 			type: String,
 			required: true,
@@ -181,7 +196,7 @@ export default defineComponent({
 			type: Boolean,
 			required: false,
 			default: false,
-		}
+		},
 	},
 	data() {
 		return {
@@ -197,6 +212,7 @@ export default defineComponent({
 				},
 			} as MarkdownItOptions,
 			attachmentsMeta: [] as AssetMeta[],
+			showConsumption: false,
 		}
 	},
 	computed: {
@@ -226,11 +242,11 @@ export default defineComponent({
 			return (this.profile.UI.Window.InitialWidth.Value ?? 0) * 0.9
 		},
 		createdAt() {
-			if(!this.date) return null
+			if (!this.date) return null
 
 			const d = new Date(this.date * 1000)
 			return d.toLocaleTimeString()
-		}
+		},
 	},
 	methods: {
 		enrichCopyButtons() {
@@ -275,9 +291,9 @@ export default defineComponent({
 		onEdit() {
 			this.$emit('onEdit')
 		},
-		onToggleVisibility(){
+		onToggleVisibility() {
 			this.$emit('toggleVisibility')
-		}
+		},
 	},
 	watch: {
 		textMessage() {

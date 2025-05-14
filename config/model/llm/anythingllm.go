@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/rainu/ask-mai/config/model/common"
 	"github.com/rainu/ask-mai/expression"
-	"github.com/rainu/ask-mai/llms"
+	"github.com/rainu/ask-mai/llms/anythingllm"
+	llmCommon "github.com/rainu/ask-mai/llms/common"
 	"github.com/rainu/go-yacl"
 )
 
@@ -46,13 +47,13 @@ func (c *AnythingLLMConfig) Validate() error {
 	return nil
 }
 
-func (c *AnythingLLMConfig) BuildLLM() (llms.Model, error) {
+func (c *AnythingLLMConfig) BuildLLM() (llmCommon.Model, error) {
 	tn, err := expression.Run(nil, *c.Thread.Name.Expression, nil).AsString()
 	if err != nil {
 		return nil, fmt.Errorf("error calculating thread name: %w", err)
 	}
 
-	return llms.NewAnythingLLM(
+	return anythingllm.New(
 		c.BaseURL,
 		string(c.Token.GetOrPanicWithDefaultTimeout()),
 		c.Workspace,

@@ -1,8 +1,9 @@
-package llms
+package ollama
 
 import (
 	"context"
 	"fmt"
+	"github.com/rainu/ask-mai/llms/common"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/ollama"
 )
@@ -11,7 +12,7 @@ type Ollama struct {
 	client *ollama.LLM
 }
 
-func NewOllama(opts []ollama.Option) (Model, error) {
+func New(opts []ollama.Option) (common.Model, error) {
 	result := &Ollama{}
 
 	var err error

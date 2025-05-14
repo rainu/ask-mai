@@ -1,8 +1,9 @@
-package llms
+package anthropic
 
 import (
 	"context"
 	"fmt"
+	"github.com/rainu/ask-mai/llms/common"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/anthropic"
 )
@@ -11,7 +12,7 @@ type Anthropic struct {
 	client *anthropic.LLM
 }
 
-func NewAnthropic(opts []anthropic.Option) (Model, error) {
+func New(opts []anthropic.Option) (common.Model, error) {
 	result := &Anthropic{}
 
 	var err error
@@ -23,12 +24,12 @@ func NewAnthropic(opts []anthropic.Option) (Model, error) {
 	return result, nil
 }
 
-func (o *Anthropic) Call(ctx context.Context, prompt string, options ...llms.CallOption) (string, error) {
-	return o.client.Call(ctx, prompt, options...)
+func (a *Anthropic) Call(ctx context.Context, prompt string, options ...llms.CallOption) (string, error) {
+	return a.client.Call(ctx, prompt, options...)
 }
 
-func (o *Anthropic) GenerateContent(ctx context.Context, messages []llms.MessageContent, options ...llms.CallOption) (*llms.ContentResponse, error) {
-	resp, err := o.client.GenerateContent(ctx, messages, options...)
+func (a *Anthropic) GenerateContent(ctx context.Context, messages []llms.MessageContent, options ...llms.CallOption) (*llms.ContentResponse, error) {
+	resp, err := a.client.GenerateContent(ctx, messages, options...)
 	if err != nil {
 		return resp, err
 	}
@@ -52,6 +53,6 @@ func (o *Anthropic) GenerateContent(ctx context.Context, messages []llms.Message
 	return resp, err
 }
 
-func (o *Anthropic) Close() error {
+func (a *Anthropic) Close() error {
 	return nil
 }

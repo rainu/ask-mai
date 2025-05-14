@@ -31,13 +31,13 @@ export function IsAppMounted():Promise<boolean>;
 
 export function LLMApproveToolCall(arg1:string):Promise<void>;
 
-export function LLMAsk(arg1:controller.LLMAskArgs):Promise<string>;
+export function LLMAsk(arg1:controller.LLMAskArgs):Promise<controller.LLMAskResult>;
 
 export function LLMInterrupt():Promise<void>;
 
 export function LLMRejectToolCall(arg1:string):Promise<void>;
 
-export function LLMWait():Promise<string>;
+export function LLMWait():Promise<controller.LLMAskResult>;
 
 export function ListMcpTools():Promise<Record<string, Array<mcp_golang.ToolRetType>>>;
 

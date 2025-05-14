@@ -11,8 +11,11 @@ import { useConfigStore } from './config.ts'
 export type HistoryEntry = {
 	Interrupted: boolean
 	Hidden: boolean
+	Consumption?: HistoryEntryConsumption
 	Message: controller.LLMMessage
 }
+
+export type HistoryEntryConsumption = Record<string, number>
 
 const buildSystemMessage = (): HistoryEntry => ({
 	Interrupted: false,

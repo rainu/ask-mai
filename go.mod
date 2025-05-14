@@ -7,6 +7,7 @@ toolchain go1.24.3
 require (
 	github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17
 	github.com/gabriel-vasile/mimetype v1.4.8
+	github.com/gage-technologies/mistral-go v1.1.0
 	github.com/gen2brain/beeep v0.0.0-20240516210008-9c006672e7f4
 	github.com/goccy/go-yaml v1.17.1
 	github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
@@ -33,7 +34,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.11.4 // indirect
 	github.com/ebitengine/purego v0.8.2 // indirect
-	github.com/gage-technologies/mistral-go v1.1.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.10.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect

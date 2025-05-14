@@ -1,4 +1,4 @@
-package llms
+package copilot
 
 import cmdchain "github.com/rainu/go-command-chain"
 

@@ -1,8 +1,9 @@
-package llms
+package openai
 
 import (
 	"context"
 	"fmt"
+	"github.com/rainu/ask-mai/llms/common"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 )
@@ -11,7 +12,7 @@ type OpenAI struct {
 	client *openai.LLM
 }
 
-func NewOpenAI(opts []openai.Option) (Model, error) {
+func New(opts []openai.Option) (common.Model, error) {
 	result := &OpenAI{}
 
 	var err error

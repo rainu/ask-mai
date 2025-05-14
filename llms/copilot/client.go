@@ -1,9 +1,10 @@
-package llms
+package copilot
 
 import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/rainu/ask-mai/llms/common"
 	cmdchain "github.com/rainu/go-command-chain"
 	"github.com/tmc/langchaingo/llms"
 	"io"
@@ -25,7 +26,7 @@ type interaction struct {
 	Output string
 }
 
-func NewCopilot() (Model, error) {
+func New() (common.Model, error) {
 	return &Copilot{}, nil
 }
 

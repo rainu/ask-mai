@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/rainu/ask-mai/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/config/model/llm/tools"
-	"github.com/rainu/ask-mai/llms"
+	"github.com/rainu/ask-mai/llms/common"
+	"github.com/rainu/ask-mai/llms/copilot"
 	langLLMS "github.com/tmc/langchaingo/llms"
 	"reflect"
 	"slices"
@@ -13,7 +14,7 @@ import (
 )
 
 type llmConfig interface {
-	BuildLLM() (llms.Model, error)
+	BuildLLM() (common.Model, error)
 	Validate() error
 }
 
@@ -60,7 +61,7 @@ func (c *LLMConfig) listBackends() (result []string) {
 
 func (c *LLMConfig) SetDefaults() {
 	if c.Backend == "" {
-		if llms.IsCopilotInstalled() {
+		if copilot.IsCopilotInstalled() {
 			c.Backend = "copilot"
 		}
 	}
@@ -97,7 +98,7 @@ func (c *LLMConfig) Validate() error {
 	return nil
 }
 
-func (c *LLMConfig) BuildLLM() (llms.Model, error) {
+func (c *LLMConfig) BuildLLM() (common.Model, error) {
 	b := c.getBackend()
 	if b == nil {
 		return nil, fmt.Errorf("unknown backend: %s", c.Backend)
