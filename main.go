@@ -8,6 +8,7 @@ import (
 	"github.com/rainu/ask-mai/config/model"
 	"github.com/rainu/ask-mai/controller"
 	"github.com/rainu/ask-mai/health"
+	"github.com/rainu/ask-mai/notification"
 	cmdchain "github.com/rainu/go-command-chain"
 	"github.com/wailsapp/wails/v2"
 	"log/slog"
@@ -37,6 +38,7 @@ func init() {
 		os.Stdout, _ = os.OpenFile("ask-mai.out.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 		os.Stderr, _ = os.OpenFile("ask-mai.err.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 	}
+	notification.SetNotificationIcon(icon)
 }
 
 // this function will be set by debug.go:init() - if "debug" flag is available
@@ -85,6 +87,8 @@ func main() {
 		health.ObserveProcess(oCtx, 98.0, func() {
 			if ctrl.IsAppMounted() {
 				slog.Warn("Restarting application because of high CPU usage: Seems like a freeze.")
+				notification.Notify("ask-mai", "Restarting application!")
+
 				ctrl.TriggerRestart()
 				oCancel() //prevent multiple restarts
 			}
