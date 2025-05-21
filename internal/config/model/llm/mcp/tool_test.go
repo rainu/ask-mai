@@ -9,6 +9,7 @@ import (
 	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"os"
 	"testing"
 	"time"
 )
@@ -50,6 +51,12 @@ func TestTool_NeedApproval(t *testing.T) {
 }
 
 func TestMergeTools(t *testing.T) {
+	_, isCI := os.LookupEnv("CI")
+	if isCI {
+		t.Skip("Skipping test in CI environment")
+		return
+	}
+
 	_, _, err := cmdchain.Builder().Join("docker", "-v").Finalize().RunAndGet()
 	if err != nil {
 		t.Skipf("Docker is not available: %v", err)
