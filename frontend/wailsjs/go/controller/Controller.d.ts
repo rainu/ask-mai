@@ -3,9 +3,8 @@
 import {controller} from '../models';
 import {model} from '../models';
 import {history} from '../models';
-import {mcp_golang} from '../models';
-import {tools} from '../models';
 import {mcp} from '../models';
+import {tools} from '../models';
 
 export function AppMounted():Promise<void>;
 
@@ -39,7 +38,7 @@ export function LLMRejectToolCall(arg1:string):Promise<void>;
 
 export function LLMWait():Promise<controller.LLMAskResult>;
 
-export function ListMcpTools():Promise<Record<string, Array<mcp_golang.ToolRetType>>>;
+export function ListMcpTools():Promise<Record<string, Array<mcp.Tool>>>;
 
 export function Log(arg1:string,arg2:string):Promise<void>;
 

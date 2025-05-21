@@ -110,6 +110,7 @@ export namespace controller {
 	export class ApplicationConfig {
 	    Config: model.Config;
 	    ActiveProfile: model.Profile;
+	    Z: mcp.Tool;
 	
 	    static createFrom(source: any = {}) {
 	        return new ApplicationConfig(source);
@@ -119,6 +120,7 @@ export namespace controller {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Config = this.convertValues(source["Config"], model.Config);
 	        this.ActiveProfile = this.convertValues(source["ActiveProfile"], model.Profile);
+	        this.Z = this.convertValues(source["Z"], mcp.Tool);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1299,6 +1301,7 @@ export namespace llm {
 export namespace mcp {
 	
 	export class Timeout {
+	    Init?: number;
 	    List?: number;
 	    Execution?: number;
 	
@@ -1308,19 +1311,17 @@ export namespace mcp {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Init = source["Init"];
 	        this.List = source["List"];
 	        this.Execution = source["Execution"];
 	    }
 	}
 	export class Server {
 	    BaseUrl: string;
-	    Endpoint: string;
 	    Headers: Record<string, string>;
 	    Name: string;
 	    Arguments: string[];
 	    Environment: Record<string, string>;
-	    AdditionalEnvironment: Record<string, string>;
-	    WorkingDirectory: string;
 	    Approval: string;
 	    Exclude: string[];
 	    Timeout: Timeout;
@@ -1332,13 +1333,10 @@ export namespace mcp {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.BaseUrl = source["BaseUrl"];
-	        this.Endpoint = source["Endpoint"];
 	        this.Headers = source["Headers"];
 	        this.Name = source["Name"];
 	        this.Arguments = source["Arguments"];
 	        this.Environment = source["Environment"];
-	        this.AdditionalEnvironment = source["AdditionalEnvironment"];
-	        this.WorkingDirectory = source["WorkingDirectory"];
 	        this.Approval = source["Approval"];
 	        this.Exclude = source["Exclude"];
 	        this.Timeout = this.convertValues(source["Timeout"], Timeout);
@@ -1362,6 +1360,80 @@ export namespace mcp {
 		    return a;
 		}
 	}
+	
+	export class ToolAnnotation {
+	    title?: string;
+	    readOnlyHint?: boolean;
+	    destructiveHint?: boolean;
+	    idempotentHint?: boolean;
+	    openWorldHint?: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new ToolAnnotation(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.title = source["title"];
+	        this.readOnlyHint = source["readOnlyHint"];
+	        this.destructiveHint = source["destructiveHint"];
+	        this.idempotentHint = source["idempotentHint"];
+	        this.openWorldHint = source["openWorldHint"];
+	    }
+	}
+	export class ToolInputSchema {
+	    type: string;
+	    properties?: Record<string, any>;
+	    required?: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new ToolInputSchema(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.type = source["type"];
+	        this.properties = source["properties"];
+	        this.required = source["required"];
+	    }
+	}
+	export class Tool {
+	    name: string;
+	    description?: string;
+	    inputSchema: ToolInputSchema;
+	    annotations: ToolAnnotation;
+	
+	    static createFrom(source: any = {}) {
+	        return new Tool(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.description = source["description"];
+	        this.inputSchema = this.convertValues(source["inputSchema"], ToolInputSchema);
+	        this.annotations = this.convertValues(source["annotations"], ToolAnnotation);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
 
 }
 

@@ -54,7 +54,7 @@
 										{{ server.config.Name }} {{ server.config.Arguments.join(' ') }}
 									</v-tooltip>
 									<v-tooltip activator="parent" location="right" v-else>
-										{{ server.config.BaseUrl }}{{ server.config.Endpoint }}
+										{{ server.config.BaseUrl }}
 									</v-tooltip>
 								</span>
 							</v-card-title>
@@ -99,7 +99,7 @@ import ZoomDetector from '../components/ZoomDetector.vue'
 import { useConfigStore } from '../store/config.ts'
 import ToolBar from '../components/bar/ToolBar.vue'
 import { ListMcpTools } from '../../wailsjs/go/controller/Controller'
-import { mcp, mcp_golang } from '../../wailsjs/go/models.ts'
+import { mcp } from '../../wailsjs/go/models.ts'
 
 export default defineComponent({
 	name: 'Tool',
@@ -112,7 +112,7 @@ export default defineComponent({
 			mcp: {
 				loading: true,
 
-				server: {} as Record<string, {config: mcp.Server, tools: mcp_golang.ToolRetType[]}>,
+				server: {} as Record<string, {config: mcp.Server, tools: mcp.Tool[]}>,
 			}
 		}
 	},
