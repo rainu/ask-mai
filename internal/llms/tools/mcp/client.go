@@ -44,12 +44,17 @@ func GetClient(ctx context.Context, tp Transporter) (c client.MCPClient, err err
 	clientTransportContext[key].ctx, clientTransportContext[key].cancel = context.WithCancel(context.Background())
 	go func() {
 		<-clientTransportContext[key].ctx.Done()
-		slog.Debug("MCP transport context was closed!", "key", key)
 
 		clientPoolMutex.Lock()
+		defer clientPoolMutex.Unlock()
+
+		slog.Debug("MCP transport context was closed!", "key", key)
+
 		c.Close()
 		delete(clientTransportContext, key)
-		clientPoolMutex.Unlock()
+
+		clientPool[key].Close()
+		delete(clientPool, key)
 	}()
 
 	err = t.Start(clientTransportContext[key].ctx)
