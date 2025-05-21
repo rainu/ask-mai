@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type DirectoryDeletion struct {
@@ -11,6 +11,12 @@ type DirectoryDeletion struct {
 	//only for wails to generate TypeScript types
 	Y file.DirectoryDeletionResult    `yaml:"-"`
 	Z file.DirectoryDeletionArguments `yaml:"-"`
+}
+
+func (c *DirectoryDeletion) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalAlways
+	}
 }
 
 func NewDirectoryDeletion() DirectoryDeletion {

@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type FileReading struct {
@@ -11,6 +11,12 @@ type FileReading struct {
 	//only for wails to generate TypeScript types
 	Y file.FileReadingResult    `yaml:"-"`
 	Z file.FileReadingArguments `yaml:"-"`
+}
+
+func (c *FileReading) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalNever
+	}
 }
 
 func NewFileReading() FileReading {

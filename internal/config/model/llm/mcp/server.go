@@ -3,7 +3,7 @@ package mcp
 import (
 	"fmt"
 	"github.com/mark3labs/mcp-go/client/transport"
-	internalMcp "github.com/rainu/ask-mai/internal/llms/tools/mcp"
+	"github.com/rainu/ask-mai/internal/mcp/client"
 )
 
 type Server struct {
@@ -42,7 +42,7 @@ func (s *Server) GetTransport() (transport transport.Interface, err error) {
 	return transport, err
 }
 
-func (s *Server) GetTimeouts() (t internalMcp.Timeouts) {
+func (s *Server) GetTimeouts() (t client.Timeouts) {
 	if s.Timeout.Init != nil {
 		t.Init = *s.Timeout.Init
 	}

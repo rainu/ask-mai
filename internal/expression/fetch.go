@@ -3,7 +3,7 @@ package expression
 import (
 	"context"
 	"github.com/dop251/goja"
-	"github.com/rainu/ask-mai/internal/llms/tools/http"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/http"
 )
 
 const FuncNameFetch = "fetch"

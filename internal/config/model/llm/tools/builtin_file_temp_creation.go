@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type FileTempCreation struct {
@@ -11,6 +11,12 @@ type FileTempCreation struct {
 	//only for wails to generate TypeScript types
 	Y file.FileTempCreationResult    `yaml:"-"`
 	Z file.FileTempCreationArguments `yaml:"-"`
+}
+
+func (c *FileTempCreation) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalNever
+	}
 }
 
 func NewFileTempCreation() FileTempCreation {

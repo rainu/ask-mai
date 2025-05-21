@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type FileAppending struct {
@@ -11,6 +11,12 @@ type FileAppending struct {
 	//only for wails to generate TypeScript types
 	Y file.FileAppendingResult    `yaml:"-"`
 	Z file.FileAppendingArguments `yaml:"-"`
+}
+
+func (c *FileAppending) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalAlways
+	}
 }
 
 func NewFileAppending() FileAppending {

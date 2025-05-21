@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type DirectoryTempCreation struct {
@@ -11,6 +11,12 @@ type DirectoryTempCreation struct {
 	//only for wails to generate TypeScript types
 	Y file.DirectoryTempCreationResult    `yaml:"-"`
 	Z file.DirectoryTempCreationArguments `yaml:"-"`
+}
+
+func (c *DirectoryTempCreation) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalNever
+	}
 }
 
 func NewDirectoryTempCreation() DirectoryTempCreation {

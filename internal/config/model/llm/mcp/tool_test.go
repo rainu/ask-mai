@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/rainu/ask-mai/internal/expression"
-	internalMcp "github.com/rainu/ask-mai/internal/llms/tools/mcp"
+	internalMcp "github.com/rainu/ask-mai/internal/mcp/server/tools/mcp"
 	cmdchain "github.com/rainu/go-command-chain"
 	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"

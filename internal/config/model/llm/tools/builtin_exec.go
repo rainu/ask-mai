@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/command"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/command"
 )
 
 type CommandExecution struct {
@@ -10,6 +10,12 @@ type CommandExecution struct {
 
 	//only for wails to generate TypeScript types
 	Z command.CommandExecutionArguments `yaml:"-"`
+}
+
+func (c *CommandExecution) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalAlways
+	}
 }
 
 func NewCommandExecution() CommandExecution {

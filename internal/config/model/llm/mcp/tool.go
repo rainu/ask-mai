@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/mark3labs/mcp-go/mcp"
 	it "github.com/rainu/ask-mai/internal/config/model/llm/tools"
-	internalMcp "github.com/rainu/ask-mai/internal/llms/tools/mcp"
+	"github.com/rainu/ask-mai/internal/mcp/client"
 	"slices"
 )
 
@@ -13,17 +13,17 @@ const McpPrefix = it.BuiltInPrefix + "_"
 
 type Tool struct {
 	mcp.Tool
-	Transporter internalMcp.Transporter
+	Transporter client.Transporter
 	approval    Approval
 }
 
 func MergeTools(ctx context.Context, s map[string]Server) (map[string]Tool, error) {
-	tp := make(map[string]internalMcp.Transporter, len(s))
+	tp := make(map[string]client.Transporter, len(s))
 	for name, server := range s {
 		tp[name] = &server
 	}
 
-	result, err := internalMcp.ListAllTools(ctx, tp)
+	result, err := client.ListAllTools(ctx, tp)
 	if err != nil {
 		return nil, err
 	}

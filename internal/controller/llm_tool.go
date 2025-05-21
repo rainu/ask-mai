@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	configMcp "github.com/rainu/ask-mai/internal/config/model/llm/mcp"
+	configMcp "github.com/rainu/ask-mai/internal/config/model/llm"
 	"github.com/rainu/ask-mai/internal/config/model/llm/tools"
-	toolMcp "github.com/rainu/ask-mai/internal/llms/tools/mcp"
+	"github.com/rainu/ask-mai/internal/mcp/client"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"log/slog"
@@ -52,7 +52,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 
 	//validate tool calls
 	availableTools := c.getProfile().LLM.Tools.GetTools()
-	availableMcpTools, err := configMcp.MergeTools(c.aiModelCtx, c.getProfile().LLM.McpServer)
+	availableMcpTools, err := c.getProfile().LLM.GetTools(c.aiModelCtx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
 	}
@@ -215,7 +215,7 @@ func (c *Controller) callMcpTool(ctx context.Context, call llms.ToolCall, toolDe
 	slog.Debug("Start calling mcp tool.", "name", toolDefinition.Name)
 
 	t := time.Now()
-	resp, callErr := toolMcp.CallTool(ctx, toolDefinition.Transporter, toolDefinition.Name, call.FunctionCall.Arguments)
+	resp, callErr := client.CallTool(ctx, toolDefinition.Transporter, toolDefinition.Name, call.FunctionCall.Arguments)
 
 	result.DurationMs = time.Since(t).Milliseconds()
 	content, _ := json.Marshal(resp)

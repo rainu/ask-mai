@@ -4,7 +4,7 @@ import (
 	"embed"
 	mcp_server "github.com/rainu/ask-mai/internal/app/mcp-server"
 	"github.com/rainu/ask-mai/internal/app/ui"
-	"github.com/rainu/ask-mai/internal/llms/tools/mcp"
+	"github.com/rainu/ask-mai/internal/mcp/client"
 	"os"
 	"path"
 	"strings"
@@ -17,14 +17,16 @@ var assets embed.FS
 var icon []byte
 
 func main() {
-	defer mcp.Close()
+	defer client.Close()
 
 	var rc int
 
 	mode := getMode()
 
 	if mode == "ask-mai-mcp" {
-		rc = mcp_server.Main(mcp_server.Args{})
+		rc = mcp_server.Main(mcp_server.Args{
+			VersionLine: versionLine(),
+		})
 	} else {
 		rc = ui.Main(ui.Args{
 			Assets:      assets,

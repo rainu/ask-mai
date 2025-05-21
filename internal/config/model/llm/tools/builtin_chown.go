@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type ChangeOwner struct {
@@ -11,6 +11,12 @@ type ChangeOwner struct {
 	//only for wails to generate TypeScript types
 	Y file.ChangeOwnerResult    `yaml:"-"`
 	Z file.ChangeOwnerArguments `yaml:"-"`
+}
+
+func (c *ChangeOwner) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalAlways
+	}
 }
 
 func NewChangeOwner() ChangeOwner {

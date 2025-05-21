@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/system"
 )
 
 type SystemInfo struct {
@@ -9,8 +9,14 @@ type SystemInfo struct {
 	Approval string `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
-	Y tools.SystemInfoResult    `yaml:"-"`
-	Z tools.SystemInfoArguments `yaml:"-"`
+	Y system.SystemInfoResult    `yaml:"-"`
+	Z system.SystemInfoArguments `yaml:"-"`
+}
+
+func (c *SystemInfo) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalNever
+	}
 }
 
 func NewSystemInfo() SystemInfo {
@@ -27,8 +33,8 @@ func (s SystemInfo) AsFunctionDefinition() *FunctionDefinition {
 	return &FunctionDefinition{
 		Name:        "getSystemInformation",
 		Approval:    s.Approval,
-		Description: tools.SystemInfoDefinition.Description,
-		Parameters:  tools.SystemInfoDefinition.Parameter,
-		CommandFn:   tools.SystemInfoDefinition.Function,
+		Description: system.SystemInfoDefinition.Description,
+		Parameters:  system.SystemInfoDefinition.Parameter,
+		CommandFn:   system.SystemInfoDefinition.Function,
 	}
 }

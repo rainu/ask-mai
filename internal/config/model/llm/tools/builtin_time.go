@@ -1,12 +1,18 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/system"
 )
 
 type SystemTime struct {
 	Disable  bool   `yaml:"disable,omitempty" usage:"disable"`
 	Approval string `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute this tool"`
+}
+
+func (c *SystemTime) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalNever
+	}
 }
 
 func NewSystemTime() SystemTime {
@@ -23,8 +29,8 @@ func (s SystemTime) AsFunctionDefinition() *FunctionDefinition {
 	return &FunctionDefinition{
 		Name:        "getSystemTime",
 		Approval:    s.Approval,
-		Description: tools.SystemTimeDefinition.Description,
-		Parameters:  tools.SystemTimeDefinition.Parameter,
-		CommandFn:   tools.SystemTimeDefinition.Function,
+		Description: system.SystemTimeDefinition.Description,
+		Parameters:  system.SystemTimeDefinition.Parameter,
+		CommandFn:   system.SystemTimeDefinition.Function,
 	}
 }

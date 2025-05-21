@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/rainu/ask-mai/internal/expression"
-	"github.com/rainu/ask-mai/internal/llms/tools/command"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/command"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"

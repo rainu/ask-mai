@@ -31,8 +31,9 @@ type LLMConfig struct {
 	DeepSeek    DeepSeekConfig    `yaml:"deepseek,omitempty" usage:"DeepSeek " llm:""`
 
 	CallOptions CallOptionsConfig     `yaml:"call,omitempty" usage:"Call option "`
-	Tools       tools.Config          `yaml:"tool,omitempty"`
+	Tools       tools.Config          //`yaml:"tool,omitempty"`
 	McpServer   map[string]mcp.Server `yaml:"mcpServers,omitempty" usage:"MCP server "`
+	McpBuiltin  tools.BuiltIns        `yaml:"tool,omitempty"`
 }
 
 func (c *LLMConfig) getBackend() llmConfig {
@@ -107,24 +108,12 @@ func (c *LLMConfig) BuildLLM() (common.Model, error) {
 }
 
 func (c *LLMConfig) AsOptions(ctx context.Context) ([]langLLMS.CallOption, error) {
-	var tools []langLLMS.Tool
-
-	for name, definition := range c.Tools.GetTools() {
-		tools = append(tools, langLLMS.Tool{
-			Type: "function",
-			Function: &langLLMS.FunctionDefinition{
-				Name:        name,
-				Description: definition.Description,
-				Parameters:  definition.Parameters,
-			},
-		})
-	}
-
-	mcpTools, err := mcp.MergeTools(ctx, c.McpServer)
+	mcpTools, err := c.GetTools(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
 	}
 
+	var tools []langLLMS.Tool
 	for key, toolDef := range mcpTools {
 		tools = append(tools, langLLMS.Tool{
 			Type: "function",

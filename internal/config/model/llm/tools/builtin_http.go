@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/http"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/http"
 )
 
 type Http struct {
@@ -11,6 +11,12 @@ type Http struct {
 	//only for wails to generate TypeScript types
 	Y http.CallResult    `yaml:"-"`
 	Z http.CallArguments `yaml:"-"`
+}
+
+func (c *Http) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalNever
+	}
 }
 
 func NewHttp() Http {

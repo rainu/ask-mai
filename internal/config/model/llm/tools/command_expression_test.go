@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rainu/ask-mai/internal/expression"
-	http2 "github.com/rainu/ask-mai/internal/llms/tools/http"
+	http2 "github.com/rainu/ask-mai/internal/mcp/server/tools/http"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"

@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type FileDeletion struct {
@@ -11,6 +11,12 @@ type FileDeletion struct {
 	//only for wails to generate TypeScript types
 	Y file.FileDeletionResult    `yaml:"-"`
 	Z file.FileDeletionArguments `yaml:"-"`
+}
+
+func (c *FileDeletion) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalAlways
+	}
 }
 
 func NewFileDeletion() FileDeletion {

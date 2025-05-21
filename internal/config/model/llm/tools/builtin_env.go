@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/system"
 )
 
 type Environment struct {
@@ -9,8 +9,14 @@ type Environment struct {
 	Approval string `yaml:"approval,omitempty" usage:"Expression to check if user approval is needed before execute this tool"`
 
 	//only for wails to generate TypeScript types
-	Y tools.EnvironmentResult    `yaml:"-"`
-	Z tools.EnvironmentArguments `yaml:"-"`
+	Y system.EnvironmentResult    `yaml:"-"`
+	Z system.EnvironmentArguments `yaml:"-"`
+}
+
+func (c *Environment) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalNever
+	}
 }
 
 func NewEnvironment() Environment {
@@ -27,8 +33,8 @@ func (f Environment) AsFunctionDefinition() *FunctionDefinition {
 	return &FunctionDefinition{
 		Name:        "getEnvironment",
 		Approval:    f.Approval,
-		Description: tools.EnvironmentDefinition.Description,
-		Parameters:  tools.EnvironmentDefinition.Parameter,
-		CommandFn:   tools.EnvironmentDefinition.Function,
+		Description: system.EnvironmentDefinition.Description,
+		Parameters:  system.EnvironmentDefinition.Parameter,
+		CommandFn:   system.EnvironmentDefinition.Function,
 	}
 }

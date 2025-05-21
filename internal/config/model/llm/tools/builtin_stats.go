@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type Stats struct {
@@ -11,6 +11,12 @@ type Stats struct {
 	//only for wails to generate TypeScript types
 	Y file.StatsResult    `yaml:"-"`
 	Z file.StatsArguments `yaml:"-"`
+}
+
+func (c *Stats) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalNever
+	}
 }
 
 func NewStats() Stats {

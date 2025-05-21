@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/rainu/ask-mai/internal/llms/tools/command"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/command"
 	"log/slog"
 	"mvdan.cc/sh/v3/shell"
 	"strings"

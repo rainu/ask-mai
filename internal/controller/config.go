@@ -6,7 +6,7 @@ import (
 	"github.com/rainu/ask-mai/internal/config/model"
 	configMcp "github.com/rainu/ask-mai/internal/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/internal/config/model/llm/tools"
-	internalMcp "github.com/rainu/ask-mai/internal/llms/tools/mcp"
+	"github.com/rainu/ask-mai/internal/mcp/client"
 )
 
 type ApplicationConfig struct {
@@ -50,7 +50,7 @@ func (c *Controller) ListMcpTools() (map[string][]mcp.Tool, error) {
 
 	for name, server := range c.getProfile().LLM.McpServer {
 		var err error
-		result[name], err = internalMcp.ListTools(c.ctx, &server)
+		result[name], err = client.ListTools(c.ctx, &server)
 		if err != nil {
 			return nil, fmt.Errorf("failed to list tools for command server %s: %w", name, err)
 		}

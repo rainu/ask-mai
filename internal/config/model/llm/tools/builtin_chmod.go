@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type ChangeMode struct {
@@ -11,6 +11,12 @@ type ChangeMode struct {
 	//only for wails to generate TypeScript types
 	Y file.ChangeModeResult    `yaml:"-"`
 	Z file.ChangeModeArguments `yaml:"-"`
+}
+
+func (c *ChangeMode) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalAlways
+	}
 }
 
 func NewChangeMode() ChangeMode {

@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"github.com/rainu/ask-mai/internal/llms/tools/file"
+	"github.com/rainu/ask-mai/internal/mcp/server/tools/file"
 )
 
 type ChangeTimes struct {
@@ -11,6 +11,12 @@ type ChangeTimes struct {
 	//only for wails to generate TypeScript types
 	Y file.ChangeTimesResult    `yaml:"-"`
 	Z file.ChangeTimesArguments `yaml:"-"`
+}
+
+func (c *ChangeTimes) SetDefaults() {
+	if c.Approval == "" {
+		c.Approval = ApprovalNever
+	}
 }
 
 func NewChangeTimes() ChangeTimes {
