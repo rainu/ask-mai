@@ -1,11 +1,14 @@
 package config
 
 import (
+	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/rainu/ask-mai/internal/config/model"
 	"github.com/rainu/ask-mai/internal/config/model/common"
 	"github.com/rainu/ask-mai/internal/config/model/llm"
-	"github.com/rainu/ask-mai/internal/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/internal/config/model/llm/tools"
+	"github.com/rainu/ask-mai/internal/config/model/llm/tools/builtin"
+	"github.com/rainu/ask-mai/internal/config/model/llm/tools/command"
+	iMcp "github.com/rainu/ask-mai/internal/config/model/llm/tools/mcp"
 	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -130,7 +133,7 @@ llm:
     builtin:
       command-execution:
         disable: true
-    functions:
+    custom:
       test:
         description: This is a test function.
         parameters:
@@ -146,28 +149,28 @@ llm:
             - arg1
         command: doTest.sh
         "approval": true
-  mcpServers:
-    command1:
-      command: docker
-      args:
-        - run
-        - --rm
-        - -i
-        - -e
-        - GITHUB_PERSONAL_ACCESS_TOKEN=github_
-        - ghcr.io/github/github-mcp-server
-      env:
-        TEST: test
-      timeout:
-        init: 500ms
-        list: 10s
-        execution: 1m30s
-    command2:
-      command: echo
-    http:
-      baseUrl: http://localhost:8080/api/v1
-      headers:
-        Authorization: Bearer TOKEN
+    mcpServers:
+      command1:
+        command: docker
+        args:
+          - run
+          - --rm
+          - -i
+          - -e
+          - GITHUB_PERSONAL_ACCESS_TOKEN=github_
+          - ghcr.io/github/github-mcp-server
+        env:
+          TEST: test
+        timeout:
+          init: 500ms
+          list: 10s
+          execution: 1m30s
+      command2:
+        command: echo
+      http:
+        baseUrl: http://localhost:8080/api/v1
+        headers:
+          Authorization: Bearer TOKEN
 print:
   format: json
   targets:
@@ -295,18 +298,18 @@ webkit:
 					MinLength:    10,
 					MaxLength:    200,
 				},
-				Tools: tools.Config{
-					BuiltInTools: &tools.BuiltIns{
-						CommandExec: tools.CommandExecution{
+				Tool: tools.Config{
+					BuiltIns: builtin.BuiltIns{
+						CommandExec: builtin.CommandExecution{
 							Disable: true,
 						},
 					},
-					Tools: map[string]tools.FunctionDefinition{
+					Custom: map[string]command.FunctionDefinition{
 						"test": {
 							Description: "This is a test function.",
-							Parameters: map[string]any{
-								"type": "object",
-								"properties": map[string]any{
+							Parameters: mcp.ToolInputSchema{
+								Type: "object",
+								Properties: map[string]any{
 									"arg1": map[string]any{
 										"type":        "string",
 										"description": "The first argument.",
@@ -316,38 +319,38 @@ webkit:
 										"description": "The second argument.",
 									},
 								},
-								"required": []any{"arg1"},
+								Required: []string{"arg1"},
 							},
 							Command:  "doTest.sh",
 							Approval: "true",
 						},
 					},
-				},
-				McpServer: map[string]mcp.Server{
-					"command1": {
-						Command: mcp.Command{
-							Name:      "docker",
-							Arguments: []string{"run", "--rm", "-i", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=github_", "ghcr.io/github/github-mcp-server"},
-							Environment: map[string]string{
-								"TEST": "test",
+					McpServer: map[string]iMcp.Server{
+						"command1": {
+							Command: iMcp.Command{
+								Name:      "docker",
+								Arguments: []string{"run", "--rm", "-i", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=github_", "ghcr.io/github/github-mcp-server"},
+								Environment: map[string]string{
+									"TEST": "test",
+								},
+							},
+							Timeout: iMcp.Timeout{
+								Init:      yacl.P(500 * time.Millisecond),
+								List:      yacl.P(10 * time.Second),
+								Execution: yacl.P(1*time.Minute + 30*time.Second),
 							},
 						},
-						Timeout: mcp.Timeout{
-							Init:      yacl.P(500 * time.Millisecond),
-							List:      yacl.P(10 * time.Second),
-							Execution: yacl.P(1*time.Minute + 30*time.Second),
+						"command2": {
+							Command: iMcp.Command{
+								Name: "echo",
+							},
 						},
-					},
-					"command2": {
-						Command: mcp.Command{
-							Name: "echo",
-						},
-					},
-					"http": {
-						Http: mcp.Http{
-							BaseUrl: "http://localhost:8080/api/v1",
-							Headers: map[string]string{
-								"Authorization": "Bearer TOKEN",
+						"http": {
+							Http: iMcp.Http{
+								BaseUrl: "http://localhost:8080/api/v1",
+								Headers: map[string]string{
+									"Authorization": "Bearer TOKEN",
+								},
 							},
 						},
 					},

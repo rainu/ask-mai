@@ -6,15 +6,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/goccy/go-yaml"
+	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/olekukonko/tablewriter"
 	"github.com/rainu/ask-mai/internal/config/model"
 	"github.com/rainu/ask-mai/internal/config/model/common"
 	"github.com/rainu/ask-mai/internal/config/model/llm"
-	"github.com/rainu/ask-mai/internal/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/internal/config/model/llm/tools"
+	"github.com/rainu/ask-mai/internal/config/model/llm/tools/approval"
+	toolCommand "github.com/rainu/ask-mai/internal/config/model/llm/tools/command"
+	iMcp "github.com/rainu/ask-mai/internal/config/model/llm/tools/mcp"
 	"github.com/rainu/ask-mai/internal/expression"
-	"github.com/rainu/ask-mai/internal/mcp/server/tools/command"
-	http2 "github.com/rainu/ask-mai/internal/mcp/server/tools/http"
+	mcpCommand "github.com/rainu/ask-mai/internal/mcp/server/builtin/tools/command"
+	http2 "github.com/rainu/ask-mai/internal/mcp/server/builtin/tools/http"
 	"github.com/rainu/go-yacl"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -187,7 +190,7 @@ func printHelpExpression(output io.Writer) {
 	js := bytes.Buffer{}
 	je := json.NewEncoder(&js)
 	je.SetIndent("   ", "  ")
-	je.Encode(command.CommandDescriptor{
+	je.Encode(mcpCommand.CommandDescriptor{
 		Command:   "/path/to/command",
 		Arguments: []string{"arg1", "...argN"},
 		Environment: map[string]string{
@@ -251,21 +254,21 @@ func printHelpTool(output io.Writer) {
 		"\nThe functions can be given by argument, Environment or config file."+
 		"\nThe fields are more or less the same for all three methods:\n")
 
-	fmt.Fprint(output, yacl.NewConfig(&tools.FunctionDefinition{}).HelpFlags())
+	fmt.Fprint(output, yacl.NewConfig(&toolCommand.FunctionDefinition{}).HelpFlags())
 
-	exampleDefs := []tools.FunctionDefinition{
+	exampleDefs := []toolCommand.FunctionDefinition{
 		{
 			Name:        "createFile",
 			Description: "This function creates a file.",
-			Parameters: map[string]any{
-				"type": "object",
-				"properties": map[string]any{
+			Parameters: mcp.ToolInputSchema{
+				Type: "object",
+				Properties: map[string]any{
 					"path": map[string]any{
 						"type":        "string",
 						"description": "The path to the file.",
 					},
 				},
-				"required": []string{"path"},
+				Required: []string{"path"},
 			},
 			Command: "/usr/bin/touch",
 			Environment: map[string]string{
@@ -278,15 +281,15 @@ func printHelpTool(output io.Writer) {
 		{
 			Name:        "echo",
 			Description: "This function echoes a message.",
-			Parameters: map[string]any{
-				"type": "object",
-				"properties": map[string]any{
+			Parameters: mcp.ToolInputSchema{
+				Type: "object",
+				Properties: map[string]any{
 					"message": map[string]any{
 						"type":        "string",
 						"description": "The message to echo.",
 					},
 				},
-				"required": []string{"message"},
+				Required: []string{"message"},
 			},
 			AdditionalEnvironment: map[string]string{
 				"ASK_MAI_ARGS": "$@",
@@ -298,7 +301,7 @@ func printHelpTool(output io.Writer) {
 
 	fmt.Fprintf(output, "\nJSON:\n")
 
-	fdm := map[string]tools.FunctionDefinition{}
+	fdm := map[string]toolCommand.FunctionDefinition{}
 	for _, def := range exampleDefs {
 		jsonDef, _ := json.MarshalIndent(def, "", " ")
 		fmt.Fprintf(output, "\n%s\n", jsonDef)
@@ -308,45 +311,47 @@ func printHelpTool(output io.Writer) {
 
 	fmt.Fprintf(output, "\nYAML:\n\n")
 	ye := yaml.NewEncoder(output, yaml.Indent(2))
-	ye.Encode(model.Profile{LLM: llm.LLMConfig{Tools: tools.Config{Tools: fdm}}})
+	ye.Encode(model.Profile{LLM: llm.LLMConfig{Tool: tools.Config{Custom: fdm}}})
 
 	fmt.Fprintf(output, "\nIt is also possible to use tools from a MCP-Server. You can connect many MCP-Servers in different way.")
 	fmt.Fprintf(output, "\nAs a command (stdio):\n")
-	fmt.Fprint(output, yacl.NewConfig(&mcp.Command{}).HelpFlags())
+	fmt.Fprint(output, yacl.NewConfig(&iMcp.Command{}).HelpFlags())
 
 	fmt.Fprintf(output, "\nAs a rest-server (http):\n")
-	fmt.Fprint(output, yacl.NewConfig(&mcp.Http{}).HelpFlags())
+	fmt.Fprint(output, yacl.NewConfig(&iMcp.Http{}).HelpFlags())
 
 	fmt.Fprintf(output, "\nYAML-Example:\n\n")
 	ye.Encode(model.Profile{
 		LLM: llm.LLMConfig{
-			McpServer: map[string]mcp.Server{
-				"github": {
-					Command: mcp.Command{
-						Name:      "docker",
-						Arguments: []string{"run", "--rm", "-i", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=github_...", "ghcr.io/github/github-mcp-server"},
-					},
-					Approval: mcp.ApprovalAlways,
-				},
-				"gitlab": {
-					Command: mcp.Command{
-						Name:      "npx",
-						Arguments: []string{"-y", "@modelcontextprotocol/server-gitlab"},
-						Environment: map[string]string{
-							"GITLAB_PERSONAL_ACCESS_TOKEN": "<YOUR_TOKEN>",
-							"GITLAB_API_URL":               "https://gitlab.com/api/v4",
+			Tool: tools.Config{
+				McpServer: map[string]iMcp.Server{
+					"github": {
+						Command: iMcp.Command{
+							Name:      "docker",
+							Arguments: []string{"run", "--rm", "-i", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=github_...", "ghcr.io/github/github-mcp-server"},
 						},
+						Approval: approval.Always,
 					},
-					Approval: expression.VarNameContext + `.definition.name === 'push_files'`,
-				},
-				"http": {
-					Http: mcp.Http{
-						BaseUrl: "http://localhost:8080/api/v1",
-						Headers: map[string]string{
-							"Authorization": "Bearer TOKEN",
+					"gitlab": {
+						Command: iMcp.Command{
+							Name:      "npx",
+							Arguments: []string{"-y", "@modelcontextprotocol/server-gitlab"},
+							Environment: map[string]string{
+								"GITLAB_PERSONAL_ACCESS_TOKEN": "<YOUR_TOKEN>",
+								"GITLAB_API_URL":               "https://gitlab.com/api/v4",
+							},
 						},
+						Approval: expression.VarNameContext + `.definition.name === 'push_files'`,
 					},
-					Approval: mcp.ApprovalNever,
+					"http": {
+						Http: iMcp.Http{
+							BaseUrl: "http://localhost:8080/api/v1",
+							Headers: map[string]string{
+								"Authorization": "Bearer TOKEN",
+							},
+						},
+						Approval: approval.Never,
+					},
 				},
 			},
 		},
@@ -363,9 +368,9 @@ func printHelpTool(output io.Writer) {
 	je.SetIndent("  ", "  ")
 
 	exampleDefs[0].Approval = `!` + expression.VarNameContext + `.args.path.startsWith('/tmp/')`
-	je.Encode(tools.ApprovalVariables{
-		FunctionDefinition: exampleDefs[0],
-		RawArguments:       `{"path": "/tmp/file"}`,
+	je.Encode(approval.Variables{
+		ToolDefinition: exampleDefs[0],
+		RawArguments:   `{"path": "/tmp/file"}`,
 		ParsedArguments: map[string]any{
 			"path": "/tmp/file",
 		},
@@ -397,19 +402,19 @@ func printHelpTool(output io.Writer) {
 
 	je = json.NewEncoder(output)
 	je.SetIndent("  ", "  ")
-	je.Encode(tools.CommandVariables{
-		FunctionDefinition: tools.FunctionDefinition{
+	je.Encode(toolCommand.Variables{
+		FunctionDefinition: toolCommand.FunctionDefinition{
 			Name:        "jsEcho",
 			Description: "This function echoes a message.",
-			Parameters: map[string]any{
-				"type": "object",
-				"properties": map[string]any{
+			Parameters: mcp.ToolInputSchema{
+				Type: "object",
+				Properties: map[string]any{
 					"message": map[string]any{
 						"type":        "string",
 						"description": "The message to echo.",
 					},
 				},
-				"required": []string{"message"},
+				Required: []string{"message"},
 			},
 			CommandExpr: fmt.Sprintf(`"Echo: " + JSON.parse(%s.args).message`, expression.VarNameContext),
 		},

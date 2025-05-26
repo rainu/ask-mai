@@ -3,7 +3,7 @@ package expression
 import (
 	"context"
 	"github.com/dop251/goja"
-	"github.com/rainu/ask-mai/internal/mcp/server/tools/command"
+	"github.com/rainu/ask-mai/internal/mcp/server/builtin/tools/command"
 )
 
 const FuncNameRun = "run"

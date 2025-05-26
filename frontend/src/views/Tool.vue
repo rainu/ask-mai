@@ -119,72 +119,72 @@ export default defineComponent({
 	computed: {
 		...mapState(useConfigStore, ['profile']),
 		SystemInfo: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.SystemInfo.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.SystemInfo.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.SystemInfo.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.SystemInfo.Disable = !value },
 		},
 		Environment: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.Environment.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.Environment.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.Environment.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.Environment.Disable = !value },
 		},
 		SystemTime: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.SystemTime.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.SystemTime.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.SystemTime.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.SystemTime.Disable = !value },
 		},
 		Stats: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.Stats.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.Stats.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.Stats.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.Stats.Disable = !value },
 		},
 		ChangeMode: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.ChangeMode.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.ChangeMode.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.ChangeMode.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.ChangeMode.Disable = !value },
 		},
 		ChangeOwner: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.ChangeOwner.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.ChangeOwner.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.ChangeOwner.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.ChangeOwner.Disable = !value },
 		},
 		ChangeTimes: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.ChangeTimes.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.ChangeTimes.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.ChangeTimes.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.ChangeTimes.Disable = !value },
 		},
 		FileCreation: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileCreation.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileCreation.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.FileCreation.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileCreation.Disable = !value },
 		},
 		FileTempCreation: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileTempCreation.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileTempCreation.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.FileTempCreation.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileTempCreation.Disable = !value },
 		},
 		FileAppending: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileAppending.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileAppending.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.FileAppending.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileAppending.Disable = !value },
 		},
 		FileReading: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileReading.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileReading.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.FileReading.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileReading.Disable = !value },
 		},
 		FileDeletion: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.FileDeletion.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.FileDeletion.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.FileDeletion.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileDeletion.Disable = !value },
 		},
 		DirectoryCreation: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.DirectoryCreation.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.DirectoryCreation.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.DirectoryCreation.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.DirectoryCreation.Disable = !value },
 		},
 		DirectoryTempCreation: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.DirectoryTempCreation.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.DirectoryTempCreation.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.DirectoryTempCreation.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.DirectoryTempCreation.Disable = !value },
 		},
 		DirectoryDeletion: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.DirectoryDeletion.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.DirectoryDeletion.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.DirectoryDeletion.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.DirectoryDeletion.Disable = !value },
 		},
 		CommandExec: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.CommandExec.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.CommandExec.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.CommandExec.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.CommandExec.Disable = !value },
 		},
 		Http: {
-			get() { return this.profile.LLM.Tools.BuiltInTools ? !this.profile.LLM.Tools.BuiltInTools.Http.Disable : false },
-			set(value: boolean) { if(this.profile.LLM.Tools.BuiltInTools) this.profile.LLM.Tools.BuiltInTools.Http.Disable = !value },
+			get() { return !this.profile.LLM.Tool.BuiltIns.Http.Disable },
+			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.Http.Disable = !value },
 		},
 	},
 	methods: {
@@ -227,7 +227,7 @@ export default defineComponent({
 		ListMcpTools().then((tools) => {
 			for (let name in tools) {
 				this.mcp.server[name] = {
-					config: this.profile.LLM.McpServer[name],
+					config: this.profile.LLM.Tool.McpServer[name],
 					tools: tools[name]
 				}
 			}

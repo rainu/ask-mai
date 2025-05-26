@@ -1,13 +1,13 @@
 <template>
 	<ToolCall :tc="tc" icon="mdi-brain">
 		<template v-slot:title>
-			{{ tc.McpToolName }}
+			{{ tc.Meta.ToolName }}
 		</template>
 
 		<template v-slot:content>
 			<v-row no-gutters>
 				<v-col cols="12">
-					<v-text-field :model-value="tc.McpToolDescription"
+					<v-text-field :model-value="tc.Meta.ToolDescription"
 												:label="$t('toolCall.mcp.description')"
 												readonly hide-details density="compact"></v-text-field>
 				</v-col>
@@ -18,7 +18,7 @@
 				<template v-if="content" >
 					<v-col cols="12" v-for="c in content">
 						<template v-if="c.type === 'text'">
-							<vue-markdown :source="textAsMarkdown(c.text)" />
+							<vue-markdown :source="textAsMarkdown(c.text ?? '')" />
 						</template>
 						<template v-else-if="c.type === 'image'">
 							<img :src="c.image" alt="Image" />

@@ -89,7 +89,7 @@ export default defineComponent({
 			//the titlebar can not be manipulated while application lifecycle - so here we use the "initial" config
 			const titleBarHeight = this.profile.UI.Window.ShowTitleBar ? (this.profile.UI.Window.TitleBarHeight ?? 0) : 0
 			const combinedHeight = Math.ceil(pageHeight * this.zoom) + titleBarHeight
-			const width = this.profile.UI.Window.InitialWidth.Value
+			const width = this.profile.UI.Window.InitialWidth.Value ?? 0
 
 			await WindowSetSize(width, combinedHeight)
 		},

@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	configMcp "github.com/rainu/ask-mai/internal/config/model/llm"
 	"github.com/rainu/ask-mai/internal/config/model/llm/tools"
 	"github.com/rainu/ask-mai/internal/mcp/client"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"log/slog"
+	"strings"
 	"sync"
 	"time"
 )
@@ -51,28 +51,18 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 	}()
 
 	//validate tool calls
-	availableTools := c.getProfile().LLM.Tools.GetTools()
-	availableMcpTools, err := c.getProfile().LLM.GetTools(c.aiModelCtx)
+	availableTools, err := c.getProfile().LLM.Tool.GetTools(c.aiModelCtx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
+		return nil, fmt.Errorf("failed to list tools: %w", err)
 	}
 
 	for callIdx, call := range resp.Choices[0].ToolCalls {
-		fnDefinition, isTool := availableTools[call.FunctionCall.Name]
-		mcpToolInfo, isMcpTool := availableMcpTools[call.FunctionCall.Name]
-		if !isTool && !isMcpTool {
+		toolInfo, ok := availableTools[call.FunctionCall.Name]
+		if !ok {
 			return nil, fmt.Errorf("unknown tool: %s", call.FunctionCall.Name)
 		}
 
-		isBuiltIn := false
-		needsApproval := false
-
-		if isTool {
-			isBuiltIn = fnDefinition.IsBuiltIn()
-			needsApproval = fnDefinition.NeedApproval(c.aiModelCtx, call.FunctionCall.Arguments)
-		} else {
-			needsApproval = mcpToolInfo.NeedApproval(c.aiModelCtx, call.FunctionCall.Arguments)
-		}
+		needsApproval := toolInfo.NeedApproval(c.aiModelCtx, call.FunctionCall.Arguments)
 
 		//create approval channel for tool calls that need approval
 		if needsApproval {
@@ -88,14 +78,18 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			ContentParts: []LLMMessageContentPart{{
 				Type: LLMMessageContentPartTypeToolCall,
 				Call: LLMMessageCall{
-					Id:                 call.ID,
-					NeedsApproval:      needsApproval,
-					BuiltIn:            isBuiltIn,
-					McpTool:            isMcpTool,
-					McpToolName:        mcpToolInfo.Name,
-					McpToolDescription: mcpToolInfo.Description,
-					Function:           call.FunctionCall.Name,
-					Arguments:          call.FunctionCall.Arguments,
+					Id:        call.ID,
+					Function:  call.FunctionCall.Name,
+					Arguments: call.FunctionCall.Arguments,
+
+					Meta: LLMMessageCallMeta{
+						BuiltIn:         strings.HasPrefix(call.FunctionCall.Name, tools.ServerNameBuiltin),
+						Custom:          strings.HasPrefix(call.FunctionCall.Name, tools.ServerNameCustom),
+						Mcp:             !strings.HasPrefix(call.FunctionCall.Name, tools.ServerNameBuiltin) && !strings.HasPrefix(call.FunctionCall.Name, tools.ServerNameCustom),
+						NeedsApproval:   needsApproval,
+						ToolName:        toolInfo.Name,
+						ToolDescription: toolInfo.Description,
+					},
 				},
 			}},
 		}
@@ -121,8 +115,6 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			} else {
 				if tool, ok := availableTools[call.FunctionCall.Name]; ok {
 					r, e = c.callTool(c.aiModelCtx, call, tool)
-				} else if tool, ok := availableMcpTools[call.FunctionCall.Name]; ok {
-					r, e = c.callMcpTool(c.aiModelCtx, call, tool)
 				} else {
 					e = fmt.Errorf("unknown tool: %s", call.FunctionCall.Name)
 				}
@@ -182,37 +174,37 @@ func (c *Controller) waitForApproval(ctx context.Context, call llms.ToolCall) er
 	return nil
 }
 
-func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.FunctionDefinition) (result LLMMessageCallResult, err error) {
-	slog.Debug("Start running command.",
-		"name", toolDefinition.Name,
-		"command", toolDefinition.Command,
-		"argument", call.FunctionCall.Arguments,
-	)
-	t := time.Now()
+//func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.FunctionDefinition) (result LLMMessageCallResult, err error) {
+//	slog.Debug("Start running command.",
+//		"name", toolDefinition.Name,
+//		"command", toolDefinition.Command,
+//		"argument", call.FunctionCall.Arguments,
+//	)
+//	t := time.Now()
+//
+//	out, execErr := toolDefinition.CommandFn(ctx, call.FunctionCall.Arguments)
+//
+//	result.DurationMs = time.Since(t).Milliseconds()
+//	result.Content = string(out)
+//
+//	if execErr != nil {
+//		result.Error = fmt.Sprintf("Execution error: %s", execErr.Error())
+//		err = nil // do not treat execution errors as error - the LLM will receive the error message
+//	}
+//
+//	slog.Debug("Command stopped.",
+//		"name", toolDefinition.Name,
+//		"command", toolDefinition.Command,
+//		"argument", call.FunctionCall.Arguments,
+//		"duration", result.DurationMs,
+//		"error", result.Error,
+//	)
+//
+//	return
+//}
 
-	out, execErr := toolDefinition.CommandFn(ctx, call.FunctionCall.Arguments)
-
-	result.DurationMs = time.Since(t).Milliseconds()
-	result.Content = string(out)
-
-	if execErr != nil {
-		result.Error = fmt.Sprintf("Execution error: %s", execErr.Error())
-		err = nil // do not treat execution errors as error - the LLM will receive the error message
-	}
-
-	slog.Debug("Command stopped.",
-		"name", toolDefinition.Name,
-		"command", toolDefinition.Command,
-		"argument", call.FunctionCall.Arguments,
-		"duration", result.DurationMs,
-		"error", result.Error,
-	)
-
-	return
-}
-
-func (c *Controller) callMcpTool(ctx context.Context, call llms.ToolCall, toolDefinition configMcp.Tool) (result LLMMessageCallResult, err error) {
-	slog.Debug("Start calling mcp tool.", "name", toolDefinition.Name)
+func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.Tool) (result LLMMessageCallResult, err error) {
+	slog.Debug("Start calling tool.", "name", toolDefinition.Name)
 
 	t := time.Now()
 	resp, callErr := client.CallTool(ctx, toolDefinition.Transporter, toolDefinition.Name, call.FunctionCall.Arguments)
@@ -226,7 +218,7 @@ func (c *Controller) callMcpTool(ctx context.Context, call llms.ToolCall, toolDe
 		err = nil // do not treat execution errors as error - the LLM will receive the error message
 	}
 
-	slog.Debug("MCP tool stopped.",
+	slog.Debug("Tool stopped.",
 		"name", toolDefinition.Name,
 		"argument", call.FunctionCall.Arguments,
 		"duration", result.DurationMs,

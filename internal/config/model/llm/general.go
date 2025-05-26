@@ -3,7 +3,6 @@ package llm
 import (
 	"context"
 	"fmt"
-	"github.com/rainu/ask-mai/internal/config/model/llm/mcp"
 	"github.com/rainu/ask-mai/internal/config/model/llm/tools"
 	"github.com/rainu/ask-mai/internal/llms/common"
 	"github.com/rainu/ask-mai/internal/llms/copilot"
@@ -30,10 +29,8 @@ type LLMConfig struct {
 	Anthropic   AnthropicConfig   `yaml:"anthropic,omitempty" usage:"Anthropic " llm:""`
 	DeepSeek    DeepSeekConfig    `yaml:"deepseek,omitempty" usage:"DeepSeek " llm:""`
 
-	CallOptions CallOptionsConfig     `yaml:"call,omitempty" usage:"Call option "`
-	Tools       tools.Config          //`yaml:"tool,omitempty"`
-	McpServer   map[string]mcp.Server `yaml:"mcpServers,omitempty" usage:"MCP server "`
-	McpBuiltin  tools.BuiltIns        `yaml:"tool,omitempty"`
+	CallOptions CallOptionsConfig `yaml:"call,omitempty" usage:"Call option "`
+	Tool        tools.Config      `yaml:"tool,omitempty"`
 }
 
 func (c *LLMConfig) getBackend() llmConfig {
@@ -87,13 +84,8 @@ func (c *LLMConfig) Validate() error {
 	if ve := c.CallOptions.Validate(); ve != nil {
 		return ve
 	}
-	if ve := c.Tools.Validate(); ve != nil {
+	if ve := c.Tool.Validate(); ve != nil {
 		return ve
-	}
-	for name, server := range c.McpServer {
-		if ve := server.Validate(); ve != nil {
-			return fmt.Errorf("invlalid mcpServer config for %s: %w", name, ve)
-		}
 	}
 
 	return nil
@@ -108,7 +100,7 @@ func (c *LLMConfig) BuildLLM() (common.Model, error) {
 }
 
 func (c *LLMConfig) AsOptions(ctx context.Context) ([]langLLMS.CallOption, error) {
-	mcpTools, err := c.GetTools(ctx)
+	mcpTools, err := c.Tool.GetTools(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
 	}

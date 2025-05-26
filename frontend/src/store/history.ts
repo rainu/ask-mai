@@ -4,6 +4,7 @@ import LLMMessage = controller.LLMMessage
 import MessageContentPart = history.MessageContentPart
 import LLMMessageContentPart = controller.LLMMessageContentPart
 import LLMMessageCall = controller.LLMMessageCall
+import LLMMessageCallMeta = controller.LLMMessageCallMeta
 import LLMMessageCallResult = controller.LLMMessageCallResult
 import { ContentType, Role } from '../components/ChatMessage.vue'
 import { useConfigStore } from './config.ts'
@@ -70,7 +71,7 @@ export const useHistoryStore = defineStore('history', {
 						Created: msg.t,
 					})
 				}
-				
+
 				entry.Message.ContentParts = (msg.p ?? []).map((msgPart: MessageContentPart) => {
 					let entryPart = LLMMessageContentPart.createFrom({
 						Type: msgPart.t,
@@ -78,11 +79,29 @@ export const useHistoryStore = defineStore('history', {
 					})
 
 					if(msgPart.ca) {
+						let meta: LLMMessageCallMeta = {
+							BuiltIn: false,
+							Custom: false,
+							Mcp: false,
+							NeedsApproval: false,
+							ToolName: msgPart.ca.f ?? "",
+							ToolDescription: ""
+						}
+						if (msgPart.ca.f) {
+							if (msgPart.ca.f.startsWith("_b")) {
+								meta.BuiltIn = true
+							} else if (msgPart.ca.f.startsWith("_c")) {
+								meta.Custom = true
+							} else {
+								meta.Mcp = true
+							}
+						}
+
 						entryPart.Call = LLMMessageCall.createFrom({
 							Id: msgPart.ca.i,
 							Function: msgPart.ca.f,
 							Arguments: msgPart.ca.a,
-							BuiltIn: msgPart.ca.f?.startsWith("__")
+							Meta: meta,
 						})
 						if(msgPart.ca.r) {
 							entryPart.Call.Result = LLMMessageCallResult.createFrom({

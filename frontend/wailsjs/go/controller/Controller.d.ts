@@ -4,7 +4,7 @@ import {controller} from '../models';
 import {model} from '../models';
 import {history} from '../models';
 import {mcp} from '../models';
-import {tools} from '../models';
+import {builtin} from '../models';
 
 export function AppMounted():Promise<void>;
 
@@ -48,7 +48,7 @@ export function Restart(arg1:string):Promise<void>;
 
 export function SetActiveProfile(arg1:string):Promise<model.Profile>;
 
-export function SetBuiltinTools(arg1:tools.BuiltIns):Promise<void>;
+export function SetBuiltinTools(arg1:builtin.BuiltIns):Promise<void>;
 
 export function SetMcpTools(arg1:Record<string, mcp.Server>):Promise<void>;
 

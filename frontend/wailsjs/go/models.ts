@@ -1,3 +1,682 @@
+export namespace builtin {
+	
+	export class Http {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: http.CallResult;
+	    Z: http.CallArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new Http(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], http.CallResult);
+	        this.Z = this.convertValues(source["Z"], http.CallArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class CommandExecution {
+	    Disable: boolean;
+	    Approval: string;
+	    Z: command.CommandExecutionArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new CommandExecution(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Z = this.convertValues(source["Z"], command.CommandExecutionArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class DirectoryDeletion {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: file.DirectoryDeletionResult;
+	    Z: file.DirectoryDeletionArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new DirectoryDeletion(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], file.DirectoryDeletionResult);
+	        this.Z = this.convertValues(source["Z"], file.DirectoryDeletionArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class DirectoryTempCreation {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: file.DirectoryTempCreationResult;
+	    // Go type: file
+	    Z: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new DirectoryTempCreation(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], file.DirectoryTempCreationResult);
+	        this.Z = this.convertValues(source["Z"], null);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class DirectoryCreation {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: file.DirectoryCreationResult;
+	    Z: file.DirectoryCreationArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new DirectoryCreation(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], file.DirectoryCreationResult);
+	        this.Z = this.convertValues(source["Z"], file.DirectoryCreationArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class FileDeletion {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: file.FileDeletionResult;
+	    Z: file.FileDeletionArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileDeletion(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], file.FileDeletionResult);
+	        this.Z = this.convertValues(source["Z"], file.FileDeletionArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class FileReading {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: file.FileReadingResult;
+	    Z: file.FileReadingArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileReading(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], file.FileReadingResult);
+	        this.Z = this.convertValues(source["Z"], file.FileReadingArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class FileAppending {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: file.FileAppendingResult;
+	    Z: file.FileAppendingArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileAppending(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], file.FileAppendingResult);
+	        this.Z = this.convertValues(source["Z"], file.FileAppendingArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class FileTempCreation {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: file.FileTempCreationResult;
+	    Z: file.FileTempCreationArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileTempCreation(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], file.FileTempCreationResult);
+	        this.Z = this.convertValues(source["Z"], file.FileTempCreationArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class FileCreation {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: file.FileCreationResult;
+	    Z: file.FileCreationArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new FileCreation(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], file.FileCreationResult);
+	        this.Z = this.convertValues(source["Z"], file.FileCreationArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class ChangeTimes {
+	    Disable: boolean;
+	    Approval: string;
+	    // Go type: file
+	    Y: any;
+	    Z: file.ChangeTimesArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeTimes(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], null);
+	        this.Z = this.convertValues(source["Z"], file.ChangeTimesArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class ChangeOwner {
+	    Disable: boolean;
+	    Approval: string;
+	    // Go type: file
+	    Y: any;
+	    Z: file.ChangeOwnerArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeOwner(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], null);
+	        this.Z = this.convertValues(source["Z"], file.ChangeOwnerArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class ChangeMode {
+	    Disable: boolean;
+	    Approval: string;
+	    // Go type: file
+	    Y: any;
+	    Z: file.ChangeModeArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChangeMode(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], null);
+	        this.Z = this.convertValues(source["Z"], file.ChangeModeArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class Stats {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: file.StatsResult;
+	    Z: file.StatsArguments;
+	
+	    static createFrom(source: any = {}) {
+	        return new Stats(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], file.StatsResult);
+	        this.Z = this.convertValues(source["Z"], file.StatsArguments);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class SystemTime {
+	    Disable: boolean;
+	    Approval: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SystemTime(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	    }
+	}
+	export class Environment {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: system.EnvironmentResult;
+	    // Go type: system
+	    Z: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new Environment(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], system.EnvironmentResult);
+	        this.Z = this.convertValues(source["Z"], null);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class SystemInfo {
+	    Disable: boolean;
+	    Approval: string;
+	    Y: system.SystemInfoResult;
+	    // Go type: system
+	    Z: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new SystemInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Disable = source["Disable"];
+	        this.Approval = source["Approval"];
+	        this.Y = this.convertValues(source["Y"], system.SystemInfoResult);
+	        this.Z = this.convertValues(source["Z"], null);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class BuiltIns {
+	    SystemInfo: SystemInfo;
+	    Environment: Environment;
+	    SystemTime: SystemTime;
+	    Stats: Stats;
+	    ChangeMode: ChangeMode;
+	    ChangeOwner: ChangeOwner;
+	    ChangeTimes: ChangeTimes;
+	    FileCreation: FileCreation;
+	    FileTempCreation: FileTempCreation;
+	    FileAppending: FileAppending;
+	    FileReading: FileReading;
+	    FileDeletion: FileDeletion;
+	    DirectoryCreation: DirectoryCreation;
+	    DirectoryTempCreation: DirectoryTempCreation;
+	    DirectoryDeletion: DirectoryDeletion;
+	    CommandExec: CommandExecution;
+	    Http: Http;
+	    Disable: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new BuiltIns(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.SystemInfo = this.convertValues(source["SystemInfo"], SystemInfo);
+	        this.Environment = this.convertValues(source["Environment"], Environment);
+	        this.SystemTime = this.convertValues(source["SystemTime"], SystemTime);
+	        this.Stats = this.convertValues(source["Stats"], Stats);
+	        this.ChangeMode = this.convertValues(source["ChangeMode"], ChangeMode);
+	        this.ChangeOwner = this.convertValues(source["ChangeOwner"], ChangeOwner);
+	        this.ChangeTimes = this.convertValues(source["ChangeTimes"], ChangeTimes);
+	        this.FileCreation = this.convertValues(source["FileCreation"], FileCreation);
+	        this.FileTempCreation = this.convertValues(source["FileTempCreation"], FileTempCreation);
+	        this.FileAppending = this.convertValues(source["FileAppending"], FileAppending);
+	        this.FileReading = this.convertValues(source["FileReading"], FileReading);
+	        this.FileDeletion = this.convertValues(source["FileDeletion"], FileDeletion);
+	        this.DirectoryCreation = this.convertValues(source["DirectoryCreation"], DirectoryCreation);
+	        this.DirectoryTempCreation = this.convertValues(source["DirectoryTempCreation"], DirectoryTempCreation);
+	        this.DirectoryDeletion = this.convertValues(source["DirectoryDeletion"], DirectoryDeletion);
+	        this.CommandExec = this.convertValues(source["CommandExec"], CommandExecution);
+	        this.Http = this.convertValues(source["Http"], Http);
+	        this.Disable = source["Disable"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+}
+
 export namespace command {
 	
 	export class CommandExecutionArguments {
@@ -17,6 +696,52 @@ export namespace command {
 	        this.working_directory = source["working_directory"];
 	        this.environment = source["environment"];
 	    }
+	}
+	export class FunctionDefinition {
+	    name: string;
+	    description: string;
+	    parameters: mcp.ToolInputSchema;
+	    approval: string;
+	    command?: string;
+	    commandExpr?: string;
+	    env?: Record<string, string>;
+	    additionalEnv?: Record<string, string>;
+	    workingDir?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new FunctionDefinition(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.description = source["description"];
+	        this.parameters = this.convertValues(source["parameters"], mcp.ToolInputSchema);
+	        this.approval = source["approval"];
+	        this.command = source["command"];
+	        this.commandExpr = source["commandExpr"];
+	        this.env = source["env"];
+	        this.additionalEnv = source["additionalEnv"];
+	        this.workingDir = source["workingDir"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 
 }
@@ -173,15 +898,33 @@ export namespace controller {
 	        this.DurationMs = source["DurationMs"];
 	    }
 	}
+	export class LLMMessageCallMeta {
+	    BuiltIn: boolean;
+	    Custom: boolean;
+	    Mcp: boolean;
+	    NeedsApproval: boolean;
+	    ToolName: string;
+	    ToolDescription: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LLMMessageCallMeta(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.BuiltIn = source["BuiltIn"];
+	        this.Custom = source["Custom"];
+	        this.Mcp = source["Mcp"];
+	        this.NeedsApproval = source["NeedsApproval"];
+	        this.ToolName = source["ToolName"];
+	        this.ToolDescription = source["ToolDescription"];
+	    }
+	}
 	export class LLMMessageCall {
 	    Id: string;
 	    Function: string;
 	    Arguments: string;
-	    NeedsApproval: boolean;
-	    BuiltIn: boolean;
-	    McpTool: boolean;
-	    McpToolName: string;
-	    McpToolDescription: string;
+	    Meta: LLMMessageCallMeta;
 	    Result?: LLMMessageCallResult;
 	
 	    static createFrom(source: any = {}) {
@@ -193,11 +936,7 @@ export namespace controller {
 	        this.Id = source["Id"];
 	        this.Function = source["Function"];
 	        this.Arguments = source["Arguments"];
-	        this.NeedsApproval = source["NeedsApproval"];
-	        this.BuiltIn = source["BuiltIn"];
-	        this.McpTool = source["McpTool"];
-	        this.McpToolName = source["McpToolName"];
-	        this.McpToolDescription = source["McpToolDescription"];
+	        this.Meta = this.convertValues(source["Meta"], LLMMessageCallMeta);
 	        this.Result = this.convertValues(source["Result"], LLMMessageCallResult);
 	    }
 	
@@ -333,6 +1072,7 @@ export namespace controller {
 	        this.Consumption = source["Consumption"];
 	    }
 	}
+	
 	
 	
 	
@@ -563,6 +1303,9 @@ export namespace file {
 	export class FileReadingArguments {
 	    path: string;
 	    limits?: FileReadingLimits;
+	    lm: string;
+	    lo: number;
+	    ll: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new FileReadingArguments(source);
@@ -572,6 +1315,9 @@ export namespace file {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.path = source["path"];
 	        this.limits = this.convertValues(source["limits"], FileReadingLimits);
+	        this.lm = source["lm"];
+	        this.lo = source["lo"];
+	        this.ll = source["ll"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1251,8 +1997,7 @@ export namespace llm {
 	    Anthropic: AnthropicConfig;
 	    DeepSeek: DeepSeekConfig;
 	    CallOptions: CallOptionsConfig;
-	    Tools: tools.Config;
-	    McpServer: Record<string, mcp.Server>;
+	    Tool: tools.Config;
 	
 	    static createFrom(source: any = {}) {
 	        return new LLMConfig(source);
@@ -1270,8 +2015,7 @@ export namespace llm {
 	        this.Anthropic = this.convertValues(source["Anthropic"], AnthropicConfig);
 	        this.DeepSeek = this.convertValues(source["DeepSeek"], DeepSeekConfig);
 	        this.CallOptions = this.convertValues(source["CallOptions"], CallOptionsConfig);
-	        this.Tools = this.convertValues(source["Tools"], tools.Config);
-	        this.McpServer = this.convertValues(source["McpServer"], mcp.Server, true);
+	        this.Tool = this.convertValues(source["Tool"], tools.Config);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1879,540 +2623,8 @@ export namespace model {
 
 }
 
-export namespace tools {
+export namespace system {
 	
-	export class Http {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: http.CallResult;
-	    Z: http.CallArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new Http(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], http.CallResult);
-	        this.Z = this.convertValues(source["Z"], http.CallArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class CommandExecution {
-	    Disable: boolean;
-	    Approval: string;
-	    Z: command.CommandExecutionArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new CommandExecution(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Z = this.convertValues(source["Z"], command.CommandExecutionArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class DirectoryDeletion {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: file.DirectoryDeletionResult;
-	    Z: file.DirectoryDeletionArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new DirectoryDeletion(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], file.DirectoryDeletionResult);
-	        this.Z = this.convertValues(source["Z"], file.DirectoryDeletionArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class DirectoryTempCreation {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: file.DirectoryTempCreationResult;
-	    // Go type: file
-	    Z: any;
-	
-	    static createFrom(source: any = {}) {
-	        return new DirectoryTempCreation(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], file.DirectoryTempCreationResult);
-	        this.Z = this.convertValues(source["Z"], null);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class DirectoryCreation {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: file.DirectoryCreationResult;
-	    Z: file.DirectoryCreationArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new DirectoryCreation(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], file.DirectoryCreationResult);
-	        this.Z = this.convertValues(source["Z"], file.DirectoryCreationArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class FileDeletion {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: file.FileDeletionResult;
-	    Z: file.FileDeletionArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileDeletion(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], file.FileDeletionResult);
-	        this.Z = this.convertValues(source["Z"], file.FileDeletionArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class FileReading {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: file.FileReadingResult;
-	    Z: file.FileReadingArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileReading(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], file.FileReadingResult);
-	        this.Z = this.convertValues(source["Z"], file.FileReadingArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class FileAppending {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: file.FileAppendingResult;
-	    Z: file.FileAppendingArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileAppending(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], file.FileAppendingResult);
-	        this.Z = this.convertValues(source["Z"], file.FileAppendingArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class FileTempCreation {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: file.FileTempCreationResult;
-	    Z: file.FileTempCreationArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileTempCreation(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], file.FileTempCreationResult);
-	        this.Z = this.convertValues(source["Z"], file.FileTempCreationArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class FileCreation {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: file.FileCreationResult;
-	    Z: file.FileCreationArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new FileCreation(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], file.FileCreationResult);
-	        this.Z = this.convertValues(source["Z"], file.FileCreationArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class ChangeTimes {
-	    Disable: boolean;
-	    Approval: string;
-	    // Go type: file
-	    Y: any;
-	    Z: file.ChangeTimesArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new ChangeTimes(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], null);
-	        this.Z = this.convertValues(source["Z"], file.ChangeTimesArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class ChangeOwner {
-	    Disable: boolean;
-	    Approval: string;
-	    // Go type: file
-	    Y: any;
-	    Z: file.ChangeOwnerArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new ChangeOwner(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], null);
-	        this.Z = this.convertValues(source["Z"], file.ChangeOwnerArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class ChangeMode {
-	    Disable: boolean;
-	    Approval: string;
-	    // Go type: file
-	    Y: any;
-	    Z: file.ChangeModeArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new ChangeMode(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], null);
-	        this.Z = this.convertValues(source["Z"], file.ChangeModeArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class Stats {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: file.StatsResult;
-	    Z: file.StatsArguments;
-	
-	    static createFrom(source: any = {}) {
-	        return new Stats(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], file.StatsResult);
-	        this.Z = this.convertValues(source["Z"], file.StatsArguments);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class SystemTime {
-	    Disable: boolean;
-	    Approval: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new SystemTime(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	    }
-	}
-	export class EnvironmentArguments {
-	
-	
-	    static createFrom(source: any = {}) {
-	        return new EnvironmentArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	
-	    }
-	}
 	export class EnvironmentResult {
 	    env: Record<string, string>;
 	
@@ -2423,55 +2635,6 @@ export namespace tools {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.env = source["env"];
-	    }
-	}
-	export class Environment {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: EnvironmentResult;
-	    // Go type: EnvironmentArguments
-	    Z: any;
-	
-	    static createFrom(source: any = {}) {
-	        return new Environment(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], EnvironmentResult);
-	        this.Z = this.convertValues(source["Z"], null);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class SystemInfoArguments {
-	
-	
-	    static createFrom(source: any = {}) {
-	        return new SystemInfoArguments(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	
 	    }
 	}
 	export class SystemInfoResult {
@@ -2502,142 +2665,15 @@ export namespace tools {
 	        this.process_id = source["process_id"];
 	    }
 	}
-	export class SystemInfo {
-	    Disable: boolean;
-	    Approval: string;
-	    Y: SystemInfoResult;
-	    // Go type: SystemInfoArguments
-	    Z: any;
+
+}
+
+export namespace tools {
 	
-	    static createFrom(source: any = {}) {
-	        return new SystemInfo(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Disable = source["Disable"];
-	        this.Approval = source["Approval"];
-	        this.Y = this.convertValues(source["Y"], SystemInfoResult);
-	        this.Z = this.convertValues(source["Z"], null);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	export class BuiltIns {
-	    SystemInfo: SystemInfo;
-	    Environment: Environment;
-	    SystemTime: SystemTime;
-	    Stats: Stats;
-	    ChangeMode: ChangeMode;
-	    ChangeOwner: ChangeOwner;
-	    ChangeTimes: ChangeTimes;
-	    FileCreation: FileCreation;
-	    FileTempCreation: FileTempCreation;
-	    FileAppending: FileAppending;
-	    FileReading: FileReading;
-	    FileDeletion: FileDeletion;
-	    DirectoryCreation: DirectoryCreation;
-	    DirectoryTempCreation: DirectoryTempCreation;
-	    DirectoryDeletion: DirectoryDeletion;
-	    CommandExec: CommandExecution;
-	    Http: Http;
-	    Disable: boolean;
-	
-	    static createFrom(source: any = {}) {
-	        return new BuiltIns(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.SystemInfo = this.convertValues(source["SystemInfo"], SystemInfo);
-	        this.Environment = this.convertValues(source["Environment"], Environment);
-	        this.SystemTime = this.convertValues(source["SystemTime"], SystemTime);
-	        this.Stats = this.convertValues(source["Stats"], Stats);
-	        this.ChangeMode = this.convertValues(source["ChangeMode"], ChangeMode);
-	        this.ChangeOwner = this.convertValues(source["ChangeOwner"], ChangeOwner);
-	        this.ChangeTimes = this.convertValues(source["ChangeTimes"], ChangeTimes);
-	        this.FileCreation = this.convertValues(source["FileCreation"], FileCreation);
-	        this.FileTempCreation = this.convertValues(source["FileTempCreation"], FileTempCreation);
-	        this.FileAppending = this.convertValues(source["FileAppending"], FileAppending);
-	        this.FileReading = this.convertValues(source["FileReading"], FileReading);
-	        this.FileDeletion = this.convertValues(source["FileDeletion"], FileDeletion);
-	        this.DirectoryCreation = this.convertValues(source["DirectoryCreation"], DirectoryCreation);
-	        this.DirectoryTempCreation = this.convertValues(source["DirectoryTempCreation"], DirectoryTempCreation);
-	        this.DirectoryDeletion = this.convertValues(source["DirectoryDeletion"], DirectoryDeletion);
-	        this.CommandExec = this.convertValues(source["CommandExec"], CommandExecution);
-	        this.Http = this.convertValues(source["Http"], Http);
-	        this.Disable = source["Disable"];
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
-	
-	
-	
-	
-	export class FunctionDefinition {
-	    name: string;
-	    description: string;
-	    parameters: any;
-	    approval: string;
-	    command?: string;
-	    commandExpr?: string;
-	    env?: Record<string, string>;
-	    additionalEnv?: Record<string, string>;
-	    workingDir?: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new FunctionDefinition(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.name = source["name"];
-	        this.description = source["description"];
-	        this.parameters = source["parameters"];
-	        this.approval = source["approval"];
-	        this.command = source["command"];
-	        this.commandExpr = source["commandExpr"];
-	        this.env = source["env"];
-	        this.additionalEnv = source["additionalEnv"];
-	        this.workingDir = source["workingDir"];
-	    }
-	}
 	export class Config {
-	    Tools: Record<string, FunctionDefinition>;
-	    BuiltInTools?: BuiltIns;
+	    BuiltIns: builtin.BuiltIns;
+	    McpServer: Record<string, mcp.Server>;
+	    Custom: Record<string, command.FunctionDefinition>;
 	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);
@@ -2645,8 +2681,9 @@ export namespace tools {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Tools = this.convertValues(source["Tools"], FunctionDefinition, true);
-	        this.BuiltInTools = this.convertValues(source["BuiltInTools"], BuiltIns);
+	        this.BuiltIns = this.convertValues(source["BuiltIns"], builtin.BuiltIns);
+	        this.McpServer = this.convertValues(source["McpServer"], mcp.Server, true);
+	        this.Custom = this.convertValues(source["Custom"], command.FunctionDefinition, true);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -2667,21 +2704,6 @@ export namespace tools {
 		    return a;
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }
 

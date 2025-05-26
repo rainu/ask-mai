@@ -28,37 +28,37 @@
 	<template v-else-if="isToolMessage">
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
 			<v-sheet color="grey-lighten-2" rounded>
-				<BuiltinToolCallSystemInfo :tc="tc" v-if="tc.BuiltIn && tc.Function.endsWith('getSystemInformation')" />
-				<BuiltinToolCallEnvironment :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getEnvironment')" />
-				<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getSystemTime')" />
+				<BuiltinToolCallSystemInfo :tc="tc" v-if="tc.Meta.BuiltIn && tc.Function.endsWith('getSystemInformation')" />
+				<BuiltinToolCallEnvironment :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('getEnvironment')" />
+				<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('getSystemTime')" />
 
-				<BuiltinToolCallChangeMode :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeMode')" />
-				<BuiltinToolCallChangeOwner :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeOwner')" />
-				<BuiltinToolCallChangeTimes :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('changeTimes')" />
+				<BuiltinToolCallChangeMode :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('changeMode')" />
+				<BuiltinToolCallChangeOwner :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('changeOwner')" />
+				<BuiltinToolCallChangeTimes :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('changeTimes')" />
 
-				<BuiltinToolCallStats :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('getStats')" />
+				<BuiltinToolCallStats :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('getStats')" />
 
 				<BuiltinToolCallFileCreation
 					:tc="tc"
-					v-else-if="tc.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))"
+					v-else-if="tc.Meta.BuiltIn && (tc.Function.endsWith('createFile') || tc.Function.endsWith('createTempFile'))"
 				/>
-				<BuiltinToolCallFileAppending :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('appendFile')" />
-				<BuiltinToolCallFileReading :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('readTextFile')" />
-				<BuiltinToolCallFileDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteFile')" />
+				<BuiltinToolCallFileAppending :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('appendFile')" />
+				<BuiltinToolCallFileReading :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('readTextFile')" />
+				<BuiltinToolCallFileDeletion :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('deleteFile')" />
 
 				<BuiltinToolCallDirectoryCreation
 					:tc="tc"
 					v-else-if="
-						tc.BuiltIn && (tc.Function.endsWith('createDirectory') || tc.Function.endsWith('createTempDirectory'))
+						tc.Meta.BuiltIn && (tc.Function.endsWith('createDirectory') || tc.Function.endsWith('createTempDirectory'))
 					"
 				/>
-				<BuiltinToolCallDirectoryDeletion :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('deleteDirectory')" />
+				<BuiltinToolCallDirectoryDeletion :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('deleteDirectory')" />
 
-				<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('executeCommand')" />
+				<BuiltinToolCallCommandExecution :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('executeCommand')" />
 
-				<BuiltinToolCallHttpCall :tc="tc" v-else-if="tc.BuiltIn && tc.Function.endsWith('callHttp')" />
+				<BuiltinToolCallHttpCall :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('callHttp')" />
 
-				<McpToolCall :tc="tc" v-else-if="tc.McpTool" />
+				<McpToolCall :tc="tc" v-else-if="tc.Meta.Mcp" />
 
 				<GeneralToolCall :tc="tc" v-else />
 

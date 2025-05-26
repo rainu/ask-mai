@@ -8,9 +8,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, tools } from '../../../wailsjs/go/models.ts'
+import { controller, system } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
-import EnvironmentResult = tools.EnvironmentResult
+import EnvironmentResult = system.EnvironmentResult
 import ToolCall from './ToolCall.vue'
 import VueMarkdown from 'vue-markdown-render'
 

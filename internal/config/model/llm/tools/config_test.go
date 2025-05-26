@@ -10,78 +10,66 @@ func TestConfig_GetTools(t *testing.T) {
 	toTest := Config{}
 	yacl.NewConfig(&toTest).ApplyDefaults()
 
-	result := toTest.GetTools()
+	result, err := toTest.GetTools(t.Context())
+	assert.NoError(t, err)
 
-	fd, contains := result[BuiltInPrefix+"getSystemInformation"]
+	_, contains := result[ServerNameBuiltin+"_getSystemInformation"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	_, contains = result[BuiltInPrefix+"getEnvironment"]
+	_, contains = result[ServerNameBuiltin+"_getEnvironment"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"getSystemTime"]
+	_, contains = result[ServerNameBuiltin+"_getSystemTime"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"getStats"]
+	_, contains = result[ServerNameBuiltin+"_getStats"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"changeMode"]
+	_, contains = result[ServerNameBuiltin+"_changeMode"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"changeOwner"]
+	_, contains = result[ServerNameBuiltin+"_changeOwner"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"changeTimes"]
+	_, contains = result[ServerNameBuiltin+"_changeTimes"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"appendFile"]
+	_, contains = result[ServerNameBuiltin+"_appendFile"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"createFile"]
+	_, contains = result[ServerNameBuiltin+"_createFile"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"deleteFile"]
+	_, contains = result[ServerNameBuiltin+"_deleteFile"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"createTempFile"]
+	_, contains = result[ServerNameBuiltin+"_createTempFile"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"createDirectory"]
+	_, contains = result[ServerNameBuiltin+"_createDirectory"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"deleteDirectory"]
+	_, contains = result[ServerNameBuiltin+"_deleteDirectory"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"createTempDirectory"]
+	_, contains = result[ServerNameBuiltin+"_createTempDirectory"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"readTextFile"]
+	_, contains = result[ServerNameBuiltin+"_readTextFile"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"executeCommand"]
+	_, contains = result[ServerNameBuiltin+"_executeCommand"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
-	fd, contains = result[BuiltInPrefix+"callHttp"]
+	_, contains = result[ServerNameBuiltin+"_callHttp"]
 	assert.True(t, contains)
-	assert.True(t, fd.IsBuiltIn())
 
 	// deactivate builtin tool
 
-	toTest.BuiltInTools.SystemInfo.Disable = true
-	toTest.BuiltInTools.SystemTime.Disable = true
-	toTest.BuiltInTools.Environment.Disable = true
-	toTest.BuiltInTools.Stats.Disable = true
-	toTest.BuiltInTools.ChangeMode.Disable = true
-	toTest.BuiltInTools.ChangeOwner.Disable = true
-	toTest.BuiltInTools.ChangeTimes.Disable = true
-	toTest.BuiltInTools.FileAppending.Disable = true
-	toTest.BuiltInTools.FileCreation.Disable = true
-	toTest.BuiltInTools.FileTempCreation.Disable = true
-	toTest.BuiltInTools.FileReading.Disable = true
-	toTest.BuiltInTools.FileDeletion.Disable = true
-	toTest.BuiltInTools.DirectoryCreation.Disable = true
-	toTest.BuiltInTools.DirectoryTempCreation.Disable = true
-	toTest.BuiltInTools.DirectoryDeletion.Disable = true
-	toTest.BuiltInTools.CommandExec.Disable = true
-	toTest.BuiltInTools.Http.Disable = true
-	assert.Empty(t, toTest.GetTools())
+	toTest.BuiltIns.SystemInfo.Disable = true
+	toTest.BuiltIns.SystemTime.Disable = true
+	toTest.BuiltIns.Environment.Disable = true
+	toTest.BuiltIns.Stats.Disable = true
+	toTest.BuiltIns.ChangeMode.Disable = true
+	toTest.BuiltIns.ChangeOwner.Disable = true
+	toTest.BuiltIns.ChangeTimes.Disable = true
+	toTest.BuiltIns.FileAppending.Disable = true
+	toTest.BuiltIns.FileCreation.Disable = true
+	toTest.BuiltIns.FileTempCreation.Disable = true
+	toTest.BuiltIns.FileReading.Disable = true
+	toTest.BuiltIns.FileDeletion.Disable = true
+	toTest.BuiltIns.DirectoryCreation.Disable = true
+	toTest.BuiltIns.DirectoryTempCreation.Disable = true
+	toTest.BuiltIns.DirectoryDeletion.Disable = true
+	toTest.BuiltIns.CommandExec.Disable = true
+	toTest.BuiltIns.Http.Disable = true
+
+	result, err = toTest.GetTools(t.Context())
+	assert.NoError(t, err)
+
+	assert.Empty(t, result)
 }

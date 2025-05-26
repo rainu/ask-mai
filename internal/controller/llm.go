@@ -31,15 +31,22 @@ type LLMMessageContentPart struct {
 }
 
 type LLMMessageCall struct {
-	Id                 string
-	Function           string
-	Arguments          string
-	NeedsApproval      bool
-	BuiltIn            bool
-	McpTool            bool
-	McpToolName        string
-	McpToolDescription string
-	Result             *LLMMessageCallResult
+	Id        string
+	Function  string
+	Arguments string
+	Meta      LLMMessageCallMeta
+	Result    *LLMMessageCallResult
+}
+
+type LLMMessageCallMeta struct {
+	BuiltIn bool
+	Custom  bool
+	Mcp     bool
+
+	NeedsApproval bool
+
+	ToolName        string
+	ToolDescription string
 }
 
 type LLMMessageCallResult struct {

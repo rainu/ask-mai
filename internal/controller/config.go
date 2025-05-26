@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/rainu/ask-mai/internal/config/model"
-	configMcp "github.com/rainu/ask-mai/internal/config/model/llm/mcp"
-	"github.com/rainu/ask-mai/internal/config/model/llm/tools"
+	"github.com/rainu/ask-mai/internal/config/model/llm/tools/builtin"
+	iMcp "github.com/rainu/ask-mai/internal/config/model/llm/tools/mcp"
 	"github.com/rainu/ask-mai/internal/mcp/client"
 )
 
@@ -37,18 +37,18 @@ func (c *Controller) SetActiveProfile(profileName string) model.Profile {
 	return *c.getProfile()
 }
 
-func (c *Controller) SetBuiltinTools(config tools.BuiltIns) {
-	c.getProfile().LLM.Tools.BuiltInTools = &config
+func (c *Controller) SetBuiltinTools(config builtin.BuiltIns) {
+	c.getProfile().LLM.Tool.BuiltIns = config
 }
 
-func (c *Controller) SetMcpTools(config map[string]configMcp.Server) {
-	c.getProfile().LLM.McpServer = config
+func (c *Controller) SetMcpTools(config map[string]iMcp.Server) {
+	c.getProfile().LLM.Tool.McpServer = config
 }
 
 func (c *Controller) ListMcpTools() (map[string][]mcp.Tool, error) {
 	result := map[string][]mcp.Tool{}
 
-	for name, server := range c.getProfile().LLM.McpServer {
+	for name, server := range c.getProfile().LLM.Tool.McpServer {
 		var err error
 		result[name], err = client.ListTools(c.ctx, &server)
 		if err != nil {

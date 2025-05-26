@@ -23,7 +23,7 @@
 		</v-card-text>
 		<v-progress-linear indeterminate size="small" v-else></v-progress-linear>
 
-		<v-card-actions v-if="tc.NeedsApproval && !tc.Result" class="pa-0">
+		<v-card-actions v-if="tc.Meta.NeedsApproval && !tc.Result" class="pa-0">
 			<v-row dense>
 				<v-col cols="6" class="pr-0">
 					<v-btn block variant="flat" color="success" @click="setToolCallApproval(tc, true)">
@@ -71,7 +71,7 @@ export default defineComponent({
 	},
 	methods: {
 		setToolCallApproval(call: LLMMessageCall, approved: boolean) {
-			call.NeedsApproval = false
+			call.Meta.NeedsApproval = false
 			if (approved) {
 				LLMApproveToolCall(call.Id)
 			} else {

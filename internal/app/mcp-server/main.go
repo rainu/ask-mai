@@ -3,7 +3,8 @@ package mcp_server
 import (
 	"fmt"
 	"github.com/mark3labs/mcp-go/server"
-	imcpServer "github.com/rainu/ask-mai/internal/mcp/server"
+	"github.com/rainu/ask-mai/internal/config/model/llm/tools/builtin"
+	mcpServer "github.com/rainu/ask-mai/internal/mcp/server/builtin"
 	"os"
 )
 
@@ -12,7 +13,7 @@ type Args struct {
 }
 
 func Main(args Args) int {
-	s := imcpServer.NewServer(args.VersionLine, imcpServer.Options{})
+	s := mcpServer.NewServer(args.VersionLine, builtin.BuiltIns{})
 	err := server.ServeStdio(s)
 
 	if err != nil {

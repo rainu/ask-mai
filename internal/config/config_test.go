@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/rainu/ask-mai/internal/config/model"
 	"github.com/rainu/ask-mai/internal/config/model/common"
-	"github.com/rainu/ask-mai/internal/config/model/llm/mcp"
+	"github.com/rainu/ask-mai/internal/config/model/llm/tools/mcp"
 	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -696,9 +696,9 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set MCP Timeout",
-			args: []string{"--llm.mcpServers[test].timeout.execution=1m"},
+			args: []string{"--llm.tool.mcpServers[test].timeout.execution=1m"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.LLM.McpServer = map[string]mcp.Server{
+				c.MainProfile.LLM.Tool.McpServer = map[string]mcp.Server{
 					"test": {
 						Timeout: mcp.Timeout{
 							Init:      yacl.P(5 * time.Second),
