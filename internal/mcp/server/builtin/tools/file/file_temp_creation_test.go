@@ -23,15 +23,15 @@ func TestTool_FileTempCreation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 
-	var parsedRsult FileTempCreationResult
-	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedRsult))
+	var parsedResult FileTempCreationResult
+	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedResult))
 	defer func() {
-		os.Remove(parsedRsult.Path)
+		os.Remove(parsedResult.Path)
 	}()
 
-	assert.Contains(t, parsedRsult.Path, os.TempDir())
+	assert.Contains(t, parsedResult.Path, os.TempDir())
 
-	info, err := os.Stat(parsedRsult.Path)
+	info, err := os.Stat(parsedResult.Path)
 	assert.NoError(t, err)
 	assert.False(t, info.IsDir())
 	assert.Equal(t, os.FileMode(0644), info.Mode().Perm(), "File permissions should be set to 0644")
@@ -52,16 +52,16 @@ func TestTool_FileTempCreation_WithSuffix(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 
-	var parsedRsult FileTempCreationResult
-	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedRsult))
+	var parsedResult FileTempCreationResult
+	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedResult))
 	defer func() {
-		os.Remove(parsedRsult.Path)
+		os.Remove(parsedResult.Path)
 	}()
 
-	assert.True(t, strings.HasPrefix(parsedRsult.Path, os.TempDir()))
-	assert.True(t, strings.HasSuffix(parsedRsult.Path, ".txt"))
+	assert.True(t, strings.HasPrefix(parsedResult.Path, os.TempDir()))
+	assert.True(t, strings.HasSuffix(parsedResult.Path, ".txt"))
 
-	info, err := os.Stat(parsedRsult.Path)
+	info, err := os.Stat(parsedResult.Path)
 	assert.NoError(t, err)
 	assert.False(t, info.IsDir())
 	assert.Equal(t, os.FileMode(0644), info.Mode().Perm(), "File permissions should be set to 0644")
@@ -82,15 +82,15 @@ func TestTool_FileTempCreation_CustomPermissions(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 
-	var parsedRsult FileTempCreationResult
-	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedRsult))
+	var parsedResult FileTempCreationResult
+	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedResult))
 	defer func() {
-		os.Remove(parsedRsult.Path)
+		os.Remove(parsedResult.Path)
 	}()
 
-	assert.Contains(t, parsedRsult.Path, os.TempDir())
+	assert.Contains(t, parsedResult.Path, os.TempDir())
 
-	info, err := os.Stat(parsedRsult.Path)
+	info, err := os.Stat(parsedResult.Path)
 	assert.NoError(t, err)
 	assert.False(t, info.IsDir())
 	assert.Equal(t, os.FileMode(0600), info.Mode().Perm(), "File permissions should be set to 0600")

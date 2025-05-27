@@ -35,11 +35,11 @@ func TestTool_Stats(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 
-	var parsedRsult StatsResult
-	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedRsult))
+	var parsedResult StatsResult
+	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedResult))
 
-	assert.NotEmpty(t, parsedRsult.ModTime)
-	parsedRsult.ModTime = time.Time{}
+	assert.NotEmpty(t, parsedResult.ModTime)
+	parsedResult.ModTime = time.Time{}
 
 	assert.Equal(t, StatsResult{
 		Path:        testFile.Name(),
@@ -48,7 +48,7 @@ func TestTool_Stats(t *testing.T) {
 		Permissions: "-rw-------",
 		Size:        12,
 		ModTime:     time.Time{},
-	}, parsedRsult)
+	}, parsedResult)
 }
 
 func TestTool_Stats_HomeResolving(t *testing.T) {
@@ -80,11 +80,11 @@ func TestTool_Stats_HomeResolving(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 
-	var parsedRsult StatsResult
-	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedRsult))
+	var parsedResult StatsResult
+	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedResult))
 
-	assert.NotEmpty(t, parsedRsult.ModTime)
-	parsedRsult.ModTime = time.Time{}
+	assert.NotEmpty(t, parsedResult.ModTime)
+	parsedResult.ModTime = time.Time{}
 
 	assert.Equal(t, StatsResult{
 		Path:        testFile.Name(),
@@ -93,7 +93,7 @@ func TestTool_Stats_HomeResolving(t *testing.T) {
 		Permissions: "-rw-r--r--",
 		Size:        12,
 		ModTime:     time.Time{},
-	}, parsedRsult)
+	}, parsedResult)
 }
 
 func TestTool_Stats_Requirements_Path(t *testing.T) {
@@ -144,18 +144,17 @@ func TestTool_Stats_Requirements_PathIsDirectory(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 
-	var parsedRsult StatsResult
-	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedRsult))
+	var parsedResult StatsResult
+	require.NoError(t, json.Unmarshal([]byte(res.Content[0].(mcp.TextContent).Text), &parsedResult))
 
-	assert.NotEmpty(t, parsedRsult.ModTime)
-	parsedRsult.ModTime = time.Time{}
+	assert.NotEmpty(t, parsedResult.ModTime)
+	parsedResult.ModTime = time.Time{}
+	parsedResult.Size = 0
 
 	assert.Equal(t, StatsResult{
 		Path:        req.Params.Arguments["path"].(string),
 		IsDirectory: true,
 		IsRegular:   false,
 		Permissions: "-rwxr-xr-x",
-		Size:        40,
-		ModTime:     time.Time{},
-	}, parsedRsult)
+	}, parsedResult)
 }
