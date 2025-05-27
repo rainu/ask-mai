@@ -56,6 +56,17 @@ var FileDeletionToolHandler = func(ctx context.Context, request mcp.CallToolRequ
 		absolutePath = path
 	}
 
+	info, err := os.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("file does not exist: %s", path)
+		}
+		return nil, fmt.Errorf("error checking file: %w", err)
+	}
+	if info.IsDir() {
+		return nil, fmt.Errorf("path is a directory, not a file: %s", path)
+	}
+
 	err = os.Remove(path)
 	if err != nil {
 		return nil, fmt.Errorf("error deleting file: %w", err)

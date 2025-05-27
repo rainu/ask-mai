@@ -63,7 +63,7 @@ var DirectoryCreationToolHandler = func(ctx context.Context, request mcp.CallToo
 		return nil, fmt.Errorf("directory already exists: %s", path)
 	}
 
-	perm, err := pArgs.Permission.Get(os.FileMode(0644))
+	perm, err := pArgs.Permission.Get(os.FileMode(0755))
 	if err != nil {
 		return nil, err
 	}

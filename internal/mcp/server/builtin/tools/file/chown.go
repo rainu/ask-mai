@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/rainu/go-yacl"
 	"io"
 	"os"
 )
 
 type ChangeOwnerArguments struct {
 	Path Path `json:"path"`
-	Uid  int  `json:"user_id"`
-	Gid  int  `json:"group_id"`
+	Uid  *int `json:"user_id"`
+	Gid  *int `json:"group_id"`
 }
 
 type ChangeOwnerResult struct {
@@ -25,12 +26,10 @@ var ChangeOwnerTool = mcp.NewTool("changeOwner",
 		mcp.Description("The path to the file or directory to change the owner for. Use '~' as placeholder for the user's home directory."),
 	),
 	mcp.WithNumber("user_id",
-		mcp.Required(),
-		mcp.Description("The id of the user which should own the file or directory. Use -1 to keep the current user."),
+		mcp.Description("The id of the user which should own the file or directory."),
 	),
 	mcp.WithNumber("group_id",
-		mcp.Required(),
-		mcp.Description("The id of the group which should own the file or directory. Use -1 to keep the current group."),
+		mcp.Description("The id of the group which should own the file or directory."),
 	),
 )
 
@@ -52,12 +51,21 @@ var ChangeOwnerToolHandler = func(ctx context.Context, request mcp.CallToolReque
 	if string(pArgs.Path) == "" {
 		return nil, fmt.Errorf("missing parameter: 'path'")
 	}
+	if pArgs.Uid == nil && pArgs.Gid == nil {
+		return nil, fmt.Errorf("missing parameter: 'user_id' or 'group_id'")
+	}
+	if pArgs.Uid == nil {
+		pArgs.Uid = yacl.P(-1)
+	}
+	if pArgs.Gid == nil {
+		pArgs.Gid = yacl.P(-1)
+	}
 	path, err := pArgs.Path.Get()
 	if err != nil {
 		return nil, err
 	}
 
-	err = os.Chown(path, pArgs.Uid, pArgs.Gid)
+	err = os.Chown(path, *pArgs.Uid, *pArgs.Gid)
 	if err != nil {
 		return nil, fmt.Errorf("error changing owner: %w", err)
 	}

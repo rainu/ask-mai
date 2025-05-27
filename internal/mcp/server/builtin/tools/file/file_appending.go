@@ -28,7 +28,8 @@ var FileAppendingTool = mcp.NewTool("appendFile",
 		mcp.Description("The path to the file to create. Use '~' as placeholder for the user's home directory."),
 	),
 	mcp.WithString("content",
-		mcp.Description("The content of the file"),
+		mcp.Required(),
+		mcp.Description("The content of the file."),
 	),
 )
 
@@ -50,6 +51,10 @@ var FileAppendingToolHandler = func(ctx context.Context, request mcp.CallToolReq
 	if string(pArgs.Path) == "" {
 		return nil, fmt.Errorf("missing parameter: 'path'")
 	}
+	if pArgs.Content == "" {
+		return nil, fmt.Errorf("missing parameter: 'content'")
+	}
+
 	path, err := pArgs.Path.Get()
 	if err != nil {
 		return nil, err
