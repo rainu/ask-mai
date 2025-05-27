@@ -8,7 +8,6 @@ import (
 	"github.com/rainu/ask-mai/internal/llms/common"
 	"github.com/rainu/go-yacl"
 	"github.com/tmc/langchaingo/llms"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"os"
 	"strings"
 	"time"
@@ -255,11 +254,11 @@ func (c *Controller) streamingFunc(ctx context.Context, chunk []byte) error {
 	}
 	if len(c.streamBuffer) > 0 {
 		// emit the buffered chunk
-		runtime.EventsEmit(c.ctx, "llm:stream:chunk", string(c.streamBuffer))
+		RuntimeEventsEmit(c.ctx, "llm:stream:chunk", string(c.streamBuffer))
 		c.streamBuffer = nil
 	}
 
-	runtime.EventsEmit(c.ctx, "llm:stream:chunk", string(chunk))
+	RuntimeEventsEmit(c.ctx, "llm:stream:chunk", string(chunk))
 	return nil
 }
 

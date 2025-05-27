@@ -8,7 +8,6 @@ import (
 	"github.com/rainu/ask-mai/internal/io"
 	"github.com/rainu/ask-mai/internal/llms/common"
 	"github.com/rainu/ask-mai/internal/sync"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"os"
 )
 
@@ -37,7 +36,7 @@ type Controller struct {
 func (c *Controller) startup(ctx context.Context) {
 	c.ctx = ctx
 
-	screens, err := runtime.ScreenGetAll(ctx)
+	screens, err := RuntimeScreenGetAll(ctx)
 	if err != nil {
 		panic(fmt.Errorf("could not get screens: %w", err))
 	}

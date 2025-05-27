@@ -21,6 +21,13 @@ func (c *Config) Validate() error {
 	}
 
 	for cmd, definition := range c.Custom {
+		definition.Name = cmd
+
+		if definition.Parameters.Type == "" && len(definition.Parameters.Properties) == 0 {
+			definition.Parameters.Type = "object"                   // Default to object if no type is set
+			definition.Parameters.Properties = make(map[string]any) // Ensure Properties is initialized
+		}
+
 		if definition.CommandExpr != "" {
 			if ve := command.Expression(definition.CommandExpr).Validate(); ve != nil {
 				return ve
@@ -34,6 +41,9 @@ func (c *Config) Validate() error {
 		} else {
 			return fmt.Errorf("Command for tool '%s' is missing", cmd)
 		}
+
+		// definition is only a local copy, so we need to set it back
+		c.Custom[cmd] = definition
 	}
 
 	return nil

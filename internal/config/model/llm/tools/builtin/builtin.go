@@ -32,8 +32,6 @@ type BuiltIns struct {
 	CommandExec CommandExecution `yaml:"command-execution,omitempty" usage:"[Command execution] "`
 
 	Http Http `yaml:"http,omitempty" usage:"[HTTP] "`
-
-	Disable bool `yaml:"disable,omitempty" usage:"Disable all builtin tools."`
 }
 
 func (b *BuiltIns) GetApprovalFor(toolName string) string {

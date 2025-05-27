@@ -8,11 +8,15 @@ import (
 	"github.com/rainu/ask-mai/internal/config/model/llm/tools"
 	"github.com/rainu/ask-mai/internal/mcp/client"
 	"github.com/tmc/langchaingo/llms"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"log/slog"
 	"strings"
 	"sync"
 	"time"
+)
+
+const (
+	EventNameLLMMessageAdd    = "llm:message:add"
+	EventNameLLMMessageUpdate = "llm:message:update"
 )
 
 func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessages, err error) {
@@ -33,7 +37,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			Created: time.Now().Unix(),
 		}
 
-		runtime.EventsEmit(c.ctx, "llm:message:add", txtMessage)
+		RuntimeEventsEmit(c.ctx, EventNameLLMMessageAdd, txtMessage)
 		result = append(result, txtMessage)
 	}
 
@@ -94,7 +98,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 			}},
 		}
 		result = append(result, tcMessage)
-		runtime.EventsEmit(c.ctx, "llm:message:add", tcMessage)
+		RuntimeEventsEmit(c.ctx, EventNameLLMMessageAdd, tcMessage)
 	}
 
 	wg := sync.WaitGroup{}
@@ -129,7 +133,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 					for p := range tcMessage.ContentParts {
 						if tcMessage.ContentParts[p].Call.Id == call.ID {
 							tcMessage.ContentParts[p].Call.Result = &r
-							runtime.EventsEmit(c.ctx, "llm:message:update", tcMessage)
+							RuntimeEventsEmit(c.ctx, EventNameLLMMessageUpdate, tcMessage)
 							return
 						}
 					}

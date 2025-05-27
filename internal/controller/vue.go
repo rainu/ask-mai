@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"math"
 )
 
@@ -9,7 +8,7 @@ import (
 func (c *Controller) AppMounted() {
 	c.applyInitialWindowConfig()
 
-	runtime.WindowShow(c.ctx)
+	RuntimeWindowShow(c.ctx)
 
 	c.vueAppMounted = true
 }
@@ -19,16 +18,16 @@ func (c *Controller) IsAppMounted() bool {
 }
 
 func (c *Controller) applyInitialWindowConfig() {
-	_, height := runtime.WindowGetSize(c.ctx)
+	_, height := RuntimeWindowGetSize(c.ctx)
 
 	initWidth := int(*c.getProfile().UI.Window.InitialWidth.Value)
 	if int(initWidth) > 0 {
-		runtime.WindowSetSize(c.ctx, initWidth, height)
+		RuntimeWindowSetSize(c.ctx, initWidth, height)
 	}
 
 	maxHeight := int(*c.getProfile().UI.Window.MaxHeight.Value)
 	if maxHeight > 0 {
-		runtime.WindowSetMaxSize(c.ctx, math.MaxInt32, maxHeight)
+		RuntimeWindowSetMaxSize(c.ctx, math.MaxInt32, maxHeight)
 	}
 
 	posX := int(*c.getProfile().UI.Window.InitialPositionX.Value)
@@ -39,8 +38,8 @@ func (c *Controller) applyInitialWindowConfig() {
 	}
 
 	if posX >= 0 || posY >= 0 {
-		runtime.WindowSetPosition(c.ctx, posX, posY)
+		RuntimeWindowSetPosition(c.ctx, posX, posY)
 	} else {
-		runtime.WindowCenter(c.ctx)
+		RuntimeWindowCenter(c.ctx)
 	}
 }

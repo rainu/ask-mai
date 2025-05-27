@@ -17,7 +17,7 @@ func (c *Controller) OpenFileDialog(args OpenFileDialogArgs) ([]string, error) {
 		})
 	}
 
-	return runtime.OpenMultipleFilesDialog(c.ctx, runtime.OpenDialogOptions{
+	return RuntimeOpenMultipleFilesDialog(c.ctx, runtime.OpenDialogOptions{
 		Title:                      args.Title,
 		Filters:                    filter,
 		DefaultDirectory:           c.getProfile().UI.FileDialog.DefaultDirectory,
