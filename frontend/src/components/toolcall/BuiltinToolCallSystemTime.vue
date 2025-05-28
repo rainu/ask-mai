@@ -1,7 +1,7 @@
 <template>
 	<ToolCall :tc="tc" icon="mdi-clock-time-one" without-title>
 		<template v-slot:content>
-			<vue-markdown :source="contentAsMarkdown"></vue-markdown>
+			<Markdown :content="contentAsMarkdown" />
 		</template>
 	</ToolCall>
 </template>
@@ -11,11 +11,11 @@ import { defineComponent } from 'vue'
 import { controller } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
 import ToolCall from './ToolCall.vue'
-import VueMarkdown from 'vue-markdown-render'
+import Markdown from '../Markdown.vue'
 
 export default defineComponent({
 	name: 'BuiltinToolCallSystemTime',
-	components: { ToolCall, VueMarkdown },
+	components: { Markdown, ToolCall },
 	props: {
 		tc: {
 			type: Object as () => LLMMessageCall,
@@ -23,7 +23,7 @@ export default defineComponent({
 		},
 	},
 	computed: {
-		contentAsMarkdown(){
+		contentAsMarkdown(): string {
 			return '```\n' + this.tc.Result?.Content + '\n```'
 		}
 	}

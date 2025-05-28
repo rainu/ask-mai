@@ -23,7 +23,7 @@
 					</v-col>
 				</v-row>
 
-				<vue-markdown :source="requestBodyAsMarkdown" v-if="parsedArguments.body" ></vue-markdown>
+				<Markdown :content="requestBodyAsMarkdown" v-if="parsedArguments.body" />
 			</div>
 
 			<v-divider thickness="5" inset class="my-4"/>
@@ -40,7 +40,7 @@
 					</v-col>
 				</v-row>
 
-				<vue-markdown :source="responseBodyAsMarkdown" ></vue-markdown>
+				<Markdown :content="responseBodyAsMarkdown" />
 			</div>
 		</template>
 	</ToolCall>
@@ -53,11 +53,11 @@ import LLMMessageCall = controller.LLMMessageCall
 import CallArguments = http.CallArguments
 import CallResult = http.CallResult
 import ToolCall from './ToolCall.vue'
-import VueMarkdown from 'vue-markdown-render'
+import Markdown from '../Markdown.vue'
 
 export default defineComponent({
 	name: 'BuiltinToolCallHttpCall',
-	components: { ToolCall, VueMarkdown },
+	components: { Markdown, ToolCall },
 	props: {
 		tc: {
 			type: Object as () => LLMMessageCall,
@@ -78,8 +78,8 @@ export default defineComponent({
 			}
 			return null
 		},
-		requestBodyAsMarkdown() {
-			if(!this.tc.Arguments) return null;
+		requestBodyAsMarkdown(): string {
+			if(!this.tc.Arguments) return '';
 
 			let line = '```\n'
 			if(this.parsedArguments.body) {
@@ -89,8 +89,8 @@ export default defineComponent({
 
 			return line
 		},
-		responseBodyAsMarkdown() {
-			if(!this.tc.Result) return null;
+		responseBodyAsMarkdown(): string {
+			if(!this.tc.Result) return '';
 
 			let line = '```\n'
 			line += this.parsedResult?.body

@@ -9,7 +9,7 @@
 			</template>
 		</template>
 		<template v-slot:content>
-			<vue-markdown :source="contentAsMarkdown"></vue-markdown>
+			<Markdown :content="contentAsMarkdown" />
 		</template>
 	</ToolCall>
 </template>
@@ -21,11 +21,11 @@ import LLMMessageCall = controller.LLMMessageCall
 import StatsArguments = file.StatsArguments
 import StatsResult = file.StatsResult
 import ToolCall from './ToolCall.vue'
-import VueMarkdown from 'vue-markdown-render'
+import Markdown from '../Markdown.vue'
 
 export default defineComponent({
 	name: 'BuiltinToolCallStats',
-	components: { ToolCall, VueMarkdown },
+	components: { Markdown, ToolCall },
 	props: {
 		tc: {
 			type: Object as () => LLMMessageCall,
@@ -46,11 +46,11 @@ export default defineComponent({
 			}
 			return null
 		},
-		contentAsMarkdown(){
+		contentAsMarkdown(): string {
 			if(this.parsedResult) {
 				return '```\n' + JSON.stringify(this.parsedResult, null, 3) + '\n```'
 			}
-			return null
+			return ''
 		}
 	}
 })

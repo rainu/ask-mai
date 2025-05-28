@@ -4,8 +4,8 @@
 			{{ title }}
 		</template>
 
-		<template v-slot:content v-if="tc.Result">
-			<vue-markdown :source="resultAsMarkdown"></vue-markdown>
+		<template v-slot:content v-if="resultAsMarkdown">
+			<Markdown :content="resultAsMarkdown" />
 		</template>
 	</ToolCall>
 </template>
@@ -16,11 +16,11 @@ import { controller, command } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
 import CommandExecutionArguments = command.CommandExecutionArguments
 import ToolCall from './ToolCall.vue'
-import VueMarkdown from 'vue-markdown-render'
+import Markdown from '../Markdown.vue'
 
 export default defineComponent({
 	name: 'BuiltinToolCallCommandExecution',
-	components: { ToolCall, VueMarkdown },
+	components: { Markdown, ToolCall },
 	props: {
 		tc: {
 			type: Object as () => LLMMessageCall,
@@ -38,8 +38,8 @@ export default defineComponent({
 			}
 			return line
 		},
-		resultAsMarkdown() {
-			if(!this.tc.Result) return null;
+		resultAsMarkdown(): string {
+			if(!this.tc.Result) return '';
 
 			let line = "```\n$> "
 			if(this.parsedArguments.working_directory){

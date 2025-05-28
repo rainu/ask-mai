@@ -12,20 +12,19 @@
 												readonly hide-details density="compact"></v-text-field>
 				</v-col>
 				<v-col cols="12">
-					<vue-markdown :source="textAsMarkdown(tc.Arguments)" />
+					<Markdown :content="textAsMarkdown(tc.Arguments)" />
 				</v-col>
 
 				<template v-if="content" >
 					<v-col cols="12" v-for="c in content">
 						<template v-if="c.type === 'text'">
-							<vue-markdown :source="textAsMarkdown(c.text ?? '')" />
+							<Markdown :content="textAsMarkdown(c.text ?? '')" />
 						</template>
 						<template v-else-if="c.type === 'image'">
 							<img :src="c.image" alt="Image" />
 						</template>
 					</v-col>
 				</template>
-
 			</v-row>
 		</template>
 	</ToolCall>
@@ -34,9 +33,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ToolCall from './ToolCall.vue'
-import VueMarkdown from 'vue-markdown-render'
 import { controller } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
+import Markdown from '../Markdown.vue'
 
 type Content = {
 	type: string
@@ -46,7 +45,7 @@ type Content = {
 
 export default defineComponent({
 	name: 'McpToolCall',
-	components: { ToolCall, VueMarkdown },
+	components: { Markdown, ToolCall },
 	props: {
 		tc: {
 			type: Object as () => LLMMessageCall,
@@ -54,7 +53,7 @@ export default defineComponent({
 		},
 	},
 	methods: {
-		textAsMarkdown(text: string) {
+		textAsMarkdown(text: string): string {
 			// try to prettify JSON
 			try {
 				text = JSON.stringify(JSON.parse(text), null, 2)
