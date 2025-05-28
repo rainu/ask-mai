@@ -15,7 +15,12 @@ func NewServer(version string, cfg builtin.BuiltIns) *server.MCPServer {
 		version,
 		server.WithToolCapabilities(false),
 	)
+	AddTools(s, cfg)
 
+	return s
+}
+
+func AddTools(s *server.MCPServer, cfg builtin.BuiltIns) {
 	if !cfg.SystemTime.Disable {
 		s.AddTool(system.SystemTimeTool, system.SystemTimeToolHandler)
 	}
@@ -72,6 +77,4 @@ func NewServer(version string, cfg builtin.BuiltIns) *server.MCPServer {
 	if !cfg.Http.Disable {
 		s.AddTool(http.CallTool, http.CallToolHandler)
 	}
-
-	return s
 }

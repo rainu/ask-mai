@@ -14,15 +14,7 @@ func NewServer(version string, cfg map[string]command.FunctionDefinition) *serve
 		version,
 		server.WithToolCapabilities(false),
 	)
-
-	for name, definition := range cfg {
-		t := mcp.Tool{
-			Name:        name,
-			Description: definition.Description,
-			InputSchema: definition.Parameters,
-		}
-		s.AddTool(t, handlerFor(definition))
-	}
+	AddTools(s, cfg)
 
 	return s
 }
@@ -36,5 +28,16 @@ func handlerFor(definition command.FunctionDefinition) server.ToolHandlerFunc {
 
 		rawResult, err := definition.CommandFn(ctx, string(raw))
 		return mcp.NewToolResultText(string(rawResult)), err
+	}
+}
+
+func AddTools(s *server.MCPServer, cfg map[string]command.FunctionDefinition) {
+	for name, definition := range cfg {
+		t := mcp.Tool{
+			Name:        name,
+			Description: definition.Description,
+			InputSchema: definition.Parameters,
+		}
+		s.AddTool(t, handlerFor(definition))
 	}
 }

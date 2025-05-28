@@ -612,7 +612,6 @@ export namespace builtin {
 	    DirectoryDeletion: DirectoryDeletion;
 	    CommandExec: CommandExecution;
 	    Http: Http;
-	    Disable: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new BuiltIns(source);
@@ -637,7 +636,6 @@ export namespace builtin {
 	        this.DirectoryDeletion = this.convertValues(source["DirectoryDeletion"], DirectoryDeletion);
 	        this.CommandExec = this.convertValues(source["CommandExec"], CommandExecution);
 	        this.Http = this.convertValues(source["Http"], Http);
-	        this.Disable = source["Disable"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -1110,8 +1108,8 @@ export namespace file {
 	}
 	export class ChangeOwnerArguments {
 	    path: string;
-	    user_id: number;
-	    group_id: number;
+	    user_id?: number;
+	    group_id?: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new ChangeOwnerArguments(source);
