@@ -27,6 +27,9 @@ package() {
   # Binary file
   install -Dm755 "\$srcdir/\$pkgname-binary-\$pkgver" "\$pkgdir/usr/bin/ask-mai"
 
+  # Symbolic link for mcp-server
+  ln -s "/usr/bin/ask-mai" "\$pkgdir/usr/bin/ask-mai-mcp-server"
+
   # Icon file
   install -Dm644 "build/appicon.png" "\$pkgdir/usr/share/pixmaps/ask-mai.png"
 

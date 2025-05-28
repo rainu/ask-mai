@@ -61,23 +61,25 @@ ask-mai -b deepseek --llm.deepseek.api-key.plain=YOUR_DEEPSEEK_API_KEY
 * Tool Support
   * You can define your own tools which can be called from the LLM
   * There are some built-in tools:
-    * "_getSystemInformation" - Get some information about the system
-    * "_getEnvironment" - Read environment variables from the system
-    * "_getSystemTime" - Get the current system time
-    * "_getStats" - Get stats of a file or directory
-    * "_changeMode" - Changes the mode of file or directory
-    * "_changeOwner" - Changes the owner of file or directory
-    * "_changeTimes" - Changes the access and/or modification time of file or directory
-    * "_createFile" - Create a file on the system
-    * "_createTempFile" - Create a temporary file on the system
-    * "_appendFile" - Append content to an existing file
-    * "_readTextFile" - Read a text file from the system
-    * "_deleteFile" - Delete a file from the system
-    * "_createDirectory" - Creates a new directory on the system
-    * "_createTempDirectory" - Creates a new temporary directory on the system
-    * "_deleteDirectory" - Delete a directory from the system
-    * "_executeCommand" - Execute a command on the system
-    * "_callHttp" - Do a http call
+    * "getSystemInformation" - Get some information about the system
+    * "getEnvironment" - Read environment variables from the system
+    * "getSystemTime" - Get the current system time
+    * "getStats" - Get stats of a file or directory
+    * "changeMode" - Changes the mode of file or directory
+    * "changeOwner" - Changes the owner of file or directory
+    * "changeTimes" - Changes the access and/or modification time of file or directory
+    * "createFile" - Create a file on the system
+    * "createTempFile" - Create a temporary file on the system
+    * "appendFile" - Append content to an existing file
+    * "readTextFile" - Read a text file from the system
+    * "deleteFile" - Delete a file from the system
+    * "createDirectory" - Creates a new directory on the system
+    * "createTempDirectory" - Creates a new temporary directory on the system
+    * "deleteDirectory" - Delete a directory from the system
+    * "executeCommand" - Execute a command on the system
+    * "callHttp" - Do a http call
+* Run as [MCP](https://www.anthropic.com/news/model-context-protocol)-Server (see below)
+  * Which allows you to use ask-mai' tools (even **your** custom tools) for other applications which support MCP-Server
 * [MCP](https://www.anthropic.com/news/model-context-protocol)-Server support
   * You can define multiple MCP-Servers which can be used by the LLM (currently only tools)
 * Scriptable
@@ -123,6 +125,18 @@ Available Features:
 * compressed - The binary is compressed (can be problematic for some antivirus software - especially on windows)
 * console - The binary is console application (only for windows)
 * debug - The binary contains devtools (you can inspect the GUI-Sources)
+
+## Start this application as mcp-server
+
+You can start this application as an MCP server by using the `ask-mai-mcp-server` as first positional argument:
+```bash
+ask-mai ask-mai-mcp-server
+```
+
+Or you can rename the binary to `ask-mai-mcp-server` and start it like this:
+```bash
+ask-mai-mcp-server
+```
 
 ## How to build this application
 

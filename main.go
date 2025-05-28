@@ -23,7 +23,7 @@ func main() {
 
 	mode := getMode()
 
-	if mode == "ask-mai-mcp" {
+	if mode == "ask-mai-mcp-server" {
 		rc = mcp_server.Main(mcp_server.Args{
 			VersionLine: versionLine(),
 		})
