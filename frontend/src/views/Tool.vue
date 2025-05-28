@@ -16,7 +16,7 @@
 
 		<v-card class="ma-2">
 			<v-card-title>{{ $t('tool.builtin.title') }}</v-card-title>
-			<v-card-text>
+			<v-card-text class="pb-0">
 				<v-row no-gutters>
 					<v-col cols="6" sm="3" lg="2"><v-checkbox v-model="SystemInfo" label="SystemInfo" density="compact" hide-details></v-checkbox></v-col>
 					<v-col cols="6" sm="3" lg="2"><v-checkbox v-model="Environment" label="Environment" density="compact" hide-details></v-checkbox></v-col>
@@ -37,6 +37,11 @@
 					<v-col cols="6" sm="3" lg="2"><v-checkbox v-model="Http" label="Http" density="compact" hide-details></v-checkbox></v-col>
 				</v-row>
 			</v-card-text>
+			<v-card-actions class="pa-0">
+				<v-spacer />
+				<v-switch v-model="toggle.builtin" inset indeterminate hide-details @update:model-value="onToggleBuiltIns"></v-switch>
+				<v-spacer />
+			</v-card-actions>
 		</v-card>
 
 		<v-card class="ma-2">
@@ -58,7 +63,7 @@
 									</v-tooltip>
 								</span>
 							</v-card-title>
-							<v-card-text>
+							<v-card-text class="pb-0">
 								<v-row no-gutters>
 									<v-col cols="6" sm="4" lg="3" v-for="(tool, ti) in server.tools" :key="ti">
 										<v-checkbox density="compact" hide-details
@@ -74,6 +79,11 @@
 									</v-col>
 								</v-row>
 							</v-card-text>
+							<v-card-actions class="pa-0">
+								<v-spacer />
+								<v-switch v-model="toggle.mcp[name]" inset indeterminate hide-details @update:model-value="onToggleMcp(name)"></v-switch>
+								<v-spacer />
+							</v-card-actions>
 						</v-card>
 					</v-col>
 				</v-row>
@@ -109,6 +119,11 @@ export default defineComponent({
 			appbarHeight: 0,
 			zoom: this.$appProfile.UI.Window.InitialZoom.Value ?? 1,
 
+			toggle: {
+				builtin: null as boolean | null,
+				mcp: {} as Record<string, boolean | null>
+			},
+
 			mcp: {
 				loading: true,
 
@@ -120,71 +135,71 @@ export default defineComponent({
 		...mapState(useConfigStore, ['profile']),
 		SystemInfo: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.SystemInfo.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.SystemInfo.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.SystemInfo.Disable = !value },
 		},
 		Environment: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.Environment.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.Environment.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.Environment.Disable = !value },
 		},
 		SystemTime: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.SystemTime.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.SystemTime.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.SystemTime.Disable = !value },
 		},
 		Stats: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.Stats.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.Stats.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.Stats.Disable = !value },
 		},
 		ChangeMode: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.ChangeMode.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.ChangeMode.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.ChangeMode.Disable = !value },
 		},
 		ChangeOwner: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.ChangeOwner.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.ChangeOwner.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.ChangeOwner.Disable = !value },
 		},
 		ChangeTimes: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.ChangeTimes.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.ChangeTimes.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.ChangeTimes.Disable = !value },
 		},
 		FileCreation: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.FileCreation.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileCreation.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.FileCreation.Disable = !value },
 		},
 		FileTempCreation: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.FileTempCreation.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileTempCreation.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.FileTempCreation.Disable = !value },
 		},
 		FileAppending: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.FileAppending.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileAppending.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.FileAppending.Disable = !value },
 		},
 		FileReading: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.FileReading.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileReading.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.FileReading.Disable = !value },
 		},
 		FileDeletion: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.FileDeletion.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.FileDeletion.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.FileDeletion.Disable = !value },
 		},
 		DirectoryCreation: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.DirectoryCreation.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.DirectoryCreation.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.DirectoryCreation.Disable = !value },
 		},
 		DirectoryTempCreation: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.DirectoryTempCreation.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.DirectoryTempCreation.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.DirectoryTempCreation.Disable = !value },
 		},
 		DirectoryDeletion: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.DirectoryDeletion.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.DirectoryDeletion.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.DirectoryDeletion.Disable = !value },
 		},
 		CommandExec: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.CommandExec.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.CommandExec.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.CommandExec.Disable = !value },
 		},
 		Http: {
 			get() { return !this.profile.LLM.Tool.BuiltIns.Http.Disable },
-			set(value: boolean) { if(this.profile.LLM.Tool.BuiltIns) this.profile.LLM.Tool.BuiltIns.Http.Disable = !value },
+			set(value: boolean) { this.profile.LLM.Tool.BuiltIns.Http.Disable = !value },
 		},
 	},
 	methods: {
@@ -222,6 +237,22 @@ export default defineComponent({
 				config.Exclude.push(toolName)
 			}
 		},
+		onToggleBuiltIns(value: unknown){
+			for(let [_, builtin] of Object.entries(this.profile.LLM.Tool.BuiltIns)) {
+				if('Disable' in builtin) {
+					builtin.Disable = !value
+				}
+			}
+		},
+		onToggleMcp(serverName: string) {
+			if(this.toggle.mcp[serverName]) {
+				// enable all
+				this.mcp.server[serverName].config.Exclude = []
+			} else {
+				// disable all
+				this.mcp.server[serverName].config.Exclude = this.mcp.server[serverName].tools.map(tool => tool.name)
+			}
+		}
 	},
 	mounted() {
 		ListMcpTools().then((tools) => {
@@ -230,6 +261,7 @@ export default defineComponent({
 					config: this.profile.LLM.Tool.McpServer[name],
 					tools: tools[name]
 				}
+				this.toggle.mcp[name] = null
 			}
 		})
 		.finally(() => this.mcp.loading = false)
