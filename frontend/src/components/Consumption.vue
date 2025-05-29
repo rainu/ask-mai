@@ -1,7 +1,7 @@
 <template>
 	<div class="text-center">
 		<v-chip prepend-icon="mdi-import" class="mx-2" variant="outlined" label v-if="inputToken !== undefined">
-			{{(inputToken - cachedToken).toLocaleString()}}
+			{{inputToken.toLocaleString()}}
 		</v-chip>
 		<v-chip prepend-icon="mdi-cached" class="mx-2" variant="outlined" label v-if="inputToken !== undefined && cachedToken">
 			{{cachedToken.toLocaleString()}}

@@ -1688,10 +1688,27 @@ export namespace http {
 
 export namespace llm {
 	
+	export class AnthropicCache {
+	    SystemMessage: boolean;
+	    Tools: boolean;
+	    Chat: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new AnthropicCache(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.SystemMessage = source["SystemMessage"];
+	        this.Tools = source["Tools"];
+	        this.Chat = source["Chat"];
+	    }
+	}
 	export class AnthropicConfig {
 	    Token: common.Secret;
 	    BaseUrl: string;
 	    Model: string;
+	    Cache?: AnthropicCache;
 	
 	    static createFrom(source: any = {}) {
 	        return new AnthropicConfig(source);
@@ -1702,6 +1719,7 @@ export namespace llm {
 	        this.Token = this.convertValues(source["Token"], common.Secret);
 	        this.BaseUrl = source["BaseUrl"];
 	        this.Model = source["Model"];
+	        this.Cache = this.convertValues(source["Cache"], AnthropicCache);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

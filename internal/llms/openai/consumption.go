@@ -27,6 +27,7 @@ func (o *OpenAI) ConsumptionOf(resp *llms.ContentResponse) common.Consumption {
 		}
 		if t, ok := choice.GenerationInfo[tokenKeyCached]; ok {
 			result.cached += uint64(t.(int))
+			result.input -= uint64(t.(int)) // cached tokens are already part of the input
 		}
 		if t, ok := choice.GenerationInfo[tokenKeyReasoning]; ok {
 			result.reason += uint64(t.(int))

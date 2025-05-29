@@ -30,6 +30,7 @@ func TestOpenAI_ConsumptionOf(t *testing.T) {
 					{
 						GenerationInfo: map[string]interface{}{
 							tokenKeyInput:      42,
+							tokenKeyCached:     40,
 							tokenKeyCompletion: 123,
 							tokenKeyReasoning:  7,
 						},
@@ -37,7 +38,8 @@ func TestOpenAI_ConsumptionOf(t *testing.T) {
 				},
 			},
 			expectedTokens: consumption{
-				input:  42,
+				input:  2,
+				cached: 40,
 				output: 123,
 				reason: 7,
 			},

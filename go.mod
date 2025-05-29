@@ -72,4 +72,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/tmc/langchaingo => github.com/rainu/langchaingo v0.0.0-20250529115311-2c0e8fe0b340
+replace github.com/tmc/langchaingo => github.com/rainu/langchaingo v0.0.0-20250529142520-123929cc4bd7
