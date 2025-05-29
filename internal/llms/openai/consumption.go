@@ -9,6 +9,7 @@ const (
 	tokenKeyCompletion = "CompletionTokens"
 	tokenKeyInput      = "PromptTokens"
 	tokenKeyReasoning  = "ReasoningTokens"
+	tokenKeyCached     = "PromptCachedTokens"
 )
 
 func (o *OpenAI) ConsumptionOf(resp *llms.ContentResponse) common.Consumption {
@@ -24,6 +25,9 @@ func (o *OpenAI) ConsumptionOf(resp *llms.ContentResponse) common.Consumption {
 		if t, ok := choice.GenerationInfo[tokenKeyInput]; ok {
 			result.input += uint64(t.(int))
 		}
+		if t, ok := choice.GenerationInfo[tokenKeyCached]; ok {
+			result.cached += uint64(t.(int))
+		}
 		if t, ok := choice.GenerationInfo[tokenKeyReasoning]; ok {
 			result.reason += uint64(t.(int))
 		}
@@ -34,12 +38,13 @@ func (o *OpenAI) ConsumptionOf(resp *llms.ContentResponse) common.Consumption {
 
 type consumption struct {
 	input  uint64
+	cached uint64
 	output uint64
 	reason uint64
 }
 
 func (t *consumption) Summary() common.ConsumptionSummary {
-	base := common.NewSimpleConsumption(t.input, t.output)
+	base := common.NewCachedConsumption(t.input, t.cached, t.output)
 	base["Reasoning"] = t.reason
 
 	return base
@@ -48,6 +53,7 @@ func (t *consumption) Summary() common.ConsumptionSummary {
 func (t *consumption) Add(add common.Consumption) {
 	if token, ok := add.(*consumption); ok {
 		t.input += token.input
+		t.cached += token.cached
 		t.output += token.output
 		t.reason += token.reason
 	}

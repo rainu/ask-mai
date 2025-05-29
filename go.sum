@@ -99,8 +99,8 @@ github.com/rainu/go-command-chain v0.4.0 h1:qgrNbNsqkTfJHdwGzVuGPPK+p+XSnGAhAT/8
 github.com/rainu/go-command-chain v0.4.0/go.mod h1:RvLsDKnTGD9XoUY7nmBz73ayffI0bFCDH/EVJPRgfks=
 github.com/rainu/go-yacl v0.2.1 h1:BZdwonr/JA8RiE/8xptE9RKT0+COwyfTmyB7kiANGPw=
 github.com/rainu/go-yacl v0.2.1/go.mod h1:cZwUkCDYE1w6xlTUi6vCqdV1O3iLvM/govQdUn6I9NU=
-github.com/rainu/langchaingo v0.0.0-20250515191545-fb57821c5987 h1:2wTe5ovJpWx272YG7UO7DkxkLWauM3A/W7+3UVQ/Srk=
-github.com/rainu/langchaingo v0.0.0-20250515191545-fb57821c5987/go.mod h1:5TXP7bKcWjN05g9e2+MpqUXprf5jwI62Q2xGtAKLno8=
+github.com/rainu/langchaingo v0.0.0-20250529115311-2c0e8fe0b340 h1:bPPPcONFkLvC2dq9e/fQ4z4t4R3/OF4qbMIlmHkLcXc=
+github.com/rainu/langchaingo v0.0.0-20250529115311-2c0e8fe0b340/go.mod h1:5TXP7bKcWjN05g9e2+MpqUXprf5jwI62Q2xGtAKLno8=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
 github.com/rivo/uniseg v0.4.7/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=

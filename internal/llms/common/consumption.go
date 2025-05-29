@@ -18,8 +18,13 @@ func (u *UnknownConsumption) Summary() ConsumptionSummary {
 }
 
 func NewSimpleConsumption(input, output uint64) ConsumptionSummary {
+	return NewCachedConsumption(input, 0, output)
+}
+
+func NewCachedConsumption(input, cached, output uint64) ConsumptionSummary {
 	return map[string]uint64{
-		"prompt":     input,
-		"completion": output,
+		"input":  input,
+		"cached": cached,
+		"output": output,
 	}
 }
