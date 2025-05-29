@@ -117,6 +117,12 @@ func (c *LLMConfig) AsOptions(ctx context.Context) ([]langLLMS.CallOption, error
 		})
 	}
 
+	// sort tools by name so that the order is consistent
+	// and the llm can cache the tool definitions
+	slices.SortFunc(tools, func(a, b langLLMS.Tool) int {
+		return strings.Compare(a.Function.Name, b.Function.Name)
+	})
+
 	opts := c.CallOptions.AsOptions()
 	if len(tools) > 0 {
 		opts = append(opts, langLLMS.WithTools(tools))
