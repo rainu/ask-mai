@@ -1689,9 +1689,9 @@ export namespace http {
 export namespace llm {
 	
 	export class AnthropicCache {
-	    SystemMessage: boolean;
-	    Tools: boolean;
-	    Chat: boolean;
+	    SystemMessage?: boolean;
+	    Tools?: boolean;
+	    Chat?: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new AnthropicCache(source);
@@ -1708,7 +1708,7 @@ export namespace llm {
 	    Token: common.Secret;
 	    BaseUrl: string;
 	    Model: string;
-	    Cache?: AnthropicCache;
+	    Cache: AnthropicCache;
 	
 	    static createFrom(source: any = {}) {
 	        return new AnthropicConfig(source);
@@ -1847,6 +1847,40 @@ export namespace llm {
 	        this.APIKey = this.convertValues(source["APIKey"], common.Secret);
 	        this.Model = source["Model"];
 	        this.BaseUrl = source["BaseUrl"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class GoogleAIConfig {
+	    APIKey: common.Secret;
+	    Model: string;
+	    HarmThreshold?: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new GoogleAIConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.APIKey = this.convertValues(source["APIKey"], common.Secret);
+	        this.Model = source["Model"];
+	        this.HarmThreshold = source["HarmThreshold"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -2012,6 +2046,7 @@ export namespace llm {
 	    Mistral: MistralConfig;
 	    Anthropic: AnthropicConfig;
 	    DeepSeek: DeepSeekConfig;
+	    Google: GoogleAIConfig;
 	    CallOptions: CallOptionsConfig;
 	    Tool: tools.Config;
 	
@@ -2030,6 +2065,7 @@ export namespace llm {
 	        this.Mistral = this.convertValues(source["Mistral"], MistralConfig);
 	        this.Anthropic = this.convertValues(source["Anthropic"], AnthropicConfig);
 	        this.DeepSeek = this.convertValues(source["DeepSeek"], DeepSeekConfig);
+	        this.Google = this.convertValues(source["Google"], GoogleAIConfig);
 	        this.CallOptions = this.convertValues(source["CallOptions"], CallOptionsConfig);
 	        this.Tool = this.convertValues(source["Tool"], tools.Config);
 	    }

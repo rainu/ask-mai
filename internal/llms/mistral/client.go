@@ -32,6 +32,11 @@ func (m *Mistral) GenerateContent(ctx context.Context, messages []llms.MessageCo
 	return m.client.GenerateContent(ctx, messages, options...)
 }
 
+func (m *Mistral) PatchTools(*[]llms.Tool) error {
+	// no need for patching tools
+	return nil
+}
+
 func (m *Mistral) Close() error {
 	return nil
 }

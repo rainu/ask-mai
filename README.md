@@ -42,10 +42,16 @@ ask-mai -b anthropic --llm.anthropic.api-key.plain=YOUR_ANTHROPIC_API_KEY
 ask-mai -b mistral --llm.mistral.api-key.plain=YOUR_MISTRAL_API_KEY --llm.mistral.model=mistral-small-latest
 ```
 
-### DeepSeekConfig
+### DeepSeek
 
 ```shell
 ask-mai -b deepseek --llm.deepseek.api-key.plain=YOUR_DEEPSEEK_API_KEY
+```
+
+### Google Gemini
+
+```shell
+ask-mai -b google --llm.google.api-key.plain=YOUR_GOOGLE_API_KEY
 ```
 
 ## Features
@@ -58,6 +64,7 @@ ask-mai -b deepseek --llm.deepseek.api-key.plain=YOUR_DEEPSEEK_API_KEY
   * [Ollama](https://ollama.com/)
   * [Mistral](https://mistral.ai/)
   * [Anthropic](https://www.anthropic.com/)
+  * [Google AI](https://ai.google.dev//)
 * Tool Support
   * You can define your own tools which can be called from the LLM
   * There are some built-in tools:

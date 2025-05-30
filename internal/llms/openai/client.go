@@ -44,6 +44,11 @@ func (o *OpenAI) GenerateContent(ctx context.Context, messages []llms.MessageCon
 	return o.client.GenerateContent(ctx, messages, options...)
 }
 
+func (o *OpenAI) PatchTools(*[]llms.Tool) error {
+	// no need for patching tools
+	return nil
+}
+
 func (o *OpenAI) Close() error {
 	return nil
 }

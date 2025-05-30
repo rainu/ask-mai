@@ -189,7 +189,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result LLMAskResult, err error) {
 		})
 	}()
 
-	opts, err := c.getProfile().LLM.AsOptions(c.aiModelCtx)
+	opts, err := c.getProfile().LLM.AsOptions(c.aiModelCtx, c.aiModel)
 	if err != nil {
 		return LLMAskResult{}, fmt.Errorf("error creating options: %w", err)
 	}

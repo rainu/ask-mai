@@ -130,6 +130,11 @@ func (c *Copilot) Call(ctx context.Context, prompt string, options ...llms.CallO
 	return string(content), nil
 }
 
+func (c *Copilot) PatchTools(*[]llms.Tool) error {
+	// no need for patching tools
+	return nil
+}
+
 func (c *Copilot) Close() error {
 	return nil
 }

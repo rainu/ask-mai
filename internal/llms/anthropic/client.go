@@ -53,6 +53,11 @@ func (a *Anthropic) GenerateContent(ctx context.Context, messages []llms.Message
 	return resp, err
 }
 
+func (a *Anthropic) PatchTools(*[]llms.Tool) error {
+	// no need for patching tools
+	return nil
+}
+
 func (a *Anthropic) Close() error {
 	return nil
 }

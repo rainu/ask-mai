@@ -32,6 +32,11 @@ func (o *Ollama) GenerateContent(ctx context.Context, messages []llms.MessageCon
 	return o.client.GenerateContent(ctx, messages, options...)
 }
 
+func (o *Ollama) PatchTools(*[]llms.Tool) error {
+	// no need for patching tools
+	return nil
+}
+
 func (o *Ollama) Close() error {
 	return nil
 }

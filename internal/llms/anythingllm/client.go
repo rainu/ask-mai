@@ -362,6 +362,11 @@ func (a *AnythingLLM) deleteThread(ctx context.Context) error {
 	return nil
 }
 
+func (a *AnythingLLM) PatchTools(*[]llms.Tool) error {
+	// no need for patching tools
+	return nil
+}
+
 func (a *AnythingLLM) Close() error {
 	if !a.threadDelete {
 		return nil

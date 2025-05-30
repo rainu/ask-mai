@@ -28,6 +28,7 @@ type LLMConfig struct {
 	Mistral     MistralConfig     `yaml:"mistral,omitempty" usage:"Mistral " llm:""`
 	Anthropic   AnthropicConfig   `yaml:"anthropic,omitempty" usage:"Anthropic " llm:""`
 	DeepSeek    DeepSeekConfig    `yaml:"deepseek,omitempty" usage:"DeepSeek " llm:""`
+	Google      GoogleAIConfig    `yaml:"google,omitempty" usage:"Google " llm:""`
 
 	CallOptions CallOptionsConfig `yaml:"call,omitempty" usage:"Call option "`
 	Tool        tools.Config      `yaml:"tool,omitempty"`
@@ -99,7 +100,7 @@ func (c *LLMConfig) BuildLLM() (common.Model, error) {
 	return b.BuildLLM()
 }
 
-func (c *LLMConfig) AsOptions(ctx context.Context) ([]langLLMS.CallOption, error) {
+func (c *LLMConfig) AsOptions(ctx context.Context, model common.Model) ([]langLLMS.CallOption, error) {
 	mcpTools, err := c.Tool.GetTools(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list mcp tools: %w", err)
@@ -125,6 +126,9 @@ func (c *LLMConfig) AsOptions(ctx context.Context) ([]langLLMS.CallOption, error
 
 	opts := c.CallOptions.AsOptions()
 	if len(tools) > 0 {
+		if err := model.PatchTools(&tools); err != nil {
+			return nil, fmt.Errorf("failed to patch tools: %w", err)
+		}
 		opts = append(opts, langLLMS.WithTools(tools))
 	}
 	return opts, nil
