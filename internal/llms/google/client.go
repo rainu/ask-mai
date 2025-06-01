@@ -4,21 +4,31 @@ import (
 	"context"
 	"fmt"
 	"github.com/rainu/ask-mai/internal/llms/common"
+	"github.com/rainu/ask-mai/internal/sync"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/googleai"
+	"time"
 )
 
 type Google struct {
 	client       *googleai.GoogleAI
 	clientCtx    context.Context
 	clientCancel context.CancelFunc
+
+	cacheTTL     time.Duration
+	cacheRefresh time.Duration
+	cacheNames   sync.Map[string, string]
 }
 
-func New(opts []googleai.Option) (common.Model, error) {
+func New(opts []googleai.Option, toolCacheTTL time.Duration) (common.Model, error) {
 	result := &Google{}
 	result.clientCtx, result.clientCancel = context.WithCancel(context.Background())
 
 	opts = append(opts, googleai.WithRest())
+	if toolCacheTTL > 0 {
+		result.cacheRefresh = toolCacheTTL - 30*time.Second
+		opts = append(opts, googleai.WithPreSendingHook(result.preSendingHook))
+	}
 
 	var err error
 	result.client, err = googleai.New(result.clientCtx, opts...)
@@ -39,5 +49,10 @@ func (g *Google) Call(ctx context.Context, prompt string, options ...llms.CallOp
 
 func (g *Google) Close() error {
 	g.clientCancel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	g.removeAllCaches(ctx)
+
 	return nil
 }

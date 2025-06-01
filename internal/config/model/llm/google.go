@@ -7,12 +7,15 @@ import (
 	"github.com/rainu/ask-mai/internal/llms/google"
 	"github.com/rainu/go-yacl"
 	"github.com/tmc/langchaingo/llms/googleai"
+	"time"
 )
 
 type GoogleAIConfig struct {
 	APIKey        common.Secret `yaml:"api-key,omitempty" usage:"API Key"`
 	Model         string        `yaml:"model,omitempty" usage:"Model"`
 	HarmThreshold *int32        `yaml:"harm-threshold,omitempty"`
+
+	ToolCacheTTL *time.Duration `yaml:"tool-cache-ttl,omitempty" usage:"TTL for tool cache. 0 means no caching. Minimum is 1 minute."`
 }
 
 func (c *GoogleAIConfig) SetDefaults() {
@@ -21,6 +24,9 @@ func (c *GoogleAIConfig) SetDefaults() {
 	}
 	if c.HarmThreshold == nil {
 		c.HarmThreshold = yacl.P(int32(googleai.HarmBlockUnspecified))
+	}
+	if c.ToolCacheTTL == nil {
+		c.ToolCacheTTL = yacl.P(5 * time.Minute)
 	}
 }
 
@@ -66,10 +72,13 @@ func (c *GoogleAIConfig) Validate() error {
 			return fmt.Errorf("Invalid harm threshold value: %d", c.HarmThreshold)
 		}
 	}
+	if c.ToolCacheTTL != nil && *c.ToolCacheTTL > 0 && *c.ToolCacheTTL < time.Minute {
+		return fmt.Errorf("Tool cache TTL must be at least 1 minute, got: %s", c.ToolCacheTTL)
+	}
 
 	return nil
 }
 
 func (c *GoogleAIConfig) BuildLLM() (llmCommon.Model, error) {
-	return google.New(c.AsOptions())
+	return google.New(c.AsOptions(), *c.ToolCacheTTL)
 }

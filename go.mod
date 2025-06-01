@@ -10,6 +10,7 @@ require (
 	github.com/gage-technologies/mistral-go v1.1.0
 	github.com/gen2brain/beeep v0.0.0-20240516210008-9c006672e7f4
 	github.com/goccy/go-yaml v1.17.1
+	github.com/google/generative-ai-go v0.15.1
 	github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
 	github.com/kteru/reversereader v0.0.0-20190328040929-bd5e29d6c056
 	github.com/mark3labs/mcp-go v0.27.1
@@ -44,7 +45,6 @@ require (
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/google/generative-ai-go v0.15.1 // indirect
 	github.com/google/pprof v0.0.0-20230207041349-798e818bf904 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -102,4 +102,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/tmc/langchaingo => github.com/rainu/langchaingo v0.0.0-20250530154254-565c5b692d5b
+replace github.com/tmc/langchaingo => github.com/rainu/langchaingo v0.0.0-20250531142006-3a73e38741a3
