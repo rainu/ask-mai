@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/goccy/go-yaml"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/olekukonko/tablewriter"
@@ -83,13 +84,32 @@ func checkHelp(c *model.Config, config *yacl.Config) {
 
 func printHelpArgs(output io.Writer, config *yacl.Config) {
 	fmt.Fprintf(output, "Usage of %s:\n", os.Args[0])
-	fmt.Fprint(output, config.HelpFlags(yacl.WithFilter(func(a yacl.FieldInfo) bool {
-		p := a.Path()
-		if strings.HasPrefix(p, "profile") {
-			return p != "profile.[].description" && p != "profile.[].icon"
-		}
-		return false
-	})))
+	fmt.Fprint(output, config.HelpFlags(
+		yacl.WithFilter(func(a yacl.FieldInfo) bool {
+			p := a.Path()
+			if strings.HasPrefix(p, "profile") {
+				return p != "profile.[].description" && p != "profile.[].icon"
+			}
+			return false
+		}),
+		yacl.WithFlagDecorators(yacl.FlagDecorators{
+			Short: func(s string) string {
+				return color.New(color.Bold).Sprint(s)
+			},
+			LongKey: func(s string) string {
+				return color.New(color.Bold).Sprint(s)
+			},
+			LongValue: func(s string) string {
+				return color.New(color.Underline).Sprint(s)
+			},
+			Usage: func(s string) string {
+				return color.New(color.Italic).Sprint(s)
+			},
+			DefaultValue: func(s string) string {
+				return color.New(color.Faint).Sprint(s) + color.GreenString(" (default)")
+			},
+		}),
+	))
 }
 
 func printHelpEnv(output io.Writer) {

@@ -6,6 +6,7 @@ toolchain go1.24.3
 
 require (
 	github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17
+	github.com/fatih/color v1.17.0
 	github.com/gabriel-vasile/mimetype v1.4.8
 	github.com/gage-technologies/mistral-go v1.1.0
 	github.com/gen2brain/beeep v0.0.0-20240516210008-9c006672e7f4
@@ -16,7 +17,7 @@ require (
 	github.com/mark3labs/mcp-go v0.27.1
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rainu/go-command-chain v0.4.0
-	github.com/rainu/go-yacl v0.2.1
+	github.com/rainu/go-yacl v0.3.0
 	github.com/shirou/gopsutil/v4 v4.25.2
 	github.com/stretchr/testify v1.10.0
 	github.com/tmc/langchaingo v0.1.13

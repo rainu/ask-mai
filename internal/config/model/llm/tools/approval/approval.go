@@ -11,8 +11,8 @@ import (
 type Approval string
 
 const (
-	Always = "true"
-	Never  = "false"
+	Always = "always"
+	Never  = "never"
 )
 
 type Variables struct {

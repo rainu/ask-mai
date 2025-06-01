@@ -1871,6 +1871,7 @@ export namespace llm {
 	    APIKey: common.Secret;
 	    Model: string;
 	    HarmThreshold?: number;
+	    ToolCacheTTL?: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new GoogleAIConfig(source);
@@ -1881,6 +1882,7 @@ export namespace llm {
 	        this.APIKey = this.convertValues(source["APIKey"], common.Secret);
 	        this.Model = source["Model"];
 	        this.HarmThreshold = source["HarmThreshold"];
+	        this.ToolCacheTTL = source["ToolCacheTTL"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

@@ -30,6 +30,8 @@ github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17 h1:spJaibPy2sZNwo6Q0Hj
 github.com/dop251/goja v0.0.0-20250125213203-5ef83b82af17/go.mod h1:MxLav0peU43GgvwVgNbLAj1s/bSGboKkhuULvq/7hx4=
 github.com/ebitengine/purego v0.8.2 h1:jPPGWs2sZ1UgOSgD2bClL0MJIqu58nOmIcBuXr62z1I=
 github.com/ebitengine/purego v0.8.2/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
+github.com/fatih/color v1.17.0 h1:GlRw1BRJxkpqUCBKzKOw098ed57fEsKeNjpTe3cSjK4=
+github.com/fatih/color v1.17.0/go.mod h1:YZ7TlrGPkiz6ku9fK3TLD/pl3CpsiFyu8N92HLgmosI=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHkI4W8=
@@ -132,8 +134,8 @@ github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c h1:ncq/mPwQF
 github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c/go.mod h1:OmDBASR4679mdNQnz2pUhc2G8CO2JrUAVFDRBDP/hJE=
 github.com/rainu/go-command-chain v0.4.0 h1:qgrNbNsqkTfJHdwGzVuGPPK+p+XSnGAhAT/8x1A8SLE=
 github.com/rainu/go-command-chain v0.4.0/go.mod h1:RvLsDKnTGD9XoUY7nmBz73ayffI0bFCDH/EVJPRgfks=
-github.com/rainu/go-yacl v0.2.1 h1:BZdwonr/JA8RiE/8xptE9RKT0+COwyfTmyB7kiANGPw=
-github.com/rainu/go-yacl v0.2.1/go.mod h1:cZwUkCDYE1w6xlTUi6vCqdV1O3iLvM/govQdUn6I9NU=
+github.com/rainu/go-yacl v0.3.0 h1:bXMS2wE2ZPGrmrlAyBGuU5ojRoqtkmpoOYwYvTpVHi4=
+github.com/rainu/go-yacl v0.3.0/go.mod h1:cZwUkCDYE1w6xlTUi6vCqdV1O3iLvM/govQdUn6I9NU=
 github.com/rainu/langchaingo v0.0.0-20250531142006-3a73e38741a3 h1:XgLNKmrXX3F+Je6DR8IwiKVV834ATnUP0A0dmIweIHA=
 github.com/rainu/langchaingo v0.0.0-20250531142006-3a73e38741a3/go.mod h1:5TXP7bKcWjN05g9e2+MpqUXprf5jwI62Q2xGtAKLno8=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
