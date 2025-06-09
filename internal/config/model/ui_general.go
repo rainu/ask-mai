@@ -40,16 +40,12 @@ func (u *UIConfig) SetDefaults() {
 func (u *UIConfig) GetUsage(field string) string {
 	switch field {
 	case "Theme":
-		return fmt.Sprintf("The theme to use ('%s', '%s', '%s')", ThemeLight, ThemeDark, ThemeSystem)
+		return fmt.Sprintf("The theme to use ('%s', '%s', '%s', and any custom defined)", ThemeLight, ThemeDark, ThemeSystem)
 	}
 	return ""
 }
 
 func (u *UIConfig) Validate() error {
-	if u.Theme != ThemeDark && u.Theme != ThemeLight && u.Theme != ThemeSystem {
-		return fmt.Errorf("Invalid theme")
-	}
-
 	if ve := u.QuitShortcut.Validate(); ve != nil {
 		return ve
 	}

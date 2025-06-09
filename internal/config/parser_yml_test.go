@@ -183,6 +183,19 @@ vue-dev-tools:
 webkit:
   open-inspector: true
   http-server: "127.0.0.1:5000"
+themes:
+  dark:
+    colors:
+      background: "#FFFFFF"
+      surface: "#FFFFFF"
+  light:
+    colors:
+      chat-tool-call: "#FF0000"
+  custom:
+    test:
+      colors:
+         background: "#00FF00"
+         chat-tool-call: "#0000FF"
 `
 	// add profile "test" with the same values as default
 	yamlContent += "\nprofiles:\n  test:\n" + strings.ReplaceAll(yamlContent, "\n", "\n    ")
@@ -371,6 +384,27 @@ webkit:
 			WebKit: model.WebKitInspectorConfig{
 				OpenInspectorOnStartup: true,
 				HttpServerAddress:      "127.0.0.1:5000",
+			},
+		},
+		Themes: model.Themes{
+			Dark: &model.Theme{
+				Colors: map[string]string{
+					"background": "#FFFFFF",
+					"surface":    "#FFFFFF",
+				},
+			},
+			Light: &model.Theme{
+				Colors: map[string]string{
+					"chat-tool-call": "#FF0000",
+				},
+			},
+			Custom: map[string]model.Theme{
+				"test": {
+					Colors: map[string]string{
+						"background":     "#00FF00",
+						"chat-tool-call": "#0000FF",
+					},
+				},
 			},
 		},
 	}

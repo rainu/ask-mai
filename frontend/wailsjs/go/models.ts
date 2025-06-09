@@ -2263,6 +2263,56 @@ export namespace model {
 	        this.DumpYaml = source["DumpYaml"];
 	    }
 	}
+	export class Theme {
+	    dark: boolean;
+	    colors: Record<string, string>;
+	    variables: Record<string, string>;
+	
+	    static createFrom(source: any = {}) {
+	        return new Theme(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.dark = source["dark"];
+	        this.colors = source["colors"];
+	        this.variables = source["variables"];
+	    }
+	}
+	export class Themes {
+	    dark?: Theme;
+	    light?: Theme;
+	    custom?: Record<string, Theme>;
+	
+	    static createFrom(source: any = {}) {
+	        return new Themes(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.dark = this.convertValues(source["dark"], Theme);
+	        this.light = this.convertValues(source["light"], Theme);
+	        this.custom = this.convertValues(source["custom"], Theme, true);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class WebKitInspectorConfig {
 	    OpenInspectorOnStartup: boolean;
 	    HttpServerAddress: string;
@@ -2625,6 +2675,7 @@ export namespace model {
 	    DebugConfig: DebugConfig;
 	    ActiveProfile: string;
 	    Profiles: Record<string, Profile>;
+	    Themes: Themes;
 	    Version: boolean;
 	    Help: Help;
 	
@@ -2639,6 +2690,7 @@ export namespace model {
 	        this.DebugConfig = this.convertValues(source["DebugConfig"], DebugConfig);
 	        this.ActiveProfile = source["ActiveProfile"];
 	        this.Profiles = this.convertValues(source["Profiles"], Profile, true);
+	        this.Themes = this.convertValues(source["Themes"], Themes);
 	        this.Version = source["Version"];
 	        this.Help = this.convertValues(source["Help"], Help);
 	    }
@@ -2661,6 +2713,8 @@ export namespace model {
 		    return a;
 		}
 	}
+	
+	
 	
 	
 	

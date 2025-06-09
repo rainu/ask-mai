@@ -1,10 +1,10 @@
 <template>
-	<v-card color="grey-lighten-2" elevation="0">
+	<v-card color="chat-tool-call" elevation="0">
 		<template v-slot:prepend>
 			<v-btn variant="flat"
 						 size="x-small"
 						 class="mb-1"
-						 :color="tc.Result ? (tc.Result.Error ? 'error' : 'success') : 'grey-lighten-2'"
+						 :color="tc.Result ? (tc.Result.Error ? 'error' : 'success') : 'chat-tool-call'"
 						 @click="expanded = !expanded">
 				<v-icon :icon="icon"></v-icon>
 			</v-btn>

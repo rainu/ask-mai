@@ -1,7 +1,7 @@
 <template>
 	<template v-if="isUserMessage">
 		<v-row class="justify-end pa-2 mb-0 mt-1 mx-1 ml-15">
-			<v-sheet color="green-accent-2" class="pa-2" rounded>
+			<v-sheet color="chat-user-message" class="pa-2" rounded>
 				<Markdown :content="textMessage" />
 
 				<!-- at the moment, only user messages can have attachments -->
@@ -27,7 +27,7 @@
 	</template>
 	<template v-else-if="isToolMessage">
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15" v-for="tc of toolCalls" :key="tc.Id">
-			<v-sheet color="grey-lighten-2" rounded>
+			<v-sheet color="chat-tool-call" rounded>
 				<BuiltinToolCallSystemInfo :tc="tc" v-if="tc.Meta.BuiltIn && tc.Function.endsWith('getSystemInformation')" />
 				<BuiltinToolCallEnvironment :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('getEnvironment')" />
 				<BuiltinToolCallSystemTime :tc="tc" v-else-if="tc.Meta.BuiltIn && tc.Function.endsWith('getSystemTime')" />
@@ -72,7 +72,7 @@
 	<template v-else-if="isSystemMessage">
 		<v-row class="pa-2 mb-0 mt-1 mx-1" v-if="textMessage">
 			<v-col>
-				<v-sheet class="pa-2" rounded>
+				<v-sheet color="chat-system-message" class="pa-2" rounded>
 					<Markdown :content="textMessage" />
 					<ChatMessageActions @toggleVisibility="onToggleVisibility" :hide-edit="hideEdit" @onEdit="onEdit" />
 				</v-sheet>
@@ -81,7 +81,7 @@
 	</template>
 	<template v-else>
 		<v-row class="pa-2 mb-0 mt-1 mx-1 mr-15">
-			<v-sheet color="grey-lighten-2" class="pa-2" rounded>
+			<v-sheet color="chat-assistant-message" class="pa-2" rounded>
 				<Markdown :content="textMessage" />
 				<small class="d-flex justify-space-between align-center">
 					<ChatMessageActions @toggleVisibility="onToggleVisibility" :hide-edit="hideEdit" @on-edit="onEdit" />
