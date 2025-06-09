@@ -32,9 +32,19 @@ func (c *Controller) GetAvailableProfiles() map[string]model.ProfileMeta {
 	return c.appConfig.GetProfiles()
 }
 
-func (c *Controller) SetActiveProfile(profileName string) model.Profile {
+func (c *Controller) SetActiveProfile(profileName string) (model.Profile, error) {
 	c.appConfig.ActiveProfile = profileName
-	return *c.getProfile()
+
+	newModel, err := c.appConfig.GetActiveProfile().LLM.BuildLLM()
+	if err != nil {
+		return model.Profile{}, err
+	}
+
+	// close the old, and set the new
+	c.aiModel.Close()
+	c.aiModel = newModel
+
+	return *c.getProfile(), nil
 }
 
 func (c *Controller) SetBuiltinTools(config builtin.BuiltIns) {
