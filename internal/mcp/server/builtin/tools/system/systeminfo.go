@@ -13,6 +13,7 @@ type SystemInfoArguments struct {
 
 type SystemInfoResult struct {
 	OS       string `json:"os"`
+	OSInfo   any    `json:"os_info,omitempty"` // OS-specific information, can be nil
 	Arch     string `json:"arch"`
 	CPU      int    `json:"cpus"`
 	Hostname string `json:"hostname"`
@@ -29,7 +30,9 @@ var SystemInfoTool = mcp.NewTool("getSystemInformation",
 
 var SystemInfoToolHandler = func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	raw, err := json.Marshal(SystemInfoResult{
-		OS:   runtime.GOOS,
+		OS:     runtime.GOOS,
+		OSInfo: getOSInfo(),
+
 		Arch: runtime.GOARCH,
 		CPU:  runtime.NumCPU(),
 		Hostname: func() string {
@@ -62,4 +65,8 @@ var SystemInfoToolHandler = func(ctx context.Context, request mcp.CallToolReques
 	}
 
 	return mcp.NewToolResultText(string(raw)), nil
+}
+
+var getOSInfo = func() any {
+	return nil
 }
