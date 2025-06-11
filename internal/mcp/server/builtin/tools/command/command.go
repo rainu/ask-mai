@@ -28,7 +28,7 @@ func (c CommandDescriptor) Run(ctx context.Context) ([]byte, error) {
 	}
 
 	buf := bytes.NewBuffer([]byte{})
-	execErr := cmdBuild.Finalize().
+	execErr := cmdBuild.WithErrorChecker(cmdchain.IgnoreExitErrors()).Finalize().
 		WithOutput(buf).
 		WithError(buf).
 		Run()
