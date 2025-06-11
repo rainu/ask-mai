@@ -16,12 +16,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, file } from '../../../wailsjs/go/models.ts'
+import { controller, file, mcp } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
 import StatsArguments = file.StatsArguments
 import StatsResult = file.StatsResult
 import ToolCall from './ToolCall.vue'
 import Markdown from '../Markdown.vue'
+import { ToolCallResult } from './types.ts'
 
 export default defineComponent({
 	name: 'BuiltinToolCallStats',
@@ -39,7 +40,11 @@ export default defineComponent({
 		parsedResult(): StatsResult | null {
 			if(this.tc.Result) {
 				try {
-					return JSON.parse(this.tc.Result.Content) as StatsResult
+					const tcr = JSON.parse(this.tc.Result.Content) as ToolCallResult
+					const firstTextContent = tcr.content.find(c => c.type === 'text') as mcp.TextContent
+					if(firstTextContent) {
+						return JSON.parse(firstTextContent.text) as StatsResult
+					}
 				} catch (e) {
 					// ignore JSON-Parse error
 				}

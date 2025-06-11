@@ -20,12 +20,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, file } from '../../../wailsjs/go/models.ts'
+import { controller, file, mcp } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
 import FileReadingArguments = file.FileReadingArguments
 import FileReadingResult = file.FileReadingResult
 import ToolCall from './ToolCall.vue'
 import Markdown from '../Markdown.vue'
+import { ToolCallResult } from './types.ts'
 
 export default defineComponent({
 	name: 'BuiltinToolCallFileReading',
@@ -43,7 +44,11 @@ export default defineComponent({
 		parsedResult(): FileReadingResult | null {
 			if(this.tc.Result) {
 				try {
-					return JSON.parse(this.tc.Result.Content) as FileReadingResult
+					const tcr = JSON.parse(this.tc.Result.Content) as ToolCallResult
+					const firstTextContent = tcr.content.find(c => c.type === 'text') as mcp.TextContent
+					if(firstTextContent) {
+						return JSON.parse(firstTextContent.text) as FileReadingResult
+					}
 				} catch (e) {
 					// ignore JSON-Parse error
 				}

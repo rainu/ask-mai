@@ -36,6 +36,7 @@ import ToolCall from './ToolCall.vue'
 import { controller } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
 import Markdown from '../Markdown.vue'
+import { ToolCallResult } from './types.ts'
 
 type Content = {
 	type: string
@@ -66,8 +67,17 @@ export default defineComponent({
 		content(): null | Content[] {
 			if(this.tc.Result) {
 				try {
-					const parsed = JSON.parse(this.tc.Result.Content)
-					return parsed.content
+					const parsed = JSON.parse(this.tc.Result.Content) as ToolCallResult
+					return parsed.content.map(c => {
+						switch (c.type) {
+							case 'text':
+								return { type: 'text', text: c.text } as Content
+							case 'image':
+								return { type: 'image', image: c.image } as Content
+							default:
+								return { type: c.type } as Content // handle other types generically
+						}
+					})
 				} catch (e) {
 					console.warn("Failed to parse JSON", e)
 				}

@@ -8,11 +8,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, system } from '../../../wailsjs/go/models.ts'
+import { controller, mcp, system } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
 import SystemInfoResult = system.SystemInfoResult
 import ToolCall from './ToolCall.vue'
 import Markdown from '../Markdown.vue'
+import { ToolCallResult } from './types.ts'
 
 export default defineComponent({
 	name: 'BuiltinToolCallSystemInfo',
@@ -27,7 +28,11 @@ export default defineComponent({
 		parsedResult(): SystemInfoResult | null {
 			if(this.tc.Result) {
 				try {
-					return JSON.parse(this.tc.Result.Content) as SystemInfoResult
+					const tcr = JSON.parse(this.tc.Result.Content) as ToolCallResult
+					const firstTextContent = tcr.content.find(c => c.type === 'text') as mcp.TextContent
+					if(firstTextContent) {
+						return JSON.parse(firstTextContent.text) as SystemInfoResult
+					}
 				} catch (e) {
 					// ignore JSON-Parse error
 				}

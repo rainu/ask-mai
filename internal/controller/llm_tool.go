@@ -178,35 +178,6 @@ func (c *Controller) waitForApproval(ctx context.Context, call llms.ToolCall) er
 	return nil
 }
 
-//func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.FunctionDefinition) (result LLMMessageCallResult, err error) {
-//	slog.Debug("Start running command.",
-//		"name", toolDefinition.Name,
-//		"command", toolDefinition.Command,
-//		"argument", call.FunctionCall.Arguments,
-//	)
-//	t := time.Now()
-//
-//	out, execErr := toolDefinition.CommandFn(ctx, call.FunctionCall.Arguments)
-//
-//	result.DurationMs = time.Since(t).Milliseconds()
-//	result.Content = string(out)
-//
-//	if execErr != nil {
-//		result.Error = fmt.Sprintf("Execution error: %s", execErr.Error())
-//		err = nil // do not treat execution errors as error - the LLM will receive the error message
-//	}
-//
-//	slog.Debug("Command stopped.",
-//		"name", toolDefinition.Name,
-//		"command", toolDefinition.Command,
-//		"argument", call.FunctionCall.Arguments,
-//		"duration", result.DurationMs,
-//		"error", result.Error,
-//	)
-//
-//	return
-//}
-
 func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.Tool) (result LLMMessageCallResult, err error) {
 	slog.Debug("Start calling tool.", "name", toolDefinition.Name)
 

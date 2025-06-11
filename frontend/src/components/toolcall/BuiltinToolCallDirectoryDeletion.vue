@@ -13,11 +13,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { controller, file } from '../../../wailsjs/go/models.ts'
+import { controller, file, mcp } from '../../../wailsjs/go/models.ts'
 import LLMMessageCall = controller.LLMMessageCall
 import DirectoryDeletionArguments = file.DirectoryDeletionArguments
 import DirectoryDeletionResult = file.DirectoryDeletionResult
 import ToolCall from './ToolCall.vue'
+import { ToolCallResult } from './types.ts'
 
 export default defineComponent({
 	name: 'BuiltinToolCallDirectoryDeletion',
@@ -35,7 +36,11 @@ export default defineComponent({
 		parsedResult(): DirectoryDeletionResult | null {
 			if(this.tc.Result) {
 				try {
-					return JSON.parse(this.tc.Result.Content) as DirectoryDeletionResult
+					const tcr = JSON.parse(this.tc.Result.Content) as ToolCallResult
+					const firstTextContent = tcr.content.find(c => c.type === 'text') as mcp.TextContent
+					if(firstTextContent) {
+						return JSON.parse(firstTextContent.text) as DirectoryDeletionResult
+					}
 				} catch (e) {
 					// ignore JSON-Parse error
 				}

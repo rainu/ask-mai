@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gabriel-vasile/mimetype"
+	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/rainu/ask-mai/internal/llms/common"
 	"github.com/rainu/go-yacl"
 	"github.com/tmc/langchaingo/llms"
@@ -52,6 +53,13 @@ type LLMMessageCallResult struct {
 	Content    string
 	Error      string
 	DurationMs int64
+
+	//only for wails to generate TypeScript types
+	V mcp.CallToolResult
+	W mcp.TextContent
+	X mcp.ImageContent
+	Y mcp.AudioContent
+	Z mcp.EmbeddedResource
 }
 
 type LLMMessageContentPartType string

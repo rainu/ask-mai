@@ -884,6 +884,11 @@ export namespace controller {
 	    Content: string;
 	    Error: string;
 	    DurationMs: number;
+	    V: mcp.CallToolResult;
+	    W: mcp.TextContent;
+	    X: mcp.ImageContent;
+	    Y: mcp.AudioContent;
+	    Z: mcp.EmbeddedResource;
 	
 	    static createFrom(source: any = {}) {
 	        return new LLMMessageCallResult(source);
@@ -894,7 +899,30 @@ export namespace controller {
 	        this.Content = source["Content"];
 	        this.Error = source["Error"];
 	        this.DurationMs = source["DurationMs"];
+	        this.V = this.convertValues(source["V"], mcp.CallToolResult);
+	        this.W = this.convertValues(source["W"], mcp.TextContent);
+	        this.X = this.convertValues(source["X"], mcp.ImageContent);
+	        this.Y = this.convertValues(source["Y"], mcp.AudioContent);
+	        this.Z = this.convertValues(source["Z"], mcp.EmbeddedResource);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class LLMMessageCallMeta {
 	    BuiltIn: boolean;
@@ -2098,6 +2126,145 @@ export namespace llm {
 
 export namespace mcp {
 	
+	export class Annotations {
+	    audience?: string[];
+	    priority?: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Annotations(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.audience = source["audience"];
+	        this.priority = source["priority"];
+	    }
+	}
+	export class AudioContent {
+	    // Go type: Annotations
+	    annotations?: any;
+	    type: string;
+	    data: string;
+	    mimeType: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AudioContent(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.annotations = this.convertValues(source["annotations"], null);
+	        this.type = source["type"];
+	        this.data = source["data"];
+	        this.mimeType = source["mimeType"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class CallToolResult {
+	    _meta?: Record<string, any>;
+	    content: any[];
+	    isError?: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new CallToolResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this._meta = source["_meta"];
+	        this.content = source["content"];
+	        this.isError = source["isError"];
+	    }
+	}
+	export class EmbeddedResource {
+	    // Go type: Annotations
+	    annotations?: any;
+	    type: string;
+	    resource: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new EmbeddedResource(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.annotations = this.convertValues(source["annotations"], null);
+	        this.type = source["type"];
+	        this.resource = source["resource"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class ImageContent {
+	    // Go type: Annotations
+	    annotations?: any;
+	    type: string;
+	    data: string;
+	    mimeType: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ImageContent(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.annotations = this.convertValues(source["annotations"], null);
+	        this.type = source["type"];
+	        this.data = source["data"];
+	        this.mimeType = source["mimeType"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class Timeout {
 	    Init?: number;
 	    List?: number;
@@ -2138,6 +2305,41 @@ export namespace mcp {
 	        this.Approval = source["Approval"];
 	        this.Exclude = source["Exclude"];
 	        this.Timeout = this.convertValues(source["Timeout"], Timeout);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class TextContent {
+	    // Go type: Annotations
+	    annotations?: any;
+	    type: string;
+	    text: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TextContent(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.annotations = this.convertValues(source["annotations"], null);
+	        this.type = source["type"];
+	        this.text = source["text"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -2747,6 +2949,7 @@ export namespace system {
 	}
 	export class SystemInfoResult {
 	    os: string;
+	    os_info?: any;
 	    arch: string;
 	    cpus: number;
 	    hostname: string;
@@ -2763,6 +2966,7 @@ export namespace system {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.os = source["os"];
+	        this.os_info = source["os_info"];
 	        this.arch = source["arch"];
 	        this.cpus = source["cpus"];
 	        this.hostname = source["hostname"];
