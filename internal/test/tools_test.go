@@ -3,12 +3,15 @@ package test
 import (
 	"context"
 	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/rainu/ask-mai/internal/config/model/llm/tools/approval"
 	"github.com/rainu/ask-mai/internal/config/model/llm/tools/command"
 	"github.com/rainu/ask-mai/internal/controller"
+	mcpCommand "github.com/rainu/ask-mai/internal/mcp/server/builtin/tools/command"
 	"github.com/rainu/ask-mai/internal/mcp/server/builtin/tools/system"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tmc/langchaingo/llms"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -148,6 +151,34 @@ func TestTool_Custom_Command(t *testing.T) {
 	}
 
 	res, err := simpleAsk(ctrl, "Sag zu dem Benutzer: Hallo Benutzer!")
+	assert.NoError(t, err)
+	assert.NotEmpty(t, res)
+	assert.True(t, toolCalled, "Tool should have been called")
+}
+
+func TestTool_BuiltIn_Exec_Sudo(t *testing.T) {
+	cfg, ctrl := initTest(t)
+
+	deactivateAllTools(cfg)
+	cfg.GetActiveProfile().LLM.Tool.BuiltIns.CommandExec.Disable = false
+	cfg.GetActiveProfile().LLM.Tool.BuiltIns.CommandExec.Approval = approval.Never
+	os.Setenv("SUDO_ASKPASS", "/usr/bin/lxqt-openssh-askpass")
+
+	toolCalled := false
+	controller.RuntimeEventsEmit = func(ctx context.Context, event string, args ...interface{}) {
+		if event == controller.EventNameLLMMessageUpdate {
+			msg := args[0].(controller.LLMMessage)
+			assert.Equal(t, string(llms.ChatMessageTypeTool), msg.Role)
+			require.True(t, strings.HasSuffix(msg.ContentParts[0].Call.Function, mcpCommand.CommandExecutionTool.Name))
+			toolCalled = true
+
+			require.NotNil(t, msg.ContentParts[0].Call.Result)
+			assert.Contains(t, msg.ContentParts[0].Call.Result.Content, time.Now().String()[:10])
+			assert.Empty(t, msg.ContentParts[0].Call.Result.Error)
+		}
+	}
+
+	res, err := simpleAsk(ctrl, "Please run 'sudo echo hello world' for me.")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, res)
 	assert.True(t, toolCalled, "Tool should have been called")
