@@ -31,14 +31,13 @@ func TestTool_Command_Exec_Echo(t *testing.T) {
 }
 
 func TestTool_Command_Exec_Sudo(t *testing.T) {
-	c := getTestClient(t)
-
-	// check if sudo is available
-	_, err := os.Stat("/usr/bin/sudo")
-	if os.IsNotExist(err) {
-		t.Skip("Skipping test, 'sudo' command not available on this system")
+	_, isCI := os.LookupEnv("CI")
+	if isCI {
+		t.Skip("Skipping test in CI environment")
 		return
 	}
+
+	c := getTestClient(t)
 
 	apScript, err := os.Create(path.Join(t.TempDir(), "ask_pass.sh"))
 	require.NoError(t, err)
