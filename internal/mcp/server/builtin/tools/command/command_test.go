@@ -33,6 +33,13 @@ func TestTool_Command_Exec_Echo(t *testing.T) {
 func TestTool_Command_Exec_Sudo(t *testing.T) {
 	c := getTestClient(t)
 
+	// check if sudo is available
+	_, err := os.Stat("/usr/bin/sudo")
+	if os.IsNotExist(err) {
+		t.Skip("Skipping test, 'sudo' command not available on this system")
+		return
+	}
+
 	apScript, err := os.Create(path.Join(t.TempDir(), "ask_pass.sh"))
 	require.NoError(t, err)
 	require.NoError(t, os.Chmod(apScript.Name(), 0700)) // Make it executable
