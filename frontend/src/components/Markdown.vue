@@ -52,10 +52,11 @@ export default defineComponent({
 	},
 	methods: {
 		patchMarkdown() {
-			this.enrichCopyButtons()
+			this.enrichPreCopyButtons()
+			this.enrichCodeCopyButtons()
 			this.replaceLinks()
 		},
-		enrichCopyButtons() {
+		enrichPreCopyButtons() {
 			const codeBlocks = this.$refs.markdown.$el.querySelectorAll('pre:not(.code-container pre)').values()
 			for (const pre of codeBlocks) {
 				const div = document.createElement('div')
@@ -63,14 +64,14 @@ export default defineComponent({
 
 				const button = document.createElement('button')
 				button.className = 'copy-button mdi-clipboard-text-outline mdi v-icon notranslate v-icon--size-small'
-				button.addEventListener('click', this.onCopyButtonClicked)
+				button.addEventListener('click', this.onPreCopyButtonClicked)
 
 				div.appendChild(button)
 				div.appendChild(pre.cloneNode(true))
 				pre.replaceWith(div)
 			}
 		},
-		onCopyButtonClicked(event: MouseEvent) {
+		onPreCopyButtonClicked(event: MouseEvent) {
 			const preElement = (event.target as HTMLButtonElement)?.nextElementSibling as HTMLElement
 			if (preElement && preElement.tagName === 'PRE') {
 				let code = preElement.innerText
@@ -87,6 +88,30 @@ export default defineComponent({
 					}, 1000)
 				})
 			}
+		},
+
+		enrichCodeCopyButtons() {
+			const codeBlocks = this.$refs.markdown.$el.querySelectorAll('code:not(.code-container code)').values()
+			for (const code of codeBlocks) {
+				console.log(code)
+				const button = document.createElement('button')
+				button.className = 'mdi-clipboard-text-outline mdi v-icon notranslate v-icon--size-small ml-2'
+				button.addEventListener('click', this.onCodeCopyButtonClicked)
+
+				code.appendChild(button)
+				code.classList.add('.code-container')
+			}
+		},
+		onCodeCopyButtonClicked(event: MouseEvent) {
+			const codeElement = (event.target as HTMLButtonElement)?.parentElement as HTMLElement
+
+			const code = codeElement.textContent || ''
+			ClipboardSetText(code).then(() => {
+				codeElement.classList.add('copied')
+				setTimeout(() => {
+					codeElement.classList.remove('copied')
+				}, 1000)
+			})
 		},
 
 		replaceLinks() {
@@ -189,6 +214,11 @@ export default defineComponent({
 	border: 2px solid #4db6ac;
 	border-radius: 5px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Add elevation effect */
+}
+
+:deep(code.copied) {
+	border: 2px solid #4db6ac;
+	border-radius: 5px;
 }
 
 :deep(button.copied) {
