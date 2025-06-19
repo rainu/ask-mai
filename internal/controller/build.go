@@ -47,45 +47,63 @@ func BuildFromConfig(cfg *model.Config, lastState string, buildMode bool) (ctrl 
 		return
 	}
 
-	if activeCfg.UI.Prompt.InitValue != "" && lastState == "" {
-		now := time.Now().Unix()
-		// ask the model the first question in background
+	if activeCfg.LLM.CallOptions.Prompt.InitValue != "" && lastState == "" {
+		args := buildInitialChat(activeCfg)
+		go ctrl.LLMAsk(args)
+	}
+
+	return
+}
+
+func buildInitialChat(activeCfg *model.Profile) LLMAskArgs {
+	now := time.Now().Unix()
+	// ask the model the first question in background
+
+	args := LLMAskArgs{}
+
+	if activeCfg.LLM.CallOptions.Prompt.System != "" {
+		// add the system prompt to the history
+		args.History = append(args.History, LLMMessage{
+			ContentParts: []LLMMessageContentPart{{
+				Type:    LLMMessageContentPartTypeText,
+				Content: activeCfg.LLM.CallOptions.Prompt.System,
+			}},
+			Role:    string(langChainLLM.ChatMessageTypeSystem),
+			Created: now,
+		})
+	}
+
+	for _, message := range activeCfg.LLM.CallOptions.Prompt.InitMessages {
+		args.History = append(args.History, LLMMessage{
+			ContentParts: []LLMMessageContentPart{{
+				Type:    LLMMessageContentPartTypeText,
+				Content: message.Content,
+			}},
+			Role:    string(message.Role),
+			Created: now,
+		})
+	}
+
+	if activeCfg.LLM.CallOptions.Prompt.InitValue != "" {
 		message := LLMMessage{
 			ContentParts: []LLMMessageContentPart{{
 				Type:    LLMMessageContentPartTypeText,
-				Content: activeCfg.UI.Prompt.InitValue,
+				Content: activeCfg.LLM.CallOptions.Prompt.InitValue,
 			}},
 			Role:    string(langChainLLM.ChatMessageTypeHuman),
 			Created: now,
 		}
-		for _, attachment := range activeCfg.UI.Prompt.InitAttachments {
+
+		for _, attachment := range activeCfg.LLM.CallOptions.Prompt.InitAttachments {
 			message.ContentParts = append(message.ContentParts, LLMMessageContentPart{
 				Type:    LLMMessageContentPartTypeAttachment,
 				Content: attachment,
 			})
 		}
-
-		args := LLMAskArgs{
-			History: LLMMessages{message},
-		}
-
-		if activeCfg.LLM.CallOptions.SystemPrompt != "" {
-			// add the system prompt to the history
-			sysPrompt := LLMMessage{
-				ContentParts: []LLMMessageContentPart{{
-					Type:    LLMMessageContentPartTypeText,
-					Content: activeCfg.LLM.CallOptions.SystemPrompt,
-				}},
-				Role:    string(langChainLLM.ChatMessageTypeSystem),
-				Created: now,
-			}
-			args.History = []LLMMessage{sysPrompt, message}
-		}
-
-		go ctrl.LLMAsk(args)
+		args.History = append(args.History, message)
 	}
 
-	return
+	return args
 }
 
 func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {

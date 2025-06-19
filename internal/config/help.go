@@ -173,7 +173,9 @@ func printHelpConfig(output io.Writer) {
 					},
 				},
 				CallOptions: llm.CallOptionsConfig{
-					SystemPrompt: "You are a helpful assistant.",
+					Prompt: llm.PromptConfig{
+						System: "You are a helpful assistant.",
+					},
 				},
 			},
 		},
@@ -181,7 +183,9 @@ func printHelpConfig(output io.Writer) {
 			"evil": {
 				LLM: llm.LLMConfig{
 					CallOptions: llm.CallOptionsConfig{
-						SystemPrompt: "You are a evil assistant.",
+						Prompt: llm.PromptConfig{
+							System: "You are a evil assistant.",
+						},
 					},
 				},
 			},

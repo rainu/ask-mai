@@ -1837,8 +1837,58 @@ export namespace llm {
 		}
 	}
 	
+	export class Message {
+	    Role: string;
+	    Content: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Message(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Role = source["Role"];
+	        this.Content = source["Content"];
+	    }
+	}
+	export class PromptConfig {
+	    System: string;
+	    InitMessages: Message[];
+	    InitValue: string;
+	    InitAttachments: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new PromptConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.System = source["System"];
+	        this.InitMessages = this.convertValues(source["InitMessages"], Message);
+	        this.InitValue = source["InitValue"];
+	        this.InitAttachments = source["InitAttachments"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class CallOptionsConfig {
-	    SystemPrompt: string;
+	    Prompt: PromptConfig;
 	    MaxToken: number;
 	    Temperature: number;
 	    TopK: number;
@@ -1852,7 +1902,7 @@ export namespace llm {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.SystemPrompt = source["SystemPrompt"];
+	        this.Prompt = this.convertValues(source["Prompt"], PromptConfig);
 	        this.MaxToken = source["MaxToken"];
 	        this.Temperature = source["Temperature"];
 	        this.TopK = source["TopK"];
@@ -1860,6 +1910,24 @@ export namespace llm {
 	        this.MinLength = source["MinLength"];
 	        this.MaxLength = source["MaxLength"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class DeepSeekConfig {
 	    APIKey: common.Secret;
@@ -2118,6 +2186,8 @@ export namespace llm {
 		    return a;
 		}
 	}
+	
+	
 	
 	
 	
@@ -2642,8 +2712,6 @@ export namespace model {
 	    }
 	}
 	export class PromptConfig {
-	    InitValue: string;
-	    InitAttachments: string[];
 	    MinRows?: number;
 	    MaxRows?: number;
 	    PinTop?: boolean;
@@ -2655,8 +2723,6 @@ export namespace model {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.InitValue = source["InitValue"];
-	        this.InitAttachments = source["InitAttachments"];
 	        this.MinRows = source["MinRows"];
 	        this.MaxRows = source["MaxRows"];
 	        this.PinTop = source["PinTop"];

@@ -150,8 +150,8 @@ export default {
 			appbarHeight: 0,
 			progress: false,
 			input: {
-				prompt: this.$appProfile.UI.Prompt.InitValue,
-				attachments: this.$appProfile.UI.Prompt.InitAttachments,
+				prompt: this.$appProfile.LLM.CallOptions.Prompt.InitValue,
+				attachments: this.$appProfile.LLM.CallOptions.Prompt.InitAttachments,
 			} as ChatInputType,
 			outputStream: [
 				{
@@ -362,8 +362,8 @@ export default {
 			await this.processLLM(input, () => LLMAsk(args))
 		},
 		async waitForLLM() {
-			this.input.prompt = this.profile.UI.Prompt.InitValue
-			this.input.attachments = this.profile.UI.Prompt.InitAttachments
+			this.input.prompt = this.profile.LLM.CallOptions.Prompt.InitValue
+			this.input.attachments = this.profile.LLM.CallOptions.Prompt.InitAttachments
 			await this.processLLM(this.input, () => LLMWait())
 		},
 		async onInterrupt() {
@@ -423,7 +423,7 @@ export default {
 
 			AppMounted()
 				.then(() => {
-					if (this.$appProfile.UI.Prompt.InitValue && !stateAsString) {
+					if (this.$appProfile.LLM.CallOptions.Prompt.InitValue && !stateAsString) {
 						this.waitForLLM()
 					}
 				})

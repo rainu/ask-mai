@@ -50,10 +50,6 @@ ui:
     resizeable: true
     translucent: never
   prompt:
-    value: Initial Prompt
-    attachments:
-      - attachment1
-      - attachment2
     min-rows: 1
     max-rows: 10
     submit:
@@ -122,7 +118,12 @@ llm:
     base-url: BaseUrl
     model: Model
   call:
-    system-prompt: Your system prompt
+    prompt:
+      system: Your system prompt
+      init-value: Initial Prompt
+      init-attachment:
+        - attachment1
+        - attachment2
     max-token: 1000
     temperature: 0.7
     top-k: 50
@@ -223,10 +224,8 @@ themes:
 					Translucent:      "never",
 				},
 				Prompt: model.PromptConfig{
-					InitValue:       "Initial Prompt",
-					InitAttachments: []string{"attachment1", "attachment2"},
-					MinRows:         yacl.P(uint(1)),
-					MaxRows:         yacl.P(uint(10)),
+					MinRows: yacl.P(uint(1)),
+					MaxRows: yacl.P(uint(10)),
 					SubmitShortcut: model.Shortcut{
 						Binding: []string{"alt+ctrl+meta+shift+enter"},
 					},
@@ -303,13 +302,17 @@ themes:
 					Model:   "Model",
 				},
 				CallOptions: llm.CallOptionsConfig{
-					SystemPrompt: "Your system prompt",
-					MaxToken:     1000,
-					Temperature:  0.7,
-					TopK:         50,
-					TopP:         0.9,
-					MinLength:    10,
-					MaxLength:    200,
+					Prompt: llm.PromptConfig{
+						System:          "Your system prompt",
+						InitValue:       "Initial Prompt",
+						InitAttachments: []string{"attachment1", "attachment2"},
+					},
+					MaxToken:    1000,
+					Temperature: 0.7,
+					TopK:        50,
+					TopP:        0.9,
+					MinLength:   10,
+					MaxLength:   200,
 				},
 				Tool: tools.Config{
 					BuiltIns: builtin.BuiltIns{

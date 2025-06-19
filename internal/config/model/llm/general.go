@@ -30,7 +30,7 @@ type LLMConfig struct {
 	DeepSeek    DeepSeekConfig    `yaml:"deepseek,omitempty" usage:"DeepSeek " llm:""`
 	Google      GoogleAIConfig    `yaml:"google,omitempty" usage:"Google " llm:""`
 
-	CallOptions CallOptionsConfig `yaml:"call,omitempty" usage:"Call option "`
+	CallOptions CallOptionsConfig `yaml:"call,omitempty"`
 	Tool        tools.Config      `yaml:"tool,omitempty"`
 }
 

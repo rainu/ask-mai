@@ -81,37 +81,37 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set UI prompt value",
-			args: []string{"--ui.prompt.value=test"},
+			args: []string{"--llm.call.prompt.init-value=test"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.InitValue = "test"
+				c.MainProfile.LLM.CallOptions.Prompt.InitValue = "test"
 			}),
 		},
 		{
 			name: "Set UI prompt value - shorthand",
 			args: []string{"-p=test"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.InitValue = "test"
+				c.MainProfile.LLM.CallOptions.Prompt.InitValue = "test"
 			}),
 		},
 		{
 			name: "Set system prompt value",
-			args: []string{"--llm.call.system-prompt=test"},
+			args: []string{"--llm.call.prompt.system=test"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.LLM.CallOptions.SystemPrompt = "test"
+				c.MainProfile.LLM.CallOptions.Prompt.System = "test"
 			}),
 		},
 		{
 			name: "Set UI prompt initial attachments",
-			args: []string{"--ui.prompt.attachments.[0]=file1.txt", "--ui.prompt.attachments.[1]=file2.txt"},
+			args: []string{"--llm.call.prompt.init-attachment.[0]=file1.txt", "--llm.call.prompt.init-attachment.[1]=file2.txt"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
+				c.MainProfile.LLM.CallOptions.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
 			}),
 		},
 		{
 			name: "Set UI prompt initial attachments - shorthand",
 			args: []string{"-a=file1.txt", "-a=file2.txt"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
+				c.MainProfile.LLM.CallOptions.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
 			}),
 		},
 		{
@@ -385,9 +385,9 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Set environment variable for init prompt",
-			env:  []string{EnvironmentPrefix + "=--ui.prompt.value=test"},
+			env:  []string{EnvironmentPrefix + "=--llm.call.prompt.init-value=test"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.InitValue = "test"
+				c.MainProfile.LLM.CallOptions.Prompt.InitValue = "test"
 			}),
 		},
 		{
@@ -470,11 +470,11 @@ func TestConfig_Parse(t *testing.T) {
 		{
 			name: "Set environment variable for UI prompt initial attachments",
 			env: []string{
-				EnvironmentPrefix + "=--ui.prompt.attachments.[1]=file2.txt",
-				EnvironmentPrefix + "=--ui.prompt.attachments.[0]=file1.txt",
+				EnvironmentPrefix + "=--llm.call.prompt.init-attachment.[1]=file2.txt",
+				EnvironmentPrefix + "=--llm.call.prompt.init-attachment.[0]=file1.txt",
 			},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
+				c.MainProfile.LLM.CallOptions.Prompt.InitAttachments = []string{"file1.txt", "file2.txt"}
 			}),
 		},
 		{
@@ -672,10 +672,10 @@ func TestConfig_Parse(t *testing.T) {
 		},
 		{
 			name: "Argument will override environment",
-			args: []string{"--ui.prompt.value=arg-prompt"},
-			env:  []string{EnvironmentPrefix + "=--ui.prompt.value=env-prompt"},
+			args: []string{"--llm.call.prompt.init-value=arg-prompt"},
+			env:  []string{EnvironmentPrefix + "=--llm.call.prompt.init-value=env-prompt"},
 			expected: modifiedConfig(func(c *model.Config) {
-				c.MainProfile.UI.Prompt.InitValue = "arg-prompt"
+				c.MainProfile.LLM.CallOptions.Prompt.InitValue = "arg-prompt"
 			}),
 		},
 		{
@@ -714,12 +714,12 @@ func TestConfig_Parse(t *testing.T) {
 			args: []string{"--profiles.test.description=test", "-P", "test", "-p", "What is the answer?"},
 			expected: modifiedConfig(func(c *model.Config) {
 				c.ActiveProfile = "test"
-				c.MainProfile.UI.Prompt.InitValue = "What is the answer?"
+				c.MainProfile.LLM.CallOptions.Prompt.InitValue = "What is the answer?"
 
 				testProfile := &model.Profile{}
 				yacl.NewConfig(testProfile).ApplyDefaults()
 				testProfile.Meta.Description = "test"
-				testProfile.UI.Prompt.InitValue = "What is the answer?"
+				testProfile.LLM.CallOptions.Prompt.InitValue = "What is the answer?"
 
 				c.Profiles = map[string]*model.Profile{
 					"test": testProfile,
