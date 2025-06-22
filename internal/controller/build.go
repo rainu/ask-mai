@@ -118,6 +118,7 @@ func buildInitialConversation(activeCfg *model.Profile) (history LLMMessages) {
 
 	if activeCfg.LLM.CallOptions.Prompt.InitValue != "" {
 		message := LLMMessage{
+			Id: initialConversationIdInitPrompt,
 			ContentParts: []LLMMessageContentPart{{
 				Type:    LLMMessageContentPartTypeText,
 				Content: activeCfg.LLM.CallOptions.Prompt.InitValue,
