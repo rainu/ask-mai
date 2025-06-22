@@ -120,6 +120,17 @@ llm:
   call:
     prompt:
       system: Your system prompt
+      init-message:
+        - role: human
+          content: This is an initial message.
+      init-tool-call:
+        - server: _builtin
+          name: getSystemInformation
+        - server: _custom
+          name: test
+          args: 
+            arg1: value1
+            arg2: 42
       init-value: Initial Prompt
       init-attachment:
         - attachment1
@@ -303,7 +314,14 @@ themes:
 				},
 				CallOptions: llm.CallOptionsConfig{
 					Prompt: llm.PromptConfig{
-						System:          "Your system prompt",
+						System: "Your system prompt",
+						InitMessages: []llm.Message{
+							{Role: "human", Content: "This is an initial message."},
+						},
+						InitToolCalls: []llm.ToolCall{
+							{Server: "_builtin", Name: "getSystemInformation"},
+							{Server: "_custom", Name: "test", Arguments: map[string]any{"arg1": "value1", "arg2": uint64(42)}},
+						},
 						InitValue:       "Initial Prompt",
 						InitAttachments: []string{"attachment1", "attachment2"},
 					},

@@ -118,7 +118,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 				r.Error = aErr.Error()
 			} else {
 				if tool, ok := availableTools[call.FunctionCall.Name]; ok {
-					r, e = c.callTool(c.aiModelCtx, call, tool)
+					r = c.callTool(c.aiModelCtx, call, tool)
 				} else {
 					e = fmt.Errorf("unknown tool: %s", call.FunctionCall.Name)
 				}
@@ -178,11 +178,15 @@ func (c *Controller) waitForApproval(ctx context.Context, call llms.ToolCall) er
 	return nil
 }
 
-func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.Tool) (result LLMMessageCallResult, err error) {
-	slog.Debug("Start calling tool.", "name", toolDefinition.Name)
+func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.Tool) LLMMessageCallResult {
+	return callTool(ctx, toolDefinition.Transporter, toolDefinition.Name, call.FunctionCall.Arguments)
+}
+
+func callTool(ctx context.Context, tp client.Transporter, name string, args string) (result LLMMessageCallResult) {
+	slog.Debug("Start calling tool.", "name", name)
 
 	t := time.Now()
-	resp, callErr := client.CallTool(ctx, toolDefinition.Transporter, toolDefinition.Name, call.FunctionCall.Arguments)
+	resp, callErr := client.CallTool(ctx, tp, name, args)
 
 	result.DurationMs = time.Since(t).Milliseconds()
 	content, _ := json.Marshal(resp)
@@ -190,12 +194,11 @@ func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefin
 
 	if callErr != nil {
 		result.Error = fmt.Sprintf("Execution error: %s", callErr.Error())
-		err = nil // do not treat execution errors as error - the LLM will receive the error message
 	}
 
 	slog.Debug("Tool stopped.",
-		"name", toolDefinition.Name,
-		"argument", call.FunctionCall.Arguments,
+		"name", name,
+		"argument", args,
 		"duration", result.DurationMs,
 		"error", result.Error,
 	)

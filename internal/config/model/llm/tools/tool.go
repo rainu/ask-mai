@@ -20,13 +20,21 @@ type Tool struct {
 	approval    approval.Approval
 }
 
+func (c *Config) GetBuiltinTransporter() client.Transporter {
+	return &builtinTools{BuiltIns: c.BuiltIns}
+}
+
+func (c *Config) GetCustomTransporter() client.Transporter {
+	return &customTools{config: c.Custom}
+}
+
 func (c *Config) GetTools(ctx context.Context) (map[string]Tool, error) {
 	tp := map[string]client.Transporter{}
 	for name, server := range c.McpServer {
 		tp[name] = &server
 	}
-	tp[ServerNameBuiltin] = &builtinTools{BuiltIns: c.BuiltIns}
-	tp[ServerNameCustom] = &customTools{config: c.Custom}
+	tp[ServerNameBuiltin] = c.GetBuiltinTransporter()
+	tp[ServerNameCustom] = c.GetCustomTransporter()
 
 	result, err := client.ListAllTools(ctx, tp)
 	if err != nil {
@@ -52,8 +60,7 @@ func (c *Config) GetTools(ctx context.Context) (map[string]Tool, error) {
 				toolApproval = approval.Approval(server.Approval)
 			}
 
-			// to prevent naming collisions, we add a prefix to the tool name
-			allTools[fmt.Sprintf("%s_%s", serverName, toolName)] = Tool{
+			allTools[GetUniqToolName(serverName, toolName)] = Tool{
 				Tool:        tool,
 				Transporter: tp[serverName],
 				approval:    toolApproval,
@@ -62,6 +69,11 @@ func (c *Config) GetTools(ctx context.Context) (map[string]Tool, error) {
 	}
 
 	return allTools, nil
+}
+
+func GetUniqToolName(serverName, toolName string) string {
+	// to prevent naming collisions, we add a prefix to the tool name
+	return fmt.Sprintf("%s_%s", serverName, toolName)
 }
 
 func (t *Tool) NeedApproval(ctx context.Context, jsonArgs string) bool {

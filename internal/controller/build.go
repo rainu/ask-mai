@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"context"
 	"embed"
 	"fmt"
 	"github.com/rainu/ask-mai/internal/config/model"
+	"github.com/rainu/ask-mai/internal/config/model/llm"
 	"github.com/rainu/ask-mai/internal/io"
 	langChainLLM "github.com/tmc/langchaingo/llms"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -47,23 +49,23 @@ func BuildFromConfig(cfg *model.Config, lastState string, buildMode bool) (ctrl 
 		return
 	}
 
-	if activeCfg.LLM.CallOptions.Prompt.InitValue != "" && lastState == "" {
-		args := buildInitialChat(activeCfg)
-		go ctrl.LLMAsk(args)
+	if lastState == "" {
+		ctrl.initialConversation = buildInitialConversation(activeCfg)
+		if activeCfg.LLM.CallOptions.Prompt.InitValue != "" {
+			// ask the model the first question in background
+			go ctrl.LLMAsk(LLMAskArgs{History: ctrl.initialConversation})
+		}
 	}
 
 	return
 }
 
-func buildInitialChat(activeCfg *model.Profile) LLMAskArgs {
+func buildInitialConversation(activeCfg *model.Profile) (history LLMMessages) {
 	now := time.Now().Unix()
-	// ask the model the first question in background
-
-	args := LLMAskArgs{}
 
 	if activeCfg.LLM.CallOptions.Prompt.System != "" {
 		// add the system prompt to the history
-		args.History = append(args.History, LLMMessage{
+		history = append(history, LLMMessage{
 			ContentParts: []LLMMessageContentPart{{
 				Type:    LLMMessageContentPartTypeText,
 				Content: activeCfg.LLM.CallOptions.Prompt.System,
@@ -74,12 +76,42 @@ func buildInitialChat(activeCfg *model.Profile) LLMAskArgs {
 	}
 
 	for _, message := range activeCfg.LLM.CallOptions.Prompt.InitMessages {
-		args.History = append(args.History, LLMMessage{
+		history = append(history, LLMMessage{
 			ContentParts: []LLMMessageContentPart{{
 				Type:    LLMMessageContentPartTypeText,
 				Content: message.Content,
 			}},
 			Role:    string(message.Role),
+			Created: now,
+		})
+	}
+
+	ctx := context.Background()
+	for i, tc := range activeCfg.LLM.CallOptions.Prompt.InitToolCalls {
+		tp := tc.GetTransporter(&activeCfg.LLM.Tool)
+		if tp == nil {
+			continue
+		}
+
+		tcArgs := tc.GetArguments()
+		tcResult := callTool(ctx, tp, tc.Name, tcArgs)
+		history = append(history, LLMMessage{
+			ContentParts: []LLMMessageContentPart{{
+				Type: LLMMessageContentPartTypeToolCall,
+				Call: LLMMessageCall{
+					Id:        fmt.Sprintf("%d-%d", now, i),
+					Function:  tc.GetUniqName(),
+					Arguments: tcArgs,
+					Meta: LLMMessageCallMeta{
+						BuiltIn:  tc.Server == llm.ToolCallTypeBuiltin,
+						Custom:   tc.Server == llm.ToolCallTypeCustom,
+						Mcp:      tc.Server != llm.ToolCallTypeBuiltin && tc.Server != llm.ToolCallTypeCustom,
+						ToolName: tc.Name,
+					},
+					Result: &tcResult,
+				},
+			}},
+			Role:    string(langChainLLM.ChatMessageTypeTool),
 			Created: now,
 		})
 	}
@@ -100,10 +132,10 @@ func buildInitialChat(activeCfg *model.Profile) LLMAskArgs {
 				Content: attachment,
 			})
 		}
-		args.History = append(args.History, message)
+		history = append(history, message)
 	}
 
-	return args
+	return
 }
 
 func GetOptions(c *Controller, icon []byte, assets embed.FS) *options.App {

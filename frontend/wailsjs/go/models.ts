@@ -1837,6 +1837,22 @@ export namespace llm {
 		}
 	}
 	
+	export class ToolCall {
+	    Server: string;
+	    Name: string;
+	    Arguments: Record<string, any>;
+	
+	    static createFrom(source: any = {}) {
+	        return new ToolCall(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Server = source["Server"];
+	        this.Name = source["Name"];
+	        this.Arguments = source["Arguments"];
+	    }
+	}
 	export class Message {
 	    Role: string;
 	    Content: string;
@@ -1854,6 +1870,7 @@ export namespace llm {
 	export class PromptConfig {
 	    System: string;
 	    InitMessages: Message[];
+	    InitToolCalls: ToolCall[];
 	    InitValue: string;
 	    InitAttachments: string[];
 	
@@ -1865,6 +1882,7 @@ export namespace llm {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.System = source["System"];
 	        this.InitMessages = this.convertValues(source["InitMessages"], Message);
+	        this.InitToolCalls = this.convertValues(source["InitToolCalls"], ToolCall);
 	        this.InitValue = source["InitValue"];
 	        this.InitAttachments = source["InitAttachments"];
 	    }
@@ -2186,6 +2204,7 @@ export namespace llm {
 		    return a;
 		}
 	}
+	
 	
 	
 	

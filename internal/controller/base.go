@@ -26,6 +26,7 @@ type Controller struct {
 	appConfig *model.Config
 	printer   io.ResponsePrinter
 
+	initialConversation LLMMessages
 	currentConversation LLMMessages
 
 	vueAppMounted bool

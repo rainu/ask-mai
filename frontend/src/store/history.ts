@@ -33,9 +33,7 @@ const buildSystemMessage = (): HistoryEntry => ({
 
 export const useHistoryStore = defineStore('history', {
 	state: () => ({
-		chatHistory: [
-			buildSystemMessage(),
-		] as HistoryEntry[],
+		chatHistory: [] as HistoryEntry[],
 	}),
 	actions: {
 		setHistory(history: HistoryEntry[]) {

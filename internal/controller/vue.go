@@ -1,9 +1,7 @@
 package controller
 
 import (
-	"fmt"
 	"math"
-	"time"
 )
 
 // AppMounted is called when the frontend application is mounted (decided by the frontend itself)
@@ -14,19 +12,12 @@ func (c *Controller) AppMounted() {
 
 	c.vueAppMounted = true
 
-	// after the app is mounted, we have to inform about the initial messages
-	//(otherwise the followup askings, will not contain the initial messages)
-	for i, message := range c.getProfile().LLM.CallOptions.Prompt.InitMessages {
-		RuntimeEventsEmit(c.ctx, EventNameLLMMessageAdd, LLMMessage{
-			Id:      fmt.Sprintf("initial-%d", i),
-			Role:    string(message.Role),
-			Created: time.Now().Unix(),
-			ContentParts: []LLMMessageContentPart{{
-				Type:    LLMMessageContentPartTypeText,
-				Content: message.Content,
-			}},
-		})
+	// after the app is mounted, we have to inform about the initial conversation
+	// (otherwise the followup askings, will not contain the initial conversation)
+	for _, message := range c.initialConversation {
+		RuntimeEventsEmit(c.ctx, EventNameLLMMessageAdd, message)
 	}
+	c.initialConversation = nil
 }
 
 func (c *Controller) IsAppMounted() bool {

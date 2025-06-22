@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/rainu/ask-mai/internal/config/model"
 	"github.com/rainu/ask-mai/internal/config/model/common"
+	"github.com/rainu/ask-mai/internal/config/model/llm"
 	"github.com/rainu/ask-mai/internal/config/model/llm/tools/mcp"
 	"github.com/rainu/go-yacl"
 	"github.com/stretchr/testify/assert"
@@ -98,6 +99,31 @@ func TestConfig_Parse(t *testing.T) {
 			args: []string{"--llm.call.prompt.system=test"},
 			expected: modifiedConfig(func(c *model.Config) {
 				c.MainProfile.LLM.CallOptions.Prompt.System = "test"
+			}),
+		},
+		{
+			name: "Set initial tool call arguments",
+			args: []string{
+				"--llm.call.prompt.init-tool-call[0].server=_builtin",
+				"--llm.call.prompt.init-tool-call[0].name=test",
+				"--llm.call.prompt.init-tool-call[0].args.key=value",
+				"--llm.call.prompt.init-tool-call[1].server=_builtin",
+				"--llm.call.prompt.init-tool-call[1].name=test",
+			},
+			expected: modifiedConfig(func(c *model.Config) {
+				c.MainProfile.LLM.CallOptions.Prompt.InitToolCalls = []llm.ToolCall{
+					{
+						Server: "_builtin",
+						Name:   "test",
+						Arguments: map[string]any{
+							"key": "value",
+						},
+					},
+					{
+						Server: "_builtin",
+						Name:   "test",
+					},
+				}
 			}),
 		},
 		{
