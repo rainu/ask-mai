@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/tmc/langchaingo/llms"
 	"log/slog"
@@ -41,7 +42,7 @@ func (c *Controller) waitForApproval(ctx context.Context, call llms.ToolCall) er
 				if a.Message != "" {
 					errMsg = a.Message
 				}
-				return fmt.Errorf(errMsg)
+				return errors.New(errMsg)
 			}
 		case <-ctx.Done():
 			return fmt.Errorf("Approval for tool '%s' timed out!", call.FunctionCall.Name)

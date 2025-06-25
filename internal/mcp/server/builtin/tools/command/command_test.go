@@ -71,7 +71,7 @@ func Test_getOutput(t *testing.T) {
 			_, err = f.Seek(0, 0)
 			require.NoError(t, err)
 
-			toTest := CommandDescriptor{LastNBytes: tc.lastNBytes, FirstNBytes: tc.firstNBytes}
+			toTest := CommandDescriptor{Output: &OutputSettings{LastNBytes: tc.lastNBytes, FirstNBytes: tc.firstNBytes}}
 			result := toTest.getOutput(f)
 
 			require.Equal(t, tc.expectedOutput, string(result))

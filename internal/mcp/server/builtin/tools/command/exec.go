@@ -84,10 +84,12 @@ var CommandExecutionToolHandler = func(ctx context.Context, request mcp.CallTool
 		Arguments:             pArgs.Arguments,
 		AdditionalEnvironment: pArgs.Environment,
 		WorkingDirectory:      pArgs.WorkingDirectory,
-		DisableStdOut:         pArgs.DisableOut,
-		DisableStdErr:         pArgs.DisableErr,
-		FirstNBytes:           pArgs.FirstBytes,
-		LastNBytes:            pArgs.LastBytes,
+		Output: &OutputSettings{
+			DisableStdOut: pArgs.DisableOut,
+			DisableStdErr: pArgs.DisableErr,
+			FirstNBytes:   pArgs.FirstBytes,
+			LastNBytes:    pArgs.LastBytes,
+		},
 	}
 
 	raw, err := cmdDesc.Run(ctx)

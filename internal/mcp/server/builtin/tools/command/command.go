@@ -16,10 +16,14 @@ type CommandDescriptor struct {
 	Environment           map[string]string `json:"env"`
 	AdditionalEnvironment map[string]string `json:"additionalEnv"`
 	WorkingDirectory      string            `json:"workingDir"`
-	DisableStdOut         bool              `json:"disableStdOut"`
-	DisableStdErr         bool              `json:"disableStdErr"`
-	FirstNBytes           int               `json:"firstNBytes"`
-	LastNBytes            int               `json:"lastNBytes"`
+	Output                *OutputSettings   `json:"output,omitempty"`
+}
+
+type OutputSettings struct {
+	DisableStdOut bool `json:"disableStdOut"`
+	DisableStdErr bool `json:"disableStdErr"`
+	FirstNBytes   int  `json:"firstNBytes"`
+	LastNBytes    int  `json:"lastNBytes"`
 }
 
 func (c CommandDescriptor) Run(ctx context.Context) ([]byte, error) {
@@ -45,10 +49,10 @@ func (c CommandDescriptor) Run(ctx context.Context) ([]byte, error) {
 	}()
 
 	cmd := cmdBuild.WithErrorChecker(cmdchain.IgnoreExitErrors()).Finalize()
-	if !c.DisableStdOut {
+	if c.Output == nil || !c.Output.DisableStdOut {
 		cmd = cmd.WithOutput(oFile)
 	}
-	if !c.DisableStdErr {
+	if c.Output == nil || !c.Output.DisableStdErr {
 		cmd = cmd.WithError(oFile)
 	}
 
@@ -57,7 +61,11 @@ func (c CommandDescriptor) Run(ctx context.Context) ([]byte, error) {
 }
 
 func (c CommandDescriptor) getOutput(f *os.File) []byte {
-	if c.FirstNBytes < 0 || c.LastNBytes < 0 {
+	if c.Output == nil {
+		return readFile(f)
+	}
+	cfg := c.Output
+	if cfg.FirstNBytes < 0 || cfg.LastNBytes < 0 {
 		return readFile(f)
 	}
 
@@ -69,7 +77,7 @@ func (c CommandDescriptor) getOutput(f *os.File) []byte {
 		)
 		return nil
 	}
-	if c.FirstNBytes+c.LastNBytes > int(fs.Size()) {
+	if cfg.FirstNBytes+cfg.LastNBytes > int(fs.Size()) {
 		return readFile(f)
 	}
 
@@ -83,11 +91,11 @@ func (c CommandDescriptor) getOutput(f *os.File) []byte {
 		return nil
 	}
 
-	if c.FirstNBytes > 0 {
-		_, err = io.CopyN(buf, f, int64(c.FirstNBytes))
+	if cfg.FirstNBytes > 0 {
+		_, err = io.CopyN(buf, f, int64(cfg.FirstNBytes))
 		if err != nil && err != io.EOF {
 			slog.Error("Could not read first bytes from command output file.",
-				"bytes", c.FirstNBytes,
+				"bytes", cfg.FirstNBytes,
 				"path", f.Name(),
 				"error", err,
 			)
@@ -95,22 +103,22 @@ func (c CommandDescriptor) getOutput(f *os.File) []byte {
 		}
 	} else {
 		// Indicate that there were bytes skipped
-		buf.WriteString(skippedBytesIndicator(fs.Size() - int64(c.LastNBytes)))
+		buf.WriteString(skippedBytesIndicator(fs.Size() - int64(cfg.LastNBytes)))
 		buf.WriteRune('\n')
 	}
 
-	if c.FirstNBytes > 0 && c.LastNBytes > 0 {
+	if cfg.FirstNBytes > 0 && cfg.LastNBytes > 0 {
 		// Indicate that there were bytes skipped
 		buf.WriteRune('\n')
-		buf.WriteString(skippedBytesIndicator(fs.Size() - int64(c.FirstNBytes+c.LastNBytes)))
+		buf.WriteString(skippedBytesIndicator(fs.Size() - int64(cfg.FirstNBytes+cfg.LastNBytes)))
 		buf.WriteRune('\n')
 	}
 
-	if c.LastNBytes > 0 {
-		_, err = f.Seek(-int64(c.LastNBytes), io.SeekEnd) // Seek to the last N bytes
+	if cfg.LastNBytes > 0 {
+		_, err = f.Seek(-int64(cfg.LastNBytes), io.SeekEnd) // Seek to the last N bytes
 		if err != nil {
 			slog.Error("Could not seek to the last bytes of command output file.",
-				"bytes", c.LastNBytes,
+				"bytes", cfg.LastNBytes,
 				"path", f.Name(),
 				"error", err,
 			)
@@ -119,7 +127,7 @@ func (c CommandDescriptor) getOutput(f *os.File) []byte {
 		_, err = io.Copy(buf, f)
 		if err != nil && err != io.EOF {
 			slog.Error("Could not read last bytes from command output file.",
-				"bytes", c.LastNBytes,
+				"bytes", cfg.LastNBytes,
 				"path", f.Name(),
 				"error", err,
 			)
@@ -128,7 +136,7 @@ func (c CommandDescriptor) getOutput(f *os.File) []byte {
 	} else {
 		// Indicate that there were bytes skipped
 		buf.WriteRune('\n')
-		buf.WriteString(skippedBytesIndicator(fs.Size() - int64(c.FirstNBytes)))
+		buf.WriteString(skippedBytesIndicator(fs.Size() - int64(cfg.FirstNBytes)))
 	}
 
 	return buf.Bytes()

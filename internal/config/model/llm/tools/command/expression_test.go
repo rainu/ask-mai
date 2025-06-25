@@ -171,6 +171,29 @@ const cmdDescriptor = {
 	assert.Equal(t, `Echo: Hello World`, strings.TrimSpace(string(result)))
 }
 
+func TestCommandExpression_CommandFn_RunCommand_WithLimit(t *testing.T) {
+	toTest := Expression(`
+const pa = JSON.parse(` + expression.VarNameContext + `.args)
+const cmdDescriptor = {
+ "command": "echo",
+ "arguments": ["Echo:", pa.message],
+ "output": {
+   "firstNBytes": 1,
+ }
+}
+
+` + expression.FuncNameRun + `(cmdDescriptor)
+`)
+	require.NoError(t, toTest.Validate())
+
+	llmArgs := `{"message": "Hello World"}`
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	result, err := toTest.CommandFn(FunctionDefinition{})(ctx, llmArgs)
+	assert.NoError(t, err)
+	assert.Equal(t, "E\n{{ 17 bytes skipped }}", strings.TrimSpace(string(result)))
+}
+
 func TestCommandExpression_CommandFn_RunCommand_WithEnv(t *testing.T) {
 	toTest := Expression(`
 const pa = JSON.parse(` + expression.VarNameContext + `.args)
