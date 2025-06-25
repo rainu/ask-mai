@@ -46,8 +46,8 @@ export function IsAppMounted() {
   return window['go']['controller']['Controller']['IsAppMounted']();
 }
 
-export function LLMApproveToolCall(arg1) {
-  return window['go']['controller']['Controller']['LLMApproveToolCall'](arg1);
+export function LLMApproveToolCall(arg1, arg2) {
+  return window['go']['controller']['Controller']['LLMApproveToolCall'](arg1, arg2);
 }
 
 export function LLMAsk(arg1) {
@@ -58,8 +58,8 @@ export function LLMInterrupt() {
   return window['go']['controller']['Controller']['LLMInterrupt']();
 }
 
-export function LLMRejectToolCall(arg1) {
-  return window['go']['controller']['Controller']['LLMRejectToolCall'](arg1);
+export function LLMRejectToolCall(arg1, arg2) {
+  return window['go']['controller']['Controller']['LLMRejectToolCall'](arg1, arg2);
 }
 
 export function LLMWait() {

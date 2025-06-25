@@ -682,6 +682,10 @@ export namespace command {
 	    arguments: string[];
 	    working_directory: string;
 	    environment: Record<string, string>;
+	    out: boolean;
+	    err: boolean;
+	    first: number;
+	    last: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new CommandExecutionArguments(source);
@@ -693,6 +697,10 @@ export namespace command {
 	        this.arguments = source["arguments"];
 	        this.working_directory = source["working_directory"];
 	        this.environment = source["environment"];
+	        this.out = source["out"];
+	        this.err = source["err"];
+	        this.first = source["first"];
+	        this.last = source["last"];
 	    }
 	}
 	export class FunctionDefinition {

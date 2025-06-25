@@ -20,6 +20,13 @@
     },
     "mcp": {
       "description": "Tool-Beschreibung"
+    },
+    "rejection": {
+      "dialog":{
+        "title": "Tool-Ausführung ablehnen",
+        "message": "Begründung",
+        "ok": "Ablehnen"
+      }
     }
   },
   "history": {

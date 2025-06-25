@@ -28,13 +28,13 @@ export function HistorySearch(arg1:string):Promise<Array<history.Entry>>;
 
 export function IsAppMounted():Promise<boolean>;
 
-export function LLMApproveToolCall(arg1:string):Promise<void>;
+export function LLMApproveToolCall(arg1:string,arg2:string):Promise<void>;
 
 export function LLMAsk(arg1:controller.LLMAskArgs):Promise<controller.LLMAskResult>;
 
 export function LLMInterrupt():Promise<void>;
 
-export function LLMRejectToolCall(arg1:string):Promise<void>;
+export function LLMRejectToolCall(arg1:string,arg2:string):Promise<void>;
 
 export function LLMWait():Promise<controller.LLMAskResult>;
 

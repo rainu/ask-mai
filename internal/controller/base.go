@@ -20,7 +20,7 @@ type Controller struct {
 	aiModelMutex    sync.Mutex
 	lastAskResponse llmAskResponse
 
-	toolApprovalChannel map[string]chan bool
+	toolApprovalChannel map[string]chan approval
 	toolApprovalMutex   sync.Mutex
 
 	appConfig *model.Config

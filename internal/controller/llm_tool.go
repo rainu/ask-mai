@@ -42,7 +42,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 	}
 
 	c.toolApprovalMutex.Write(func() {
-		c.toolApprovalChannel = map[string]chan bool{}
+		c.toolApprovalChannel = map[string]chan approval{}
 	})
 
 	// close approval channel to prevent memory leaks
@@ -71,7 +71,7 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 		//create approval channel for tool calls that need approval
 		if needsApproval {
 			c.toolApprovalMutex.Write(func() {
-				c.toolApprovalChannel[call.ID] = make(chan bool)
+				c.toolApprovalChannel[call.ID] = make(chan approval)
 			})
 		}
 
@@ -147,37 +147,6 @@ func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessa
 	return
 }
 
-func (c *Controller) waitForApproval(ctx context.Context, call llms.ToolCall) error {
-	// wait for user's approval (see llmApplyToolCallApproval())
-	var approvalChan chan bool
-	c.toolApprovalMutex.Read(func() {
-		approvalChan = c.toolApprovalChannel[call.ID]
-	})
-
-	if approvalChan != nil {
-		defer func() {
-			c.toolApprovalMutex.Write(func() {
-				delete(c.toolApprovalChannel, call.ID)
-			})
-		}()
-
-		// wait for approval
-		select {
-		case approved := <-approvalChan:
-			slog.Debug("Approval received for tool.", "tool", call.FunctionCall.Name, "approved", approved)
-
-			if !approved {
-				return fmt.Errorf("The user rejected the tool call!")
-			}
-		case <-ctx.Done():
-			return fmt.Errorf("Approval for tool '%s' timed out!", call.FunctionCall.Name)
-		}
-	}
-
-	// no approval needed
-	return nil
-}
-
 func (c *Controller) callTool(ctx context.Context, call llms.ToolCall, toolDefinition tools.Tool) LLMMessageCallResult {
 	return callTool(ctx, toolDefinition.Transporter, toolDefinition.Name, call.FunctionCall.Arguments)
 }
@@ -204,21 +173,4 @@ func callTool(ctx context.Context, tp client.Transporter, name string, args stri
 	)
 
 	return
-}
-
-func (c *Controller) LLMApproveToolCall(callId string) {
-	c.llmApplyToolCallApproval(callId, true)
-}
-
-func (c *Controller) LLMRejectToolCall(callId string) {
-	c.llmApplyToolCallApproval(callId, false)
-}
-
-func (c *Controller) llmApplyToolCallApproval(callId string, approve bool) {
-	c.toolApprovalMutex.Read(func() {
-		if c.toolApprovalChannel[callId] != nil {
-			c.toolApprovalChannel[callId] <- approve
-			close(c.toolApprovalChannel[callId])
-		}
-	})
 }

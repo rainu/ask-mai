@@ -20,6 +20,13 @@
     },
     "mcp": {
       "description": "Tool description"
+    },
+    "rejection": {
+      "dialog":{
+        "title": "Reject tool execution",
+        "message": "Reason",
+        "ok": "Reject"
+      }
     }
   },
   "history": {

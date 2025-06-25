@@ -93,7 +93,6 @@ export default defineComponent({
 		enrichCodeCopyButtons() {
 			const codeBlocks = this.$refs.markdown.$el.querySelectorAll('code:not(.code-container code)').values()
 			for (const code of codeBlocks) {
-				console.log(code)
 				const button = document.createElement('button')
 				button.className = 'mdi-clipboard-text-outline mdi v-icon notranslate v-icon--size-small ml-2'
 				button.addEventListener('click', this.onCodeCopyButtonClicked)

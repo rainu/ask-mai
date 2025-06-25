@@ -49,7 +49,11 @@ export default defineComponent({
 		title(){
 			let line = this.parsedArguments.name
 			if(this.parsedArguments.arguments) {
-				line += " " + this.parsedArguments.arguments.join(' ')
+				if (Array.isArray(this.parsedArguments.arguments)) {
+					line += " " + this.parsedArguments.arguments.join(' ')
+				} else {
+					line += " " + this.parsedArguments.arguments
+				}
 			}
 			return line
 		},
@@ -69,7 +73,11 @@ export default defineComponent({
 
 			line += this.parsedArguments.name
 			if(this.parsedArguments.arguments) {
-				line += " " + this.parsedArguments.arguments.join(' ')
+				if (Array.isArray(this.parsedArguments.arguments)) {
+					line += " " + this.parsedArguments.arguments.join(' ')
+				} else {
+					line += " " + this.parsedArguments.arguments
+				}
 			}
 
 			if(this.parsedResult) {

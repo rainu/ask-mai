@@ -1,4 +1,24 @@
 <template>
+	<v-dialog v-model="rejectionDialog" persistent>
+		<v-card :title="$t('toolCall.rejection.dialog.title')">
+			<template v-slot:text>
+				<v-text-field
+					v-model="rejectionMessage"
+					@keyup.enter="setToolCallApproval(tc, false)"
+					:placeholder="$t('toolCall.rejection.dialog.message')"
+					clearable
+					hide-details
+					autofocus />
+			</template>
+
+			<template v-slot:actions>
+				<v-btn block variant="flat" color="error" @click="setToolCallApproval(tc, false)">
+					{{ $t('toolCall.rejection.dialog.ok') }}
+				</v-btn>
+			</template>
+		</v-card>
+	</v-dialog>
+
 	<v-card color="chat-tool-call" elevation="0">
 		<template v-slot:prepend>
 			<v-btn variant="flat"
@@ -31,7 +51,7 @@
 					</v-btn>
 				</v-col>
 				<v-col cols="6" class="pl-0">
-					<v-btn block variant="flat" color="error" @click="setToolCallApproval(tc, false)">
+					<v-btn block variant="flat" color="error" @click="rejectionDialog = true">
 						<v-icon icon="mdi-close"></v-icon>
 					</v-btn>
 				</v-col>
@@ -67,15 +87,19 @@ export default defineComponent({
 	data(){
 		return {
 			expanded: false,
+			rejectionDialog: false,
+			rejectionMessage: '',
 		}
 	},
 	methods: {
 		setToolCallApproval(call: LLMMessageCall, approved: boolean) {
 			call.Meta.NeedsApproval = false
 			if (approved) {
-				LLMApproveToolCall(call.Id)
+				LLMApproveToolCall(call.Id, '')
 			} else {
-				LLMRejectToolCall(call.Id)
+				LLMRejectToolCall(call.Id, this.rejectionMessage)
+				this.rejectionMessage = ''
+				this.rejectionDialog = false
 			}
 		},
 	}
