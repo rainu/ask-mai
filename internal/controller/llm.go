@@ -225,6 +225,7 @@ func (c *Controller) LLMAsk(args LLMAskArgs) (result LLMAskResult, err error) {
 		}
 
 		consumption.Add(c.aiModel.ConsumptionOf(resp))
+		RuntimeEventsEmit(c.ctx, EventNameLLMConsumptionUpdate, consumption.Summary())
 
 		tcMessage, err := c.handleToolCall(resp)
 		if err != nil {

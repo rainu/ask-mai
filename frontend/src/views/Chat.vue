@@ -160,6 +160,7 @@ export default {
 				},
 			] as LLMMessageContentPart[],
 			outputStreamRole: Role.Bot,
+			runningAskingConsumption: {} as HistoryEntryConsumption,
 			error: null as { title: string; message: string } | null,
 			userScroll: false,
 			minimized: false,
@@ -201,7 +202,9 @@ export default {
 			return result
 		},
 		totalChatConsumption(): HistoryEntryConsumption | null {
-			let result = {} as HistoryEntryConsumption
+			let result = {
+				...this.runningAskingConsumption
+			} as HistoryEntryConsumption
 
 			for (let msg of this.chatHistory) {
 				if(msg.Consumption === undefined){
@@ -298,6 +301,7 @@ export default {
 				this.progress = true
 				this.error = null
 				this.userScroll = false
+				this.runningAskingConsumption = {}
 
 				const setInput = () => {
 					this.pushHistory({
@@ -353,6 +357,7 @@ export default {
 			} finally {
 				this.progress = false
 				this.outputStream[0].Content = ''
+				this.runningAskingConsumption = {}
 			}
 		},
 		async onSubmit(input: ChatInputType) {
@@ -392,6 +397,9 @@ export default {
 		})
 		EventsOn('llm:message:update', (message: LLMMessage) => {
 			this.updateHistoryMessage(message)
+		})
+		EventsOn('llm:consumption:update', (consumption: HistoryEntryConsumption) => {
+			this.runningAskingConsumption = consumption
 		})
 		EventsOn('system:restart', () => {
 			// backend requested a restart

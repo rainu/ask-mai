@@ -15,8 +15,9 @@ import (
 )
 
 const (
-	EventNameLLMMessageAdd    = "llm:message:add"
-	EventNameLLMMessageUpdate = "llm:message:update"
+	EventNameLLMMessageAdd        = "llm:message:add"
+	EventNameLLMMessageUpdate     = "llm:message:update"
+	EventNameLLMConsumptionUpdate = "llm:consumption:update"
 )
 
 func (c *Controller) handleToolCall(resp *llms.ContentResponse) (result LLMMessages, err error) {
