@@ -678,8 +678,7 @@ export namespace builtin {
 export namespace command {
 	
 	export class CommandExecutionArguments {
-	    name: string;
-	    arguments: string[];
+	    command: string;
 	    working_directory: string;
 	    environment: Record<string, string>;
 	    out: boolean;
@@ -693,8 +692,7 @@ export namespace command {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.name = source["name"];
-	        this.arguments = source["arguments"];
+	        this.command = source["command"];
 	        this.working_directory = source["working_directory"];
 	        this.environment = source["environment"];
 	        this.out = source["out"];
@@ -1704,7 +1702,7 @@ export namespace http {
 	export class CallResult {
 	    status_code: number;
 	    status: string;
-	    header: Record<string, string[]>;
+	    header: Record<string, Array<string>>;
 	    body: string;
 	
 	    static createFrom(source: any = {}) {

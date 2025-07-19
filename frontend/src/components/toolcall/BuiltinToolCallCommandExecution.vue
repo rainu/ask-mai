@@ -47,14 +47,7 @@ export default defineComponent({
 			return null
 		},
 		title(){
-			let line = this.parsedArguments.name
-			if(this.parsedArguments.arguments) {
-				if (Array.isArray(this.parsedArguments.arguments)) {
-					line += " " + this.parsedArguments.arguments.join(' ')
-				} else {
-					line += " " + this.parsedArguments.arguments
-				}
-			}
+			let line = this.parsedArguments.command
 			return line
 		},
 		resultAsMarkdown(): string {
@@ -71,14 +64,7 @@ export default defineComponent({
 				})
 			}
 
-			line += this.parsedArguments.name
-			if(this.parsedArguments.arguments) {
-				if (Array.isArray(this.parsedArguments.arguments)) {
-					line += " " + this.parsedArguments.arguments.join(' ')
-				} else {
-					line += " " + this.parsedArguments.arguments
-				}
-			}
+			line += this.parsedArguments.command
 
 			if(this.parsedResult) {
 				line += '\n' + this.parsedResult.trim() + '\n```'

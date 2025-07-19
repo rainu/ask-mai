@@ -11,8 +11,9 @@ import (
 )
 
 type CommandDescriptor struct {
-	Command               string            `json:"command"`
-	Arguments             []string          `json:"arguments"`
+	CommandLine           string            `json:"command,omitempty"`
+	Name                  string            `json:"name,omitempty"`
+	Arguments             []string          `json:"arguments,omitempty"`
 	Environment           map[string]string `json:"env"`
 	AdditionalEnvironment map[string]string `json:"additionalEnv"`
 	WorkingDirectory      string            `json:"workingDir"`
@@ -27,7 +28,13 @@ type OutputSettings struct {
 }
 
 func (c CommandDescriptor) Run(ctx context.Context) ([]byte, error) {
-	cmdBuild := cmdchain.Builder().JoinWithContext(ctx, c.Command, c.Arguments...)
+	var cmdBuild cmdchain.CommandBuilder
+
+	if c.CommandLine != "" {
+		cmdBuild = cmdchain.Builder().JoinShellCmdWithContext(ctx, c.CommandLine)
+	} else {
+		cmdBuild = cmdchain.Builder().JoinWithContext(ctx, c.Name, c.Arguments...)
+	}
 
 	if len(c.Environment) > 0 {
 		cmdBuild = cmdBuild.WithEnvironmentMap(toAnyMap(c.Environment))

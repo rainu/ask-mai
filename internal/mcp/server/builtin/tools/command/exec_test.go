@@ -18,8 +18,7 @@ func TestTool_Command_Exec_Echo(t *testing.T) {
 	req := mcp.CallToolRequest{}
 	req.Params.Name = CommandExecutionTool.Name
 	req.Params.Arguments = map[string]any{
-		"name":      "echo",
-		"arguments": []string{"hello", "world"},
+		"command": `echo "hello" "world"`,
 	}
 
 	res, err := c.CallTool(t.Context(), req)
@@ -55,8 +54,7 @@ echo 'invalidPassword'
 	req := mcp.CallToolRequest{}
 	req.Params.Name = CommandExecutionTool.Name
 	req.Params.Arguments = map[string]any{
-		"name":      "sudo",
-		"arguments": []string{"echo", "hello", "world"},
+		"command": `sudo echo hello world`,
 	}
 
 	res, err := c.CallTool(t.Context(), req)
@@ -75,7 +73,7 @@ func TestTool_Command_Exec_Env(t *testing.T) {
 	req := mcp.CallToolRequest{}
 	req.Params.Name = CommandExecutionTool.Name
 	req.Params.Arguments = map[string]any{
-		"name": "env",
+		"command": "env",
 		"environment": map[string]string{
 			"FOO": "bar",
 		},
@@ -95,7 +93,7 @@ func TestTool_Command_Exec_Unknown(t *testing.T) {
 	req := mcp.CallToolRequest{}
 	req.Params.Name = CommandExecutionTool.Name
 	req.Params.Arguments = map[string]any{
-		"name": "CommandShouldNotExists",
+		"command": "CommandShouldNotExists",
 	}
 
 	res, err := c.CallTool(t.Context(), req)

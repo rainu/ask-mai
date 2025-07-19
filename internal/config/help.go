@@ -215,7 +215,7 @@ func printHelpExpression(output io.Writer) {
 	je := json.NewEncoder(&js)
 	je.SetIndent("   ", "  ")
 	je.Encode(mcpCommand.CommandDescriptor{
-		Command:   "/path/to/command",
+		Name:      "/path/to/command",
 		Arguments: []string{"arg1", "...argN"},
 		Environment: map[string]string{
 			"ENV_VAR": "value",

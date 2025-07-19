@@ -9,8 +9,7 @@ import (
 )
 
 type CommandExecutionArguments struct {
-	Name             string            `json:"name"`
-	Arguments        []string          `json:"arguments"`
+	Command          string            `json:"command"`
 	WorkingDirectory string            `json:"working_directory"`
 	Environment      map[string]string `json:"environment"`
 
@@ -26,14 +25,10 @@ var defaultCommandExecutionArguments = CommandExecutionArguments{
 }
 
 var CommandExecutionTool = mcp.NewTool("executeCommand",
-	mcp.WithDescription("Execute a command on the user's system."),
-	mcp.WithString("name",
+	mcp.WithDescription(`Execute a command on the user's system. Concatenations with binary operators like "&&" or "||" are not supported.`),
+	mcp.WithString("command",
 		mcp.Required(),
-		mcp.Description("The name / path to the command to execute."),
-	),
-	mcp.WithArray("arguments",
-		mcp.Description("The arguments for the command. Must be a list of strings."),
-		mcp.Items(map[string]any{"type": "string"}),
+		mcp.Description("The shell-like command to execute."),
 	),
 	mcp.WithString("working_directory",
 		mcp.Description("The working directory for the command."),
@@ -75,13 +70,12 @@ var CommandExecutionToolHandler = func(ctx context.Context, request mcp.CallTool
 		return nil, fmt.Errorf("error parsing arguments: %w", err)
 	}
 
-	if pArgs.Name == "" {
-		return nil, fmt.Errorf("missing parameter: 'name'")
+	if pArgs.Command == "" {
+		return nil, fmt.Errorf("missing parameter: 'command'")
 	}
 
 	cmdDesc := CommandDescriptor{
-		Command:               pArgs.Name,
-		Arguments:             pArgs.Arguments,
+		CommandLine:           pArgs.Command,
 		AdditionalEnvironment: pArgs.Environment,
 		WorkingDirectory:      pArgs.WorkingDirectory,
 		Output: &OutputSettings{

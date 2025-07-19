@@ -155,7 +155,7 @@ func TestCommandExpression_CommandFn_RunCommand(t *testing.T) {
 	toTest := Expression(`
 const pa = JSON.parse(` + expression.VarNameContext + `.args)
 const cmdDescriptor = {
- "command": "echo",
+ "name": "echo",
  "arguments": ["Echo:", pa.message]
 }
 
@@ -175,7 +175,7 @@ func TestCommandExpression_CommandFn_RunCommand_WithLimit(t *testing.T) {
 	toTest := Expression(`
 const pa = JSON.parse(` + expression.VarNameContext + `.args)
 const cmdDescriptor = {
- "command": "echo",
+ "name": "echo",
  "arguments": ["Echo:", pa.message],
  "output": {
    "firstNBytes": 1,
@@ -198,7 +198,7 @@ func TestCommandExpression_CommandFn_RunCommand_WithEnv(t *testing.T) {
 	toTest := Expression(`
 const pa = JSON.parse(` + expression.VarNameContext + `.args)
 const cmdDescriptor = {
- "command": "env",
+ "name": "env",
  "env": {"TEST_ENV": "test"},
  "additionalEnv": {"ADDITIONAL_ENV_VAR": "value"},
 }
@@ -219,7 +219,7 @@ const cmdDescriptor = {
 func TestCommandExpression_CommandFn_RunCommand_WithError(t *testing.T) {
 	toTest := Expression(`
 ` + expression.FuncNameRun + `({
- "command": "__DoesNotExistOnAnySystem__"
+ "name": "__DoesNotExistOnAnySystem__"
 })
 `)
 	require.NoError(t, toTest.Validate())
@@ -237,7 +237,7 @@ func TestCommandExpression_CommandFn_RunCommand_CatchError(t *testing.T) {
 let result = ""
 try {
 	result = ` + expression.FuncNameRun + `({
-		"command": "__DoesNotExistOnAnySystem__"
+		"name": "__DoesNotExistOnAnySystem__"
 	})
 } catch (e) {
 	result = "Error: " + e

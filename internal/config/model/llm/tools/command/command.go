@@ -25,7 +25,7 @@ func (c Command) CommandFn(fd FunctionDefinition) CommandFn {
 		cmdDesc := command.CommandDescriptor{}
 		var err error
 
-		cmdDesc.Command, cmdDesc.Arguments, err = fd.GetCommandWithArgs(argsAsJson)
+		cmdDesc.Name, cmdDesc.Arguments, err = fd.GetCommandWithArgs(argsAsJson)
 		if err != nil {
 			return nil, fmt.Errorf("error creating command for tool '%s': %w", fd.Name, err)
 		}

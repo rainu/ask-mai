@@ -54,7 +54,7 @@ func TestApproval_NeedsApproval_Run(t *testing.T) {
 	require.Error(t, err, "file should not exist")
 
 	Approval(expression.FuncNameRun+`({
-	"command": "touch",
+	"name": "touch",
 	"arguments": ['`+tmp.Name()+`'],
 }); true`).NeedsApproval(context.Background(), ``, nil)
 
