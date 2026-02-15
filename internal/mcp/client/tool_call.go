@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -20,7 +21,7 @@ func CallTool(ctx context.Context, tp Transporter, toolName string, argsAsJson s
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool call arguments: %w", err)
 	}
-	if len(req.Params.Arguments) == 0 {
+	if len(req.GetArguments()) == 0 {
 		req.Params.Arguments = map[string]any{
 			"_": "_", // some tools require at least one argument, so we add a dummy one
 		}
