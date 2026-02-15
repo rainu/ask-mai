@@ -2221,9 +2221,24 @@ export namespace llm {
 
 export namespace mcp {
 	
+	export class Meta {
+	    ProgressToken: any;
+	    AdditionalFields: Record<string, any>;
+	
+	    static createFrom(source: any = {}) {
+	        return new Meta(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ProgressToken = source["ProgressToken"];
+	        this.AdditionalFields = source["AdditionalFields"];
+	    }
+	}
 	export class Annotations {
 	    audience?: string[];
 	    priority?: number;
+	    lastModified?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Annotations(source);
@@ -2233,11 +2248,13 @@ export namespace mcp {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.audience = source["audience"];
 	        this.priority = source["priority"];
+	        this.lastModified = source["lastModified"];
 	    }
 	}
 	export class AudioContent {
 	    // Go type: Annotations
 	    annotations?: any;
+	    _meta?: Meta;
 	    type: string;
 	    data: string;
 	    mimeType: string;
@@ -2249,6 +2266,7 @@ export namespace mcp {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.annotations = this.convertValues(source["annotations"], null);
+	        this._meta = this.convertValues(source["_meta"], Meta);
 	        this.type = source["type"];
 	        this.data = source["data"];
 	        this.mimeType = source["mimeType"];
@@ -2273,8 +2291,9 @@ export namespace mcp {
 		}
 	}
 	export class CallToolResult {
-	    _meta?: Record<string, any>;
+	    _meta?: Meta;
 	    content: any[];
+	    structuredContent?: any;
 	    isError?: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -2283,14 +2302,34 @@ export namespace mcp {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this._meta = source["_meta"];
+	        this._meta = this.convertValues(source["_meta"], Meta);
 	        this.content = source["content"];
+	        this.structuredContent = source["structuredContent"];
 	        this.isError = source["isError"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class EmbeddedResource {
 	    // Go type: Annotations
 	    annotations?: any;
+	    _meta?: Meta;
 	    type: string;
 	    resource: any;
 	
@@ -2301,6 +2340,7 @@ export namespace mcp {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.annotations = this.convertValues(source["annotations"], null);
+	        this._meta = this.convertValues(source["_meta"], Meta);
 	        this.type = source["type"];
 	        this.resource = source["resource"];
 	    }
@@ -2323,9 +2363,26 @@ export namespace mcp {
 		    return a;
 		}
 	}
+	export class Icon {
+	    src: string;
+	    mimeType?: string;
+	    sizes?: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new Icon(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.src = source["src"];
+	        this.mimeType = source["mimeType"];
+	        this.sizes = source["sizes"];
+	    }
+	}
 	export class ImageContent {
 	    // Go type: Annotations
 	    annotations?: any;
+	    _meta?: Meta;
 	    type: string;
 	    data: string;
 	    mimeType: string;
@@ -2337,6 +2394,7 @@ export namespace mcp {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.annotations = this.convertValues(source["annotations"], null);
+	        this._meta = this.convertValues(source["_meta"], Meta);
 	        this.type = source["type"];
 	        this.data = source["data"];
 	        this.mimeType = source["mimeType"];
@@ -2360,6 +2418,7 @@ export namespace mcp {
 		    return a;
 		}
 	}
+	
 	export class Timeout {
 	    Init?: number;
 	    List?: number;
@@ -2423,6 +2482,7 @@ export namespace mcp {
 	export class TextContent {
 	    // Go type: Annotations
 	    annotations?: any;
+	    _meta?: Meta;
 	    type: string;
 	    text: string;
 	
@@ -2433,6 +2493,7 @@ export namespace mcp {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.annotations = this.convertValues(source["annotations"], null);
+	        this._meta = this.convertValues(source["_meta"], Meta);
 	        this.type = source["type"];
 	        this.text = source["text"];
 	    }
@@ -2456,6 +2517,18 @@ export namespace mcp {
 		}
 	}
 	
+	export class ToolExecution {
+	    taskSupport?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ToolExecution(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.taskSupport = source["taskSupport"];
+	    }
+	}
 	export class ToolAnnotation {
 	    title?: string;
 	    readOnlyHint?: boolean;
@@ -2476,10 +2549,32 @@ export namespace mcp {
 	        this.openWorldHint = source["openWorldHint"];
 	    }
 	}
-	export class ToolInputSchema {
+	export class ToolOutputSchema {
+	    $defs?: Record<string, any>;
 	    type: string;
 	    properties?: Record<string, any>;
 	    required?: string[];
+	    additionalProperties?: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new ToolOutputSchema(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.$defs = source["$defs"];
+	        this.type = source["type"];
+	        this.properties = source["properties"];
+	        this.required = source["required"];
+	        this.additionalProperties = source["additionalProperties"];
+	    }
+	}
+	export class ToolInputSchema {
+	    $defs?: Record<string, any>;
+	    type: string;
+	    properties?: Record<string, any>;
+	    required?: string[];
+	    additionalProperties?: any;
 	
 	    static createFrom(source: any = {}) {
 	        return new ToolInputSchema(source);
@@ -2487,16 +2582,23 @@ export namespace mcp {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.$defs = source["$defs"];
 	        this.type = source["type"];
 	        this.properties = source["properties"];
 	        this.required = source["required"];
+	        this.additionalProperties = source["additionalProperties"];
 	    }
 	}
 	export class Tool {
+	    _meta?: Meta;
 	    name: string;
 	    description?: string;
 	    inputSchema: ToolInputSchema;
+	    outputSchema?: ToolOutputSchema;
 	    annotations: ToolAnnotation;
+	    defer_loading?: boolean;
+	    icons?: Icon[];
+	    execution?: ToolExecution;
 	
 	    static createFrom(source: any = {}) {
 	        return new Tool(source);
@@ -2504,10 +2606,15 @@ export namespace mcp {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this._meta = this.convertValues(source["_meta"], Meta);
 	        this.name = source["name"];
 	        this.description = source["description"];
 	        this.inputSchema = this.convertValues(source["inputSchema"], ToolInputSchema);
+	        this.outputSchema = this.convertValues(source["outputSchema"], ToolOutputSchema);
 	        this.annotations = this.convertValues(source["annotations"], ToolAnnotation);
+	        this.defer_loading = source["defer_loading"];
+	        this.icons = this.convertValues(source["icons"], Icon);
+	        this.execution = this.convertValues(source["execution"], ToolExecution);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -2528,6 +2635,8 @@ export namespace mcp {
 		    return a;
 		}
 	}
+	
+	
 	
 
 }
@@ -2970,6 +3079,7 @@ export namespace model {
 	    Profiles: Record<string, Profile>;
 	    Themes: Themes;
 	    Version: boolean;
+	    HttpAddress: string;
 	    Help: Help;
 	
 	    static createFrom(source: any = {}) {
@@ -2985,6 +3095,7 @@ export namespace model {
 	        this.Profiles = this.convertValues(source["Profiles"], Profile, true);
 	        this.Themes = this.convertValues(source["Themes"], Themes);
 	        this.Version = source["Version"];
+	        this.HttpAddress = source["HttpAddress"];
 	        this.Help = this.convertValues(source["Help"], Help);
 	    }
 	

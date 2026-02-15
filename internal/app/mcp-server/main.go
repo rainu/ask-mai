@@ -2,11 +2,12 @@ package mcp_server
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
+
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/rainu/ask-mai/internal/config"
 	mcpServer "github.com/rainu/ask-mai/internal/mcp/server"
-	"log/slog"
-	"os"
 )
 
 type Args struct {
@@ -29,7 +30,13 @@ func Main(args Args) int {
 	ap := cfg.GetActiveProfile()
 
 	ms := mcpServer.NewServer(args.VersionLine, ap.LLM.Tool.BuiltIns, ap.LLM.Tool.Custom)
-	err := server.ServeStdio(ms)
+
+	var err error
+	if cfg.HttpAddress != "" {
+		err = server.NewStreamableHTTPServer(ms).Start(cfg.HttpAddress)
+	} else {
+		err = server.ServeStdio(ms)
+	}
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())

@@ -14,7 +14,8 @@ type Config struct {
 	Profiles      map[string]*Profile `yaml:"profiles,omitempty" usage:"Configuration profiles. Each profile has the same structure as the main configuration: "`
 	Themes        Themes              `yaml:"themes,omitempty" usage:"Theme settings for the application: "`
 
-	Version bool `yaml:"version,omitempty" short:"v" usage:"Show the version"`
+	Version     bool   `yaml:"version,omitempty" short:"v" usage:"Show the version"`
+	HttpAddress string `yaml:"http-address,omitempty" usage:"Address to listen on for MCP-HTTP server (e.g. \":8080\"). If not set, the server will run in stdio mode."`
 
 	Help Help `yaml:",inline,omitempty"`
 }

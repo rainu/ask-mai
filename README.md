@@ -145,6 +145,11 @@ Or you can rename the binary to `ask-mai-mcp-server` and start it like this:
 ask-mai-mcp-server
 ```
 
+Do run the MCP server as a streamable HTTP server, you can use the `-http-address` flag:
+```bash
+ask-mai ask-mai-mcp-server --http-address=":8080"
+```
+
 ## How to build this application
 
 1. Install dependencies [see wails documentation](https://wails.io/docs/gettingstarted/installation)
