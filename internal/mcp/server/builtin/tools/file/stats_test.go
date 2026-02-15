@@ -3,14 +3,15 @@ package file
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mark3labs/mcp-go/mcp"
-	"github.com/mark3labs/mcp-go/server"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path"
 	"testing"
 	"time"
+
+	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/mark3labs/mcp-go/server"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTool_Stats(t *testing.T) {
@@ -152,7 +153,7 @@ func TestTool_Stats_Requirements_PathIsDirectory(t *testing.T) {
 	parsedResult.Size = 0
 
 	assert.Equal(t, StatsResult{
-		Path:        req.Params.Arguments["path"].(string),
+		Path:        req.Params.Arguments.(map[string]any)["path"].(string),
 		IsDirectory: true,
 		IsRegular:   false,
 		Permissions: "-rwxr-xr-x",
